@@ -1,0 +1,2 @@
+MEASURE_SPLIT = "|"
+EMPTY_NOTE = "-"
