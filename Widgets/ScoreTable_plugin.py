@@ -10,15 +10,10 @@ class ScoreTablePlugin(QPyDesignerCustomWidgetPlugin):
     def __init__(self, parent = None):
 
         super(ScoreTablePlugin, self).__init__(parent)
-
         self.initialized = False
 
     def createWidget(self, parent):
         widget = ScoreTable(parent)
-
-        # We install an event filter on the text editor to prevent the
-        # contents from being modified outside the custom editor dialog.
-        #widget.installEventFilter(self)
         return widget
 
     def name(self):

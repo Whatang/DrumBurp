@@ -14,21 +14,10 @@ class _NoDataError(StandardError):
     There is nothing defined for the Score in this grid.
     '''
 
-def _makeDirtyProperty(name):
-    def _set(self, value):
-        if value != getattr(self, name):
-            setattr(self, name, value)
-            self._recalculate = True
-    def _get(self):
-        return getattr(self, name)
-    return property(_get, _set)
-
-
 class SongModel(QAbstractTableModel):
     '''
     classdocs
     '''
-
 
     def __init__(self):
         '''
@@ -41,7 +30,13 @@ class SongModel(QAbstractTableModel):
         self._recalculate = True
         self._calculateSystems()
 
-    width = _makeDirtyProperty("_width")
+    def _setWidth(self, value):
+        if value != self._width:
+            self._width = value
+            self._calculateSystems()
+    def _getWidth(self):
+        return self._width
+    width = property(fget = _getWidth, fset = _setWidth)
 
     def rowCount(self, unusedIndex = QModelIndex()):
         if self._recalculate:
@@ -79,7 +74,7 @@ class SongModel(QAbstractTableModel):
                 measures.append(thisMeasure)
                 thisMeasure = []
         startTime = 0
-        thisSystem = ScoreSystem(startTime)
+        thisSystem = ScoreSystem(self.score, startTime)
         for measure in measures:
             lastNote = measure[-1]
             if lastNote.time - startTime < self.width:
@@ -90,7 +85,7 @@ class SongModel(QAbstractTableModel):
                     # already, so end the line and start a new one
                     self._systems.append(thisSystem)
                     startTime = thisSystem.lastTime + 1
-                    thisSystem = ScoreSystem(startTime)
+                    thisSystem = ScoreSystem(self.score, startTime)
                 while startTime + self.width < lastNote.time:
                     # Add systems until we have enough for this measure
                     thisSystem.addNotes(n for n in measure if
@@ -98,7 +93,7 @@ class SongModel(QAbstractTableModel):
                     thisSystem.lastTime = startTime + self.width - 1
                     self._systems.append(thisSystem)
                     startTime += self.width
-                    thisSystem = ScoreSystem(startTime)
+                    thisSystem = ScoreSystem(self.score, startTime)
                 thisSystem.addNotes(n for n in measure
                                     if startTime <= n.time)
         if thisSystem.lastTime != thisSystem.startTime:
@@ -147,9 +142,7 @@ class SongModel(QAbstractTableModel):
         except _NoDataError:
             return
         system = self._systems[self._rowToSystemNumber(index.row())]
-        self.score.addNote(time, lineIndex, head)
-        head = self.score.getNote(time, lineIndex)
-        system.addNotes([Data.Note.Note(time, lineIndex, head)])
+        system.addNote(time, lineIndex, head)
         self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"), index, index)
 
     def delNote(self, index):
@@ -159,6 +152,15 @@ class SongModel(QAbstractTableModel):
         except _NoDataError:
             return
         system = self._systems[self._rowToSystemNumber(index.row())]
-        self.score.delNote(time, lineIndex)
         system.delNote(time, lineIndex)
+        self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"), index, index)
+
+    def toggleNote(self, index, noteHead):
+        try:
+            time, lineIndex = self._gridToTimeAndLineIndex(index.row(),
+                                                           index.column())
+        except _NoDataError:
+            return
+        system = self._systems[self._rowToSystemNumber(index.row())]
+        system.toggleNote(time, lineIndex, noteHead)
         self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"), index, index)

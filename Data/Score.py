@@ -65,6 +65,7 @@ class Score(object):
         if not isinstance(line, Line):
             line = self[line]
         line.addNote(noteTime, head)
+        return self.getNote(noteTime, line)
 
     def delNote(self, noteTime, line):
         if not isinstance(line, Line):

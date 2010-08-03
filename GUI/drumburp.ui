@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>DrumBurp</string>
   </property>
+  <property name="animated">
+   <bool>true</bool>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0" rowspan="2">
@@ -26,8 +29,14 @@
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <widget class="QGroupBox" name="groupBox">
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
          <property name="title">
           <string>Note Head</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
@@ -94,39 +103,98 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton">
-         <property name="text">
-          <string>Width</string>
+        <widget class="QGroupBox" name="groupBox_3">
+         <property name="title">
+          <string>Display Options</string>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_5">
-         <property name="text">
-          <string>Horizontal Spacing</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSlider" name="spaceSlider">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="value">
-          <number>50</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="tickPosition">
-          <enum>QSlider::TicksBelow</enum>
-         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Horizontal Spacing</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="buddy">
+             <cstring>spaceSlider</cstring>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSlider" name="spaceSlider">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="value">
+             <number>0</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="tickPosition">
+             <enum>QSlider::TicksBelow</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>Width</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame_3">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QCheckBox" name="checkBox">
+               <property name="layoutDirection">
+                <enum>Qt::RightToLeft</enum>
+               </property>
+               <property name="text">
+                <string>Fixed</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="widthSpinBox">
+               <property name="minimum">
+                <number>10</number>
+               </property>
+               <property name="maximum">
+                <number>1000</number>
+               </property>
+               <property name="value">
+                <number>80</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
@@ -154,7 +222,7 @@
        <item row="0" column="0">
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>Song</string>
+          <string>&amp;Song</string>
          </property>
          <property name="buddy">
           <cstring>lineEdit</cstring>
@@ -167,7 +235,7 @@
        <item row="0" column="2">
         <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>BPM</string>
+          <string>&amp;BPM</string>
          </property>
          <property name="buddy">
           <cstring>spinBox</cstring>
@@ -177,7 +245,7 @@
        <item row="1" column="0">
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Artist</string>
+          <string>&amp;Artist</string>
          </property>
          <property name="buddy">
           <cstring>lineEdit_2</cstring>
@@ -190,7 +258,10 @@
        <item row="1" column="2">
         <widget class="QLabel" name="label_4">
          <property name="text">
-          <string>Tabbed by</string>
+          <string>&amp;Tabbed by</string>
+         </property>
+         <property name="textInteractionFlags">
+          <set>Qt::NoTextInteraction</set>
          </property>
          <property name="buddy">
           <cstring>lineEdit_3</cstring>
@@ -253,6 +324,9 @@
         <bold>false</bold>
        </font>
       </property>
+      <property name="contextMenuPolicy">
+       <enum>Qt::NoContextMenu</enum>
+      </property>
       <property name="editTriggers">
        <set>QAbstractItemView::NoEditTriggers</set>
       </property>
@@ -265,14 +339,20 @@
       <property name="dragDropOverwriteMode">
        <bool>false</bool>
       </property>
+      <property name="dragDropMode">
+       <enum>QAbstractItemView::DropOnly</enum>
+      </property>
       <property name="selectionMode">
        <enum>QAbstractItemView::NoSelection</enum>
       </property>
       <property name="textElideMode">
-       <enum>Qt::ElideNone</enum>
+       <enum>Qt::ElideMiddle</enum>
       </property>
       <property name="showGrid">
        <bool>false</bool>
+      </property>
+      <property name="gridStyle">
+       <enum>Qt::NoPen</enum>
       </property>
       <property name="wordWrap">
        <bool>false</bool>
@@ -284,7 +364,7 @@
        <bool>false</bool>
       </attribute>
       <attribute name="horizontalHeaderDefaultSectionSize">
-       <number>10</number>
+       <number>0</number>
       </attribute>
       <attribute name="horizontalHeaderHighlightSections">
        <bool>false</bool>
@@ -293,7 +373,7 @@
        <number>0</number>
       </attribute>
       <attribute name="verticalHeaderDefaultSectionSize">
-       <number>10</number>
+       <number>0</number>
       </attribute>
       <attribute name="verticalHeaderHighlightSections">
        <bool>false</bool>
@@ -302,7 +382,7 @@
        <number>0</number>
       </attribute>
       <attribute name="verticalHeaderDefaultSectionSize">
-       <number>10</number>
+       <number>0</number>
       </attribute>
       <attribute name="horizontalHeaderVisible">
        <bool>false</bool>
@@ -320,7 +400,7 @@
        <bool>false</bool>
       </attribute>
       <attribute name="horizontalHeaderDefaultSectionSize">
-       <number>10</number>
+       <number>0</number>
       </attribute>
      </widget>
     </item>
@@ -416,8 +496,6 @@
   <tabstop>RadioButtonTeller_4</tabstop>
   <tabstop>RadioButtonTeller_5</tabstop>
   <tabstop>RadioButtonTeller_6</tabstop>
-  <tabstop>pushButton</tabstop>
-  <tabstop>spaceSlider</tabstop>
   <tabstop>lineEdit</tabstop>
   <tabstop>lineEdit_2</tabstop>
   <tabstop>spinBox</tabstop>
@@ -433,8 +511,8 @@
    <slot>spacingChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>32058</x>
-     <y>32312</y>
+     <x>136</x>
+     <y>299</y>
     </hint>
     <hint type="destinationlabel">
      <x>287</x>
@@ -449,8 +527,8 @@
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>32068</x>
-     <y>32113</y>
+     <x>136</x>
+     <y>102</y>
     </hint>
     <hint type="destinationlabel">
      <x>239</x>
@@ -465,8 +543,8 @@
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>32054</x>
-     <y>32138</y>
+     <x>136</x>
+     <y>125</y>
     </hint>
     <hint type="destinationlabel">
      <x>262</x>
@@ -481,8 +559,8 @@
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>32051</x>
-     <y>32167</y>
+     <x>136</x>
+     <y>148</y>
     </hint>
     <hint type="destinationlabel">
      <x>268</x>
@@ -497,8 +575,8 @@
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>32046</x>
-     <y>32187</y>
+     <x>136</x>
+     <y>171</y>
     </hint>
     <hint type="destinationlabel">
      <x>254</x>
@@ -513,8 +591,8 @@
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>32034</x>
-     <y>32204</y>
+     <x>136</x>
+     <y>194</y>
     </hint>
     <hint type="destinationlabel">
      <x>258</x>
@@ -529,12 +607,60 @@
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>32037</x>
-     <y>32229</y>
+     <x>136</x>
+     <y>217</y>
     </hint>
     <hint type="destinationlabel">
      <x>268</x>
      <y>212</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>widthSpinBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>74</x>
+     <y>336</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>110</x>
+     <y>334</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>widthSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setWidth(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>120</x>
+     <y>341</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>171</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setFixedWidth(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>63</x>
+     <y>335</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>476</x>
+     <y>355</y>
     </hint>
    </hints>
   </connection>

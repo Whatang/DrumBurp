@@ -24,7 +24,6 @@ class RadioButtonTeller(QRadioButton):
     def _getButtonValue(self):
         return self._buttonValue
 
-
     emitValue = QtCore.pyqtSignal(QtCore.QString)
     buttonValue = QtCore.pyqtProperty(QtCore.QString, fget = _getButtonValue,
                                       fset = _setButtonValue)
