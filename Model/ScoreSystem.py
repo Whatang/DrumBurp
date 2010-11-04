@@ -5,6 +5,14 @@ Created on 31 Jul 2010
 
 '''
 import Data
+import bisect
+from bisect import bisect_left
+
+class BadMeasureError(StandardError):
+    'Could not add this measure to the ScoreSystem'
+
+class BadTimeError(StandardError):
+    'The given time does not correspond to any measure in this ScoreSystem'
 
 class ScoreSystem(object):
     '''
@@ -17,55 +25,89 @@ class ScoreSystem(object):
         Constructor
         '''
         self.score = score
-        self.startTime = startTime
-        self.lastTime = self.startTime
-        self._notes = {}
+        self._startTime = startTime
+        self._lastTime = startTime - 1
+        self._timeToMeasure = {}
+        self._measures = []
+        self._measureLinesOrdered = []
         self._measureLines = set()
+
+    def _getStartTime(self):
+        return self._startTime
+    startTime = property(fget = _getStartTime)
+
+    def _getLastTime(self):
+        return self._lastTime
+    lastTime = property(fget = _getLastTime)
+
+    def addMeasure(self, measure):
+        if measure.startTime <= self.lastTime:
+            print measure.startTime, self.lastTime
+            raise BadMeasureError()
+        self._measures.append(measure)
+        self._measureLinesOrdered.append(measure.lastTime)
+        self._measureLines.add(measure.lastTime)
+        self._lastTime = measure.lastTime
+        mIndex = len(self._measures) - 1
+        for t in xrange(measure.startTime, measure.lastTime + 1):
+            self._timeToMeasure[t] = (measure, mIndex)
+
+    def _findMeasureAtTime(self, time):
+        if time not in self._timeToMeasure:
+            raise BadTimeError()
+        return self._timeToMeasure[time][0]
 
     def addNotes(self, iterable):
         for note in iterable:
             self.addNote(note.time, note.lineIndex, note.head)
 
     def addNote(self, time, lineIndex, head):
-        if time > self.lastTime:
-            self.lastTime = time
-        if time < self.startTime:
-            return
+        # Quick check to make sure we're not trying to add a note on a measure
+        # line
         if time in self._measureLines:
             return
-        if head == Data.MEASURE_SPLIT:
-            self._measureLines.add(time)
-            self.score.addNote(time, 0, head)
-        else:
-            head = self.score.addNote(time, lineIndex, head)
-            self._notes[(time, lineIndex)] = head
+        # Find the measure at this time
+        try:
+            measure = self._findMeasureAtTime(time)
+        except BadTimeError:
+            # Not here, just return quietly
+            return
+        measure.addNewNote(time, lineIndex, head)
 
     def delNote(self, time, lineIndex):
-        if ((not (self.startTime <= time <= self.lastTime))
-             or
-             (time in self._measureLines)):
-            return
+        # Quick check to make sure we're not trying to delete a note on a measure
+        # line
         if time in self._measureLines:
             return
-        self._notes.pop((time, lineIndex), None)
-        self.score.delNote(time, lineIndex)
+        # Find the measure at this time
+        try:
+            measure = self._findMeasureAtTime(time)
+        except BadTimeError:
+            # Not here, just return quietly
+            return
+        measure.delNote(time, lineIndex)
 
     def toggleNote(self, time, lineIndex, head):
-        if ((not (self.startTime <= time <= self.lastTime))
-             or
-             (time in self._measureLines)):
+        # Quick check to make sure we're not trying to toggle a note on a
+        # measure line
+        if time in self._measureLines:
             return
-        if (time, lineIndex) in self._notes:
-            self.delNote(time, lineIndex)
-        elif time in self._measureLines:
+        # Find the measure at this time
+        try:
+            measure = self._findMeasureAtTime(time)
+        except BadTimeError:
+            # Not here, just return quietly
             return
-        else:
-            self.addNote(time, lineIndex, head)
+        measure.toggleNote(time, lineIndex, head)
 
     def getNoteHead(self, time, lineIndex):
-        if not (self.startTime <= time <= self.lastTime):
-            return ""
         if time in self._measureLines:
             return Data.MEASURE_SPLIT
         else:
-            return self._notes.get((time, lineIndex), Data.EMPTY_NOTE)
+            # Find the measure at this time
+            try:
+                measure = self._findMeasureAtTime(time)
+            except BadTimeError:
+                # Not here, just return quietly
+                return ""
+            return measure.getNoteHead(time, lineIndex)

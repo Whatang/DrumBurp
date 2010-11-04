@@ -5,7 +5,7 @@ Created on 2 Aug 2010
 
 '''
 from PyQt4.QtGui import QTableView, QFontMetrics
-from PyQt4 import QtCore
+from PyQt4 import QtCore, QtGui
 
 class ScoreTable(QTableView):
     '''
@@ -22,7 +22,9 @@ class ScoreTable(QTableView):
                                QtCore.Qt.RightButton : self._rightClick}
         self._noteHead = None
         self._fixedWidth = True
-        self._width = 80
+        self._desiredWidth = 80
+        self._menuIsUp = False
+        self._holdingForMenu = False
 
     def setColumnSizes(self):
         fm = QFontMetrics(self.font())
@@ -56,13 +58,13 @@ class ScoreTable(QTableView):
     @QtCore.pyqtSlot(int)
     def setWidth(self, width):
         self.model().width = width
-        self._width = width
+        self._desiredWidth = width
 
     @QtCore.pyqtSlot(bool)
     def setFixedWidth(self, value):
         self._fixedWidth = value
         if self._fixedWidth:
-            self.model().width = self._width
+            self.model().width = self._desiredWidth
         else:
             self._setVariableWidth()
 
@@ -83,9 +85,38 @@ class ScoreTable(QTableView):
     def _midClick(self, index):
         pass
 
+    def mousePressEvent(self, event):
+        print self._menuIsUp
+        self._startIndex = self.indexAt(event.pos())
+        self._holdingForMenu = True
+        QtCore.QTimer.singleShot(750, self.showContextMenu)
+        super(ScoreTable, self).mousePressEvent(event)
+
     def mouseReleaseEvent(self, event):
+        index = self.indexAt(event.pos())
+        if index == self._startIndex:
+            self.clearSelection()
+            if self._holdingForMenu:
+                button = event.button()
+                self._buttonMethods[button](index)
+        self._holdingForMenu = False
+        super(ScoreTable, self).mouseReleaseEvent(event)
+
+    def mouseMoveEvent(self, event):
+        print "Mouse move"
         pos = event.pos()
         index = self.indexAt(pos)
-        button = event.button()
-        self._buttonMethods[button](index)
-        super(ScoreTable, self).mouseReleaseEvent(event)
+        if self._holdingForMenu and index != self._startIndex:
+            self._holdingForMenu = False
+        else:
+            print index.row(), index.column()
+            super(ScoreTable, self).mouseMoveEvent(event)
+
+    def showContextMenu(self):
+        if self._holdingForMenu:
+            qm = QtGui.QMenu()
+            qm.addAction("Hi")
+            self._menuIsUp = True
+            qm.exec_(QtGui.QCursor.pos())
+            self._menuIsUp = False
+            self._holdingForMenu = False

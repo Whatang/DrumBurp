@@ -15,10 +15,6 @@ class RadioButtonTellerPlugin(QPyDesignerCustomWidgetPlugin):
 
     def createWidget(self, parent):
         widget = RadioButtonTeller(parent)
-
-        # We install an event filter on the text editor to prevent the
-        # contents from being modified outside the custom editor dialog.
-        #widget.installEventFilter(self)
         return widget
 
     def name(self):

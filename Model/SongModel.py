@@ -8,6 +8,8 @@ Created on 31 Jul 2010
 from Model.ScoreSystem import ScoreSystem
 from PyQt4.QtCore import Qt, QVariant, QAbstractTableModel, QModelIndex, SIGNAL, QSize
 import Data.Score
+from Model.Measure import Measure
+import time
 
 class _NoDataError(StandardError):
     '''
@@ -25,17 +27,21 @@ class SongModel(QAbstractTableModel):
         '''
         super(SongModel, self).__init__()
         self.score = Data.Score.makeEmptyScore(8, 16)
-        self._width = 80
+        self._desiredWidth = 80
+        self._actualWidth = 80
         self._systems = []
         self._recalculate = True
+        self._measures = []
+        self._dataCache = {}
+        self.calculateMeasures()
         self._calculateSystems()
 
     def _setWidth(self, value):
-        if value != self._width:
-            self._width = value
+        if value != self._desiredWidth:
+            self._desiredWidth = value
             self._calculateSystems()
     def _getWidth(self):
-        return self._width
+        return self._desiredWidth
     width = property(fget = _getWidth, fset = _setWidth)
 
     def rowCount(self, unusedIndex = QModelIndex()):
@@ -47,7 +53,7 @@ class SongModel(QAbstractTableModel):
     def columnCount(self, unusedIndex = QModelIndex()):
         if self._recalculate:
             self._calculateSystems()
-        return self.width
+        return self._actualWidth
 
     def _rowToSystemNumber(self, row):
         return row / (len(self.score) + 1)
@@ -59,26 +65,31 @@ class SongModel(QAbstractTableModel):
 
     def _gridToTimeAndLineIndex(self, row, col):
         scoreSystem = self._systems[self._rowToSystemNumber(row)]
-        if col > scoreSystem.lastTime:
+        if scoreSystem.startTime + col > scoreSystem.lastTime:
             raise _NoDataError()
         return (scoreSystem.startTime + col, self._rowToLineIndex(row))
 
+    def calculateMeasures(self):
+        self._measures = []
+        thisMeasure = Measure(score = self.score, startTime = 0)
+        for note in self.score.iterNotes():
+            thisMeasure.recordNote(note)
+            if note.head == Data.MEASURE_SPLIT:
+                self._measures.append(thisMeasure)
+                thisMeasure = Measure(score = self.score,
+                                      startTime = thisMeasure.lastTime + 1)
+
     def _calculateSystems(self):
         self._recalculate = False
+        self._dataCache = {}
         self._systems = []
-        measures = []
-        thisMeasure = []
-        for note in self.score.iterNotes():
-            thisMeasure.append(note)
-            if note.head == Data.MEASURE_SPLIT:
-                measures.append(thisMeasure)
-                thisMeasure = []
         startTime = 0
         thisSystem = ScoreSystem(self.score, startTime)
-        for measure in measures:
-            lastNote = measure[-1]
-            if lastNote.time - startTime < self.width:
-                thisSystem.addNotes(measure)
+        self._actualWidth = self.width
+        for measure in self._measures:
+            endTime = measure.lastTime
+            if endTime - startTime < self.width:
+                thisSystem.addMeasure(measure)
             else:
                 if thisSystem.lastTime != thisSystem.startTime:
                     # i.e. there is at least one measure on this line
@@ -86,20 +97,17 @@ class SongModel(QAbstractTableModel):
                     self._systems.append(thisSystem)
                     startTime = thisSystem.lastTime + 1
                     thisSystem = ScoreSystem(self.score, startTime)
-                while startTime + self.width < lastNote.time:
-                    # Add systems until we have enough for this measure
-                    thisSystem.addNotes(n for n in measure if
-                                        0 <= (n.time - startTime) < self.width)
-                    thisSystem.lastTime = startTime + self.width - 1
-                    self._systems.append(thisSystem)
-                    startTime += self.width
+                    thisSystem.addMeasure(measure)
+                else:
+                    # Just stick the measure on this line, and make the width 
+                    # of the table bigger to accommodate it if necessary
+                    thisSystem.addMeasure(measure)
+                    startTime = thisSystem.lastTime + 1
                     thisSystem = ScoreSystem(self.score, startTime)
-                thisSystem.addNotes(n for n in measure
-                                    if startTime <= n.time)
+                    self._actualWidth = max(self._actualWidth, measure.width)
         if thisSystem.lastTime != thisSystem.startTime:
             self._systems.append(thisSystem)
         self.emit(SIGNAL("modelReset()"))
-
 
     def data(self, index, role = Qt.DisplayRole):
         if self._recalculate:
@@ -109,13 +117,15 @@ class SongModel(QAbstractTableModel):
             return QVariant()
         if role == Qt.DisplayRole:
             try:
-                time, line = self._gridToTimeAndLineIndex(index.row(),
-                                                          index.column())
+                gridTime, line = self._gridToTimeAndLineIndex(index.row(),
+                                                              index.column())
             except _NoDataError:
                 return QVariant()
-            system = self._systems[self._rowToSystemNumber(index.row())]
-            gridValue = system.getNoteHead(time, line)
-            return QVariant(gridValue)
+            if (gridTime, line) not in self._dataCache:
+                system = self._systems[self._rowToSystemNumber(index.row())]
+                gridValue = system.getNoteHead(gridTime, line)
+                self._dataCache[(gridTime, line)] = QVariant(gridValue)
+            return self._dataCache[(gridTime, line)]
         elif role == Qt.TextAlignmentRole:
             return QVariant(Qt.AlignCenter)
         elif role == Qt.SizeHintRole:
@@ -137,30 +147,34 @@ class SongModel(QAbstractTableModel):
 
     def addNote(self, index, head = None):
         try:
-            time, lineIndex = self._gridToTimeAndLineIndex(index.row(),
+            gridTime, lineIndex = self._gridToTimeAndLineIndex(index.row(),
                                                            index.column())
         except _NoDataError:
             return
         system = self._systems[self._rowToSystemNumber(index.row())]
-        system.addNote(time, lineIndex, head)
+        system.addNote(gridTime, lineIndex, head)
+        self._dataCache.pop((gridTime, lineIndex), None)
         self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"), index, index)
 
     def delNote(self, index):
         try:
-            time, lineIndex = self._gridToTimeAndLineIndex(index.row(),
+            gridTime, lineIndex = self._gridToTimeAndLineIndex(index.row(),
                                                            index.column())
         except _NoDataError:
             return
         system = self._systems[self._rowToSystemNumber(index.row())]
-        system.delNote(time, lineIndex)
+        system.delNote(gridTime, lineIndex)
+        self._dataCache.pop((gridTime, lineIndex), None)
         self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"), index, index)
 
     def toggleNote(self, index, noteHead):
+        print index.column()
         try:
-            time, lineIndex = self._gridToTimeAndLineIndex(index.row(),
+            gridTime, lineIndex = self._gridToTimeAndLineIndex(index.row(),
                                                            index.column())
         except _NoDataError:
             return
         system = self._systems[self._rowToSystemNumber(index.row())]
-        system.toggleNote(time, lineIndex, noteHead)
+        self._dataCache.pop((gridTime, lineIndex), None)
+        system.toggleNote(gridTime, lineIndex, noteHead)
         self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"), index, index)

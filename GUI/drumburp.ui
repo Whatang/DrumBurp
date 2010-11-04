@@ -19,7 +19,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0" rowspan="2">
-     <widget class="QFrame" name="frame">
+     <widget class="QFrame" name="optionsFrame">
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
       </property>
@@ -28,7 +28,7 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QGroupBox" name="groupBox">
+        <widget class="QGroupBox" name="noteHeadGroupBox">
          <property name="layoutDirection">
           <enum>Qt::LeftToRight</enum>
          </property>
@@ -40,7 +40,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <widget class="RadioButtonTeller" name="RadioButtonTeller">
+           <widget class="RadioButtonTeller" name="defaultNoteHeadButton">
             <property name="text">
              <string>Default</string>
             </property>
@@ -50,7 +50,7 @@
            </widget>
           </item>
           <item>
-           <widget class="RadioButtonTeller" name="RadioButtonTeller_2">
+           <widget class="RadioButtonTeller" name="xNoteHeadButton">
             <property name="text">
              <string>x</string>
             </property>
@@ -60,7 +60,7 @@
            </widget>
           </item>
           <item>
-           <widget class="RadioButtonTeller" name="RadioButtonTeller_3">
+           <widget class="RadioButtonTeller" name="bigXNoteHeadButton">
             <property name="text">
              <string>X</string>
             </property>
@@ -70,7 +70,7 @@
            </widget>
           </item>
           <item>
-           <widget class="RadioButtonTeller" name="RadioButtonTeller_4">
+           <widget class="RadioButtonTeller" name="oNoteHeadButton">
             <property name="text">
              <string>o</string>
             </property>
@@ -80,7 +80,7 @@
            </widget>
           </item>
           <item>
-           <widget class="RadioButtonTeller" name="RadioButtonTeller_5">
+           <widget class="RadioButtonTeller" name="bigONoteHeadButton">
             <property name="text">
              <string>O</string>
             </property>
@@ -90,12 +90,22 @@
            </widget>
           </item>
           <item>
-           <widget class="RadioButtonTeller" name="RadioButtonTeller_6">
+           <widget class="RadioButtonTeller" name="plusNoteHeadButton">
             <property name="text">
              <string>+</string>
             </property>
             <property name="buttonValue" stdset="0">
              <string>+</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="RadioButtonTeller" name="gNoteHeadButton">
+            <property name="text">
+             <string>g</string>
+            </property>
+            <property name="buttonValue" stdset="0">
+             <string>g</string>
             </property>
            </widget>
           </item>
@@ -103,13 +113,13 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_3">
+        <widget class="QGroupBox" name="displayOptionsGroupBox">
          <property name="title">
           <string>Display Options</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <widget class="QLabel" name="label_5">
+           <widget class="QLabel" name="spacingLabel">
             <property name="text">
              <string>Horizontal Spacing</string>
             </property>
@@ -141,14 +151,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_6">
+           <widget class="QLabel" name="widthLabel">
             <property name="text">
              <string>Width</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QFrame" name="frame_3">
+           <widget class="QFrame" name="widthGroupBox">
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
             </property>
@@ -166,7 +176,7 @@
               <number>0</number>
              </property>
              <item>
-              <widget class="QCheckBox" name="checkBox">
+              <widget class="QCheckBox" name="fixedWidthCheckBox">
                <property name="layoutDirection">
                 <enum>Qt::RightToLeft</enum>
                </property>
@@ -214,49 +224,49 @@
      </widget>
     </item>
     <item row="0" column="1">
-     <widget class="QGroupBox" name="groupBox_2">
+     <widget class="QGroupBox" name="songPropertiesGroupBox">
       <property name="title">
        <string>Song Properties</string>
       </property>
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="0">
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="songNameLabel">
          <property name="text">
-          <string>&amp;Song</string>
+          <string>Name</string>
          </property>
          <property name="buddy">
-          <cstring>lineEdit</cstring>
+          <cstring>songNameEdit</cstring>
          </property>
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="lineEdit"/>
+        <widget class="QLineEdit" name="songNameEdit"/>
        </item>
        <item row="0" column="2">
-        <widget class="QLabel" name="label_3">
+        <widget class="QLabel" name="bpmLabel">
          <property name="text">
           <string>&amp;BPM</string>
          </property>
          <property name="buddy">
-          <cstring>spinBox</cstring>
+          <cstring>bpmSpinBox</cstring>
          </property>
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="label_2">
+        <widget class="QLabel" name="artistNameLabel">
          <property name="text">
           <string>&amp;Artist</string>
          </property>
          <property name="buddy">
-          <cstring>lineEdit_2</cstring>
+          <cstring>artistNameEdit</cstring>
          </property>
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="lineEdit_2"/>
+        <widget class="QLineEdit" name="artistNameEdit"/>
        </item>
        <item row="1" column="2">
-        <widget class="QLabel" name="label_4">
+        <widget class="QLabel" name="tabberLabel">
          <property name="text">
           <string>&amp;Tabbed by</string>
          </property>
@@ -264,15 +274,15 @@
           <set>Qt::NoTextInteraction</set>
          </property>
          <property name="buddy">
-          <cstring>lineEdit_3</cstring>
+          <cstring>tabberEdit</cstring>
          </property>
         </widget>
        </item>
        <item row="1" column="3">
-        <widget class="QLineEdit" name="lineEdit_3"/>
+        <widget class="QLineEdit" name="tabberEdit"/>
        </item>
        <item row="0" column="3">
-        <widget class="QFrame" name="frame_2">
+        <widget class="QFrame" name="bpmFrame">
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -284,7 +294,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QSpinBox" name="spinBox">
+           <widget class="QSpinBox" name="bpmSpinBox">
             <property name="suffix">
              <string> bpm</string>
             </property>
@@ -317,6 +327,12 @@
     </item>
     <item row="1" column="1">
      <widget class="ScoreTable" name="scoreView">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+        <horstretch>200</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="font">
        <font>
         <family>Tahoma</family>
@@ -343,10 +359,16 @@
        <enum>QAbstractItemView::DropOnly</enum>
       </property>
       <property name="selectionMode">
-       <enum>QAbstractItemView::NoSelection</enum>
+       <enum>QAbstractItemView::ContiguousSelection</enum>
       </property>
       <property name="textElideMode">
        <enum>Qt::ElideMiddle</enum>
+      </property>
+      <property name="verticalScrollMode">
+       <enum>QAbstractItemView::ScrollPerPixel</enum>
+      </property>
+      <property name="horizontalScrollMode">
+       <enum>QAbstractItemView::ScrollPerPixel</enum>
       </property>
       <property name="showGrid">
        <bool>false</bool>
@@ -490,16 +512,16 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>RadioButtonTeller</tabstop>
-  <tabstop>RadioButtonTeller_2</tabstop>
-  <tabstop>RadioButtonTeller_3</tabstop>
-  <tabstop>RadioButtonTeller_4</tabstop>
-  <tabstop>RadioButtonTeller_5</tabstop>
-  <tabstop>RadioButtonTeller_6</tabstop>
-  <tabstop>lineEdit</tabstop>
-  <tabstop>lineEdit_2</tabstop>
-  <tabstop>spinBox</tabstop>
-  <tabstop>lineEdit_3</tabstop>
+  <tabstop>defaultNoteHeadButton</tabstop>
+  <tabstop>xNoteHeadButton</tabstop>
+  <tabstop>bigXNoteHeadButton</tabstop>
+  <tabstop>oNoteHeadButton</tabstop>
+  <tabstop>bigONoteHeadButton</tabstop>
+  <tabstop>plusNoteHeadButton</tabstop>
+  <tabstop>songNameEdit</tabstop>
+  <tabstop>artistNameEdit</tabstop>
+  <tabstop>bpmSpinBox</tabstop>
+  <tabstop>tabberEdit</tabstop>
   <tabstop>scoreView</tabstop>
  </tabstops>
  <resources/>
@@ -521,7 +543,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>RadioButtonTeller</sender>
+   <sender>defaultNoteHeadButton</sender>
    <signal>emitValue(QString)</signal>
    <receiver>scoreView</receiver>
    <slot>setNoteHead(QString)</slot>
@@ -537,7 +559,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>RadioButtonTeller_2</sender>
+   <sender>xNoteHeadButton</sender>
    <signal>emitValue(QString)</signal>
    <receiver>scoreView</receiver>
    <slot>setNoteHead(QString)</slot>
@@ -553,7 +575,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>RadioButtonTeller_3</sender>
+   <sender>bigXNoteHeadButton</sender>
    <signal>emitValue(QString)</signal>
    <receiver>scoreView</receiver>
    <slot>setNoteHead(QString)</slot>
@@ -569,7 +591,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>RadioButtonTeller_4</sender>
+   <sender>oNoteHeadButton</sender>
    <signal>emitValue(QString)</signal>
    <receiver>scoreView</receiver>
    <slot>setNoteHead(QString)</slot>
@@ -585,7 +607,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>RadioButtonTeller_5</sender>
+   <sender>bigONoteHeadButton</sender>
    <signal>emitValue(QString)</signal>
    <receiver>scoreView</receiver>
    <slot>setNoteHead(QString)</slot>
@@ -601,7 +623,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>RadioButtonTeller_6</sender>
+   <sender>plusNoteHeadButton</sender>
    <signal>emitValue(QString)</signal>
    <receiver>scoreView</receiver>
    <slot>setNoteHead(QString)</slot>
@@ -617,18 +639,18 @@
    </hints>
   </connection>
   <connection>
-   <sender>checkBox</sender>
+   <sender>fixedWidthCheckBox</sender>
    <signal>clicked(bool)</signal>
    <receiver>widthSpinBox</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>74</x>
-     <y>336</y>
+     <y>359</y>
     </hint>
     <hint type="destinationlabel">
      <x>110</x>
-     <y>334</y>
+     <y>357</y>
     </hint>
    </hints>
   </connection>
@@ -640,7 +662,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>120</x>
-     <y>341</y>
+     <y>364</y>
     </hint>
     <hint type="destinationlabel">
      <x>171</x>
@@ -649,18 +671,34 @@
    </hints>
   </connection>
   <connection>
-   <sender>checkBox</sender>
+   <sender>fixedWidthCheckBox</sender>
    <signal>clicked(bool)</signal>
    <receiver>scoreView</receiver>
    <slot>setFixedWidth(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>63</x>
-     <y>335</y>
+     <y>358</y>
     </hint>
     <hint type="destinationlabel">
      <x>476</x>
      <y>355</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>gNoteHeadButton</sender>
+   <signal>emitValue(QString)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setNoteHead(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>47</x>
+     <y>230</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>202</x>
+     <y>229</y>
     </hint>
    </hints>
   </connection>

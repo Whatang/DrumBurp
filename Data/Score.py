@@ -129,7 +129,7 @@ class Score(object):
         self.setInstruments(Score.DefaultKit)
 
 def makeEmptyScore(numBars = 8, barLengths = 16):
-    score = Score(8 * (barLengths + 1))
+    score = Score(numBars * (barLengths + 1))
     score.loadDefaultKit()
     for i in range(0, numBars):
         score.setMeasureLine((i + 1) * (barLengths + 1) - 1)
