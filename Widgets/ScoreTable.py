@@ -7,6 +7,7 @@ Created on 2 Aug 2010
 from PyQt4.QtGui import QTableView, QFontMetrics
 from PyQt4 import QtCore, QtGui
 
+#pylint: disable-msg=R0902
 class ScoreTable(QTableView):
     '''
     classdocs
@@ -86,7 +87,6 @@ class ScoreTable(QTableView):
         pass
 
     def mousePressEvent(self, event):
-        print self._menuIsUp
         self._startIndex = self.indexAt(event.pos())
         self._holdingForMenu = True
         QtCore.QTimer.singleShot(750, self.showContextMenu)

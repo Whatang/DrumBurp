@@ -6,6 +6,8 @@ Created on 3 Aug 2010
 from PyQt4.QtDesigner import QPyDesignerCustomWidgetPlugin
 from RadioButtonTeller import RadioButtonTeller
 
+#pylint: disable-msg=R0923
+
 class RadioButtonTellerPlugin(QPyDesignerCustomWidgetPlugin):
     def __init__(self, parent = None):
 

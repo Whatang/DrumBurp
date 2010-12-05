@@ -4,9 +4,8 @@ Created on 31 Jul 2010
 @author: Mike Thomas
 
 '''
-import Data
-import bisect
-from bisect import bisect_left
+
+from Constants import MEASURE_SPLIT
 
 class BadMeasureError(StandardError):
     'Could not add this measure to the ScoreSystem'
@@ -75,8 +74,8 @@ class ScoreSystem(object):
         measure.addNewNote(time, lineIndex, head)
 
     def delNote(self, time, lineIndex):
-        # Quick check to make sure we're not trying to delete a note on a measure
-        # line
+        # Quick check to make sure we're not trying to delete a note on a
+        # measure line
         if time in self._measureLines:
             return
         # Find the measure at this time
@@ -102,7 +101,7 @@ class ScoreSystem(object):
 
     def getNoteHead(self, time, lineIndex):
         if time in self._measureLines:
-            return Data.MEASURE_SPLIT
+            return MEASURE_SPLIT
         else:
             # Find the measure at this time
             try:

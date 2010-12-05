@@ -9,6 +9,7 @@ from Data.Instrument import Instrument
 from Data.Line import Line
 import Data.Note
 
+#pylint: disable-msg=R0904
 class Test(unittest.TestCase):
 
     def setUp(self):

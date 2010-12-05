@@ -6,6 +6,8 @@ Created on 1 Aug 2010
 from PyQt4.QtDesigner import QPyDesignerCustomWidgetPlugin
 from ScoreTable import ScoreTable
 
+#pylint: disable-msg=R0923
+
 class ScoreTablePlugin(QPyDesignerCustomWidgetPlugin):
     def __init__(self, parent = None):
 

@@ -4,9 +4,10 @@ Created on 31 Jul 2010
 @author: Mike Thomas
 
 '''
-from Data.Line import Line
-from Data.Instrument import Instrument
-import Data.Note
+from Line import Line
+from Instrument import Instrument
+from Constants import MEASURE_SPLIT
+from Note import Note
 
 class Score(object):
     '''
@@ -111,7 +112,7 @@ class Score(object):
         notes = []
         for lineIndex in range(0, len(self)):
             line = self[lineIndex]
-            notes.extend(Data.Note.Note(noteTime, lineIndex, noteHead)
+            notes.extend(Note(noteTime, lineIndex, noteHead)
                          for noteTime, noteHead in line)
         notes.sort()
         for note in notes:
@@ -119,11 +120,11 @@ class Score(object):
                 yield note
             else:
                 break
-        yield Data.Note.Note(self.songLength - 1, 0, Data.MEASURE_SPLIT)
+        yield Note(self.songLength - 1, 0, MEASURE_SPLIT)
 
     def setMeasureLine(self, measureTime):
         line = self[0]
-        line.addNote(measureTime, Data.MEASURE_SPLIT)
+        line.addNote(measureTime, MEASURE_SPLIT)
 
     def loadDefaultKit(self):
         self.setInstruments(Score.DefaultKit)
