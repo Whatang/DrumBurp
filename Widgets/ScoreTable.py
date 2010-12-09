@@ -15,7 +15,7 @@ class ScoreTable(QTableView):
 
     def __init__(self, parent = None):
         super(ScoreTable, self).__init__(parent)
-        self.spaceFactor = 50
+        self.hSpaceFactor = 50
         self._colWidths = 0
         self._rowHeight = 0
         self._buttonMethods = {QtCore.Qt.LeftButton : self._leftClick,
@@ -29,13 +29,13 @@ class ScoreTable(QTableView):
 
     def setColumnSizes(self):
         fm = QFontMetrics(self.font())
-        spaceFactor = 1.25 + ((self.spaceFactor / 100.0) * 0.75)
+        spaceFactor = 1.25 + ((self.hSpaceFactor / 100.0) * 0.75)
         self._colWidths = spaceFactor * fm.width("X")
         self._rowHeight = 1.25 * fm.height()
 
     @QtCore.pyqtSlot(int)
     def spacingChanged(self, value):
-        self.spaceFactor = value
+        self.hSpaceFactor = value
         self.setColumnSizes()
         self.resizeTable()
 

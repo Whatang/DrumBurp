@@ -59,6 +59,10 @@ class Score(object):
         else:
             return self._lines[subscript]
 
+    @property
+    def numLines(self):
+        return len(self._lines)
+
     def addNote(self, noteTime, line, head = None):
         '''
         
@@ -103,6 +107,9 @@ class Score(object):
         for line in badLines:
             self._lines.pop(line.instrument.name)
 
+    def lineHead(self, line):
+        return self[line].defaultHead()
+
     def iterNotes(self):
         '''
         Iterate over the notes in this Score, in time order.
@@ -129,8 +136,8 @@ class Score(object):
     def loadDefaultKit(self):
         self.setInstruments(Score.DefaultKit)
 
-def makeEmptyScore(numBars = 8, barLengths = 16):
-    score = Score(numBars * (barLengths + 1))
+def makeEmptyScore(numBars = 8, barLengths = 16, scoreClass = Score):
+    score = scoreClass(numBars * (barLengths + 1))
     score.loadDefaultKit()
     for i in range(0, numBars):
         score.setMeasureLine((i + 1) * (barLengths + 1) - 1)

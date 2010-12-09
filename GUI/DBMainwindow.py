@@ -6,9 +6,11 @@ Created on 31 Jul 2010
 '''
 
 from GUI.ui_drumburp import Ui_DrumBurpWindow
-from Model.SongModel import SongModel
-from PyQt4.QtCore import SIGNAL, QTimer
 from PyQt4.QtGui import QMainWindow
+from PyQt4.QtCore import QTimer
+from Data.Score import makeEmptyScore
+from Data.FormattedScore import FormattedScore
+from GUI.ScoreScene import ScoreScene
 
 APPNAME = "DrumBurp"
 
@@ -24,13 +26,13 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         '''
         super(DrumBurp, self).__init__(parent)
         self.setupUi(self)
-        self.oldRowCount = 0
-        self.model = SongModel()
-        self.scoreView.setModel(self.model)
-        self.connect(self.model, SIGNAL("modelReset()"),
-                     self.scoreView.resizeTable)
-        QTimer.singleShot(0, self.scoreView.resizeTable)
+        score = makeEmptyScore(32, 16, FormattedScore)
+        self.scoreScene = ScoreScene(score, self)
+        self.scoreScene.build()
+        self.scoreView.setScene(self.scoreScene)
         QTimer.singleShot(0, lambda: self.widthSpinBox.setValue(80))
-        QTimer.singleShot(0, lambda: self.spaceSlider.setValue(50))
+        xValue, yValue, lValue = self.scoreScene.proportionalSpacing()
+        QTimer.singleShot(0, lambda: self.spaceSlider.setValue(xValue))
+        QTimer.singleShot(0, lambda: self.verticalSlider.setValue(yValue))
         statusBar = self.statusBar()
         statusBar.showMessage("Welcome to %s" % APPNAME, 5000)

@@ -6,14 +6,15 @@ Created on 31 Jul 2010
 '''
 
 from Constants import MEASURE_SPLIT
-
+from PyQt4.QtGui import QWidget
+from PyQt4 import QtCore
 class BadMeasureError(StandardError):
     'Could not add this measure to the ScoreSystem'
 
 class BadTimeError(StandardError):
     'The given time does not correspond to any measure in this ScoreSystem'
 
-class ScoreSystem(object):
+class ScoreSystem(QWidget):
     '''
     classdocs
     '''
@@ -30,14 +31,19 @@ class ScoreSystem(object):
         self._measures = []
         self._measureLinesOrdered = []
         self._measureLines = set()
+        super(ScoreSystem, self).__init__()
 
-    def _getStartTime(self):
+    @property
+    def numLines(self):
+        return self.score.numLines
+
+    @property
+    def startTime(self):
         return self._startTime
-    startTime = property(fget = _getStartTime)
 
-    def _getLastTime(self):
+    @property
+    def lastTime(self):
         return self._lastTime
-    lastTime = property(fget = _getLastTime)
 
     def addMeasure(self, measure):
         if measure.startTime <= self.lastTime:
@@ -72,6 +78,7 @@ class ScoreSystem(object):
             # Not here, just return quietly
             return
         measure.addNewNote(time, lineIndex, head)
+        self.emit(QtCore.SIGNAL("dataChanged"), time, lineIndex)
 
     def delNote(self, time, lineIndex):
         # Quick check to make sure we're not trying to delete a note on a
@@ -85,6 +92,7 @@ class ScoreSystem(object):
             # Not here, just return quietly
             return
         measure.delNote(time, lineIndex)
+        self.emit(QtCore.SIGNAL("dataChanged"), time, lineIndex)
 
     def toggleNote(self, time, lineIndex, head):
         # Quick check to make sure we're not trying to toggle a note on a
@@ -98,6 +106,7 @@ class ScoreSystem(object):
             # Not here, just return quietly
             return
         measure.toggleNote(time, lineIndex, head)
+        self.emit(QtCore.SIGNAL("dataChanged"), time, lineIndex)
 
     def getNoteHead(self, time, lineIndex):
         if time in self._measureLines:
@@ -110,3 +119,12 @@ class ScoreSystem(object):
                 # Not here, just return quietly
                 return ""
             return measure.getNoteHead(time, lineIndex)
+
+    def scoreTime(self, systemTime):
+        return self.startTime + systemTime
+
+    def systemTime(self, scoreTime):
+        return scoreTime - self.startTime
+
+    def getLine(self, lineIndex):
+        return self.score[lineIndex]

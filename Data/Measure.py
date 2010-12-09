@@ -4,7 +4,7 @@ Created on 6 Oct 2010
 @author: Mike Thomas
 
 '''
-import Data
+from Constants import MEASURE_SPLIT, EMPTY_NOTE
 
 class BadNoteTimeError(StandardError):
     'Bad time for this note'
@@ -57,12 +57,14 @@ class Measure(object):
         self.score.delNote(time, lineIndex)
 
     def toggleNote(self, time, lineIndex, head):
-        if (time, lineIndex) in self._notes:
+        if head is None:
+            head = self.score.lineHead(lineIndex)
+        if (time, lineIndex) in self._notes and self._notes[(time, lineIndex)] == head:
             self.delNote(time, lineIndex)
         else:
             self.addNewNote(time, lineIndex, head)
 
     def getNoteHead(self, time, lineIndex):
         if time == self.lastTime:
-            return Data.MEASURE_SPLIT
-        return self._notes.get((time, lineIndex), Data.EMPTY_NOTE)
+            return MEASURE_SPLIT
+        return self._notes.get((time, lineIndex), EMPTY_NOTE)

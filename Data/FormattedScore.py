@@ -8,7 +8,6 @@ from Score import Score
 from ScoreSystem import ScoreSystem
 from Measure import Measure
 from Constants import MEASURE_SPLIT
-from test.test_iterlen import len
 
 class FormattedScore(Score):
     def __init__(self, songLength = 0):
@@ -17,7 +16,6 @@ class FormattedScore(Score):
         self._actualWidth = 80
         self._systems = []
         self._measures = []
-        self._dataCache = {}
         self.calculateMeasures()
         self._calculateSystems()
 
@@ -36,6 +34,11 @@ class FormattedScore(Score):
     def numSystems(self):
         return len(self._systems)
 
+    def setMeasureLine(self, measureTime):
+        Score.setMeasureLine(self, measureTime)
+        self.calculateMeasures()
+
+
     def calculateMeasures(self):
         self._measures = []
         thisMeasure = Measure(score = self, startTime = 0)
@@ -45,9 +48,9 @@ class FormattedScore(Score):
                 self._measures.append(thisMeasure)
                 thisMeasure = Measure(score = self,
                                       startTime = thisMeasure.lastTime + 1)
+        self._calculateSystems()
 
     def _calculateSystems(self):
-        self._dataCache = {}
         self._systems = []
         startTime = 0
         thisSystem = ScoreSystem(self, startTime)

@@ -105,8 +105,11 @@ class Line(object):
         assert(noteTime >= 0)
         assert(head is None or len(head) == 1)
         if head is None:
-            head = self.instrument.head
+            head = self.defaultHead()
         self._notes[noteTime] = head
+
+    def defaultHead(self):
+        return self.instrument.head
 
     def delNote(self, noteTime):
         '''
