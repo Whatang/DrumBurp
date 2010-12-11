@@ -10,8 +10,8 @@ from QSystem import QSystem
 from DBSignals import LINESPACING_SIGNAL, XSPACING_SIGNAL, YSPACING_SIGNAL
 from QNote import QNote
 
-START_NOTE_WIDTH = 10
-MIN_NOTE_WIDTH = 8
+START_NOTE_WIDTH = 12
+MIN_NOTE_WIDTH = 12
 MAX_NOTE_WIDTH = 20
 NOTE_WIDTH_RANGE = MAX_NOTE_WIDTH - MIN_NOTE_WIDTH
 
@@ -50,9 +50,6 @@ class ScoreScene(QtGui.QGraphicsScene):
 
     def mouseReleaseEvent(self, event):
         item = self.itemAt(event.scenePos())
-        print event
-        print event.scenePos()
-        print item
         if isinstance(item, QNote):
             item.toggleNote(self.head)
             event.accept()
