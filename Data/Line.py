@@ -139,3 +139,7 @@ class Line(object):
         '''
         assert(noteTime >= 0)
         return self._notes.get(noteTime, None)
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

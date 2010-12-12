@@ -37,3 +37,7 @@ class Note(object):
         '''
         return (cmp(self.time, other.time)
                 or cmp(self.lineIndex, other.lineIndex))
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

@@ -41,7 +41,7 @@ class Measure(object):
 
     def recordNote(self, note):
         if note.time < self.startTime:
-            raise BadNoteTimeError()
+            raise BadNoteTimeError(note.time, self.startTime)
         if note.time > self.lastTime:
             self._lastTime = note.time
         self._notes[(note.time, note.lineIndex)] = note.head

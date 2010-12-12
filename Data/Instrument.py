@@ -31,4 +31,7 @@ class Instrument(object):
         if abbr == "":
             abbr = name[0:min(len(name), 2)]
         self.abbr = abbr.capitalize()
+        assert(len(self.abbr) > 0)
+        assert(len(self.name) > 0)
+        assert(len(self.head) == 1)
 
