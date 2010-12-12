@@ -9,7 +9,6 @@ from Data import Constants
 from DBSignals import XSPACING_SIGNAL, YSPACING_SIGNAL
 OFFSET = 24
 
-
 class QDBGridItem(QtGui.QGraphicsItem):
     def __init__(self, lineIndex, scoreScene, parent = None):
         super(QDBGridItem, self).__init__(parent = parent,
@@ -40,10 +39,14 @@ class QDBGridItem(QtGui.QGraphicsItem):
         if len(self._text) > 0:
             painter.setPen(QtCore.Qt.SolidLine)
             if self._text == Constants.EMPTY_NOTE:
-                y = self.cellHeight() / 2
+                y = self.cellHeight() / 2.0
                 painter.drawLine(1, y,
                                  self.cellWidth() - 1, y)
             else:
+                if self._scene.font is not None:
+                    painter.setFont(self._scene.font)
+                self._rect.moveCenter(QtCore.QPointF(self.cellWidth() / 2.0,
+                                                     self.cellHeight() / 2.0))
                 painter.setBrush(self._scene.palette().text())
                 painter.drawText(self._rect, QtCore.Qt.AlignCenter, self._text)
 
@@ -69,7 +72,6 @@ class QDBGridItem(QtGui.QGraphicsItem):
         self._rect.setBottom(self.cellHeight())
         self.setPos(self.x(), self.yPosition())
 
-
 class QNote(QDBGridItem):
     '''
     classdocs
@@ -79,6 +81,7 @@ class QNote(QDBGridItem):
     def __init__(self, timeIndex, lineIndex, scoreScene, parent = None):
         super(QNote, self).__init__(lineIndex, scoreScene, parent)
         self._timeIndex = timeIndex
+        self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable)
 
     def toggleNote(self, head):
         self._system.toggleNote(self._timeIndex, self._lineIndex, head)
@@ -88,9 +91,6 @@ class QNote(QDBGridItem):
 
     def yPosition(self):
         return (self._scene.numLines - self._lineIndex - 1) * self._scene.ySpace
-
-#    def mouseReleaseEvent(self, event):
-#        self.toggleNote(self._scene.head)
 
 class QLineLabel(QDBGridItem):
     def __init__(self, lineName, lineIndex, scoreScene, parent = None):
