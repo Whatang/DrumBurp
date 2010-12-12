@@ -39,22 +39,26 @@ class ScoreScene(QtGui.QGraphicsScene):
         super(ScoreScene, self).__init__(parent)
         self._score = score
         self._systems = []
-        self._xSpace = START_NOTE_WIDTH
-        self._ySpace = START_NOTE_HEIGHT
+        self._xSpace = 0
+        self._ySpace = 0
         self._sceneWidth = 0
         self._sceneHeight = 0
         self._interLineSpace = 20
         self._head = None
         self.xMargins = 10
         self.yMargins = 10
+        self.font = None
 
     def mouseReleaseEvent(self, event):
-        item = self.itemAt(event.scenePos())
-        if isinstance(item, QNote):
-            item.toggleNote(self.head)
-            event.accept()
-        else:
+        if event.button() != QtCore.Qt.LeftButton:
             event.ignore()
+        else:
+            item = self.itemAt(event.scenePos())
+            if isinstance(item, QNote):
+                item.toggleNote(self.head)
+                event.accept()
+            else:
+                event.ignore()
 
     def _gethead(self):
         return self._head
@@ -169,5 +173,5 @@ class ScoreScene(QtGui.QGraphicsScene):
                 self._systems.append(newSystem)
             thisSystem = self._systems[-1]
             thisSystem.setSystem(system)
-        self.emit(QtCore.SIGNAL(XSPACING_SIGNAL))
-        self.emit(QtCore.SIGNAL(YSPACING_SIGNAL))
+        self.xSpace = START_NOTE_WIDTH
+        self.ySpace = START_NOTE_HEIGHT
