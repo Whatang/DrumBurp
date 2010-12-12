@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sat Dec 11 19:14:41 2010
+# Created: Sat Dec 11 23:08:56 2010
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -148,7 +148,7 @@ class Ui_DrumBurpWindow(object):
         self.fontComboBox.setObjectName(_fromUtf8("fontComboBox"))
         self.verticalLayout_3.addWidget(self.fontComboBox)
         self.verticalLayout_2.addWidget(self.displayOptionsGroupBox)
-        spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        spacerItem = QtGui.QSpacerItem(0, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout_2.addItem(spacerItem)
         self.gridLayout_2.addWidget(self.optionsFrame, 0, 0, 2, 1)
         self.songPropertiesGroupBox = QtGui.QGroupBox(self.centralwidget)
@@ -208,6 +208,8 @@ class Ui_DrumBurpWindow(object):
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
+        self.menuView = QtGui.QMenu(self.menubar)
+        self.menuView.setObjectName(_fromUtf8("menuView"))
         DrumBurpWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(DrumBurpWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
@@ -227,6 +229,15 @@ class Ui_DrumBurpWindow(object):
         self.actionSave_As.setObjectName(_fromUtf8("actionSave_As"))
         self.actionExport_ASCII = QtGui.QAction(DrumBurpWindow)
         self.actionExport_ASCII.setObjectName(_fromUtf8("actionExport_ASCII"))
+        self.actionDisplayOptionsIsVisible = QtGui.QAction(DrumBurpWindow)
+        self.actionDisplayOptionsIsVisible.setCheckable(True)
+        self.actionDisplayOptionsIsVisible.setObjectName(_fromUtf8("actionDisplayOptionsIsVisible"))
+        self.actionSongPropertiesIsVisible = QtGui.QAction(DrumBurpWindow)
+        self.actionSongPropertiesIsVisible.setCheckable(True)
+        self.actionSongPropertiesIsVisible.setObjectName(_fromUtf8("actionSongPropertiesIsVisible"))
+        self.actionNoteHeadSelectorIsVisble = QtGui.QAction(DrumBurpWindow)
+        self.actionNoteHeadSelectorIsVisble.setCheckable(True)
+        self.actionNoteHeadSelectorIsVisble.setObjectName(_fromUtf8("actionNoteHeadSelectorIsVisble"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.actionSave)
@@ -235,7 +246,11 @@ class Ui_DrumBurpWindow(object):
         self.menuFile.addAction(self.actionExport_ASCII)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionQuit)
+        self.menuView.addAction(self.actionDisplayOptionsIsVisible)
+        self.menuView.addAction(self.actionSongPropertiesIsVisible)
+        self.menuView.addAction(self.actionNoteHeadSelectorIsVisble)
         self.menubar.addAction(self.menuFile.menuAction())
+        self.menubar.addAction(self.menuView.menuAction())
         self.toolBar.addAction(self.actionNew)
         self.toolBar.addAction(self.actionLoad)
         self.toolBar.addAction(self.actionSave)
@@ -260,6 +275,9 @@ class Ui_DrumBurpWindow(object):
         QtCore.QObject.connect(self.verticalSlider, QtCore.SIGNAL(_fromUtf8("valueChanged(int)")), self.scoreView.verticalSpacingChanged)
         QtCore.QObject.connect(self.lineSpaceSlider, QtCore.SIGNAL(_fromUtf8("valueChanged(int)")), self.scoreView.systemSpacingChanged)
         QtCore.QObject.connect(self.fontComboBox, QtCore.SIGNAL(_fromUtf8("currentFontChanged(QFont)")), self.scoreView.setFont)
+        QtCore.QObject.connect(self.actionDisplayOptionsIsVisible, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.displayOptionsGroupBox.setVisible)
+        QtCore.QObject.connect(self.actionNoteHeadSelectorIsVisble, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.noteHeadGroupBox.setVisible)
+        QtCore.QObject.connect(self.actionSongPropertiesIsVisible, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.songPropertiesGroupBox.setVisible)
         QtCore.QMetaObject.connectSlotsByName(DrumBurpWindow)
         DrumBurpWindow.setTabOrder(self.defaultNoteHeadButton, self.xNoteHeadButton)
         DrumBurpWindow.setTabOrder(self.xNoteHeadButton, self.bigXNoteHeadButton)
@@ -300,6 +318,7 @@ class Ui_DrumBurpWindow(object):
         self.tabberLabel.setText(QtGui.QApplication.translate("DrumBurpWindow", "&Tabbed by", None, QtGui.QApplication.UnicodeUTF8))
         self.bpmSpinBox.setSuffix(QtGui.QApplication.translate("DrumBurpWindow", " bpm", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuView.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "View", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBar.setWindowTitle(QtGui.QApplication.translate("DrumBurpWindow", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setText(QtGui.QApplication.translate("DrumBurpWindow", "Quit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Quit DrumBurp", None, QtGui.QApplication.UnicodeUTF8))
@@ -312,6 +331,9 @@ class Ui_DrumBurpWindow(object):
         self.actionSave_As.setText(QtGui.QApplication.translate("DrumBurpWindow", "Save As", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExport_ASCII.setText(QtGui.QApplication.translate("DrumBurpWindow", "&Export ASCII", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExport_ASCII.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+E", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDisplayOptionsIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "Display Options", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSongPropertiesIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "Song Properties", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNoteHeadSelectorIsVisble.setText(QtGui.QApplication.translate("DrumBurpWindow", "Note Head Selector", None, QtGui.QApplication.UnicodeUTF8))
 
 from Widgets.ScoreView_plugin import ScoreView
 from Widgets.RadioButtonTeller_plugin import RadioButtonTeller

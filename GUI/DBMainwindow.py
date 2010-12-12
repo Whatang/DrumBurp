@@ -38,5 +38,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         QTimer.singleShot(0, lambda: self.lineSpaceSlider.setValue(lValue))
         font = self.scoreScene.font()
         self.fontComboBox.setCurrentFont(font)
+        self.actionDisplayOptionsIsVisible.setChecked(True)
+        self.actionNoteHeadSelectorIsVisble.setChecked(True)
+        self.actionSongPropertiesIsVisible.setChecked(True)
         statusBar = self.statusBar()
         statusBar.showMessage("Welcome to %s" % APPNAME, 5000)
