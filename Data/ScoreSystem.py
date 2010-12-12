@@ -6,15 +6,13 @@ Created on 31 Jul 2010
 '''
 
 from Constants import MEASURE_SPLIT
-from PyQt4.QtGui import QWidget
-from PyQt4 import QtCore
 class BadMeasureError(StandardError):
     'Could not add this measure to the ScoreSystem'
 
 class BadTimeError(StandardError):
     'The given time does not correspond to any measure in this ScoreSystem'
 
-class ScoreSystem(QWidget):
+class ScoreSystem(object):
     '''
     classdocs
     '''
@@ -31,6 +29,7 @@ class ScoreSystem(QWidget):
         self._measures = []
         self._measureLinesOrdered = []
         self._measureLines = set()
+        self._listeners = {}
         super(ScoreSystem, self).__init__()
 
     @property
@@ -78,7 +77,7 @@ class ScoreSystem(QWidget):
             # Not here, just return quietly
             return
         measure.addNewNote(time, lineIndex, head)
-        self.emit(QtCore.SIGNAL("dataChanged"), time, lineIndex)
+        self.dataChanged(time, lineIndex)
 
     def delNote(self, time, lineIndex):
         # Quick check to make sure we're not trying to delete a note on a
@@ -92,7 +91,7 @@ class ScoreSystem(QWidget):
             # Not here, just return quietly
             return
         measure.delNote(time, lineIndex)
-        self.emit(QtCore.SIGNAL("dataChanged"), time, lineIndex)
+        self.dataChanged(time, lineIndex)
 
     def toggleNote(self, time, lineIndex, head):
         # Quick check to make sure we're not trying to toggle a note on a
@@ -106,7 +105,7 @@ class ScoreSystem(QWidget):
             # Not here, just return quietly
             return
         measure.toggleNote(time, lineIndex, head)
-        self.emit(QtCore.SIGNAL("dataChanged"), time, lineIndex)
+        self.dataChanged(time, lineIndex)
 
     def getNoteHead(self, time, lineIndex):
         if time in self._measureLines:
@@ -119,6 +118,17 @@ class ScoreSystem(QWidget):
                 # Not here, just return quietly
                 return ""
             return measure.getNoteHead(time, lineIndex)
+
+    def registerListener(self, name, listener):
+        self._listeners[name] = listener
+
+    def removeListener(self, name):
+        if name in self._listeners:
+            del self._listeners[name]
+
+    def dataChanged(self, time, lineIndex):
+        for listener in self._listeners.itervalues():
+            listener(time, lineIndex)
 
     def scoreTime(self, systemTime):
         return self.startTime + systemTime

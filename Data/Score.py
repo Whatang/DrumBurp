@@ -8,6 +8,8 @@ from Line import Line
 from Instrument import Instrument
 from Constants import MEASURE_SPLIT
 from Note import Note
+import os
+import csv
 
 class Score(object):
     '''
@@ -35,20 +37,20 @@ class Score(object):
         '''
         self._lines = {}
         self._instrumentOrder = []
-        self.songLength = songLength
+        self._songLength = songLength
 
     def __iter__(self):
         '''
         Iterate over the Lines in this Score.
         '''
-        for index in xrange(0, len(self)):
+        for index in xrange(0, self.numLines):
             yield self[index]
 
     def __len__(self):
         '''
         Return the number of Lines in this Score.
         '''
-        return len(self._lines)
+        return self._songLength
 
     def __getitem__(self, subscript):
         '''
@@ -63,16 +65,19 @@ class Score(object):
     def numLines(self):
         return len(self._lines)
 
+    def addTime(self, time):
+        self._songLength += time
+
     def addNote(self, noteTime, line, head = None):
-        '''
-        
-        '''
+        assert(0 <= noteTime < len(self) - 1)
+        assert(self[0].noteAtTime(noteTime) != MEASURE_SPLIT)
         if not isinstance(line, Line):
             line = self[line]
         line.addNote(noteTime, head)
         return self.getNote(noteTime, line)
 
     def delNote(self, noteTime, line):
+        assert(self[0].noteAtTime(noteTime) != MEASURE_SPLIT)
         if not isinstance(line, Line):
             line = self[line]
         line.delNote(noteTime)
@@ -117,17 +122,14 @@ class Score(object):
         Each note returned is a Note object.
         '''
         notes = []
-        for lineIndex in range(0, len(self)):
+        for lineIndex in range(0, self.numLines):
             line = self[lineIndex]
             notes.extend(Note(noteTime, lineIndex, noteHead)
                          for noteTime, noteHead in line)
         notes.sort()
         for note in notes:
-            if note.time < self.songLength - 1:
-                yield note
-            else:
-                break
-        yield Note(self.songLength - 1, 0, MEASURE_SPLIT)
+            yield note
+        yield Note(self._songLength - 1, 0, MEASURE_SPLIT)
 
     def setMeasureLine(self, measureTime):
         line = self[0]
@@ -136,9 +138,55 @@ class Score(object):
     def loadDefaultKit(self):
         self.setInstruments(Score.DefaultKit)
 
+    def save(self, handle):
+        handle.write("NUM_LINES=%d" % self.numLines)
+        handle.write(os.linesep)
+        handle.write("SONG_LENGTH=%d" % self._songLength)
+        handle.write(os.linesep)
+        handle.write("END OF HEADER")
+        handle.write(os.linesep)
+        writer = csv.writer(handle)
+        for line in self:
+            instr = line.instrument
+            writer.writerow([instr.name, instr.abbr, instr.head])
+        handle.write("END OF INSTRUMENTS")
+        handle.write(os.linesep)
+        for note in self.iterNotes():
+            if note.time == len(self) - 1:
+                break
+            writer.writerow([note.time,
+                             note.lineIndex, note.head])
+
+def loadScore(handle):
+    songLength = None
+    numLines = None
+    for line in handle:
+        line = line.strip()
+        if line == "END OF HEADER":
+            break
+        fields = line.split("=")
+        assert(len(fields) == 2)
+        if fields[0] == "NUM_LINES":
+            numLines = int(fields[1])
+        elif fields[0] == "SONG_LENGTH":
+            songLength = int(fields[1])
+    assert(numLines is not None and songLength is not None)
+    assert(numLines >= 0 and songLength >= 0)
+    score = Score(songLength = songLength)
+    reader = csv.reader(handle)
+    for lineNum, row in enumerate(reader):
+        if lineNum == numLines:
+            assert(row[0] == "END OF INSTRUMENTS")
+            break
+        instr = Instrument(name = row[0], abbr = row[1], head = row[2])
+        score.appendInstrument(instr)
+    for row in reader:
+        score.addNote(int(row[0]), int(row[1]), row[2])
+    return score
+
 def makeEmptyScore(numBars = 8, barLengths = 16, scoreClass = Score):
     score = scoreClass(numBars * (barLengths + 1))
     score.loadDefaultKit()
-    for i in range(0, numBars):
-        score.setMeasureLine((i + 1) * (barLengths + 1) - 1)
+    for i in range(1, numBars):
+        score.setMeasureLine(i * (barLengths + 1) - 1)
     return score

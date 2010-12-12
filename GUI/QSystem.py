@@ -36,8 +36,10 @@ class QSystem(QtGui.QGraphicsItemGroup):
         self._system = system
         self.build()
         self._rePosition()
-        system.connect(system, QtCore.SIGNAL("dataChanged"),
-                       self.drawNoteHead)
+#        system.connect(system, QtCore.SIGNAL("dataChanged"),
+#                       self.drawNoteHead)
+        system.registerListener("QSystem", self.drawNoteHead)
+
 
     def width(self):
         return (((self._system.lastTime - self._system.startTime)
