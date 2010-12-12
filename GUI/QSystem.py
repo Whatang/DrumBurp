@@ -35,6 +35,7 @@ class QSystem(QtGui.QGraphicsItemGroup):
     def setSystem(self, system):
         self._system = system
         self.build()
+        self._rePosition()
         system.connect(system, QtCore.SIGNAL("dataChanged"),
                        self.drawNoteHead)
 
