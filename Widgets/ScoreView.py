@@ -56,7 +56,7 @@ class ScoreView(QtGui.QGraphicsView):
 
     @QtCore.pyqtSlot(QtGui.QFont)
     def setFont(self, font):
-        self.scene().font = font
+        self.scene().noteFont = font
         self.scene().update()
 
     def _setVariableWidth(self):

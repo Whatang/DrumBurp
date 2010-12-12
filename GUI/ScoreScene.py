@@ -47,7 +47,7 @@ class ScoreScene(QtGui.QGraphicsScene):
         self._head = None
         self.xMargins = 10
         self.yMargins = 10
-        self.font = None
+        self.noteFont = None
 
     def mouseReleaseEvent(self, event):
         if event.button() != QtCore.Qt.LeftButton:

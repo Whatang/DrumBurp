@@ -9,6 +9,29 @@ from Data import Constants
 from DBSignals import XSPACING_SIGNAL, YSPACING_SIGNAL
 OFFSET = 24
 
+_charMaps = {}
+def _stringToPixMap(character, font, scene):
+    key = (character, font.key())
+    if key not in _charMaps:
+        fm = QtGui.QFontMetrics(font)
+        br = fm.tightBoundingRect(character)
+        dx = -br.x() + 1
+        dy = -br.y() + 1
+        br.translate(dx, dy)
+        pix = QtGui.QPixmap(br.width() + 2, br.height() + 2)
+        painter = QtGui.QPainter(pix)
+        painter.setPen(QtCore.Qt.NoPen)
+        painter.setBrush(scene.palette().base())
+        painter.drawRect(0, 0, br.width() + 2, br.height() + 2)
+        painter.setBrush(scene.palette().text())
+        painter.setPen(QtCore.Qt.SolidLine)
+        painter.setFont(font)
+        painter.drawText(dx, dy, character)
+        painter.end()
+        _charMaps[key] = pix
+    return _charMaps[key]
+
+
 class QDBGridItem(QtGui.QGraphicsItem):
     def __init__(self, lineIndex, scoreScene, parent = None):
         super(QDBGridItem, self).__init__(parent = parent,
@@ -43,12 +66,17 @@ class QDBGridItem(QtGui.QGraphicsItem):
                 painter.drawLine(1, y,
                                  self.cellWidth() - 1, y)
             else:
-                if self._scene.font is not None:
-                    painter.setFont(self._scene.font)
-                self._rect.moveCenter(QtCore.QPointF(self.cellWidth() / 2.0,
-                                                     self.cellHeight() / 2.0))
-                painter.setBrush(self._scene.palette().text())
-                painter.drawText(self._rect, QtCore.Qt.AlignCenter, self._text)
+                font = self._scene.noteFont
+                if font is None:
+                    font = painter.font()
+                pix = _stringToPixMap(self._text, font, self._scene)
+                left = (self.cellWidth() - pix.width() + 2) / 2
+                top = (self.cellHeight() - pix.height() + 2) / 2
+                painter.drawPixmap(left, top, pix)
+#        painter.setPen(QtCore.Qt.DotLine)
+#        painter.drawLine(self.cellWidth() / 2, 0, self.cellWidth() / 2, self.cellHeight())
+#        painter.drawLine(0, self.cellHeight() / 2, self.cellWidth(), self.cellHeight() / 2)
+
 
     def cellWidth(self):
         return self._scene.xSpace
