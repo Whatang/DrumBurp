@@ -5,9 +5,9 @@ Created on 12 Dec 2010
 '''
 
 class BadTimeError(StandardError):
-    "The given staff/measure/time index is invalid."
+    "The given note position is invalid."
 
-class BadNoteError(StandardError):
+class BadNoteSpecification(StandardError):
     "The given note index is not valid for this DrumKit."
 
 class DuplicateDrumError(StandardError):

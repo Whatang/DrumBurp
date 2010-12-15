@@ -19,9 +19,9 @@ class Staff(object):
         self._measures = []
         self._callBack = None
 
-    def _runCallBack(self, measureIndex, noteTime, drumIndex):
+    def _runCallBack(self, position):
         if self._callBack is not None:
-            self._callBack(measureIndex, noteTime, drumIndex)
+            self._callBack(position)
 
     def setCallBack(self, callBack):
         self._callBack = callBack
@@ -42,29 +42,30 @@ class Staff(object):
         return len(self._measures)
 
     def _setMeasureCallBack(self, measure, measureIndex):
-        def wrappedCallBack(noteTime, drumIndex):
-            self._runCallBack(measureIndex, noteTime, drumIndex)
+        def wrappedCallBack(position):
+            position.measureIndex = measureIndex
+            self._runCallBack(position)
         measure.setCallBack(wrappedCallBack)
 
     def addMeasure(self, measure):
         self._measures.append(measure)
         self._setMeasureCallBack(self._measures[-1], len(self._measures) - 1)
 
-    def deleteMeasure(self, index):
-        if not (0 <= index < self.numMeasures()):
-            raise BadTimeError(index)
-        measure = self._measures.pop(index)
+    def deleteMeasure(self, position):
+        if not (0 <= position.measureIndex < self.numMeasures()):
+            raise BadTimeError(position)
+        measure = self._measures.pop(position.measureIndex)
         measure.clearCallBack()
-        for measureIndex, nextMeasure in enumerate(self._measures[index:]):
-            self._setMeasureCallBack(nextMeasure, index + measureIndex)
+        for index, nextMeasure in enumerate(self._measures[position.measureIndex:]):
+            self._setMeasureCallBack(nextMeasure, position.measureIndex + index)
 
-    def insertMeasure(self, index, measure):
-        if not (0 <= index <= self.numMeasures()):
-            raise BadTimeError(index)
-        self._measures.insert(index, measure)
-        for measureIndex in range(index, self.numMeasures()):
-            nextMeasure = self[measureIndex]
-            self._setMeasureCallBack(nextMeasure, measureIndex)
+    def insertMeasure(self, position, measure):
+        if not (0 <= position.measureIndex <= self.numMeasures()):
+            raise BadTimeError(position)
+        self._measures.insert(position.measureIndex, measure)
+        for index in range(position.measureIndex, self.numMeasures()):
+            nextMeasure = self[index]
+            self._setMeasureCallBack(nextMeasure, index)
 
     def clear(self):
         self._measures = []
@@ -87,23 +88,23 @@ class Staff(object):
             return 0
         return len(self) + self.numMeasures() + 1
 
-    def getNote(self, measureIndex, timeIndex, noteIndex):
-        if not (0 <= measureIndex < self.numMeasures()):
-            raise BadTimeError(measureIndex)
-        return self[measureIndex].getNote(timeIndex, noteIndex)
+    def getNote(self, position):
+        if not (0 <= position.measureIndex < self.numMeasures()):
+            raise BadTimeError(position)
+        return self[position.measureIndex].getNote(position)
 
-    def addNote(self, measureIndex, timeIndex, noteIndex, head):
-        if not (0 <= measureIndex < self.numMeasures()):
-            raise BadTimeError(measureIndex)
-        self[measureIndex].addNote(timeIndex, noteIndex, head)
+    def addNote(self, position, head):
+        if not (0 <= position.measureIndex < self.numMeasures()):
+            raise BadTimeError(position)
+        self[position.measureIndex].addNote(position, head)
 
-    def deleteNote(self, measureIndex, timeIndex, noteIndex):
-        if not (0 <= measureIndex < self.numMeasures()):
-            raise BadTimeError(measureIndex)
-        self[measureIndex].deleteNote(timeIndex, noteIndex)
+    def deleteNote(self, position):
+        if not (0 <= position.measureIndex < self.numMeasures()):
+            raise BadTimeError(position)
+        self[position.measureIndex].deleteNote(position)
 
-    def toggleNote(self, measureIndex, timeIndex, noteIndex, head):
-        if not (0 <= measureIndex < self.numMeasures()):
-            raise BadTimeError(measureIndex)
-        self[measureIndex].toggleNote(timeIndex, noteIndex, head)
+    def toggleNote(self, position, head):
+        if not (0 <= position.measureIndex < self.numMeasures()):
+            raise BadTimeError(position)
+        self[position.measureIndex].toggleNote(position, head)
 

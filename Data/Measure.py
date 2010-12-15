@@ -25,9 +25,9 @@ class Measure(object):
     def __len__(self):
         return self._width
 
-    def _runCallBack(self, noteTime, drumIndex):
+    def _runCallBack(self, position):
         if self._callBack is not None:
-            self._callBack(noteTime, drumIndex)
+            self._callBack(position)
 
     def setCallBack(self, callBack):
         self._callBack = callBack
@@ -63,39 +63,40 @@ class Measure(object):
     def numNotes(self):
         return sum(len(timeDict) for timeDict in self._notes.values())
 
-    def getNote(self, noteTime, drumIndex):
-        if not(0 <= noteTime < len(self)):
-            raise BadTimeError(noteTime)
-        if noteTime in self._notes and drumIndex in self._notes[noteTime]:
-            return self._notes[noteTime][drumIndex]
+    def getNote(self, position):
+        if not(0 <= position.noteTime < len(self)):
+            raise BadTimeError(position)
+        if (position.noteTime in self._notes and
+            position.drumIndex in self._notes[position.noteTime]):
+            return self._notes[position.noteTime][position.drumIndex]
         return EMPTY_NOTE
 
-    def addNote(self, noteTime, drumIndex, head):
-        if not(0 <= noteTime < len(self)):
-            raise BadTimeError(noteTime)
-        if head != self._notes[noteTime][drumIndex]:
-            self._notes[noteTime][drumIndex] = head
-            self._runCallBack(noteTime, drumIndex)
+    def addNote(self, position, head):
+        if not(0 <= position.noteTime < len(self)):
+            raise BadTimeError(position)
+        if head != self._notes[position.noteTime][position.drumIndex]:
+            self._notes[position.noteTime][position.drumIndex] = head
+            self._runCallBack(position)
 
-    def deleteNote(self, noteTime, drumIndex):
-        if not(0 <= noteTime < len(self)):
-            raise BadTimeError(noteTime)
-        if noteTime in self._notes and drumIndex in self._notes[noteTime]:
-            del self._notes[noteTime][drumIndex]
-            if len(self._notes[noteTime]) == 0:
-                del self._notes[noteTime]
-            self._runCallBack(noteTime, drumIndex)
+    def deleteNote(self, position):
+        if not(0 <= position.noteTime < len(self)):
+            raise BadTimeError(position)
+        if position.noteTime in self._notes and position.drumIndex in self._notes[position.noteTime]:
+            del self._notes[position.noteTime][position.drumIndex]
+            if len(self._notes[position.noteTime]) == 0:
+                del self._notes[position.noteTime]
+            self._runCallBack(position)
 
 
-    def toggleNote(self, noteTime, drumIndex, head):
-        if not(0 <= noteTime < len(self)):
-            raise BadTimeError(noteTime)
-        if (noteTime in self._notes
-            and drumIndex in self._notes[noteTime]
-            and self.getNote(noteTime, drumIndex) == head):
-            self.deleteNote(noteTime, drumIndex)
+    def toggleNote(self, position, head):
+        if not(0 <= position.noteTime < len(self)):
+            raise BadTimeError(position)
+        if (position.noteTime in self._notes
+            and position.drumIndex in self._notes[position.noteTime]
+            and self.getNote(position) == head):
+            self.deleteNote(position)
         else:
-            self.addNote(noteTime, drumIndex, head)
+            self.addNote(position, head)
 
     def setWidth(self, newWidth):
         assert(newWidth > 0)

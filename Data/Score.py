@@ -8,7 +8,8 @@ Created on 12 Dec 2010
 from DrumKit import DrumKit
 from Staff import Staff
 from Measure import Measure
-from DBErrors import BadTimeError, OverSizeMeasure, BadNoteError
+from DBErrors import BadTimeError, OverSizeMeasure
+from Data.NotePosition import NotePosition
 
 class Score(object):
     '''
@@ -74,13 +75,14 @@ class Score(object):
             index = staff.numMeasures()
         else:
             staff, index = self._staffContainingMeasure(index)
-        staff.insertMeasure(index, Measure(width))
+        staff.insertMeasure(NotePosition(measureIndex = index),
+                            Measure(width))
 
     def deleteMeasure(self, index):
         if not (0 <= index < self.numMeasures()):
             raise BadTimeError()
         staff, index = self._staffContainingMeasure(index)
-        staff.deleteMeasure(index)
+        staff.deleteMeasure(NotePosition(measureIndex = index))
         if staff.numMeasures() == 0:
             self._staffs.remove(staff)
 
@@ -99,7 +101,7 @@ class Score(object):
                     else:
                         raise OverSizeMeasure(measure)
                 else:
-                    staff.deleteMeasure(staff.numMeasures() - 1)
+                    staff.deleteMeasure(NotePosition(measureIndex = staff.numMeasures() - 1))
                     staffIndex += 1
                     if staffIndex == self.numStaffs():
                         self._staffs.append(Staff())
@@ -119,40 +121,34 @@ class Score(object):
     def gridFormatScore(self, width):
         self._formatScore(width, Staff.gridWidth)
 
-    def getNote(self, staffIndex, measureIndex, timeIndex, noteIndex):
-        if not (0 <= staffIndex < self.numMeasures()):
-            raise BadTimeError(measureIndex)
-        if not (0 <= noteIndex < len(self.drumKit)):
-            raise BadNoteError(noteIndex)
-        return self.getStaff(staffIndex).getNote(measureIndex,
-                                                 timeIndex, noteIndex)
+    def getNote(self, position):
+        if not (0 <= position.staffIndex < self.numMeasures()):
+            raise BadTimeError(position)
+        if not (0 <= position.drumIndex < len(self.drumKit)):
+            raise BadTimeError(position)
+        return self.getStaff(position.staffIndex).getNote(position)
 
-    def addNote(self, staffIndex, measureIndex,
-                timeIndex, noteIndex, head = None):
-        if not (0 <= staffIndex < self.numMeasures()):
-            raise BadTimeError(measureIndex)
-        if not (0 <= noteIndex < len(self.drumKit)):
-            raise BadNoteError(noteIndex)
+    def addNote(self, position, head = None):
+        if not (0 <= position.staffIndex < self.numMeasures()):
+            raise BadTimeError(position)
+        if not (0 <= position.drumIndex < len(self.drumKit)):
+            raise BadTimeError(position)
         if head is None:
-            head = self.drumKit[noteIndex].head
-        self.getStaff(staffIndex).addNote(measureIndex, timeIndex,
-                                          noteIndex, head)
+            head = self.drumKit[position.drumIndex].head
+        self.getStaff(position.staffIndex).addNote(position, head)
 
-    def deleteNote(self, staffIndex, measureIndex, timeIndex, noteIndex):
-        if not (0 <= staffIndex < self.numMeasures()):
-            raise BadTimeError(measureIndex)
-        if not (0 <= noteIndex < len(self.drumKit)):
-            raise BadNoteError(noteIndex)
-        self.getStaff(staffIndex).deleteNote(measureIndex,
-                                             timeIndex, noteIndex)
+    def deleteNote(self, position):
+        if not (0 <= position.staffIndex < self.numMeasures()):
+            raise BadTimeError(position)
+        if not (0 <= position.drumIndex < len(self.drumKit)):
+            raise BadTimeError(position)
+        self.getStaff(position.staffIndex).deleteNote(position)
 
-    def toggleNote(self, staffIndex, measureIndex,
-                   timeIndex, noteIndex, head = None):
-        if not (0 <= staffIndex < self.numMeasures()):
-            raise BadTimeError(measureIndex)
-        if not (0 <= noteIndex < len(self.drumKit)):
-            raise BadNoteError(noteIndex)
+    def toggleNote(self, position, head = None):
+        if not (0 <= position.staffIndex < self.numMeasures()):
+            raise BadTimeError(position)
+        if not (0 <= position.drumIndex < len(self.drumKit)):
+            raise BadTimeError(position)
         if head is None:
-            head = self.drumKit[noteIndex].head
-        self.getStaff(staffIndex).toggleNote(measureIndex, timeIndex,
-                                             noteIndex, head)
+            head = self.drumKit[position.drumIndex].head
+        self.getStaff(position.staffIndex).toggleNote(position, head)

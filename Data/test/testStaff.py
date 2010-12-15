@@ -8,6 +8,7 @@ from Data.Staff import Staff
 from Data.Measure import Measure
 from Data.DBConstants import BAR_TYPES, EMPTY_NOTE
 from Data.DBErrors import BadTimeError
+from Data.NotePosition import NotePosition
 
 #pylint: disable-msg=R0904
 
@@ -42,32 +43,32 @@ class TestStaff(unittest.TestCase):
     def testDeleteMeasure(self):
         self.staff.addMeasure(Measure(1))
         self.staff.addMeasure(Measure(2))
-        self.staff.deleteMeasure(0)
+        self.staff.deleteMeasure(NotePosition(measureIndex = 0))
         self.assertEqual(self.staff.numMeasures(), 1)
         self.assertEqual(len(self.staff), 2)
 
     def testDeleteMeasure_BadIndex(self):
         self.staff.addMeasure(Measure(1))
         self.staff.addMeasure(Measure(2))
-        self.assertRaises(BadTimeError, self.staff.deleteMeasure, -1)
-        self.assertRaises(BadTimeError, self.staff.deleteMeasure, 2)
+        self.assertRaises(BadTimeError, self.staff.deleteMeasure, NotePosition(measureIndex = -1))
+        self.assertRaises(BadTimeError, self.staff.deleteMeasure, NotePosition(measureIndex = 2))
 
     def testInsertMeasure(self):
         self.staff.addMeasure(Measure(1))
         self.staff.addMeasure(Measure(3))
-        self.staff.insertMeasure(1, Measure(2))
+        self.staff.insertMeasure(NotePosition(measureIndex = 1), Measure(2))
         for i, measure in enumerate(self.staff):
             self.assertEqual(len(measure), i + 1)
 
     def testInsertMeasureAtStart(self):
         self.staff.addMeasure(Measure(2))
-        self.staff.insertMeasure(0, Measure(1))
+        self.staff.insertMeasure(NotePosition(measureIndex = 0), Measure(1))
         for i, measure in enumerate(self.staff):
             self.assertEqual(len(measure), i + 1)
 
     def testInsertMeasureAtEnd(self):
         self.staff.addMeasure(Measure(1))
-        self.staff.insertMeasure(1, Measure(2))
+        self.staff.insertMeasure(NotePosition(measureIndex = 1), Measure(2))
         for i, measure in enumerate(self.staff):
             self.assertEqual(len(measure), i + 1)
 
@@ -75,8 +76,8 @@ class TestStaff(unittest.TestCase):
         self.staff.addMeasure(Measure(1))
         self.staff.addMeasure(Measure(2))
         m = Measure(3)
-        self.assertRaises(BadTimeError, self.staff.insertMeasure, -1, m)
-        self.assertRaises(BadTimeError, self.staff.insertMeasure, 3, m)
+        self.assertRaises(BadTimeError, self.staff.insertMeasure, NotePosition(measureIndex = -1), m)
+        self.assertRaises(BadTimeError, self.staff.insertMeasure, NotePosition(measureIndex = 3), m)
 
     def testClearStaff(self):
         self.staff.addMeasure(Measure(16))
@@ -123,116 +124,177 @@ class TestNoteControl(unittest.TestCase):
         self.staff.addMeasure(Measure(16))
 
     def testGetNote(self):
-        self.assertEqual(self.staff.getNote(0, 0, 0), EMPTY_NOTE)
+        self.assertEqual(self.staff.getNote(NotePosition(measureIndex = 0,
+                                                         noteTime = 0,
+                                                         drumIndex = 0)),
+                         EMPTY_NOTE)
 
     def testGetNote_BadTime(self):
-        self.assertRaises(BadTimeError, self.staff.getNote, -1, 0, 0)
-        self.assertRaises(BadTimeError, self.staff.getNote, 20, 0, 0)
-        self.assertRaises(BadTimeError, self.staff.getNote, 0, -1, 0)
-        self.assertRaises(BadTimeError, self.staff.getNote, 0, 20, 0)
+        self.assertRaises(BadTimeError, self.staff.getNote,
+                          NotePosition(measureIndex = -1,
+                                       noteTime = 0, drumIndex = 0))
+        self.assertRaises(BadTimeError, self.staff.getNote,
+                          NotePosition(measureIndex = 20,
+                                       noteTime = 0, drumIndex = 0))
+        self.assertRaises(BadTimeError, self.staff.getNote,
+                          NotePosition(measureIndex = 0,
+                                       noteTime = -1, drumIndex = 0))
+        self.assertRaises(BadTimeError, self.staff.getNote,
+                          NotePosition(measureIndex = 0,
+                                       noteTime = 20, drumIndex = 0))
 
     def testAddNote(self):
-        self.staff.addNote(0, 0, 0, "o")
-        self.assertEqual(self.staff.getNote(0, 0, 0), "o")
+        self.staff.addNote(NotePosition(measureIndex = 0,
+                                        noteTime = 0, drumIndex = 0), "o")
+        self.assertEqual(self.staff.getNote(NotePosition(measureIndex = 0,
+                                                         noteTime = 0,
+                                                         drumIndex = 0)), "o")
 
     def testAddNote_BadTime(self):
-        self.assertRaises(BadTimeError, self.staff.addNote, -1, 0, 0, "x")
-        self.assertRaises(BadTimeError, self.staff.addNote, 4, 0, 0, "x")
-        self.assertRaises(BadTimeError, self.staff.addNote, 0, -1, 0, "x")
-        self.assertRaises(BadTimeError, self.staff.addNote, 0, 20, 0, "x")
+        self.assertRaises(BadTimeError, self.staff.addNote,
+                          NotePosition(measureIndex = -1,
+                                       noteTime = 0, drumIndex = 0), "x")
+        self.assertRaises(BadTimeError, self.staff.addNote,
+                          NotePosition(measureIndex = 4,
+                                       noteTime = 0, drumIndex = 0), "x")
+        self.assertRaises(BadTimeError, self.staff.addNote,
+                          NotePosition(measureIndex = 0,
+                                       noteTime = -1, drumIndex = 0), "x")
+        self.assertRaises(BadTimeError, self.staff.addNote,
+                          NotePosition(measureIndex = 0,
+                                       noteTime = 20, drumIndex = 0), "x")
 
     def testDeleteNote(self):
-        self.staff.addNote(0, 0, 0, "o")
-        self.staff.deleteNote(0, 0, 0)
-        self.assertEqual(self.staff.getNote(0, 0, 0), EMPTY_NOTE)
+        np = NotePosition(measureIndex = 0, noteTime = 0, drumIndex = 0)
+        self.staff.addNote(np, "o")
+        self.staff.deleteNote(np)
+        self.assertEqual(self.staff.getNote(np), EMPTY_NOTE)
 
     def testDeleteNote_BadTime(self):
-        self.assertRaises(BadTimeError, self.staff.deleteNote, -1, 0, 0)
-        self.assertRaises(BadTimeError, self.staff.deleteNote, 20, 0, 0)
-        self.assertRaises(BadTimeError, self.staff.deleteNote, 0, -1, 0)
-        self.assertRaises(BadTimeError, self.staff.deleteNote, 0, 20, 0)
+        self.assertRaises(BadTimeError, self.staff.deleteNote,
+                          NotePosition(measureIndex = -1,
+                                       noteTime = 0, drumIndex = 0))
+        self.assertRaises(BadTimeError, self.staff.deleteNote,
+                          NotePosition(measureIndex = 20,
+                                       noteTime = 0, drumIndex = 0))
+        self.assertRaises(BadTimeError, self.staff.deleteNote,
+                          NotePosition(measureIndex = 0,
+                                       noteTime = -1, drumIndex = 0))
+        self.assertRaises(BadTimeError, self.staff.deleteNote,
+                          NotePosition(measureIndex = 0,
+                                       noteTime = 20, drumIndex = 0))
 
     def testToggleNote(self):
-        self.staff.toggleNote(0, 0, 0, "o")
-        self.assertEqual(self.staff.getNote(0, 0, 0), "o")
-        self.staff.toggleNote(0, 0, 0, "o")
-        self.assertEqual(self.staff.getNote(0, 0, 0), EMPTY_NOTE)
+        np = NotePosition(measureIndex = 0, noteTime = 0, drumIndex = 0)
+        self.staff.toggleNote(np, "o")
+        self.assertEqual(self.staff.getNote(np), "o")
+        self.staff.toggleNote(np, "o")
+        self.assertEqual(self.staff.getNote(np), EMPTY_NOTE)
 
     def testToggleNote_BadTime(self):
-        self.assertRaises(BadTimeError, self.staff.toggleNote, -1, 0, 0, "x")
-        self.assertRaises(BadTimeError, self.staff.toggleNote, 20, 0, 0, "x")
-        self.assertRaises(BadTimeError, self.staff.toggleNote, 0, -1, 0, "x")
-        self.assertRaises(BadTimeError, self.staff.toggleNote, 0, 20, 0, "x")
+        self.assertRaises(BadTimeError, self.staff.toggleNote,
+                          NotePosition(measureIndex = -1,
+                                       noteTime = 0, drumIndex = 0), "x")
+        self.assertRaises(BadTimeError, self.staff.toggleNote,
+                          NotePosition(measureIndex = 20,
+                                       noteTime = 0, drumIndex = 0), "x")
+        self.assertRaises(BadTimeError, self.staff.toggleNote,
+                          NotePosition(measureIndex = 0,
+                                       noteTime = -1, drumIndex = 0), "x")
+        self.assertRaises(BadTimeError, self.staff.toggleNote,
+                          NotePosition(measureIndex = 0,
+                                       noteTime = 20, drumIndex = 0), "x")
 
 class TestCallBack(unittest.TestCase):
     def setUp(self):
         self.staff = Staff()
         self.staff.addMeasure(Measure(16))
         self.calls = []
-        self.staff.setCallBack(lambda m, t, d: self.calls.append((m, t, d)))
+        def myCallBack(position):
+            self.calls.append((position.measureIndex,
+                               position.noteTime,
+                               position.drumIndex))
+        self.staff.setCallBack(myCallBack)
 
     def testAddNoteCallBack(self):
-        self.staff.addNote(0, 0, 0, "x")
+        np = NotePosition(measureIndex = 0, noteTime = 0, drumIndex = 0)
+        self.staff.addNote(np, "x")
         self.assertEqual(len(self.calls), 1)
         self.assertEqual(self.calls[0], (0, 0, 0))
-        self.staff.addNote(0, 0, 0, "x")
+        self.staff.addNote(np, "x")
         self.assertEqual(len(self.calls), 1)
-        self.staff.addNote(0, 0, 0, "o")
+        self.staff.addNote(np, "o")
         self.assertEqual(len(self.calls), 2)
         self.assertEqual(self.calls[1], (0, 0, 0))
 
     def testDeleteNoteCallBack(self):
-        self.staff.deleteNote(0, 0, 0)
+        np = NotePosition(measureIndex = 0, noteTime = 0, drumIndex = 0)
+        self.staff.deleteNote(np)
         self.assertEqual(len(self.calls), 0)
-        self.staff.addNote(0, 0, 0, "x")
+        self.staff.addNote(np, "x")
         self.assertEqual(len(self.calls), 1)
         self.assertEqual(self.calls[0], (0, 0, 0))
-        self.staff.deleteNote(0, 0, 0)
+        self.staff.deleteNote(np)
         self.assertEqual(len(self.calls), 2)
         self.assertEqual(self.calls[1], (0, 0, 0))
 
     def testToggleNoteCallBack(self):
-        self.staff.toggleNote(0, 0, 0, "x")
+        np = NotePosition(measureIndex = 0, noteTime = 0, drumIndex = 0)
+        self.staff.toggleNote(np, "x")
         self.assertEqual(len(self.calls), 1)
         self.assertEqual(self.calls[0], (0, 0, 0))
-        self.staff.toggleNote(0, 0, 0, "x")
+        self.staff.toggleNote(np, "x")
         self.assertEqual(len(self.calls), 2)
         self.assertEqual(self.calls[1], (0, 0, 0))
-        self.staff.toggleNote(0, 0, 0, "x")
+        self.staff.toggleNote(np, "x")
         self.assertEqual(len(self.calls), 3)
         self.assertEqual(self.calls[2], (0, 0, 0))
-        self.staff.toggleNote(0, 0, 0, "o")
+        self.staff.toggleNote(np, "o")
         self.assertEqual(len(self.calls), 4)
         self.assertEqual(self.calls[2], (0, 0, 0))
 
     def testClearCallBack(self):
         self.staff.clearCallBack()
-        self.staff.addNote(0, 0, 0, "x")
+        self.staff.addNote(NotePosition(measureIndex = 0,
+                                        noteTime = 0,
+                                        drumIndex = 0), "x")
         self.assertEqual(len(self.calls), 0)
 
     def testAddMeasureCallBack(self):
+        np = NotePosition(measureIndex = 1, noteTime = 0, drumIndex = 0)
         self.staff.addMeasure(Measure(16))
-        self.staff.addNote(1, 0, 0, "x")
+        self.staff.addNote(np, "x")
         self.assertEqual(len(self.calls), 1)
         self.assertEqual(self.calls[0], (1, 0, 0))
 
     def testDeleteMeasureCallBack(self):
         self.staff.addMeasure(Measure(16))
         self.staff.addMeasure(Measure(16))
-        self.staff.addNote(1, 0, 0, "x")
-        self.staff.deleteMeasure(0)
-        self.staff.deleteNote(0, 0, 0)
-        self.staff.addNote(1, 0, 0, "x")
+        np = NotePosition(measureIndex = 1,
+                          noteTime = 0,
+                          drumIndex = 0)
+        self.staff.addNote(np, "x")
+        self.staff.deleteMeasure(NotePosition(measureIndex = 0))
+        self.staff.deleteNote(NotePosition(measureIndex = 0,
+                                           noteTime = 0,
+                                           drumIndex = 0))
+        self.staff.addNote(np, "x")
         self.assertEqual(len(self.calls), 3)
         self.assertEqual(self.calls[0], (1, 0, 0))
         self.assertEqual(self.calls[1], (0, 0, 0))
         self.assertEqual(self.calls[2], (1, 0, 0))
 
     def testInsertMeasureCallBack(self):
-        self.staff.addNote(0, 0, 0, "x")
-        self.staff.insertMeasure(0, Measure(8))
-        self.staff.addNote(0, 0, 0, "x")
-        self.staff.deleteNote(1, 0, 0)
+        np0 = NotePosition(measureIndex = 0,
+                          noteTime = 0,
+                          drumIndex = 0)
+        np1 = NotePosition(measureIndex = 1,
+                          noteTime = 0,
+                          drumIndex = 0)
+        self.staff.addNote(np0, "x")
+        self.staff.insertMeasure(np0, Measure(8))
+        self.staff.addNote(np0, "x")
+        self.staff.deleteNote(np1)
         self.assertEqual(len(self.calls), 3)
         self.assertEqual(self.calls[0], (0, 0, 0))
         self.assertEqual(self.calls[1], (0, 0, 0))
