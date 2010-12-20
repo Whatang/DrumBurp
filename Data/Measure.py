@@ -81,7 +81,8 @@ class Measure(object):
     def deleteNote(self, position):
         if not(0 <= position.noteTime < len(self)):
             raise BadTimeError(position)
-        if position.noteTime in self._notes and position.drumIndex in self._notes[position.noteTime]:
+        if (position.noteTime in self._notes
+            and position.drumIndex in self._notes[position.noteTime]):
             del self._notes[position.noteTime][position.drumIndex]
             if len(self._notes[position.noteTime]) == 0:
                 del self._notes[position.noteTime]

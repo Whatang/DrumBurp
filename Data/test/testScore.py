@@ -207,7 +207,8 @@ class TestNoteControl(unittest.TestCase):
         self.score.textFormatScore(80)
 
     def testGetNote(self):
-        self.assertEqual(self.score.getNote(NotePosition(0, 0, 0, 0)), EMPTY_NOTE)
+        self.assertEqual(self.score.getNote(NotePosition(0, 0, 0, 0)),
+                         EMPTY_NOTE)
 
     def testGetNote_BadTime(self):
         self.assertRaises(BadTimeError, self.score.getNote,
@@ -235,15 +236,22 @@ class TestNoteControl(unittest.TestCase):
         self.assertEqual(self.score.getNote(NotePosition(0, 0, 0, 0)), "o")
 
     def testAddNote_BadTime(self):
-        self.assertRaises(BadTimeError, self.score.addNote, NotePosition(-1, 0, 0, 0), "x")
-        self.assertRaises(BadTimeError, self.score.addNote, NotePosition(20, 0, 0, 0), "x")
-        self.assertRaises(BadTimeError, self.score.addNote, NotePosition(0, -1, 0, 0), "x")
-        self.assertRaises(BadTimeError, self.score.addNote, NotePosition(0, 20, 0, 0), "x")
-        self.assertRaises(BadTimeError, self.score.addNote, NotePosition(0, 0, -1, 0), "x")
-        self.assertRaises(BadTimeError, self.score.addNote, NotePosition(0, 0, 20, 0), "x")
+        self.assertRaises(BadTimeError,
+                          self.score.addNote, NotePosition(-1, 0, 0, 0), "x")
+        self.assertRaises(BadTimeError,
+                          self.score.addNote, NotePosition(20, 0, 0, 0), "x")
+        self.assertRaises(BadTimeError,
+                          self.score.addNote, NotePosition(0, -1, 0, 0), "x")
+        self.assertRaises(BadTimeError,
+                          self.score.addNote, NotePosition(0, 20, 0, 0), "x")
+        self.assertRaises(BadTimeError,
+                          self.score.addNote, NotePosition(0, 0, -1, 0), "x")
+        self.assertRaises(BadTimeError,
+                          self.score.addNote, NotePosition(0, 0, 20, 0), "x")
 
     def testAddNote_BadNote(self):
-        self.assertRaises(BadTimeError, self.score.addNote, NotePosition(0, 0, 0, -1), "x")
+        self.assertRaises(BadTimeError, self.score.addNote,
+                          NotePosition(0, 0, 0, -1), "x")
         self.assertRaises(BadTimeError, self.score.addNote,
                           NotePosition(0, 0, 0,
                                        len(self.score.drumKit)), "x")
@@ -303,16 +311,34 @@ class TestNoteControl(unittest.TestCase):
                           NotePosition(0, 0, 20, 0), "x")
 
     def testToggleNote_BadNote(self):
-        self.assertRaises(BadTimeError, self.score.toggleNote, NotePosition(0, 0, 0, -1), "x")
+        self.assertRaises(BadTimeError, self.score.toggleNote,
+                          NotePosition(0, 0, 0, -1), "x")
         self.assertRaises(BadTimeError, self.score.toggleNote,
                           NotePosition(0, 0, 0, len(self.score.drumKit)), "x")
 
     def testToggleNote_DefaultHead(self):
         self.score.toggleNote(NotePosition(0, 0, 0, 0))
         defaultHead = self.score.drumKit[0].head
-        self.assertEqual(self.score.getNote(NotePosition(0, 0, 0, 0)), defaultHead)
+        self.assertEqual(self.score.getNote(NotePosition(0, 0, 0, 0)),
+                         defaultHead)
         self.score.toggleNote(NotePosition(0, 0, 0, 0))
-        self.assertEqual(self.score.getNote(NotePosition(0, 0, 0, 0)), EMPTY_NOTE)
+        self.assertEqual(self.score.getNote(NotePosition(0, 0, 0, 0)),
+                         EMPTY_NOTE)
+
+class TestCallBack(unittest.TestCase):
+    def setUp(self):
+        self.score = Score()
+        self.score.addMeasure(16)
+        self.calls = []
+        def myCallBack(position):
+            self.calls.append((position.staffIndex,
+                               position.measureIndex,
+                               position.noteTime,
+                               position.drumIndex))
+        self.score.setCallBack(myCallBack)
+
+    def testAddNote(self):
+        pass
 
 if __name__ == "__main__":
     unittest.main()

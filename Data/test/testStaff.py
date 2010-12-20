@@ -50,8 +50,10 @@ class TestStaff(unittest.TestCase):
     def testDeleteMeasure_BadIndex(self):
         self.staff.addMeasure(Measure(1))
         self.staff.addMeasure(Measure(2))
-        self.assertRaises(BadTimeError, self.staff.deleteMeasure, NotePosition(measureIndex = -1))
-        self.assertRaises(BadTimeError, self.staff.deleteMeasure, NotePosition(measureIndex = 2))
+        self.assertRaises(BadTimeError, self.staff.deleteMeasure,
+                          NotePosition(measureIndex = -1))
+        self.assertRaises(BadTimeError, self.staff.deleteMeasure,
+                          NotePosition(measureIndex = 2))
 
     def testInsertMeasure(self):
         self.staff.addMeasure(Measure(1))
@@ -76,8 +78,12 @@ class TestStaff(unittest.TestCase):
         self.staff.addMeasure(Measure(1))
         self.staff.addMeasure(Measure(2))
         m = Measure(3)
-        self.assertRaises(BadTimeError, self.staff.insertMeasure, NotePosition(measureIndex = -1), m)
-        self.assertRaises(BadTimeError, self.staff.insertMeasure, NotePosition(measureIndex = 3), m)
+        self.assertRaises(BadTimeError,
+                          self.staff.insertMeasure,
+                          NotePosition(measureIndex = -1), m)
+        self.assertRaises(BadTimeError,
+                          self.staff.insertMeasure,
+                          NotePosition(measureIndex = 3), m)
 
     def testClearStaff(self):
         self.staff.addMeasure(Measure(16))

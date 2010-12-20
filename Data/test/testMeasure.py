@@ -17,7 +17,8 @@ class TestMeasure(unittest.TestCase):
     def testEmptyMeasure(self):
         self.assertEqual(len(self.measure), 16)
         self.assertEqual(self.measure.numNotes(), 0)
-        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 0, drumIndex = 0)),
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 0,
+                                                           drumIndex = 0)),
                          EMPTY_NOTE)
         self.assertEqual(self.measure.startBar,
                          BAR_TYPES["NORMAL_BAR"])
@@ -37,7 +38,8 @@ class TestMeasure(unittest.TestCase):
 
     def testAddNote(self):
         self.measure.addNote(NotePosition(noteTime = 0, drumIndex = 0), "o")
-        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 0, drumIndex = 0)), "o")
+        notePos = NotePosition(noteTime = 0, drumIndex = 0)
+        self.assertEqual(self.measure.getNote(notePos), "o")
 
     def testAddNote_BadTime(self):
         self.assertRaises(BadTimeError, self.measure.addNote,
@@ -94,23 +96,27 @@ class TestMeasure(unittest.TestCase):
         self.measure.addNote(NotePosition(noteTime = 7, drumIndex = 1), "x")
         self.measure.setWidth(32)
         self.assertEqual(len(self.measure), 32)
-        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 7, drumIndex = 1)), "x")
+        notePos = NotePosition(noteTime = 7, drumIndex = 1)
+        self.assertEqual(self.measure.getNote(notePos), "x")
 
     def testSetWidth_MakeNonEmptyMeasureSmaller(self):
         self.measure.addNote(NotePosition(noteTime = 7, drumIndex = 1), "x")
         self.measure.addNote(NotePosition(noteTime = 12, drumIndex = 1), "x")
         self.measure.setWidth(8)
         self.assertEqual(len(self.measure), 8)
-        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 7, drumIndex = 1)), "x")
+        notePos = NotePosition(noteTime = 7, drumIndex = 1)
+        self.assertEqual(self.measure.getNote(notePos), "x")
         self.assertEqual(self.measure.numNotes(), 1)
 
     def testSetWidth_NoEffect(self):
-        self.measure.addNote(NotePosition(noteTime = 7, drumIndex = 1), "x")
-        self.measure.addNote(NotePosition(noteTime = 12, drumIndex = 1), "x")
+        notePos1 = NotePosition(noteTime = 7, drumIndex = 1)
+        notePos2 = NotePosition(noteTime = 12, drumIndex = 1)
+        self.measure.addNote(notePos1, "x")
+        self.measure.addNote(notePos2, "x")
         self.measure.setWidth(16)
         self.assertEqual(len(self.measure), 16)
-        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 7, drumIndex = 1)), "x")
-        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 12, drumIndex = 1)), "x")
+        self.assertEqual(self.measure.getNote(notePos1), "x")
+        self.assertEqual(self.measure.getNote(notePos2), "x")
         self.assertEqual(self.measure.numNotes(), 2)
 
     def testSetSectionEnd_NoRepeat(self):

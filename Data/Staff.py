@@ -56,8 +56,10 @@ class Staff(object):
             raise BadTimeError(position)
         measure = self._measures.pop(position.measureIndex)
         measure.clearCallBack()
-        for index, nextMeasure in enumerate(self._measures[position.measureIndex:]):
-            self._setMeasureCallBack(nextMeasure, position.measureIndex + index)
+        iterator = enumerate(self._measures[position.measureIndex:])
+        for index, nextMeasure in iterator:
+            self._setMeasureCallBack(nextMeasure,
+                                     position.measureIndex + index)
 
     def insertMeasure(self, position, measure):
         if not (0 <= position.measureIndex <= self.numMeasures()):
