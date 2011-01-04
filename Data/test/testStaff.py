@@ -40,6 +40,18 @@ class TestStaff(unittest.TestCase):
         for i in range(1, 16):
             self.assertEqual(len(self.staff[i - 1]), i)
 
+    def testDeleteLastMeasure(self):
+        self.staff.addMeasure(Measure(1))
+        self.staff.addMeasure(Measure(2))
+        self.staff.addMeasure(Measure(3))
+        self.staff.addMeasure(Measure(4))
+        self.assertEqual(self.staff.numMeasures(), 4)
+        self.staff.deleteLastMeasure()
+        self.assertEqual(self.staff.numMeasures(), 3)
+        for index in range(1, 4):
+            self.assertEqual(len(self.staff[index - 1]), index)
+
+
     def testDeleteMeasure(self):
         self.staff.addMeasure(Measure(1))
         self.staff.addMeasure(Measure(2))

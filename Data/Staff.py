@@ -51,6 +51,11 @@ class Staff(object):
         self._measures.append(measure)
         self._setMeasureCallBack(self._measures[-1], len(self._measures) - 1)
 
+    def deleteLastMeasure(self):
+        if self.numMeasures() > 0:
+            measure = self._measures.pop()
+            measure.clearCallBack()
+
     def deleteMeasure(self, position):
         if not (0 <= position.measureIndex < self.numMeasures()):
             raise BadTimeError(position)
@@ -70,6 +75,8 @@ class Staff(object):
             self._setMeasureCallBack(nextMeasure, index)
 
     def clear(self):
+        for measure in self:
+            measure.clearCallBack()
         self._measures = []
 
     def characterWidth(self):
