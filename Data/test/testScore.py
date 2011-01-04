@@ -11,7 +11,57 @@ from Data.NotePosition import NotePosition
 
 #pylint: disable-msg=R0904
 
-class TestScoreOneStaff(unittest.TestCase):
+class TestStaffControl(unittest.TestCase):
+
+    def setUp(self):
+        self.score = Score()
+
+    def testAddStaff(self):
+        self.score.addStaff()
+        self.assertEqual(self.score.numStaffs(), 1)
+        self.score.addStaff()
+        self.assertEqual(self.score.numStaffs(), 2)
+
+    def testDeleteStaff(self):
+        self.score.addStaff()
+        self.score.addStaff()
+        self.assertEqual(self.score.numStaffs(), 2)
+        lastStaff = self.score.getStaff(1)
+        self.score.deleteStaff(NotePosition(staffIndex = 0))
+        self.assertEqual(self.score.numStaffs(), 1)
+        self.assert_(self.score.getStaff(0) is lastStaff)
+
+    def testInsertStaffAtStart(self):
+        self.score.addStaff()
+        self.score.addStaff()
+        self.assertEqual(self.score.numStaffs(), 2)
+        firstStaff = self.score.getStaff(0)
+        self.score.insertStaff(NotePosition(staffIndex = 0))
+        self.assertEqual(self.score.numStaffs(), 3)
+        self.assert_(firstStaff is self.score.getStaff(1))
+
+    def testInsertStaffInMiddle(self):
+        self.score.addStaff()
+        self.score.addStaff()
+        self.assertEqual(self.score.numStaffs(), 2)
+        firstStaff = self.score.getStaff(0)
+        lastStaff = self.score.getStaff(1)
+        self.score.insertStaff(NotePosition(staffIndex = 1))
+        self.assertEqual(self.score.numStaffs(), 3)
+        self.assert_(firstStaff is self.score.getStaff(0))
+        self.assert_(lastStaff is self.score.getStaff(2))
+        self.assert_(self.score.getStaff(1) not in (firstStaff, lastStaff))
+
+    def testInsertStaffAtEnd(self):
+        self.score.addStaff()
+        self.score.addStaff()
+        self.assertEqual(self.score.numStaffs(), 2)
+        lastStaff = self.score.getStaff(1)
+        self.score.insertStaff(NotePosition(staffIndex = 2))
+        self.assertEqual(self.score.numStaffs(), 3)
+        self.assertFalse(lastStaff is self.score.getStaff(2))
+
+class TestMeasureControl(unittest.TestCase):
     def setUp(self):
         self.score = Score()
 
@@ -22,188 +72,87 @@ class TestScoreOneStaff(unittest.TestCase):
         self.assertEqual(len(self.score.drumKit), 0)
 
     def testAddMeasure(self):
-        self.score.addMeasure(16)
+        self.score.addEmptyMeasure(16)
         self.assertEqual(len(self.score), 16)
         self.assertEqual(self.score.numStaffs(), 1)
         self.assertEqual(self.score.numMeasures(), 1)
 
     def testGetMeasure(self):
         for i in range(1, 17):
-            self.score.addMeasure(i)
+            self.score.addEmptyMeasure(i)
         for i in range(1, 17):
             self.assertEqual(len(self.score.getMeasure(i - 1)), i)
 
     def testGetMeasure_BadIndex(self):
         self.assertRaises(BadTimeError, self.score.getMeasure, 0)
-        self.score.addMeasure(16)
-        self.score.addMeasure(16)
-        self.score.addMeasure(16)
+        self.score.addEmptyMeasure(16)
+        self.score.addEmptyMeasure(16)
+        self.score.addEmptyMeasure(16)
         self.assertRaises(BadTimeError, self.score.getMeasure, -1)
         self.assertRaises(BadTimeError, self.score.getMeasure, 3)
 
     def testDeleteMeasure(self):
-        self.score.addMeasure(16)
-        self.score.addMeasure(16)
-        self.score.addMeasure(16)
-        self.score.deleteMeasure(1)
+        self.score.addEmptyMeasure(16)
+        self.score.addEmptyMeasure(16)
+        self.score.addEmptyMeasure(16)
+        self.score.deleteMeasureByIndex(1)
         self.assertEqual(len(self.score), 32)
         self.assertEqual(self.score.numStaffs(), 1)
         self.assertEqual(self.score.numMeasures(), 2)
 
     def testDeleteMeasure_EmptySystem(self):
-        self.score.addMeasure(16)
-        self.score.addMeasure(16)
-        self.score.addMeasure(16)
-        self.score.deleteMeasure(1)
+        self.score.addEmptyMeasure(16)
+        self.score.addEmptyMeasure(16)
+        self.score.addEmptyMeasure(16)
+        self.score.deleteMeasureByIndex(1)
         self.assertEqual(self.score.numMeasures(), 2)
-        self.score.deleteMeasure(1)
+        self.score.deleteMeasureByIndex(1)
         self.assertEqual(self.score.numMeasures(), 1)
-        self.score.deleteMeasure(0)
+        self.score.deleteMeasureByIndex(0)
         self.assertEqual(len(self.score), 0)
-        self.assertEqual(self.score.numStaffs(), 0)
+        self.assertEqual(self.score.numStaffs(), 1)
         self.assertEqual(self.score.numMeasures(), 0)
 
     def testDeleteMeasure_BadIndex(self):
-        self.score.addMeasure(16)
-        self.score.addMeasure(16)
-        self.score.addMeasure(16)
-        self.assertRaises(BadTimeError, self.score.deleteMeasure, -1)
-        self.assertRaises(BadTimeError, self.score.deleteMeasure, 3)
+        self.score.addEmptyMeasure(16)
+        self.score.addEmptyMeasure(16)
+        self.score.addEmptyMeasure(16)
+        self.assertRaises(BadTimeError, self.score.deleteMeasureByIndex, -1)
+        self.assertRaises(BadTimeError, self.score.deleteMeasureByIndex, 3)
 
     def testInsertMeasure(self):
-        self.score.addMeasure(16)
-        self.score.addMeasure(16)
-        self.score.addMeasure(16)
-        self.score.insertMeasure(8, 2)
+        self.score.addEmptyMeasure(16)
+        self.score.addEmptyMeasure(16)
+        self.score.addEmptyMeasure(16)
+        self.score.insertMeasureByIndex(8, 2)
         self.assertEqual(self.score.numMeasures(), 4)
         self.assertEqual(len(self.score), 56)
         self.assertEqual(len(self.score.getMeasure(2)), 8)
-        self.score.insertMeasure(24, 4)
+        self.score.insertMeasureByIndex(24, 4)
         self.assertEqual(self.score.numMeasures(), 5)
         self.assertEqual(len(self.score), 80)
         self.assertEqual(len(self.score.getMeasure(4)), 24)
 
     def testInsertMeasure_IntoEmptyScore(self):
-        self.score.insertMeasure(16, 0)
+        self.score.insertMeasureByIndex(16, 0)
         self.assertEqual(self.score.numMeasures(), 1)
         self.assertEqual(len(self.score), 16)
         self.assertEqual(len(self.score.getMeasure(0)), 16)
 
     def testInsertMeasure_BadIndex(self):
-        self.assertRaises(BadTimeError, self.score.insertMeasure, 16, -1)
-        self.score.addMeasure(16)
-        self.score.addMeasure(16)
-        self.score.addMeasure(16)
-        self.assertRaises(BadTimeError, self.score.insertMeasure, 16, -1)
-        self.assertRaises(BadTimeError, self.score.insertMeasure, 16, 4)
-
-    def testMoveMeasure(self):
-        pass
-
-    def testCopyMeasure(self):
-        pass
-
-class TestCharacterFormatScore(unittest.TestCase):
-    def setUp(self):
-        self.score = Score()
-
-    def testTextFormatScore(self):
-        for dummy in range(0, 20):
-            self.score.addMeasure(16)
-        self.score.textFormatScore(80)
-        self.assertEqual(self.score.numStaffs(), 5)
-        for staff in self.score.iterStaffs():
-            self.assertEqual(staff.numMeasures(), 4)
-            self.assertEqual(len(staff), 64)
-            self.assertEqual(staff.characterWidth(), 69)
-
-    def testTextFormatScoreWithSections(self):
-        for dummy in range(0, 20):
-            self.score.addMeasure(16)
-        self.score.getMeasure(5).setSectionEnd(True)
-        self.score.textFormatScore(80)
-        self.assertEqual(self.score.numStaffs(), 6)
-        self.assertEqual(self.score.getStaff(1).characterWidth(), 36)
-
-    def testTextFormatScore_SectionEndAtScoreEnd(self):
-        for dummy in range(0, 20):
-            self.score.addMeasure(16)
-        self.score.getMeasure(19).setSectionEnd(True)
-        self.score.textFormatScore(80)
-        self.assertEqual(self.score.numStaffs(), 5)
-
-    def testTextFormatScoreWithSectionsAndRepeat(self):
-        for dummy in range(0, 20):
-            self.score.addMeasure(16)
-        self.score.getMeasure(0).setRepeatStart(True)
-        self.score.getMeasure(5).setSectionEnd(True)
-        self.score.getMeasure(5).setRepeatEnd(True)
-        self.score.textFormatScore(80)
-        self.assertEqual(self.score.numStaffs(), 6)
-        self.assertEqual(self.score.getStaff(1).characterWidth(), 36)
-
-    def testTextFormatScoreWithLargeBar(self):
-        for dummy in range(0, 12):
-            self.score.addMeasure(16)
-        self.score.addMeasure(70)
-        for dummy in range(0, 12):
-            self.score.addMeasure(16)
-        self.score.textFormatScore(80)
-        self.assertEqual(self.score.numStaffs(), 7)
-        self.assertEqual(self.score.getStaff(3).characterWidth(), 72)
-
-    def testTextFormatScoreWithOverSizeBar_IgnoreErrors(self):
-        for dummy in range(0, 12):
-            self.score.addMeasure(16)
-        self.score.addMeasure(80)
-        for dummy in range(0, 12):
-            self.score.addMeasure(16)
-        self.score.textFormatScore(80, ignoreErrors = True)
-        self.assertEqual(self.score.numStaffs(), 7)
-        self.assertEqual(self.score.getStaff(3).characterWidth(), 82)
-
-    def testTextFormatScoreWithOverSizeBar_DontIgnoreErrors(self):
-        for dummy in range(0, 12):
-            self.score.addMeasure(16)
-        self.score.addMeasure(90)
-        for dummy in range(0, 12):
-            self.score.addMeasure(16)
-        self.assertRaises(OverSizeMeasure, self.score.textFormatScore, 80)
-
-    def testTextFormatScore_FewerStaffsAfterDelete(self):
-        for dummy in range(0, 9):
-            self.score.addMeasure(16)
-        self.score.textFormatScore(80)
-        self.assertEqual(self.score.numStaffs(), 3)
-        self.score.deleteMeasure(6)
-        self.score.textFormatScore(80)
-        self.assertEqual(self.score.numStaffs(), 2)
-
-    def testTextFormatScore_FewerStaffsOnWiderFormat(self):
-        for dummy in range(0, 8):
-            self.score.addMeasure(16)
-        self.score.textFormatScore(40)
-        self.assertEqual(self.score.numStaffs(), 4)
-        self.score.textFormatScore(80)
-        self.assertEqual(self.score.numStaffs(), 2)
-
-
-class TestScoreManyStaffs(unittest.TestCase):
-    def testAddMeasure(self):
-        pass
-
-    def testDeleteMeasure(self):
-        pass
-
-    def testDeleteMeasure_EmptyStaff(self):
-        pass
+        self.assertRaises(BadTimeError, self.score.insertMeasureByIndex, 16, -1)
+        self.score.addEmptyMeasure(16)
+        self.score.addEmptyMeasure(16)
+        self.score.addEmptyMeasure(16)
+        self.assertRaises(BadTimeError, self.score.insertMeasureByIndex, 16, -1)
+        self.assertRaises(BadTimeError, self.score.insertMeasureByIndex, 16, 4)
 
 class TestNoteControl(unittest.TestCase):
     def setUp(self):
         self.score = Score()
         self.score.drumKit.loadDefaultKit()
         for dummy in range(0, 12):
-            self.score.addMeasure(16)
+            self.score.addEmptyMeasure(16)
         self.score.textFormatScore(80)
 
     def testGetNote(self):
@@ -325,10 +274,97 @@ class TestNoteControl(unittest.TestCase):
         self.assertEqual(self.score.getNote(NotePosition(0, 0, 0, 0)),
                          EMPTY_NOTE)
 
+class TestCharacterFormatScore(unittest.TestCase):
+    def setUp(self):
+        self.score = Score()
+
+    def testTextFormatScore(self):
+        for dummy in range(0, 20):
+            self.score.addEmptyMeasure(16)
+        self.score.textFormatScore(80)
+        self.assertEqual(self.score.numStaffs(), 5)
+        for staff in self.score.iterStaffs():
+            self.assertEqual(staff.numMeasures(), 4)
+            self.assertEqual(len(staff), 64)
+            self.assertEqual(staff.characterWidth(), 69)
+
+    def testTextFormatScoreWithSections(self):
+        for dummy in range(0, 20):
+            self.score.addEmptyMeasure(16)
+        self.score.getMeasure(5).setSectionEnd(True)
+        self.score.textFormatScore(80)
+        self.assertEqual(self.score.numStaffs(), 6)
+        self.assertEqual(self.score.getStaff(1).characterWidth(), 36)
+
+    def testTextFormatScore_SectionEndAtScoreEnd(self):
+        for dummy in range(0, 20):
+            self.score.addEmptyMeasure(16)
+        self.score.getMeasure(19).setSectionEnd(True)
+        self.score.textFormatScore(80)
+        self.assertEqual(self.score.numStaffs(), 5)
+
+    def testTextFormatScoreWithSectionsAndRepeat(self):
+        for dummy in range(0, 20):
+            self.score.addEmptyMeasure(16)
+        self.score.getMeasure(0).setRepeatStart(True)
+        self.score.getMeasure(5).setSectionEnd(True)
+        self.score.getMeasure(5).setRepeatEnd(True)
+        self.score.textFormatScore(80)
+        self.assertEqual(self.score.numStaffs(), 6)
+        self.assertEqual(self.score.getStaff(1).characterWidth(), 36)
+
+    def testTextFormatScoreWithLargeBar(self):
+        for dummy in range(0, 12):
+            self.score.addEmptyMeasure(16)
+        self.score.addEmptyMeasure(70)
+        for dummy in range(0, 12):
+            self.score.addEmptyMeasure(16)
+        self.score.textFormatScore(80)
+        self.assertEqual(self.score.numStaffs(), 7)
+        self.assertEqual(self.score.getStaff(3).characterWidth(), 72)
+
+    def testTextFormatScoreWithOverSizeBar_IgnoreErrors(self):
+        for dummy in range(0, 12):
+            self.score.addEmptyMeasure(16)
+        self.score.addEmptyMeasure(80)
+        for dummy in range(0, 12):
+            self.score.addEmptyMeasure(16)
+        self.score.textFormatScore(80, ignoreErrors = True)
+        self.assertEqual(self.score.numStaffs(), 7)
+        self.assertEqual(self.score.getStaff(3).characterWidth(), 82)
+
+    def testTextFormatScoreWithOverSizeBar_DontIgnoreErrors(self):
+        for dummy in range(0, 12):
+            self.score.addEmptyMeasure(16)
+        self.score.addEmptyMeasure(90)
+        for dummy in range(0, 12):
+            self.score.addEmptyMeasure(16)
+        self.assertRaises(OverSizeMeasure, self.score.textFormatScore, 80)
+
+    def testTextFormatScore_FewerStaffsAfterDelete(self):
+        for dummy in range(0, 9):
+            self.score.addEmptyMeasure(16)
+        self.score.textFormatScore(80)
+        self.assertEqual(self.score.numStaffs(), 3)
+        self.score.deleteMeasureByIndex(6)
+        self.score.textFormatScore(80)
+        self.assertEqual(self.score.numStaffs(), 2)
+
+    def testTextFormatScore_FewerStaffsOnWiderFormat(self):
+        for dummy in range(0, 8):
+            self.score.addEmptyMeasure(16)
+        self.score.textFormatScore(40)
+        self.assertEqual(self.score.numStaffs(), 4)
+        self.score.textFormatScore(80)
+        self.assertEqual(self.score.numStaffs(), 2)
+
 class TestCallBack(unittest.TestCase):
     def setUp(self):
         self.score = Score()
-        self.score.addMeasure(16)
+        self.score.drumKit.loadDefaultKit()
+        for dummy in range(0, 16):
+            self.score.addEmptyMeasure(16)
+        self.score.textFormatScore(80)
         self.calls = []
         def myCallBack(position):
             self.calls.append((position.staffIndex,
@@ -337,8 +373,50 @@ class TestCallBack(unittest.TestCase):
                                position.drumIndex))
         self.score.setCallBack(myCallBack)
 
-    def testAddNote(self):
-        pass
+    def testAddNoteCallBack(self):
+        notePos = NotePosition(1, 0, 0, 4)
+        self.score.addNote(notePos, "x")
+        self.assertEqual(len(self.calls), 1)
+        self.assertEqual(self.calls[0], (1, 0, 0, 4))
+        self.score.addNote(notePos, "x")
+        self.assertEqual(len(self.calls), 1)
+        self.score.addNote(notePos, "o")
+        self.assertEqual(len(self.calls), 2)
+        self.assertEqual(self.calls[1], (1, 0, 0, 4))
+
+    def testDeleteNoteCallBack(self):
+        np = NotePosition(1, 0, 0, 4)
+        self.score.deleteNote(np)
+        self.assertEqual(len(self.calls), 0)
+        self.score.addNote(np, "x")
+        self.assertEqual(len(self.calls), 1)
+        self.assertEqual(self.calls[0], (1, 0, 0, 4))
+        self.score.deleteNote(np)
+        self.assertEqual(len(self.calls), 2)
+        self.assertEqual(self.calls[1], (1, 0, 0, 4))
+
+    def testToggleNoteCallBack(self):
+        np = NotePosition(1, 0, 0, 0)
+        self.score.toggleNote(np, "x")
+        self.assertEqual(len(self.calls), 1)
+        self.assertEqual(self.calls[0], (1, 0, 0, 0))
+        self.score.toggleNote(np, "x")
+        self.assertEqual(len(self.calls), 2)
+        self.assertEqual(self.calls[1], (1, 0, 0, 0))
+        self.score.toggleNote(np, "x")
+        self.assertEqual(len(self.calls), 3)
+        self.assertEqual(self.calls[2], (1, 0, 0, 0))
+        self.score.toggleNote(np, "o")
+        self.assertEqual(len(self.calls), 4)
+        self.assertEqual(self.calls[2], (1, 0, 0, 0))
+
+    def testClearCallBack(self):
+        self.score.clearCallBack()
+        self.score.addNote(NotePosition(staffIndex = 0,
+                                        measureIndex = 0,
+                                        noteTime = 0,
+                                        drumIndex = 0), "x")
+        self.assertEqual(len(self.calls), 0)
 
 if __name__ == "__main__":
     unittest.main()
