@@ -50,7 +50,8 @@ class QSystem(QtGui.QGraphicsItemGroup):
         return self._system.numLines * self._scene.ySpace
 
     def yPosition(self):
-        return self._scene.yMargins + self._index * (self._scene.interLineSpace + self.height())
+        return (self._scene.yMargins +
+                self._index * (self._scene.interLineSpace + self.height()))
 
     def _rePosition(self):
         self.setPos(self._scene.xMargins, self.yPosition())

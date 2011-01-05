@@ -5,14 +5,14 @@ Created on 5 Dec 2010
 
 '''
 from PyQt4 import QtGui, QtCore
-from Data import Constants
+from Data import DBConstants
 from DBSignals import XSPACING_SIGNAL, YSPACING_SIGNAL
 OFFSET = 24
 
-_charMaps = {}
+_CHAR_PIXMAPS = {}
 def _stringToPixMap(character, font, scene):
     key = (character, font.key())
-    if key not in _charMaps:
+    if key not in _CHAR_PIXMAPS:
         fm = QtGui.QFontMetrics(font)
         br = fm.tightBoundingRect(character)
         dx = -br.x() + 1
@@ -28,8 +28,8 @@ def _stringToPixMap(character, font, scene):
         painter.setFont(font)
         painter.drawText(dx, dy, character)
         painter.end()
-        _charMaps[key] = pix
-    return _charMaps[key]
+        _CHAR_PIXMAPS[key] = pix
+    return _CHAR_PIXMAPS[key]
 
 
 class QDBGridItem(QtGui.QGraphicsItem):
@@ -61,7 +61,7 @@ class QDBGridItem(QtGui.QGraphicsItem):
         painter.drawRect(self._rect)
         if len(self._text) > 0:
             painter.setPen(QtCore.Qt.SolidLine)
-            if self._text == Constants.EMPTY_NOTE:
+            if self._text == DBConstants.EMPTY_NOTE:
                 y = self.cellHeight() / 2.0
                 painter.drawLine(1, y,
                                  self.cellWidth() - 1, y)
@@ -73,10 +73,6 @@ class QDBGridItem(QtGui.QGraphicsItem):
                 left = (self.cellWidth() - pix.width() + 2) / 2
                 top = (self.cellHeight() - pix.height() + 2) / 2
                 painter.drawPixmap(left, top, pix)
-#        painter.setPen(QtCore.Qt.DotLine)
-#        painter.drawLine(self.cellWidth() / 2, 0, self.cellWidth() / 2, self.cellHeight())
-#        painter.drawLine(0, self.cellHeight() / 2, self.cellWidth(), self.cellHeight() / 2)
-
 
     def cellWidth(self):
         return self._scene.xSpace

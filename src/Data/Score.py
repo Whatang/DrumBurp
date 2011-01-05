@@ -11,6 +11,8 @@ from Measure import Measure
 from DBErrors import BadTimeError, OverSizeMeasure
 from Data.NotePosition import NotePosition
 
+#pylint: disable-msg=R0904
+
 class Score(object):
     '''
     classdocs
