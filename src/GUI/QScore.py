@@ -139,10 +139,10 @@ class QScore(QtGui.QGraphicsScene):
         else:
             item = self.itemAt(event.scenePos())
             if isinstance(item, QNote):
-                item.toggleNote(self._properties.head)
+                item.toggleNote()
                 event.accept()
             else:
                 event.ignore()
 
-    def toggleNote(self, np, head):
-        self._score.toggleNote(np, head)
+    def toggleNote(self, np):
+        self._score.toggleNote(np, self._properties.head)

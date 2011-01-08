@@ -76,9 +76,9 @@ class QMeasure(QtGui.QGraphicsItemGroup):
     def _setHeight(self):
         self._height = len(self._score.drumKit) * self._props.ySpacing
 
-    def toggleNote(self, np, head):
+    def toggleNote(self, np):
         np.measureIndex = self._index
-        self._qStaff.toggleNote(np, head)
+        self._qStaff.toggleNote(np)
 
     def setNote(self, np, head):
         self._notes[np.drumIndex][np.noteTime].setText(head)

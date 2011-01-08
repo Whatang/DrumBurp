@@ -120,9 +120,9 @@ class QStaff(QtGui.QGraphicsItemGroup):
     def setNote(self, np, head):
         self._measures[np.measureIndex].setNote(np, head)
 
-    def toggleNote(self, np, head):
+    def toggleNote(self, np):
         np.staffIndex = self._index
-        self._qScore.toggleNote(np, head)
+        self._qScore.toggleNote(np)
 
 #    def boundingRect(self):
 #        return QtCore.QRectF(0, 0, self._width, self._height)

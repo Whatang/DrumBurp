@@ -87,10 +87,10 @@ class QNote(QDBGridItem):
         self._text = DBConstants.EMPTY_NOTE
 #        self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable)
 
-    def toggleNote(self, head):
+    def toggleNote(self):
         np = NotePosition(drumIndex = self._drumIndex,
                           noteTime = self._noteTime)
-        self._qMeasure.toggleNote(np, head)
+        self._qMeasure.toggleNote(np)
 
     def setIndex(self, drumIndex, noteTime):
         if (drumIndex, noteTime) != (self._drumIndex, self._noteTime):
