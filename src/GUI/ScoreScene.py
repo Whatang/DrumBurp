@@ -37,7 +37,7 @@ class ScoreScene(QtGui.QGraphicsScene):
         Constructor
         '''
         super(ScoreScene, self).__init__(parent)
-        self._score = score
+        self._qScore = score
         self._systems = []
         self._xSpace = 0
         self._ySpace = 0
@@ -68,9 +68,9 @@ class ScoreScene(QtGui.QGraphicsScene):
     head = property(fget = _gethead, fset = _sethead)
 
     def _getScore(self):
-        return self._score
+        return self._qScore
     def _setScore(self, score):
-        self._score = score
+        self._qScore = score
     score = property(_getScore, _setScore)
 
     def _getxSpace(self):

@@ -54,6 +54,12 @@ class Score(object):
             for measure in staff:
                 yield measure
 
+    def iterNotes(self):
+        for sIndex, staff in enumerate(self.iterStaffs()):
+            for np, head in staff.iterNotes():
+                np.staffIndex = sIndex
+                yield np, head
+
     def getMeasure(self, index):
         if not (0 <= index < self.numMeasures()):
             raise BadTimeError()
@@ -213,4 +219,13 @@ class Score(object):
         self._formatScore(width, Staff.characterWidth, ignoreErrors)
 
     def gridFormatScore(self, width):
-        self._formatScore(width, Staff.gridWidth)
+        self._formatScore(width,
+                          Staff.gridWidth,
+                          True)
+
+def makeEmptyScore(numMeasures, measureWidth):
+    score = Score()
+    score.drumKit.loadDefaultKit()
+    for dummy in range(0, numMeasures):
+        score.addEmptyMeasure(measureWidth)
+    return score

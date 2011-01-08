@@ -35,6 +35,12 @@ class Staff(object):
     def __iter__(self):
         return iter(self._measures)
 
+    def iterNotes(self):
+        for mIndex, measure in enumerate(self._measures):
+            for np, head in measure:
+                np.measureIndex = mIndex
+                yield np, head
+
     def __getitem__(self, index):
         return self._measures[index]
 

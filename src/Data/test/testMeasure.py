@@ -47,6 +47,16 @@ class TestMeasure(unittest.TestCase):
         self.assertRaises(BadTimeError, self.measure.addNote,
                           NotePosition(noteTime = 20, drumIndex = 0), "x")
 
+    def testIterNotes(self):
+        for i in range(0, 4):
+            self.measure.addNote(NotePosition(noteTime = 4 * i,
+                                              drumIndex = i), str(i))
+        for i, (np, head) in enumerate(self.measure):
+            self.assertEqual(head, str(i))
+            self.assertEqual(np.noteTime, 4 * i)
+            self.assertEqual(np.drumIndex, i)
+
+
     def testDeleteNote(self):
         np = NotePosition(noteTime = 0, drumIndex = 0)
         self.measure.addNote(np, "o")

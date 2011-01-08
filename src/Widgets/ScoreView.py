@@ -15,23 +15,25 @@ class ScoreView(QtGui.QGraphicsView):
     def __init__(self, parent = None):
         super(ScoreView, self).__init__(parent)
         self._fixedWidth = 80
+        self._props = None
 
     def setScene(self, scene):
 #        self.connect(self, QtCore.SIGNAL("itemClicked"), scene.itemClicked)
         super(ScoreView, self).setScene(scene)
+        self._props = scene.getProperties()
         self.centerOn(0, 0)
 
     @QtCore.pyqtSlot(int)
     def horizontalSpacingChanged(self, value):
-        self.scene().setSpacing(width = value - 101)
+        self._props.xSpacing = value - 101
 
     @QtCore.pyqtSlot(int)
     def verticalSpacingChanged(self, value):
-        self.scene().setSpacing(height = value - 101)
+        self._props.ySpacing = value - 101
 
     @QtCore.pyqtSlot(int)
     def systemSpacingChanged(self, value):
-        self.scene().setSpacing(lineSpace = value - 101)
+        self._props.lineSpacing = value - 101
 
     @QtCore.pyqtSlot(QtCore.QString)
     def setNoteHead(self, noteHead):
@@ -40,7 +42,7 @@ class ScoreView(QtGui.QGraphicsView):
             noteHead = None
         else:
             noteHead = noteHead[0]
-        self.scene().head = noteHead
+        self._props.head = noteHead
 
     @QtCore.pyqtSlot(int)
     def setWidth(self, width):
@@ -56,8 +58,9 @@ class ScoreView(QtGui.QGraphicsView):
 
     @QtCore.pyqtSlot(QtGui.QFont)
     def setFont(self, font):
-        self.scene().noteFont = font
+        self.scene().getProperties().noteFont = font
         self.scene().update()
 
     def _setVariableWidth(self):
-        self.setWidth(int(max(10, (self.width() / self._colWidths) - 1)))
+#        self.setWidth(int(max(10, (self.width() / self._colWidths) - 1)))
+        pass

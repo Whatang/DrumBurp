@@ -6,8 +6,7 @@ Created on 5 Dec 2010
 '''
 from PyQt4 import QtGui, QtCore
 from Data import DBConstants
-from DBSignals import XSPACING_SIGNAL, YSPACING_SIGNAL
-OFFSET = 24
+from Data.NotePosition import NotePosition
 
 _CHAR_PIXMAPS = {}
 def _stringToPixMap(character, font, scene):
@@ -33,31 +32,31 @@ def _stringToPixMap(character, font, scene):
 
 
 class QDBGridItem(QtGui.QGraphicsItem):
-    def __init__(self, lineIndex, scoreScene, parent = None):
+    def __init__(self, qScore, parent = None):
         super(QDBGridItem, self).__init__(parent = parent,
-                                          scene = scoreScene)
-        self.catcher = QtCore.QObject()
-        self._scene = scoreScene
-        self.catcher.connect(self._scene, QtCore.SIGNAL(XSPACING_SIGNAL),
-                             self._xSpacingChanged)
-        self.catcher.connect(self._scene, QtCore.SIGNAL(YSPACING_SIGNAL),
-                             self._ySpacingChanged)
-        self._system = parent
+                                          scene = qScore)
         self._text = ""
-        self._lineIndex = lineIndex
+        self._qScore = qScore
+        self._props = qScore.getProperties()
         self._rect = QtCore.QRectF(0, 0,
-                                   self.cellWidth(), self.cellHeight())
+                                   self.cellWidth(),
+                                   self.cellHeight())
 
     def setText(self, text):
         self._text = text
         self.update()
+
+    def setDimensions(self):
+        self.prepareGeometryChange()
+        self._rect.setBottomRight(QtCore.QPointF(self.cellWidth(),
+                                                 self.cellHeight()))
 
     def boundingRect(self):
         return self._rect
 
     def paint(self, painter, dummyOption, dummyWidget = None):
         painter.setPen(QtCore.Qt.NoPen)
-        painter.setBrush(self._scene.palette().base())
+        painter.setBrush(self.scene().palette().base())
         painter.drawRect(self._rect)
         if len(self._text) > 0:
             painter.setPen(QtCore.Qt.SolidLine)
@@ -66,66 +65,59 @@ class QDBGridItem(QtGui.QGraphicsItem):
                 painter.drawLine(1, y,
                                  self.cellWidth() - 1, y)
             else:
-                font = self._scene.noteFont
+                font = self._props.noteFont
                 if font is None:
                     font = painter.font()
-                pix = _stringToPixMap(self._text, font, self._scene)
+                pix = _stringToPixMap(self._text, font, self.scene())
                 left = (self.cellWidth() - pix.width() + 2) / 2
                 top = (self.cellHeight() - pix.height() + 2) / 2
                 painter.drawPixmap(left, top, pix)
-
-    def cellWidth(self):
-        return self._scene.xSpace
-
-    def cellHeight(self):
-        return self._scene.ySpace
-
-    def xPosition(self):
-        raise NotImplementedError()
-
-    def yPosition(self):
-        raise NotImplementedError()
-
-    def _xSpacingChanged(self):
-        self.prepareGeometryChange()
-        self._rect.setRight(self.cellWidth())
-        self.setPos(self.xPosition(), self.y())
-
-    def _ySpacingChanged(self):
-        self.prepareGeometryChange()
-        self._rect.setBottom(self.cellHeight())
-        self.setPos(self.x(), self.yPosition())
 
 class QNote(QDBGridItem):
     '''
     classdocs
     '''
 
-
-    def __init__(self, timeIndex, lineIndex, scoreScene, parent = None):
-        super(QNote, self).__init__(lineIndex, scoreScene, parent)
-        self._timeIndex = timeIndex
-        self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable)
+    def __init__(self, qScore, parent = None):
+        super(QNote, self).__init__(qScore, parent)
+        self._qMeasure = parent
+        self._drumIndex = None
+        self._noteTime = None
+        self._notePosition = NotePosition()
+        self._text = DBConstants.EMPTY_NOTE
+#        self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable)
 
     def toggleNote(self, head):
-        self._system.toggleNote(self._timeIndex, self._lineIndex, head)
+        np = NotePosition(drumIndex = self._drumIndex,
+                          noteTime = self._noteTime)
+        self._qMeasure.toggleNote(np, head)
 
-    def xPosition(self):
-        return OFFSET + self._timeIndex * self.cellWidth()
+    def setIndex(self, drumIndex, noteTime):
+        if (drumIndex, noteTime) != (self._drumIndex, self._noteTime):
+            self._drumIndex = drumIndex
+            self._noteTime = noteTime
+            self._notePosition.drumIndex = drumIndex
+            self._notePosition.noteTime = noteTime
 
-    def yPosition(self):
-        return (self._scene.numLines - self._lineIndex - 1) * self._scene.ySpace
+    def cellWidth(self):
+        return self._props.xSpacing
+
+    def cellHeight(self):
+        return self._props.ySpacing
+
+    def xSpacingChanged(self):
+        self.prepareGeometryChange()
+        self._rect.setRight(self.cellWidth())
+
+    def ySpacingChanged(self):
+        self.prepareGeometryChange()
+        self._rect.setBottom(self.cellHeight())
 
 class QLineLabel(QDBGridItem):
-    def __init__(self, lineName, lineIndex, scoreScene, parent = None):
-        super(QLineLabel, self).__init__(lineIndex, scoreScene, parent)
+    def __init__(self, lineName, qScore, parent = None):
+        super(QLineLabel, self).__init__(qScore, parent)
+        self.prepareGeometryChange()
         self.setText(lineName)
 
     def cellWidth(self):
-        return OFFSET
-
-    def xPosition(self):
-        return 0
-
-    def yPosition(self):
-        return (self._scene.numLines - self._lineIndex - 1) * self._scene.ySpace
+        return self._props.LINELABELWIDTH

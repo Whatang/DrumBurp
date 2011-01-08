@@ -8,6 +8,7 @@ Created on 12 Dec 2010
 from collections import defaultdict
 from DBConstants import EMPTY_NOTE, BAR_TYPES
 from DBErrors import BadTimeError
+from NotePosition import NotePosition
 
 class Measure(object):
     '''
@@ -24,6 +25,16 @@ class Measure(object):
 
     def __len__(self):
         return self._width
+
+    def __iter__(self):
+        noteTimes = self._notes.keys()
+        noteTimes.sort()
+        for noteTime in noteTimes:
+            drumIndexes = self._notes[noteTime].keys()
+            for drumIndex in drumIndexes:
+                yield (NotePosition(noteTime = noteTime,
+                                    drumIndex = drumIndex),
+                       self._notes[noteTime][drumIndex])
 
     def _runCallBack(self, position):
         if self._callBack is not None:
