@@ -86,10 +86,10 @@ class QNote(QDBGridItem):
         self._notePosition = NotePosition()
         self._text = DBConstants.EMPTY_NOTE
 
-    def toggleNote(self):
+    def toggleNote(self, head = None):
         np = NotePosition(drumIndex = self._drumIndex,
                           noteTime = self._noteTime)
-        self._qMeasure.toggleNote(np)
+        self._qMeasure.toggleNote(np, head)
 
     def setIndex(self, drumIndex, noteTime):
         if (drumIndex, noteTime) != (self._drumIndex, self._noteTime):
@@ -111,6 +111,22 @@ class QNote(QDBGridItem):
     def ySpacingChanged(self):
         self.prepareGeometryChange()
         self._rect.setBottom(self.cellHeight())
+
+    def mousePressEvent(self, event):
+        if event.button() == QtCore.Qt.MiddleButton:
+            menu = QtGui.QMenu()
+            for noteHead in self._props.allowedNoteHeads():
+                action = menu.addAction(noteHead)
+                def noteAction(nh = noteHead):
+                    self.toggleNote(nh)
+                menu.connect(action, QtCore.SIGNAL("triggered()"), noteAction)
+            menu.exec_(event.screenPos())
+        elif event.button() == QtCore.Qt.RightButton:
+            menu = QtGui.QMenu()
+            oneAction = menu.addAction("One")
+            twoAction = menu.addAction("Two")
+            menu.exec_(event.screenPos())
+        event.accept()
 
     def mouseReleaseEvent(self, event):
         if event.button() == QtCore.Qt.LeftButton:

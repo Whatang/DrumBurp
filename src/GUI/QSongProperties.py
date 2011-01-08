@@ -153,3 +153,5 @@ class QSongProperties(object):
         widthInPixels -= 2 * self.xMargins
         return int(widthInPixels / self.xSpacing)
 
+    def allowedNoteHeads(self):
+        return ("x", "X", "o", "O", "g", "+")

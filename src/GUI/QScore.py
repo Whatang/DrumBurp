@@ -5,7 +5,7 @@ Created on 4 Jan 2011
 
 '''
 
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 from QStaff import QStaff
 from QNote import QNote
 from Data.Score import ScoreFactory
@@ -143,5 +143,6 @@ class QScore(QtGui.QGraphicsScene):
         if item is not None:
             item.mouseReleaseEvent(event)
 
-    def toggleNote(self, np):
-        self._score.toggleNote(np, self._properties.head)
+    def toggleNote(self, np, head):
+        head = head if head is not None else self._properties.head
+        self._score.toggleNote(np, head)
