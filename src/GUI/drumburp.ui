@@ -52,6 +52,9 @@
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
+    <property name="statusTip">
+     <string>Operations on the DrumBurp Score</string>
+    </property>
     <property name="title">
      <string>File</string>
     </property>
@@ -65,33 +68,56 @@
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuView">
+    <property name="statusTip">
+     <string>Options affecting the view</string>
+    </property>
     <property name="title">
      <string>View</string>
     </property>
-    <addaction name="actionDisplayOptionsIsVisible"/>
-    <addaction name="actionSongPropertiesIsVisible"/>
-    <addaction name="actionNoteHeadSelectorIsVisble"/>
-    <addaction name="separator"/>
-    <addaction name="actionToolbarIsVisible"/>
-    <addaction name="separator"/>
+    <widget class="QMenu" name="menuShow">
+     <property name="statusTip">
+      <string>Select visible components</string>
+     </property>
+     <property name="title">
+      <string>Show...</string>
+     </property>
+     <addaction name="actionDisplayOptionsIsVisible"/>
+     <addaction name="actionSongPropertiesIsVisible"/>
+     <addaction name="actionNoteHeadSelectorIsVisble"/>
+    </widget>
+    <widget class="QMenu" name="menuType_Here">
+     <property name="title">
+      <string>Show Tool Bars...</string>
+     </property>
+     <addaction name="actionFileToolbarIsVisible"/>
+     <addaction name="actionDisplayToolBarIsVisible"/>
+    </widget>
+    <widget class="QMenu" name="menuType_Here_2">
+     <property name="title">
+      <string>Type Here</string>
+     </property>
+    </widget>
     <addaction name="actionFitInWindow"/>
+    <addaction name="menuShow"/>
+    <addaction name="menuType_Here"/>
+    <addaction name="menuType_Here_2"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QToolBar" name="toolBar">
+  <widget class="QToolBar" name="fileToolBar">
    <property name="contextMenuPolicy">
     <enum>Qt::DefaultContextMenu</enum>
    </property>
    <property name="windowTitle">
-    <string>Tool Bar</string>
+    <string>File Tool Bar</string>
    </property>
    <property name="movable">
     <bool>true</bool>
    </property>
    <property name="allowedAreas">
-    <set>Qt::AllToolBarAreas</set>
+    <set>Qt::TopToolBarArea</set>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -106,6 +132,12 @@
    <addaction name="actionExport_ASCII"/>
   </widget>
   <widget class="QDockWidget" name="noteHeadDock">
+   <property name="toolTip">
+    <string>Select the note head</string>
+   </property>
+   <property name="statusTip">
+    <string>The note head determines what note will be placed in the Score</string>
+   </property>
    <property name="features">
     <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
@@ -119,9 +151,15 @@
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
-    <layout class="QVBoxLayout" name="verticalLayout_4">
-     <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
       <widget class="RadioButtonTeller" name="defaultNoteHeadButton">
+       <property name="toolTip">
+        <string>Default note head</string>
+       </property>
+       <property name="statusTip">
+        <string>Use the default note head for each instrument</string>
+       </property>
        <property name="text">
         <string>Default</string>
        </property>
@@ -130,67 +168,7 @@
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="RadioButtonTeller" name="xNoteHeadButton">
-       <property name="text">
-        <string>x</string>
-       </property>
-       <property name="buttonValue" stdset="0">
-        <string>x</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="RadioButtonTeller" name="bigXNoteHeadButton">
-       <property name="text">
-        <string>X</string>
-       </property>
-       <property name="buttonValue" stdset="0">
-        <string>X</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="RadioButtonTeller" name="oNoteHeadButton">
-       <property name="text">
-        <string>o</string>
-       </property>
-       <property name="buttonValue" stdset="0">
-        <string>o</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="RadioButtonTeller" name="bigONoteHeadButton">
-       <property name="text">
-        <string>O</string>
-       </property>
-       <property name="buttonValue" stdset="0">
-        <string>O</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="RadioButtonTeller" name="plusNoteHeadButton">
-       <property name="text">
-        <string>+</string>
-       </property>
-       <property name="buttonValue" stdset="0">
-        <string>+</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="RadioButtonTeller" name="gNoteHeadButton">
-       <property name="text">
-        <string>g</string>
-       </property>
-       <property name="buttonValue" stdset="0">
-        <string>g</string>
-       </property>
-      </widget>
-     </item>
-     <item>
+     <item row="7" column="0">
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -203,10 +181,112 @@
        </property>
       </spacer>
      </item>
+     <item row="3" column="1">
+      <widget class="RadioButtonTeller" name="bigXNoteHeadButton">
+       <property name="toolTip">
+        <string>X note head</string>
+       </property>
+       <property name="statusTip">
+        <string>Use &quot;X&quot; as the note head</string>
+       </property>
+       <property name="text">
+        <string>X</string>
+       </property>
+       <property name="buttonValue" stdset="0">
+        <string>X</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="RadioButtonTeller" name="xNoteHeadButton">
+       <property name="toolTip">
+        <string>x note head</string>
+       </property>
+       <property name="statusTip">
+        <string>Use &quot;x&quot; as the note head</string>
+       </property>
+       <property name="text">
+        <string>x</string>
+       </property>
+       <property name="buttonValue" stdset="0">
+        <string>x</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="RadioButtonTeller" name="bigONoteHeadButton">
+       <property name="toolTip">
+        <string>O note head</string>
+       </property>
+       <property name="statusTip">
+        <string>Use &quot;O&quot; as the note head</string>
+       </property>
+       <property name="text">
+        <string>O</string>
+       </property>
+       <property name="buttonValue" stdset="0">
+        <string>O</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="RadioButtonTeller" name="oNoteHeadButton">
+       <property name="toolTip">
+        <string>o note head</string>
+       </property>
+       <property name="statusTip">
+        <string>Use &quot;o&quot; as the note head</string>
+       </property>
+       <property name="text">
+        <string>o</string>
+       </property>
+       <property name="buttonValue" stdset="0">
+        <string>o</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="2">
+      <widget class="RadioButtonTeller" name="plusNoteHeadButton">
+       <property name="toolTip">
+        <string>+ note head</string>
+       </property>
+       <property name="statusTip">
+        <string>Use &quot;+&quot; as the note head</string>
+       </property>
+       <property name="text">
+        <string>+</string>
+       </property>
+       <property name="buttonValue" stdset="0">
+        <string>+</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="RadioButtonTeller" name="gNoteHeadButton">
+       <property name="toolTip">
+        <string>g note head</string>
+       </property>
+       <property name="statusTip">
+        <string>Use &quot;g&quot; as the note head</string>
+       </property>
+       <property name="text">
+        <string>g</string>
+       </property>
+       <property name="buttonValue" stdset="0">
+        <string>g</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
   </widget>
   <widget class="QDockWidget" name="diplayOptionsDock">
+   <property name="toolTip">
+    <string>Display Options</string>
+   </property>
+   <property name="statusTip">
+    <string>Options affecting how the Score is displayed</string>
+   </property>
    <property name="features">
     <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
@@ -242,6 +322,12 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="toolTip">
+        <string>Note width</string>
+       </property>
+       <property name="statusTip">
+        <string>The width of each note in the Score</string>
+       </property>
        <property name="maximum">
         <number>100</number>
        </property>
@@ -261,8 +347,17 @@
      </item>
      <item>
       <widget class="QLabel" name="label">
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="statusTip">
+        <string/>
+       </property>
        <property name="text">
         <string>Vertical Spacing</string>
+       </property>
+       <property name="buddy">
+        <cstring>verticalSlider</cstring>
        </property>
       </widget>
      </item>
@@ -273,6 +368,12 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Note height</string>
+       </property>
+       <property name="statusTip">
+        <string>The height of each note in the Score</string>
        </property>
        <property name="maximum">
         <number>100</number>
@@ -290,8 +391,17 @@
      </item>
      <item>
       <widget class="QLabel" name="label_2">
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="statusTip">
+        <string/>
+       </property>
        <property name="text">
         <string>System Spacing</string>
+       </property>
+       <property name="buddy">
+        <cstring>lineSpaceSlider</cstring>
        </property>
       </widget>
      </item>
@@ -302,6 +412,12 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Inter-system distance</string>
+       </property>
+       <property name="statusTip">
+        <string>The distance between each system in the Score</string>
        </property>
        <property name="maximum">
         <number>100</number>
@@ -324,10 +440,19 @@
          <property name="text">
           <string>Columns:</string>
          </property>
+         <property name="buddy">
+          <cstring>widthSpinBox</cstring>
+         </property>
         </widget>
        </item>
        <item>
         <widget class="QSpinBox" name="widthSpinBox">
+         <property name="toolTip">
+          <string>Score width</string>
+         </property>
+         <property name="statusTip">
+          <string>The number of columns to display the Score on</string>
+         </property>
          <property name="minimum">
           <number>10</number>
          </property>
@@ -376,7 +501,10 @@
      <item>
       <widget class="QLabel" name="widthLabel">
        <property name="text">
-        <string>Width</string>
+        <string>Display font</string>
+       </property>
+       <property name="buddy">
+        <cstring>fontComboBox</cstring>
        </property>
       </widget>
      </item>
@@ -386,10 +514,25 @@
         <bool>true</bool>
        </property>
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>20</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>187</width>
+         <height>20</height>
+        </size>
+       </property>
+       <property name="statusTip">
+        <string>The font used to display notes in the Score</string>
        </property>
        <property name="editable">
         <bool>false</bool>
@@ -425,6 +568,12 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="songPropertiesDock">
+   <property name="toolTip">
+    <string>Song Properties</string>
+   </property>
+   <property name="statusTip">
+    <string>Information about the Score</string>
+   </property>
    <property name="features">
     <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
@@ -450,15 +599,29 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLineEdit" name="songNameEdit"/>
+      <widget class="QLineEdit" name="songNameEdit">
+       <property name="toolTip">
+        <string>Song name</string>
+       </property>
+       <property name="statusTip">
+        <string>Song name</string>
+       </property>
+      </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QLineEdit" name="artistNameEdit"/>
+      <widget class="QLineEdit" name="artistNameEdit">
+       <property name="toolTip">
+        <string>Song artist</string>
+       </property>
+       <property name="statusTip">
+        <string>Song artist</string>
+       </property>
+      </widget>
      </item>
      <item row="2" column="3">
       <widget class="QLabel" name="tabberLabel">
        <property name="text">
-        <string>&amp;Tabbed by</string>
+        <string>Created by</string>
        </property>
        <property name="textInteractionFlags">
         <set>Qt::NoTextInteraction</set>
@@ -469,7 +632,14 @@
       </widget>
      </item>
      <item row="2" column="4">
-      <widget class="QLineEdit" name="tabberEdit"/>
+      <widget class="QLineEdit" name="tabberEdit">
+       <property name="toolTip">
+        <string>Score creator</string>
+       </property>
+       <property name="statusTip">
+        <string>Who created this DrumBurp score</string>
+       </property>
+      </widget>
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="artistNameLabel">
@@ -493,6 +663,18 @@
      </item>
      <item row="0" column="4">
       <widget class="QSpinBox" name="bpmSpinBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>BPM</string>
+       </property>
+       <property name="statusTip">
+        <string>Beats per minute</string>
+       </property>
        <property name="suffix">
         <string> bpm</string>
        </property>
@@ -506,6 +688,24 @@
      </item>
     </layout>
    </widget>
+  </widget>
+  <widget class="QToolBar" name="displayToolBar">
+   <property name="windowTitle">
+    <string>Display Tool Bar</string>
+   </property>
+   <property name="movable">
+    <bool>true</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::TopToolBarArea</set>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionFitInWindow"/>
   </widget>
   <action name="actionQuit">
    <property name="text">
@@ -621,15 +821,15 @@
     <string>Change visibility of note head selector</string>
    </property>
   </action>
-  <action name="actionToolbarIsVisible">
+  <action name="actionFileToolbarIsVisible">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Tool Bar</string>
+    <string>File</string>
    </property>
    <property name="toolTip">
-    <string>Change visibility of tool bar</string>
+    <string>Change visibility of File tool bar</string>
    </property>
    <property name="statusTip">
     <string>Change visibility of tool bar</string>
@@ -637,10 +837,26 @@
   </action>
   <action name="actionFitInWindow">
    <property name="text">
-    <string>Fit In Window</string>
+    <string>Fit Window</string>
    </property>
    <property name="statusTip">
     <string>Attempt to make the score as wide as possible within the current window.</string>
+   </property>
+  </action>
+  <action name="actionToolbars">
+   <property name="text">
+    <string>Toolbars</string>
+   </property>
+  </action>
+  <action name="actionDisplayToolBarIsVisible">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display</string>
+   </property>
+   <property name="toolTip">
+    <string>Change visibility of Display tool bar</string>
    </property>
   </action>
  </widget>
@@ -931,9 +1147,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionToolbarIsVisible</sender>
+   <sender>actionFileToolbarIsVisible</sender>
    <signal>toggled(bool)</signal>
-   <receiver>toolBar</receiver>
+   <receiver>fileToolBar</receiver>
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -947,9 +1163,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>toolBar</sender>
+   <sender>fileToolBar</sender>
    <signal>visibilityChanged(bool)</signal>
-   <receiver>actionToolbarIsVisible</receiver>
+   <receiver>actionFileToolbarIsVisible</receiver>
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -991,6 +1207,38 @@
     <hint type="destinationlabel">
      <x>-1</x>
      <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>displayToolBar</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionDisplayToolBarIsVisible</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>523</x>
+     <y>32</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDisplayToolBarIsVisible</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>displayToolBar</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>32</y>
     </hint>
    </hints>
   </connection>
