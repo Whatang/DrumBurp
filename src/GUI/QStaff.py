@@ -46,10 +46,6 @@ class QStaff(QtGui.QGraphicsItemGroup):
             self.build()
 
     def clear(self):
-        for measure in self._measures:
-            measure.clear()
-#        for measureLine in self._measureLines:
-#            measureLine.clear()
         self._measures = []
         self._measureLines = []
 
