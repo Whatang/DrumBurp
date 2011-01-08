@@ -9,7 +9,6 @@ from PyQt4 import QtGui, QtCore
 from QStaff import QStaff
 from QNote import QNote
 from Data.Score import ScoreFactory
-
 _SCORE_FACTORY = ScoreFactory()
 
 class QScore(QtGui.QGraphicsScene):
@@ -115,6 +114,13 @@ class QScore(QtGui.QGraphicsScene):
         self.setSceneRect(0, 0,
                           self.width(),
                           yOffset - lineSpacing + yMargins)
+
+    def setWidth(self):
+        formatChanged = self._score.gridFormatScore(self._properties.width)
+        if formatChanged:
+            oldSceneRect = self.sceneRect()
+            self.build()
+            self.update(oldSceneRect)
 
     def populate(self):
         for notePosition, head in self._score.iterNotes():

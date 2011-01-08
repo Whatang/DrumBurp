@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sat Jan 08 13:31:24 2011
+# Created: Sat Jan 08 15:48:42 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -141,17 +141,25 @@ class Ui_DrumBurpWindow(object):
         self.verticalLayout_2.addWidget(self.lineSpaceSlider)
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
-        self.fixedWidthCheckBox = QtGui.QCheckBox(self.dockWidgetContents_2)
-        self.fixedWidthCheckBox.setLayoutDirection(QtCore.Qt.RightToLeft)
-        self.fixedWidthCheckBox.setChecked(True)
-        self.fixedWidthCheckBox.setObjectName(_fromUtf8("fixedWidthCheckBox"))
-        self.horizontalLayout_2.addWidget(self.fixedWidthCheckBox)
+        self.label_3 = QtGui.QLabel(self.dockWidgetContents_2)
+        self.label_3.setObjectName(_fromUtf8("label_3"))
+        self.horizontalLayout_2.addWidget(self.label_3)
         self.widthSpinBox = QtGui.QSpinBox(self.dockWidgetContents_2)
         self.widthSpinBox.setMinimum(10)
         self.widthSpinBox.setMaximum(1000)
         self.widthSpinBox.setProperty(_fromUtf8("value"), 80)
         self.widthSpinBox.setObjectName(_fromUtf8("widthSpinBox"))
         self.horizontalLayout_2.addWidget(self.widthSpinBox)
+        self.fitWindowButton = QtGui.QPushButton(self.dockWidgetContents_2)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.fitWindowButton.sizePolicy().hasHeightForWidth())
+        self.fitWindowButton.setSizePolicy(sizePolicy)
+        self.fitWindowButton.setObjectName(_fromUtf8("fitWindowButton"))
+        self.horizontalLayout_2.addWidget(self.fitWindowButton)
+        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem1)
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         self.widthLabel = QtGui.QLabel(self.dockWidgetContents_2)
         self.widthLabel.setObjectName(_fromUtf8("widthLabel"))
@@ -172,8 +180,8 @@ class Ui_DrumBurpWindow(object):
         self.fontComboBox.setCurrentFont(font)
         self.fontComboBox.setObjectName(_fromUtf8("fontComboBox"))
         self.verticalLayout_2.addWidget(self.fontComboBox)
-        spacerItem1 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.verticalLayout_2.addItem(spacerItem1)
+        spacerItem2 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.verticalLayout_2.addItem(spacerItem2)
         self.diplayOptionsDock.setWidget(self.dockWidgetContents_2)
         DrumBurpWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.diplayOptionsDock)
         self.songPropertiesDock = QtGui.QDockWidget(DrumBurpWindow)
@@ -237,6 +245,8 @@ class Ui_DrumBurpWindow(object):
         self.actionToolbarIsVisible = QtGui.QAction(DrumBurpWindow)
         self.actionToolbarIsVisible.setCheckable(True)
         self.actionToolbarIsVisible.setObjectName(_fromUtf8("actionToolbarIsVisible"))
+        self.actionFitInWindow = QtGui.QAction(DrumBurpWindow)
+        self.actionFitInWindow.setObjectName(_fromUtf8("actionFitInWindow"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.actionSave)
@@ -250,6 +260,8 @@ class Ui_DrumBurpWindow(object):
         self.menuView.addAction(self.actionNoteHeadSelectorIsVisble)
         self.menuView.addSeparator()
         self.menuView.addAction(self.actionToolbarIsVisible)
+        self.menuView.addSeparator()
+        self.menuView.addAction(self.actionFitInWindow)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
         self.toolBar.addAction(self.actionNew)
@@ -264,7 +276,6 @@ class Ui_DrumBurpWindow(object):
         self.bpmLabel.setBuddy(self.bpmSpinBox)
 
         self.retranslateUi(DrumBurpWindow)
-        QtCore.QObject.connect(self.fixedWidthCheckBox, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.widthSpinBox.setEnabled)
         QtCore.QObject.connect(self.defaultNoteHeadButton, QtCore.SIGNAL(_fromUtf8("emitValue(QString)")), self.scoreView.setNoteHead)
         QtCore.QObject.connect(self.xNoteHeadButton, QtCore.SIGNAL(_fromUtf8("emitValue(QString)")), self.scoreView.setNoteHead)
         QtCore.QObject.connect(self.bigXNoteHeadButton, QtCore.SIGNAL(_fromUtf8("emitValue(QString)")), self.scoreView.setNoteHead)
@@ -284,6 +295,8 @@ class Ui_DrumBurpWindow(object):
         QtCore.QObject.connect(self.diplayOptionsDock, QtCore.SIGNAL(_fromUtf8("visibilityChanged(bool)")), self.actionDisplayOptionsIsVisible.setChecked)
         QtCore.QObject.connect(self.actionToolbarIsVisible, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.toolBar.setVisible)
         QtCore.QObject.connect(self.toolBar, QtCore.SIGNAL(_fromUtf8("visibilityChanged(bool)")), self.actionToolbarIsVisible.setChecked)
+        QtCore.QObject.connect(self.widthSpinBox, QtCore.SIGNAL(_fromUtf8("valueChanged(int)")), self.scoreView.setWidth)
+        QtCore.QObject.connect(self.fitWindowButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionFitInWindow.trigger)
         QtCore.QMetaObject.connectSlotsByName(DrumBurpWindow)
 
     def retranslateUi(self, DrumBurpWindow):
@@ -309,7 +322,10 @@ class Ui_DrumBurpWindow(object):
         self.spacingLabel.setText(QtGui.QApplication.translate("DrumBurpWindow", "Horizontal Spacing", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("DrumBurpWindow", "Vertical Spacing", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("DrumBurpWindow", "System Spacing", None, QtGui.QApplication.UnicodeUTF8))
-        self.fixedWidthCheckBox.setText(QtGui.QApplication.translate("DrumBurpWindow", "Fixed", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_3.setText(QtGui.QApplication.translate("DrumBurpWindow", "Columns:", None, QtGui.QApplication.UnicodeUTF8))
+        self.fitWindowButton.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Fit Score In Window", None, QtGui.QApplication.UnicodeUTF8))
+        self.fitWindowButton.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Attempt to make the score as wide as possible within the current window.", None, QtGui.QApplication.UnicodeUTF8))
+        self.fitWindowButton.setText(QtGui.QApplication.translate("DrumBurpWindow", "Fit Window", None, QtGui.QApplication.UnicodeUTF8))
         self.widthLabel.setText(QtGui.QApplication.translate("DrumBurpWindow", "Width", None, QtGui.QApplication.UnicodeUTF8))
         self.songPropertiesDock.setWindowTitle(QtGui.QApplication.translate("DrumBurpWindow", "Song Properties", None, QtGui.QApplication.UnicodeUTF8))
         self.songNameLabel.setText(QtGui.QApplication.translate("DrumBurpWindow", "Name", None, QtGui.QApplication.UnicodeUTF8))
@@ -349,6 +365,8 @@ class Ui_DrumBurpWindow(object):
         self.actionToolbarIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "Tool Bar", None, QtGui.QApplication.UnicodeUTF8))
         self.actionToolbarIsVisible.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Change visibility of tool bar", None, QtGui.QApplication.UnicodeUTF8))
         self.actionToolbarIsVisible.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Change visibility of tool bar", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionFitInWindow.setText(QtGui.QApplication.translate("DrumBurpWindow", "Fit In Window", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionFitInWindow.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Attempt to make the score as wide as possible within the current window.", None, QtGui.QApplication.UnicodeUTF8))
 
 from Widgets.ScoreView_plugin import ScoreView
 from Widgets.RadioButtonTeller_plugin import RadioButtonTeller

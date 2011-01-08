@@ -39,3 +39,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.fontComboBox.setCurrentFont(font)
         statusBar = self.statusBar()
         statusBar.showMessage("Welcome to %s" % APPNAME, 5000)
+
+    def on_actionFitInWindow_triggered(self):
+        widthInPixels = self.scoreView.width()
+        maxColumns = self.songProperties.maxColumns(widthInPixels)
+        self.widthSpinBox.setValue(maxColumns)

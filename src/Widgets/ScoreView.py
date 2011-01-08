@@ -46,21 +46,9 @@ class ScoreView(QtGui.QGraphicsView):
 
     @QtCore.pyqtSlot(int)
     def setWidth(self, width):
-        pass
-
-    @QtCore.pyqtSlot(bool)
-    def setFixedWidth(self, value):
-        self._fixedWidth = value
-        if self._fixedWidth:
-            pass
-        else:
-            self._setVariableWidth()
+        self.scene().getProperties().width = width
 
     @QtCore.pyqtSlot(QtGui.QFont)
     def setFont(self, font):
         self.scene().getProperties().noteFont = font
         self.scene().update()
-
-    def _setVariableWidth(self):
-#        self.setWidth(int(max(10, (self.width() / self._colWidths) - 1)))
-        pass

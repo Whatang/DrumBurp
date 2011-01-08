@@ -73,6 +73,8 @@
     <addaction name="actionNoteHeadSelectorIsVisble"/>
     <addaction name="separator"/>
     <addaction name="actionToolbarIsVisible"/>
+    <addaction name="separator"/>
+    <addaction name="actionFitInWindow"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -318,15 +320,9 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QCheckBox" name="fixedWidthCheckBox">
-         <property name="layoutDirection">
-          <enum>Qt::RightToLeft</enum>
-         </property>
+        <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>Fixed</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
+          <string>Columns:</string>
          </property>
         </widget>
        </item>
@@ -342,6 +338,38 @@
           <number>80</number>
          </property>
         </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="fitWindowButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>Fit Score In Window</string>
+         </property>
+         <property name="statusTip">
+          <string>Attempt to make the score as wide as possible within the current window.</string>
+         </property>
+         <property name="text">
+          <string>Fit Window</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </item>
@@ -607,6 +635,14 @@
     <string>Change visibility of tool bar</string>
    </property>
   </action>
+  <action name="actionFitInWindow">
+   <property name="text">
+    <string>Fit In Window</string>
+   </property>
+   <property name="statusTip">
+    <string>Attempt to make the score as wide as possible within the current window.</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -623,30 +659,14 @@
  <resources/>
  <connections>
   <connection>
-   <sender>fixedWidthCheckBox</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>widthSpinBox</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>87</x>
-     <y>540</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>138</x>
-     <y>542</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>defaultNoteHeadButton</sender>
    <signal>emitValue(QString)</signal>
    <receiver>scoreView</receiver>
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>86</x>
-     <y>185</y>
+     <x>76</x>
+     <y>175</y>
     </hint>
     <hint type="destinationlabel">
      <x>440</x>
@@ -693,8 +713,8 @@
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>66</x>
-     <y>256</y>
+     <x>56</x>
+     <y>246</y>
     </hint>
     <hint type="destinationlabel">
      <x>373</x>
@@ -709,8 +729,8 @@
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>55</x>
-     <y>274</y>
+     <x>45</x>
+     <y>264</y>
     </hint>
     <hint type="destinationlabel">
      <x>369</x>
@@ -725,8 +745,8 @@
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>88</x>
-     <y>297</y>
+     <x>78</x>
+     <y>287</y>
     </hint>
     <hint type="destinationlabel">
      <x>365</x>
@@ -758,7 +778,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>116</x>
-     <y>431</y>
+     <y>411</y>
     </hint>
     <hint type="destinationlabel">
      <x>378</x>
@@ -774,7 +794,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>131</x>
-     <y>480</y>
+     <y>460</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -790,7 +810,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>121</x>
-     <y>529</y>
+     <y>509</y>
     </hint>
     <hint type="destinationlabel">
      <x>431</x>
@@ -806,7 +826,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>166</x>
-     <y>602</y>
+     <y>582</y>
     </hint>
     <hint type="destinationlabel">
      <x>454</x>
@@ -935,6 +955,38 @@
     <hint type="sourcelabel">
      <x>399</x>
      <y>32</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>widthSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setWidth(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>195</x>
+     <y>531</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>283</x>
+     <y>525</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fitWindowButton</sender>
+   <signal>clicked()</signal>
+   <receiver>actionFitInWindow</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>148</x>
+     <y>528</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>

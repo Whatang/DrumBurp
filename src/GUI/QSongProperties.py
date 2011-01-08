@@ -149,3 +149,7 @@ class QSongProperties(object):
                 (float(self.lineSpacing - self.MIN_LINE_SPACE)
                  / self.LINE_SPACE_RANGE * 100))
 
+    def maxColumns(self, widthInPixels):
+        widthInPixels -= 2 * self.xMargins
+        return int(widthInPixels / self.xSpacing)
+
