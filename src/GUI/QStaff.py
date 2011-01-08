@@ -5,7 +5,7 @@ Created on 4 Jan 2011
 
 '''
 
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui
 from QMeasure import QMeasure
 from QMeasureLine import QMeasureLine
 
