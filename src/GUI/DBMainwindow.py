@@ -18,7 +18,6 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     classdocs
     '''
 
-
     def __init__(self, parent = None):
         '''
         Constructor
