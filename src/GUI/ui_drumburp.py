@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sat Jan 08 16:31:10 2011
+# Created: Sat Jan 08 18:18:05 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -238,11 +238,11 @@ class Ui_DrumBurpWindow(object):
         self.gridLayout_3.addWidget(self.bpmSpinBox, 0, 4, 1, 1)
         self.songPropertiesDock.setWidget(self.dockWidgetContents_3)
         DrumBurpWindow.addDockWidget(QtCore.Qt.DockWidgetArea(4), self.songPropertiesDock)
-        self.viewToolBar = QtGui.QToolBar(DrumBurpWindow)
-        self.viewToolBar.setMovable(True)
-        self.viewToolBar.setAllowedAreas(QtCore.Qt.TopToolBarArea)
-        self.viewToolBar.setObjectName(_fromUtf8("viewToolBar"))
-        DrumBurpWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.viewToolBar)
+        self.displayToolBar = QtGui.QToolBar(DrumBurpWindow)
+        self.displayToolBar.setMovable(True)
+        self.displayToolBar.setAllowedAreas(QtCore.Qt.TopToolBarArea)
+        self.displayToolBar.setObjectName(_fromUtf8("displayToolBar"))
+        DrumBurpWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.displayToolBar)
         self.actionQuit = QtGui.QAction(DrumBurpWindow)
         self.actionQuit.setObjectName(_fromUtf8("actionQuit"))
         self.actionNew = QtGui.QAction(DrumBurpWindow)
@@ -271,9 +271,9 @@ class Ui_DrumBurpWindow(object):
         self.actionFitInWindow.setObjectName(_fromUtf8("actionFitInWindow"))
         self.actionToolbars = QtGui.QAction(DrumBurpWindow)
         self.actionToolbars.setObjectName(_fromUtf8("actionToolbars"))
-        self.actionViewToolBarIsVisible = QtGui.QAction(DrumBurpWindow)
-        self.actionViewToolBarIsVisible.setCheckable(True)
-        self.actionViewToolBarIsVisible.setObjectName(_fromUtf8("actionViewToolBarIsVisible"))
+        self.actionDisplayToolBarIsVisible = QtGui.QAction(DrumBurpWindow)
+        self.actionDisplayToolBarIsVisible.setCheckable(True)
+        self.actionDisplayToolBarIsVisible.setObjectName(_fromUtf8("actionDisplayToolBarIsVisible"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.actionSave)
@@ -286,7 +286,7 @@ class Ui_DrumBurpWindow(object):
         self.menuShow.addAction(self.actionSongPropertiesIsVisible)
         self.menuShow.addAction(self.actionNoteHeadSelectorIsVisble)
         self.menuType_Here.addAction(self.actionFileToolbarIsVisible)
-        self.menuType_Here.addAction(self.actionViewToolBarIsVisible)
+        self.menuType_Here.addAction(self.actionDisplayToolBarIsVisible)
         self.menuView.addAction(self.actionFitInWindow)
         self.menuView.addAction(self.menuShow.menuAction())
         self.menuView.addAction(self.menuType_Here.menuAction())
@@ -298,7 +298,7 @@ class Ui_DrumBurpWindow(object):
         self.fileToolBar.addAction(self.actionSave)
         self.fileToolBar.addAction(self.actionSave_As)
         self.fileToolBar.addAction(self.actionExport_ASCII)
-        self.viewToolBar.addAction(self.actionFitInWindow)
+        self.displayToolBar.addAction(self.actionFitInWindow)
         self.spacingLabel.setBuddy(self.spaceSlider)
         self.label.setBuddy(self.verticalSlider)
         self.label_2.setBuddy(self.lineSpaceSlider)
@@ -331,8 +331,8 @@ class Ui_DrumBurpWindow(object):
         QtCore.QObject.connect(self.fileToolBar, QtCore.SIGNAL(_fromUtf8("visibilityChanged(bool)")), self.actionFileToolbarIsVisible.setChecked)
         QtCore.QObject.connect(self.widthSpinBox, QtCore.SIGNAL(_fromUtf8("valueChanged(int)")), self.scoreView.setWidth)
         QtCore.QObject.connect(self.fitWindowButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionFitInWindow.trigger)
-        QtCore.QObject.connect(self.viewToolBar, QtCore.SIGNAL(_fromUtf8("visibilityChanged(bool)")), self.actionViewToolBarIsVisible.setChecked)
-        QtCore.QObject.connect(self.actionViewToolBarIsVisible, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.viewToolBar.setVisible)
+        QtCore.QObject.connect(self.displayToolBar, QtCore.SIGNAL(_fromUtf8("visibilityChanged(bool)")), self.actionDisplayToolBarIsVisible.setChecked)
+        QtCore.QObject.connect(self.actionDisplayToolBarIsVisible, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.displayToolBar.setVisible)
         QtCore.QMetaObject.connectSlotsByName(DrumBurpWindow)
 
     def retranslateUi(self, DrumBurpWindow):
@@ -412,7 +412,7 @@ class Ui_DrumBurpWindow(object):
         self.bpmSpinBox.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "BPM", None, QtGui.QApplication.UnicodeUTF8))
         self.bpmSpinBox.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Beats per minute", None, QtGui.QApplication.UnicodeUTF8))
         self.bpmSpinBox.setSuffix(QtGui.QApplication.translate("DrumBurpWindow", " bpm", None, QtGui.QApplication.UnicodeUTF8))
-        self.viewToolBar.setWindowTitle(QtGui.QApplication.translate("DrumBurpWindow", "View Tool Bar", None, QtGui.QApplication.UnicodeUTF8))
+        self.displayToolBar.setWindowTitle(QtGui.QApplication.translate("DrumBurpWindow", "Display Tool Bar", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setText(QtGui.QApplication.translate("DrumBurpWindow", "Quit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Quit DrumBurp", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Quit DrumBurp", None, QtGui.QApplication.UnicodeUTF8))
@@ -448,8 +448,8 @@ class Ui_DrumBurpWindow(object):
         self.actionFitInWindow.setText(QtGui.QApplication.translate("DrumBurpWindow", "Fit Window", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFitInWindow.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Attempt to make the score as wide as possible within the current window.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionToolbars.setText(QtGui.QApplication.translate("DrumBurpWindow", "Toolbars", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionViewToolBarIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "View", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionViewToolBarIsVisible.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Change visibility of View tool bar", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDisplayToolBarIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "Display", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDisplayToolBarIsVisible.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Change visibility of Display tool bar", None, QtGui.QApplication.UnicodeUTF8))
 
 from Widgets.ScoreView_plugin import ScoreView
 from Widgets.RadioButtonTeller_plugin import RadioButtonTeller
