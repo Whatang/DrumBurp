@@ -229,3 +229,11 @@ def makeEmptyScore(numMeasures, measureWidth):
     for dummy in range(0, numMeasures):
         score.addEmptyMeasure(measureWidth)
     return score
+
+class ScoreFactory(object):
+    def __call__(self, filename):
+        if filename is not None:
+            pass
+        else:
+            score = makeEmptyScore(32, 16)
+        return score
