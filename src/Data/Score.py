@@ -187,6 +187,7 @@ class Score(object):
     def _formatScore(self, width,
                      widthFunction, ignoreErrors = False):
         measures = list(self.iterMeasures())
+        oldNumMeasures = [staff.numMeasures() for staff in self.iterStaffs()]
         for staff in self.iterStaffs():
             staff.clear()
         staff = self.getStaff(0)
@@ -214,14 +215,16 @@ class Score(object):
                 staff = self.getStaff(staffIndex)
         while self.numStaffs() > staffIndex + 1:
             self.deleteLastStaff()
+        newNumMeasures = [staff.numMeasures() for staff in self.iterStaffs()]
+        return newNumMeasures != oldNumMeasures
 
     def textFormatScore(self, width, ignoreErrors = False):
-        self._formatScore(width, Staff.characterWidth, ignoreErrors)
+        return self._formatScore(width, Staff.characterWidth, ignoreErrors)
 
     def gridFormatScore(self, width):
-        self._formatScore(width,
-                          Staff.gridWidth,
-                          True)
+        return self._formatScore(width,
+                                 Staff.gridWidth,
+                                 True)
 
 def makeEmptyScore(numMeasures, measureWidth):
     score = Score()
