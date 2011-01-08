@@ -18,406 +18,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0" rowspan="2">
-     <widget class="QFrame" name="optionsFrame">
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QGroupBox" name="noteHeadGroupBox">
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-         <property name="title">
-          <string>Note Head</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <widget class="RadioButtonTeller" name="defaultNoteHeadButton">
-            <property name="text">
-             <string>Default</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="RadioButtonTeller" name="xNoteHeadButton">
-            <property name="text">
-             <string>x</string>
-            </property>
-            <property name="buttonValue" stdset="0">
-             <string>x</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="RadioButtonTeller" name="bigXNoteHeadButton">
-            <property name="text">
-             <string>X</string>
-            </property>
-            <property name="buttonValue" stdset="0">
-             <string>X</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="RadioButtonTeller" name="oNoteHeadButton">
-            <property name="text">
-             <string>o</string>
-            </property>
-            <property name="buttonValue" stdset="0">
-             <string>o</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="RadioButtonTeller" name="bigONoteHeadButton">
-            <property name="text">
-             <string>O</string>
-            </property>
-            <property name="buttonValue" stdset="0">
-             <string>O</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="RadioButtonTeller" name="plusNoteHeadButton">
-            <property name="text">
-             <string>+</string>
-            </property>
-            <property name="buttonValue" stdset="0">
-             <string>+</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="RadioButtonTeller" name="gNoteHeadButton">
-            <property name="text">
-             <string>g</string>
-            </property>
-            <property name="buttonValue" stdset="0">
-             <string>g</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="displayOptionsGroupBox">
-         <property name="title">
-          <string>Display Options</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
-          <item>
-           <widget class="QLabel" name="spacingLabel">
-            <property name="text">
-             <string>Horizontal Spacing</string>
-            </property>
-            <property name="wordWrap">
-             <bool>true</bool>
-            </property>
-            <property name="buddy">
-             <cstring>spaceSlider</cstring>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSlider" name="spaceSlider">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="maximum">
-             <number>100</number>
-            </property>
-            <property name="value">
-             <number>0</number>
-            </property>
-            <property name="tracking">
-             <bool>false</bool>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="tickPosition">
-             <enum>QSlider::TicksBelow</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Vertical Spacing</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSlider" name="verticalSlider">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="maximum">
-             <number>100</number>
-            </property>
-            <property name="tracking">
-             <bool>false</bool>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="tickPosition">
-             <enum>QSlider::TicksBelow</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>System Spacing</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSlider" name="lineSpaceSlider">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="maximum">
-             <number>100</number>
-            </property>
-            <property name="tracking">
-             <bool>false</bool>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="tickPosition">
-             <enum>QSlider::TicksBelow</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="widthLabel">
-            <property name="text">
-             <string>Width</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QFrame" name="widthGroupBox">
-            <property name="frameShape">
-             <enum>QFrame::StyledPanel</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QCheckBox" name="fixedWidthCheckBox">
-               <property name="layoutDirection">
-                <enum>Qt::RightToLeft</enum>
-               </property>
-               <property name="text">
-                <string>Fixed</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QSpinBox" name="widthSpinBox">
-               <property name="minimum">
-                <number>10</number>
-               </property>
-               <property name="maximum">
-                <number>1000</number>
-               </property>
-               <property name="value">
-                <number>80</number>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <widget class="QFontComboBox" name="fontComboBox">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="editable">
-             <bool>false</bool>
-            </property>
-            <property name="maxVisibleItems">
-             <number>20</number>
-            </property>
-            <property name="fontFilters">
-             <set>QFontComboBox::ScalableFonts</set>
-            </property>
-            <property name="currentFont">
-             <font>
-              <family>BatangChe</family>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>0</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QGroupBox" name="songPropertiesGroupBox">
-      <property name="title">
-       <string>Song Properties</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0">
-        <widget class="QLabel" name="songNameLabel">
-         <property name="text">
-          <string>Name</string>
-         </property>
-         <property name="buddy">
-          <cstring>songNameEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="songNameEdit"/>
-       </item>
-       <item row="0" column="2">
-        <widget class="QLabel" name="bpmLabel">
-         <property name="text">
-          <string>&amp;BPM</string>
-         </property>
-         <property name="buddy">
-          <cstring>bpmSpinBox</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="artistNameLabel">
-         <property name="text">
-          <string>&amp;Artist</string>
-         </property>
-         <property name="buddy">
-          <cstring>artistNameEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="artistNameEdit"/>
-       </item>
-       <item row="1" column="2">
-        <widget class="QLabel" name="tabberLabel">
-         <property name="text">
-          <string>&amp;Tabbed by</string>
-         </property>
-         <property name="textInteractionFlags">
-          <set>Qt::NoTextInteraction</set>
-         </property>
-         <property name="buddy">
-          <cstring>tabberEdit</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <widget class="QLineEdit" name="tabberEdit"/>
-       </item>
-       <item row="0" column="3">
-        <widget class="QFrame" name="bpmFrame">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <property name="margin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QSpinBox" name="bpmSpinBox">
-            <property name="suffix">
-             <string> bpm</string>
-            </property>
-            <property name="maximum">
-             <number>300</number>
-            </property>
-            <property name="value">
-             <number>120</number>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>154</width>
-              <height>0</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="1" column="1">
+    <item row="0" column="0">
      <widget class="ScoreView" name="scoreView">
       <property name="contextMenuPolicy">
        <enum>Qt::ActionsContextMenu</enum>
@@ -490,6 +91,382 @@
    <addaction name="actionSave"/>
    <addaction name="actionSave_As"/>
    <addaction name="actionExport_ASCII"/>
+  </widget>
+  <widget class="QDockWidget" name="noteHeadDock">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Note Head</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout_4">
+     <item>
+      <widget class="RadioButtonTeller" name="defaultNoteHeadButton">
+       <property name="text">
+        <string>Default</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="RadioButtonTeller" name="xNoteHeadButton">
+       <property name="text">
+        <string>x</string>
+       </property>
+       <property name="buttonValue" stdset="0">
+        <string>x</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="RadioButtonTeller" name="bigXNoteHeadButton">
+       <property name="text">
+        <string>X</string>
+       </property>
+       <property name="buttonValue" stdset="0">
+        <string>X</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="RadioButtonTeller" name="oNoteHeadButton">
+       <property name="text">
+        <string>o</string>
+       </property>
+       <property name="buttonValue" stdset="0">
+        <string>o</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="RadioButtonTeller" name="bigONoteHeadButton">
+       <property name="text">
+        <string>O</string>
+       </property>
+       <property name="buttonValue" stdset="0">
+        <string>O</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="RadioButtonTeller" name="plusNoteHeadButton">
+       <property name="text">
+        <string>+</string>
+       </property>
+       <property name="buttonValue" stdset="0">
+        <string>+</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="RadioButtonTeller" name="gNoteHeadButton">
+       <property name="text">
+        <string>g</string>
+       </property>
+       <property name="buttonValue" stdset="0">
+        <string>g</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="diplayOptionsDock">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Display Options</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QLabel" name="spacingLabel">
+       <property name="text">
+        <string>Horizontal Spacing</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+       <property name="buddy">
+        <cstring>spaceSlider</cstring>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="spaceSlider">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="value">
+        <number>0</number>
+       </property>
+       <property name="tracking">
+        <bool>false</bool>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="tickPosition">
+        <enum>QSlider::TicksBelow</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Vertical Spacing</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="verticalSlider">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="tracking">
+        <bool>false</bool>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="tickPosition">
+        <enum>QSlider::TicksBelow</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>System Spacing</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="lineSpaceSlider">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="tracking">
+        <bool>false</bool>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="tickPosition">
+        <enum>QSlider::TicksBelow</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QCheckBox" name="fixedWidthCheckBox">
+         <property name="layoutDirection">
+          <enum>Qt::RightToLeft</enum>
+         </property>
+         <property name="text">
+          <string>Fixed</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="widthSpinBox">
+         <property name="minimum">
+          <number>10</number>
+         </property>
+         <property name="maximum">
+          <number>1000</number>
+         </property>
+         <property name="value">
+          <number>80</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QLabel" name="widthLabel">
+       <property name="text">
+        <string>Width</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFontComboBox" name="fontComboBox">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="editable">
+        <bool>false</bool>
+       </property>
+       <property name="maxVisibleItems">
+        <number>20</number>
+       </property>
+       <property name="fontFilters">
+        <set>QFontComboBox::ScalableFonts</set>
+       </property>
+       <property name="currentFont">
+        <font>
+         <family>BatangChe</family>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="songPropertiesDock">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::BottomDockWidgetArea|Qt::TopDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Song Properties</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>4</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_3">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="0" column="0">
+      <widget class="QLabel" name="songNameLabel">
+       <property name="text">
+        <string>Name</string>
+       </property>
+       <property name="buddy">
+        <cstring>songNameEdit</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="songNameEdit"/>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="artistNameEdit"/>
+     </item>
+     <item row="2" column="3">
+      <widget class="QLabel" name="tabberLabel">
+       <property name="text">
+        <string>&amp;Tabbed by</string>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::NoTextInteraction</set>
+       </property>
+       <property name="buddy">
+        <cstring>tabberEdit</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="4">
+      <widget class="QLineEdit" name="tabberEdit"/>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="artistNameLabel">
+       <property name="text">
+        <string>&amp;Artist</string>
+       </property>
+       <property name="buddy">
+        <cstring>artistNameEdit</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QLabel" name="bpmLabel">
+       <property name="text">
+        <string>&amp;BPM</string>
+       </property>
+       <property name="buddy">
+        <cstring>bpmSpinBox</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="4">
+      <widget class="QSpinBox" name="bpmSpinBox">
+       <property name="suffix">
+        <string> bpm</string>
+       </property>
+       <property name="maximum">
+        <number>300</number>
+       </property>
+       <property name="value">
+        <number>120</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="actionQuit">
    <property name="text">
@@ -573,18 +550,6 @@
    <header>Widgets.ScoreView_plugin</header>
   </customwidget>
  </customwidgets>
- <tabstops>
-  <tabstop>defaultNoteHeadButton</tabstop>
-  <tabstop>xNoteHeadButton</tabstop>
-  <tabstop>bigXNoteHeadButton</tabstop>
-  <tabstop>oNoteHeadButton</tabstop>
-  <tabstop>bigONoteHeadButton</tabstop>
-  <tabstop>plusNoteHeadButton</tabstop>
-  <tabstop>songNameEdit</tabstop>
-  <tabstop>artistNameEdit</tabstop>
-  <tabstop>bpmSpinBox</tabstop>
-  <tabstop>tabberEdit</tabstop>
- </tabstops>
  <resources/>
  <connections>
   <connection>
@@ -595,11 +560,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>87</x>
-     <y>464</y>
+     <y>540</y>
     </hint>
     <hint type="destinationlabel">
      <x>138</x>
-     <y>466</y>
+     <y>542</y>
     </hint>
    </hints>
   </connection>
@@ -611,11 +576,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>86</x>
-     <y>96</y>
+     <y>185</y>
     </hint>
     <hint type="destinationlabel">
-     <x>202</x>
-     <y>162</y>
+     <x>440</x>
+     <y>302</y>
     </hint>
    </hints>
   </connection>
@@ -627,7 +592,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>48</x>
-     <y>114</y>
+     <y>203</y>
     </hint>
     <hint type="destinationlabel">
      <x>380</x>
@@ -643,7 +608,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>55</x>
-     <y>137</y>
+     <y>226</y>
     </hint>
     <hint type="destinationlabel">
      <x>371</x>
@@ -659,7 +624,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>66</x>
-     <y>167</y>
+     <y>256</y>
     </hint>
     <hint type="destinationlabel">
      <x>373</x>
@@ -675,7 +640,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>55</x>
-     <y>185</y>
+     <y>274</y>
     </hint>
     <hint type="destinationlabel">
      <x>369</x>
@@ -691,7 +656,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>88</x>
-     <y>208</y>
+     <y>297</y>
     </hint>
     <hint type="destinationlabel">
      <x>365</x>
@@ -707,11 +672,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>54</x>
-     <y>228</y>
+     <y>317</y>
     </hint>
     <hint type="destinationlabel">
-     <x>224</x>
-     <y>232</y>
+     <x>462</x>
+     <y>372</y>
     </hint>
    </hints>
   </connection>
@@ -722,8 +687,8 @@
    <slot>horizontalSpacingChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>107</x>
-     <y>310</y>
+     <x>116</x>
+     <y>431</y>
     </hint>
     <hint type="destinationlabel">
      <x>378</x>
@@ -738,12 +703,12 @@
    <slot>verticalSpacingChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>122</x>
-     <y>359</y>
+     <x>131</x>
+     <y>480</y>
     </hint>
     <hint type="destinationlabel">
-     <x>211</x>
-     <y>359</y>
+     <x>449</x>
+     <y>499</y>
     </hint>
    </hints>
   </connection>
@@ -754,12 +719,12 @@
    <slot>systemSpacingChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>112</x>
-     <y>407</y>
+     <x>121</x>
+     <y>529</y>
     </hint>
     <hint type="destinationlabel">
-     <x>193</x>
-     <y>407</y>
+     <x>431</x>
+     <y>547</y>
     </hint>
    </hints>
   </connection>
@@ -770,19 +735,19 @@
    <slot>setFont(QFont)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>157</x>
-     <y>486</y>
+     <x>166</x>
+     <y>602</y>
     </hint>
     <hint type="destinationlabel">
-     <x>216</x>
-     <y>485</y>
+     <x>454</x>
+     <y>570</y>
     </hint>
    </hints>
   </connection>
   <connection>
    <sender>actionDisplayOptionsIsVisible</sender>
    <signal>toggled(bool)</signal>
-   <receiver>displayOptionsGroupBox</receiver>
+   <receiver>diplayOptionsDock</receiver>
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -790,15 +755,15 @@
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>96</x>
-     <y>380</y>
+     <x>112</x>
+     <y>430</y>
     </hint>
    </hints>
   </connection>
   <connection>
    <sender>actionNoteHeadSelectorIsVisble</sender>
    <signal>toggled(bool)</signal>
-   <receiver>noteHeadGroupBox</receiver>
+   <receiver>noteHeadDock</receiver>
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -806,15 +771,15 @@
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>96</x>
-     <y>156</y>
+     <x>112</x>
+     <y>160</y>
     </hint>
    </hints>
   </connection>
   <connection>
    <sender>actionSongPropertiesIsVisible</sender>
    <signal>toggled(bool)</signal>
-   <receiver>songPropertiesGroupBox</receiver>
+   <receiver>songPropertiesDock</receiver>
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -822,8 +787,8 @@
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>490</x>
-     <y>93</y>
+     <x>399</x>
+     <y>86</y>
     </hint>
    </hints>
   </connection>
