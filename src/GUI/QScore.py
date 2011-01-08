@@ -5,7 +5,7 @@ Created on 4 Jan 2011
 
 '''
 
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui
 from QStaff import QStaff
 from QNote import QNote
 from Data.Score import ScoreFactory
@@ -133,16 +133,15 @@ class QScore(QtGui.QGraphicsScene):
     def setNote(self, np, head):
         self._qStaffs[np.staffIndex].setNote(np, head)
 
+    def mousePressEvent(self, event):
+        item = self.itemAt(event.scenePos())
+        if item is not None:
+            item.mousePressEvent(event)
+
     def mouseReleaseEvent(self, event):
-        if event.button() != QtCore.Qt.LeftButton:
-            event.ignore()
-        else:
-            item = self.itemAt(event.scenePos())
-            if isinstance(item, QNote):
-                item.toggleNote()
-                event.accept()
-            else:
-                event.ignore()
+        item = self.itemAt(event.scenePos())
+        if item is not None:
+            item.mouseReleaseEvent(event)
 
     def toggleNote(self, np):
         self._score.toggleNote(np, self._properties.head)

@@ -119,6 +119,3 @@ class QStaff(QtGui.QGraphicsItemGroup):
     def toggleNote(self, np):
         np.staffIndex = self._index
         self._qScore.toggleNote(np)
-
-#    def boundingRect(self):
-#        return QtCore.QRectF(0, 0, self._width, self._height)

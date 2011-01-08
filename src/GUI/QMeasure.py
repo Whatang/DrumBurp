@@ -5,7 +5,7 @@ Created on 5 Jan 2011
 
 '''
 
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 from QNote import QNote
 
 class QMeasure(QtGui.QGraphicsItemGroup):

@@ -33,7 +33,7 @@ def _stringToPixMap(character, font, scene):
 
 class QDBGridItem(QtGui.QGraphicsItem):
     def __init__(self, qScore, parent = None):
-        super(QDBGridItem, self).__init__(parent = parent,
+        super(QDBGridItem, self).__init__(parent = None,
                                           scene = qScore)
         self._text = ""
         self._qScore = qScore
@@ -85,7 +85,6 @@ class QNote(QDBGridItem):
         self._noteTime = None
         self._notePosition = NotePosition()
         self._text = DBConstants.EMPTY_NOTE
-#        self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable)
 
     def toggleNote(self):
         np = NotePosition(drumIndex = self._drumIndex,
@@ -112,6 +111,18 @@ class QNote(QDBGridItem):
     def ySpacingChanged(self):
         self.prepareGeometryChange()
         self._rect.setBottom(self.cellHeight())
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == QtCore.Qt.LeftButton:
+            self.toggleNote()
+            event.accept()
+        else:
+            event.ignore()
+
+    def mouseDoubleClickEvent(self, event):
+        print self.scene().mouseGrabberItem()
+        event.accept()
+        print self._text
 
 class QLineLabel(QDBGridItem):
     def __init__(self, lineName, qScore, parent = None):
