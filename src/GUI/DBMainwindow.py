@@ -8,7 +8,8 @@ Created on 31 Jul 2010
 from GUI.ui_drumburp import Ui_DrumBurpWindow
 from PyQt4.QtGui import QMainWindow, QFontDatabase
 from PyQt4.QtCore import QTimer
-from GUI.QScore import QScore, QSongProperties
+from QScore import QScore
+from QSongProperties import QSongProperties
 
 APPNAME = "DrumBurp"
 
