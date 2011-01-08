@@ -8,6 +8,9 @@ Created on 4 Jan 2011
 from PyQt4 import QtGui, QtCore
 from QStaff import QStaff
 from QNote import QNote
+from Data.Score import ScoreFactory
+
+scoreFactory = ScoreFactory()
 
 class QScore(QtGui.QGraphicsScene):
     '''
@@ -15,18 +18,21 @@ class QScore(QtGui.QGraphicsScene):
     '''
 
 
-    def __init__(self, score, parent = None):
+    def __init__(self, parent):
         '''
         Constructor
         '''
         super(QScore, self).__init__(parent)
-        self._score = None
         self._qStaffs = []
-        self._properties = QSongProperties(self)
+        self._properties = parent.songProperties
+        self._score = None
+        score = scoreFactory(parent.filename)
+        self._properties.setScore(self)
         self.setScore(score)
 
     def setScore(self, score):
         if score != self._score:
+            score.gridFormatScore(self._properties.width)
             self._score = score
             self._score.setCallBack(self.noteChanged)
             self.build()
@@ -104,7 +110,6 @@ class QScore(QtGui.QGraphicsScene):
         lineSpacing = self._properties.lineSpacing
         yOffset = yMargins
         for qStaff in self:
-            print qStaff.boundingRect()
             qStaff.setPos(xMargins, yOffset)
             yOffset += qStaff.height() + lineSpacing
         self.setSceneRect(0, 0,
@@ -136,6 +141,42 @@ class QScore(QtGui.QGraphicsScene):
     def toggleNote(self, np, head):
         self._score.toggleNote(np, head)
 
+class Null(object):
+    def __init__(self, *args, **kwargs):
+        "Ignore parameters."
+        return None
+
+    # object calling
+
+    def __call__(self, *args, **kwargs):
+        "Ignore method calls."
+        return self
+
+    # attribute handling
+
+    def __getattr__(self, mname):
+        "Ignore attribute requests."
+        return self
+
+    def __setattr__(self, name, value):
+        "Ignore attribute setting."
+        return self
+
+    def __delattr__(self, name):
+        "Ignore deleting attributes."
+        return self
+
+    # misc.
+
+    def __repr__(self):
+        "Return a string representation."
+        return "<Null>"
+
+    def __str__(self):
+        "Convert to a string and return it."
+        return "Null"
+
+
 class QSongProperties(object):
     _START_NOTE_WIDTH = 12
     MIN_NOTE_WIDTH = 12
@@ -154,7 +195,7 @@ class QSongProperties(object):
 
     LINELABELWIDTH = 30
 
-    def __init__(self, qScore):
+    def __init__(self, qScore = Null()):
         self._qScore = qScore
         self._xMargins = 20
         self._yMargins = 30
@@ -163,6 +204,10 @@ class QSongProperties(object):
         self._lineSpacing = self._START_LINE_SPACE
         self._noteFont = None
         self._head = None
+        self._width = 80
+
+    def setScore(self, score):
+        self._qScore = score
 
     def _getxSpacing(self):
         return self._xSpacing
@@ -229,8 +274,16 @@ class QSongProperties(object):
             self._head = value
     head = property(fget = _gethead, fset = _sethead)
 
+    def _getwidth(self):
+        return self._width
+    def _setwidth(self, value):
+        if self._width != value:
+            self._width = value
+    width = property(fget = _getwidth, fset = _setwidth)
+
     def proportionalSpacing(self):
         return (float(self.xSpacing - self.MIN_NOTE_WIDTH) / self.NOTE_WIDTH_RANGE * 100,
                 float(self.ySpacing - self.MIN_NOTE_HEIGHT) / self.NOTE_HEIGHT_RANGE * 100,
                 (float(self.lineSpacing - self.MIN_LINE_SPACE)
                  / self.LINE_SPACE_RANGE * 100))
+
