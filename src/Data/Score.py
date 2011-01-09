@@ -234,9 +234,9 @@ def makeEmptyScore(numMeasures, measureWidth):
     return score
 
 class ScoreFactory(object):
-    def __call__(self, filename):
+    def __call__(self, filename = None, numMeasures = 32 , measureWidth = 16):
         if filename is not None:
             pass
         else:
-            score = makeEmptyScore(32, 16)
+            score = makeEmptyScore(numMeasures, measureWidth)
         return score

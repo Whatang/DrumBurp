@@ -92,15 +92,9 @@
      <addaction name="actionFileToolbarIsVisible"/>
      <addaction name="actionDisplayToolBarIsVisible"/>
     </widget>
-    <widget class="QMenu" name="menuType_Here_2">
-     <property name="title">
-      <string>Type Here</string>
-     </property>
-    </widget>
     <addaction name="actionFitInWindow"/>
     <addaction name="menuShow"/>
     <addaction name="menuType_Here"/>
-    <addaction name="menuType_Here_2"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -608,39 +602,6 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="artistNameEdit">
-       <property name="toolTip">
-        <string>Song artist</string>
-       </property>
-       <property name="statusTip">
-        <string>Song artist</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="3">
-      <widget class="QLabel" name="tabberLabel">
-       <property name="text">
-        <string>Created by</string>
-       </property>
-       <property name="textInteractionFlags">
-        <set>Qt::NoTextInteraction</set>
-       </property>
-       <property name="buddy">
-        <cstring>tabberEdit</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="4">
-      <widget class="QLineEdit" name="tabberEdit">
-       <property name="toolTip">
-        <string>Score creator</string>
-       </property>
-       <property name="statusTip">
-        <string>Who created this DrumBurp score</string>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="0">
       <widget class="QLabel" name="artistNameLabel">
        <property name="text">
@@ -651,7 +612,24 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="3">
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="artistNameEdit">
+       <property name="toolTip">
+        <string>Song artist</string>
+       </property>
+       <property name="statusTip">
+        <string>Song artist</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="4">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Default Measure Width</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="4">
       <widget class="QLabel" name="bpmLabel">
        <property name="text">
         <string>&amp;BPM</string>
@@ -661,7 +639,7 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="4">
+     <item row="2" column="5">
       <widget class="QSpinBox" name="bpmSpinBox">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -675,6 +653,9 @@
        <property name="statusTip">
         <string>Beats per minute</string>
        </property>
+       <property name="frame">
+        <bool>true</bool>
+       </property>
        <property name="suffix">
         <string> bpm</string>
        </property>
@@ -683,6 +664,51 @@
        </property>
        <property name="value">
         <number>120</number>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="5">
+      <widget class="QSpinBox" name="defaultMeasureWidthSpinBox">
+       <property name="toolTip">
+        <string>Default Measure Width</string>
+       </property>
+       <property name="statusTip">
+        <string>The number of ticks in default measures added to the Score</string>
+       </property>
+       <property name="suffix">
+        <string> ticks</string>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>256</number>
+       </property>
+       <property name="value">
+        <number>16</number>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="tabberLabel">
+       <property name="text">
+        <string>Created by</string>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::NoTextInteraction</set>
+       </property>
+       <property name="buddy">
+        <cstring>tabberEdit</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="tabberEdit">
+       <property name="toolTip">
+        <string>Score creator</string>
+       </property>
+       <property name="statusTip">
+        <string>Who created this DrumBurp score</string>
        </property>
       </widget>
      </item>
@@ -882,7 +908,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>76</x>
-     <y>175</y>
+     <y>207</y>
     </hint>
     <hint type="destinationlabel">
      <x>440</x>
@@ -898,7 +924,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>48</x>
-     <y>203</y>
+     <y>230</y>
     </hint>
     <hint type="destinationlabel">
      <x>380</x>
@@ -913,8 +939,8 @@
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>55</x>
-     <y>226</y>
+     <x>102</x>
+     <y>230</y>
     </hint>
     <hint type="destinationlabel">
      <x>371</x>
@@ -945,8 +971,8 @@
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>45</x>
-     <y>264</y>
+     <x>92</x>
+     <y>253</y>
     </hint>
     <hint type="destinationlabel">
      <x>369</x>
@@ -961,8 +987,8 @@
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>78</x>
-     <y>287</y>
+     <x>172</x>
+     <y>253</y>
     </hint>
     <hint type="destinationlabel">
      <x>365</x>
@@ -977,8 +1003,8 @@
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>54</x>
-     <y>317</y>
+     <x>162</x>
+     <y>230</y>
     </hint>
     <hint type="destinationlabel">
      <x>462</x>
@@ -994,7 +1020,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>116</x>
-     <y>411</y>
+     <y>374</y>
     </hint>
     <hint type="destinationlabel">
      <x>378</x>
@@ -1010,7 +1036,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>131</x>
-     <y>460</y>
+     <y>423</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -1026,7 +1052,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>121</x>
-     <y>509</y>
+     <y>472</y>
     </hint>
     <hint type="destinationlabel">
      <x>431</x>
@@ -1042,7 +1068,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>166</x>
-     <y>582</y>
+     <y>548</y>
     </hint>
     <hint type="destinationlabel">
      <x>454</x>
@@ -1157,8 +1183,8 @@
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>399</x>
-     <y>32</y>
+     <x>246</x>
+     <y>43</y>
     </hint>
    </hints>
   </connection>
@@ -1169,8 +1195,8 @@
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>399</x>
-     <y>32</y>
+     <x>246</x>
+     <y>43</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -1185,8 +1211,8 @@
    <slot>setWidth(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>195</x>
-     <y>531</y>
+     <x>104</x>
+     <y>500</y>
     </hint>
     <hint type="destinationlabel">
      <x>283</x>
@@ -1201,8 +1227,8 @@
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>148</x>
-     <y>528</y>
+     <x>185</x>
+     <y>502</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -1239,6 +1265,22 @@
     <hint type="destinationlabel">
      <x>523</x>
      <y>32</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>defaultMeasureWidthSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setDefaultMeasureWidth(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>763</x>
+     <y>87</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>760</x>
+     <y>194</y>
     </hint>
    </hints>
   </connection>

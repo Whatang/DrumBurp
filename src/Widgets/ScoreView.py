@@ -18,7 +18,6 @@ class ScoreView(QtGui.QGraphicsView):
         self._props = None
 
     def setScene(self, scene):
-#        self.connect(self, QtCore.SIGNAL("itemClicked"), scene.itemClicked)
         super(ScoreView, self).setScene(scene)
         self._props = scene.getProperties()
         self.centerOn(0, 0)
@@ -52,3 +51,7 @@ class ScoreView(QtGui.QGraphicsView):
     def setFont(self, font):
         self.scene().getProperties().noteFont = font
         self.scene().update()
+
+    @QtCore.pyqtSlot(int)
+    def setDefaultMeasureWidth(self, width):
+        self.scene().getProperties().defaultMeasureWidth = width

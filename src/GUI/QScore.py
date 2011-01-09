@@ -25,7 +25,10 @@ class QScore(QtGui.QGraphicsScene):
         self._qStaffs = []
         self._properties = parent.songProperties
         self._score = None
-        score = _SCORE_FACTORY(parent.filename)
+        score = _SCORE_FACTORY(filename = parent.filename,
+                               numMeasures = 32,
+                               measureWidth = self._properties.defaultMeasureWidth)
+        self._startMousePressItem = None
         self._properties.setScore(self)
         self.setScore(score)
 
@@ -115,12 +118,15 @@ class QScore(QtGui.QGraphicsScene):
                           self.width(),
                           yOffset - lineSpacing + yMargins)
 
+    def reBuild(self):
+        oldSceneRect = self.sceneRect()
+        self.build()
+        self.update(oldSceneRect)
+
     def setWidth(self):
         formatChanged = self._score.gridFormatScore(self._properties.width)
         if formatChanged:
-            oldSceneRect = self.sceneRect()
-            self.build()
-            self.update(oldSceneRect)
+            self.reBuild()
 
     def populate(self):
         for notePosition, head in self._score.iterNotes():
@@ -136,13 +142,41 @@ class QScore(QtGui.QGraphicsScene):
     def mousePressEvent(self, event):
         item = self.itemAt(event.scenePos())
         if item is not None:
+            self._startMousePressItem = item
             item.mousePressEvent(event)
+
+    def getMousePressStartItem(self):
+        return self._startMousePressItem
 
     def mouseReleaseEvent(self, event):
         item = self.itemAt(event.scenePos())
         if item is not None:
             item.mouseReleaseEvent(event)
+        self._startMousePressItem = None
 
     def toggleNote(self, np, head):
         head = head if head is not None else self._properties.head
         self._score.toggleNote(np, head)
+
+    def insertMeasure(self, np):
+        width = self._properties.defaultMeasureWidth
+        self._score.insertMeasureByPosition(width, np)
+        self._score.gridFormatScore(self._properties.width)
+        self.reBuild()
+
+    def insertOtherMeasures(self, np):
+        QtGui.QMessageBox.warning(self.parent(),
+                                  "Not implemented",
+                                  "Inserting multiple and/or non-standard "
+                                  "measures is not yet supported.")
+
+    def deleteMeasure(self, np):
+        yesNo = QtGui.QMessageBox.question(self.parent(), "Delete Measure",
+                                              "Really delete this measure?",
+                                              QtGui.QMessageBox.Ok,
+                                              QtGui.QMessageBox.Cancel)
+        if yesNo == QtGui.QMessageBox.Ok:
+            self._score.deleteMeasureByPosition(np)
+            self._score.gridFormatScore(self._properties.width)
+            self.reBuild()
+

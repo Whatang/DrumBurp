@@ -64,6 +64,7 @@ class QSongProperties(object):
         self._noteFont = None
         self._head = None
         self._width = 80
+        self._defaultMeasureWidth = 16
 
     def setScore(self, score):
         self._qScore = score
@@ -140,6 +141,13 @@ class QSongProperties(object):
             self._width = value
             self._qScore.setWidth()
     width = property(fget = _getwidth, fset = _setwidth)
+
+    def _getdefaultMeasureWidth(self):
+        return self._defaultMeasureWidth
+    def _setdefaultMeasureWidth(self, value):
+        if self._defaultMeasureWidth != value:
+            self._defaultMeasureWidth = value
+    defaultMeasureWidth = property(fget = _getdefaultMeasureWidth, fset = _setdefaultMeasureWidth)
 
     def proportionalSpacing(self):
         return ((float(self.xSpacing - self.MIN_NOTE_WIDTH)

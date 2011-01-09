@@ -5,8 +5,9 @@ Created on 5 Jan 2011
 
 '''
 
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui
 from QNote import QNote
+from Data.NotePosition import NotePosition
 
 class QMeasure(QtGui.QGraphicsItemGroup):
     '''
@@ -76,9 +77,34 @@ class QMeasure(QtGui.QGraphicsItemGroup):
     def _setHeight(self):
         self._height = len(self._score.drumKit) * self._props.ySpacing
 
-    def toggleNote(self, np, head):
+    def _makeNotePosition(self):
+        np = NotePosition()
+        self._augmentNotePosition(np)
+        return np
+
+    def _augmentNotePosition(self, np):
         np.measureIndex = self._index
+
+    def toggleNote(self, np, head):
+        self._augmentNotePosition(np)
         self._qStaff.toggleNote(np, head)
+
+    def insertMeasureBefore(self):
+        np = self._makeNotePosition()
+        self._qStaff.insertMeasure(np)
+
+    def insertMeasureAfter(self):
+        np = self._makeNotePosition()
+        np.measureIndex += 1
+        self._qStaff.insertMeasure(np)
+
+    def insertOtherMeasures(self):
+        np = self._makeNotePosition()
+        self._qStaff.insertOtherMeasures(np)
+
+    def deleteMeasure(self):
+        np = self._makeNotePosition()
+        self._qStaff.deleteMeasure(np)
 
     def setNote(self, np, head):
         self._notes[np.drumIndex][np.noteTime].setText(head)

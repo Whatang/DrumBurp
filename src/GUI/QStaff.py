@@ -116,6 +116,21 @@ class QStaff(QtGui.QGraphicsItemGroup):
     def setNote(self, np, head):
         self._measures[np.measureIndex].setNote(np, head)
 
-    def toggleNote(self, np, head):
+    def _augmentNotePosition(self, np):
         np.staffIndex = self._index
+
+    def toggleNote(self, np, head):
+        self._augmentNotePosition(np)
         self._qScore.toggleNote(np, head)
+
+    def insertMeasure(self, np):
+        self._augmentNotePosition(np)
+        self._qScore.insertMeasure(np)
+
+    def insertOtherMeasures(self, np):
+        self._augmentNotePosition(np)
+        self._qScore.insertOtherMeasures(np)
+
+    def deleteMeasure(self, np):
+        self._augmentNotePosition(np)
+        self._qScore.deleteMeasure(np)

@@ -114,6 +114,7 @@ class QNote(QDBGridItem):
 
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.MiddleButton:
+            event.accept()
             menu = QtGui.QMenu()
             for noteHead in self._props.allowedNoteHeads():
                 action = menu.addAction(noteHead)
@@ -122,23 +123,38 @@ class QNote(QDBGridItem):
                 menu.connect(action, QtCore.SIGNAL("triggered()"), noteAction)
             menu.exec_(event.screenPos())
         elif event.button() == QtCore.Qt.RightButton:
+            event.accept()
             menu = QtGui.QMenu()
-            oneAction = menu.addAction("One")
-            twoAction = menu.addAction("Two")
+            actionText = "Insert Default Measure"
+            insertDefaultMeasureAction = menu.addAction(actionText)
+            menu.connect(insertDefaultMeasureAction,
+                         QtCore.SIGNAL("triggered()"),
+                         self._qMeasure.insertMeasureBefore)
+            deleteAction = menu.addAction("Delete Measure")
+            menu.connect(deleteAction, QtCore.SIGNAL("triggered()"),
+                         self._qMeasure.deleteMeasure)
+            menu.addSeparator()
+            insertMenu = menu.addMenu("Insert...")
+            insertAfterAction = insertMenu.addAction("Default Measure After")
+            insertMenu.connect(insertAfterAction,
+                               QtCore.SIGNAL("triggered()"),
+                               self._qMeasure.insertMeasureAfter)
+            insertOtherMeasures = insertMenu.addAction("Other Measures")
+            insertMenu.connect(insertOtherMeasures,
+                               QtCore.SIGNAL("triggered()"),
+                               self._qMeasure.insertOtherMeasures)
             menu.exec_(event.screenPos())
-        event.accept()
+        else:
+            event.ignore()
+
 
     def mouseReleaseEvent(self, event):
-        if event.button() == QtCore.Qt.LeftButton:
+        if (event.button() == QtCore.Qt.LeftButton and
+            self._qScore.getMousePressStartItem() == self):
             self.toggleNote()
             event.accept()
         else:
             event.ignore()
-
-    def mouseDoubleClickEvent(self, event):
-        print self.scene().mouseGrabberItem()
-        event.accept()
-        print self._text
 
 class QLineLabel(QDBGridItem):
     def __init__(self, lineName, qScore, parent = None):

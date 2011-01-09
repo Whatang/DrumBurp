@@ -34,6 +34,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         QTimer.singleShot(0, lambda: self.spaceSlider.setValue(xValue))
         QTimer.singleShot(0, lambda: self.verticalSlider.setValue(yValue))
         QTimer.singleShot(0, lambda: self.lineSpaceSlider.setValue(lValue))
+        QTimer.singleShot(0, lambda: self.defaultMeasureWidthSpinBox.setValue(self.songProperties.defaultMeasureWidth))
         font = self.scoreScene.font()
         self.fontComboBox.setCurrentFont(font)
         statusBar = self.statusBar()
