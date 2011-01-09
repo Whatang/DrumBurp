@@ -27,7 +27,7 @@ class QScore(QtGui.QGraphicsScene):
         self._properties = parent.songProperties
         self._score = None
         score = _SCORE_FACTORY(filename = parent.filename,
-                               numMeasures = 32,
+                               numMeasures = 16,
                                measureWidth = self._properties.defaultMeasureWidth)
         self._startMousePressItem = None
         self._properties.setScore(self)
@@ -185,6 +185,11 @@ class QScore(QtGui.QGraphicsScene):
                                   "measures is not yet supported.")
 
     def deleteMeasure(self, np):
+        if self._score.numMeasures() == 1:
+            QtGui.QMessageBox.warning(self.parent(),
+                                      "Invalid delete",
+                                      "Cannot delete last measure.")
+            return
         yesNo = QtGui.QMessageBox.question(self.parent(), "Delete Measure",
                                               "Really delete this measure?",
                                               QtGui.QMessageBox.Ok,
