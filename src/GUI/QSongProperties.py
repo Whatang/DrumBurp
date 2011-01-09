@@ -158,7 +158,7 @@ class QSongProperties(object):
                  / self.LINE_SPACE_RANGE * 100))
 
     def maxColumns(self, widthInPixels):
-        widthInPixels -= 2 * self.xMargins
+        widthInPixels -= (2 * self.xMargins + self.LINELABELWIDTH)
         return int(widthInPixels / self.xSpacing)
 
     def allowedNoteHeads(self):

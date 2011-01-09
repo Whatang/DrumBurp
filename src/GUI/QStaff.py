@@ -8,6 +8,7 @@ Created on 4 Jan 2011
 from PyQt4 import QtGui
 from QMeasure import QMeasure
 from QMeasureLine import QMeasureLine
+from QNote import QLineLabel
 
 class QStaff(QtGui.QGraphicsItemGroup):
     '''
@@ -25,6 +26,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self._props = self._qScore.getProperties()
         self._staff = None
         self._index = None
+        self._lineLabels = []
         self._measures = []
         self._measureLines = []
         self._width = 0
@@ -46,11 +48,14 @@ class QStaff(QtGui.QGraphicsItemGroup):
             self.build()
 
     def clear(self):
+        self._lineLabels = []
         self._measures = []
         self._measureLines = []
 
     def build(self):
         self.clear()
+        for label in self._qScore.iterLineLabels():
+            self.addLineLabel(label)
         lastMeasure = None
         for measure in self._staff:
             self.addMeasureLine(lastMeasure, measure)
@@ -60,6 +65,12 @@ class QStaff(QtGui.QGraphicsItemGroup):
 
     def numMeasures(self):
         return len(self._measures)
+
+    def addLineLabel(self, label):
+        qLabel = QLineLabel(label, self._qScore, self)
+        qLabel.setIndex(len(self._lineLabels))
+        self._lineLabels.append(qLabel)
+        self.addToGroup(qLabel)
 
     def addMeasure(self, measure):
         qMeasure = QMeasure(self._qScore, measure, parent = self)
@@ -75,7 +86,11 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self.addToGroup(qMeasureLine)
 
     def placeMeasures(self):
+        lineOffsets = self._qScore.lineOffsets()
         xOffset = 0
+        for yOffset, label in zip(lineOffsets, self._lineLabels):
+            label.setPos(xOffset, yOffset)
+        xOffset += self._props.LINELABELWIDTH
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
             qMeasureLine.setPos(xOffset, 0)
@@ -90,8 +105,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self._height = self._measureLines[0].height()
 
     def xSpacingChanged(self):
-#        self.prepareGeometryChange()
-        xOffset = 0
+        xOffset = self._props.LINELABELWIDTH
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
             qMeasureLine.setPos(xOffset, 0)
@@ -105,7 +119,10 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self._width = xOffset + self._measureLines[-1].width()
 
     def ySpacingChanged(self):
-#        self.prepareGeometryChange()
+        lineOffsets = self._qScore.lineOffsets()
+        for yOffset, label in zip(lineOffsets, self._lineLabels):
+            label.setYpos(yOffset)
+            label.ySpacingChanged()
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
             qMeasureLine.ySpacingChanged()

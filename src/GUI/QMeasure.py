@@ -50,7 +50,7 @@ class QMeasure(QtGui.QGraphicsItemGroup):
 
     def build(self):
         self.clear()
-        for drumIndex in range(0, len(self._score.drumKit)):
+        for drumIndex in range(0, self._qScore.kitSize):
             noteLine = []
             self._notes.append(noteLine)
             for noteTime in range(0, len(self._measure)):
@@ -60,8 +60,7 @@ class QMeasure(QtGui.QGraphicsItemGroup):
                 self.addToGroup(qNote)
 
     def placeNotes(self):
-        yOffsets = [drumIndex * self._props.ySpacing
-                    for drumIndex in range(0, len(self._score.drumKit))]
+        yOffsets = self._qScore.lineOffsets()
         for noteTime in range(0, len(self._measure)):
             xOffset = noteTime * self._props.xSpacing
             for drumIndex, yOffset in enumerate(yOffsets):
@@ -75,7 +74,7 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         self._width = len(self._measure) * self._props.xSpacing
 
     def _setHeight(self):
-        self._height = len(self._score.drumKit) * self._props.ySpacing
+        self._height = self._qScore.kitSize * self._props.ySpacing
 
     def _makeNotePosition(self):
         np = NotePosition()
@@ -110,8 +109,7 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         self._notes[np.drumIndex][np.noteTime].setText(head)
 
     def xSpacingChanged(self):
-        yOffsets = [drumIndex * self._props.ySpacing
-                    for drumIndex in range(0, len(self._score.drumKit))]
+        yOffsets = self._qScore.lineOffsets()
         for noteTime in range(0, len(self._measure)):
             xOffset = noteTime * self._props.xSpacing
             for drumIndex, yOffset in enumerate(yOffsets):
@@ -121,8 +119,7 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         self._setWidth()
 
     def ySpacingChanged(self):
-        yOffsets = [drumIndex * self._props.ySpacing
-                    for drumIndex in range(0, len(self._score.drumKit))]
+        yOffsets = self._qScore.lineOffsets()
         for noteTime in range(0, len(self._measure)):
             xOffset = noteTime * self._props.xSpacing
             for drumIndex, yOffset in enumerate(yOffsets):

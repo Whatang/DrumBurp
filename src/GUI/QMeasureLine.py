@@ -41,7 +41,7 @@ class QMeasureLine(QtGui.QGraphicsItem):
         painter.drawLine(x, 0, x, self.height())
 
     def _setHeight(self):
-        self._height = self._props.ySpacing * len(self._score.drumKit)
+        self._height = self._props.ySpacing * self._qScore.kitSize
 
     def setDimensions(self):
         self.prepareGeometryChange()

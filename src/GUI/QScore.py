@@ -5,11 +5,12 @@ Created on 4 Jan 2011
 
 '''
 
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui
 from QStaff import QStaff
-from QNote import QNote
 from Data.Score import ScoreFactory
 _SCORE_FACTORY = ScoreFactory()
+
+#pylint: disable-msg=R0904
 
 class QScore(QtGui.QGraphicsScene):
     '''
@@ -31,6 +32,19 @@ class QScore(QtGui.QGraphicsScene):
         self._startMousePressItem = None
         self._properties.setScore(self)
         self.setScore(score)
+
+    def _getkitSize(self):
+        return len(self._score.drumKit)
+    kitSize = property(fget = _getkitSize)
+
+    def lineOffsets(self):
+        yOffsets = [drumIndex * self._properties.ySpacing
+                    for drumIndex in range(0, self.kitSize)]
+        yOffsets.reverse()
+        return yOffsets
+
+    def iterLineLabels(self):
+        return (drum.abbr for drum in self._score.drumKit)
 
     def setScore(self, score):
         if score != self._score:

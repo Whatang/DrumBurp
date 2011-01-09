@@ -32,7 +32,7 @@ def _stringToPixMap(character, font, scene):
 
 
 class QDBGridItem(QtGui.QGraphicsItem):
-    def __init__(self, qScore, parent = None):
+    def __init__(self, qScore, parent):
         super(QDBGridItem, self).__init__(parent = None,
                                           scene = qScore)
         self._text = ""
@@ -78,7 +78,7 @@ class QNote(QDBGridItem):
     classdocs
     '''
 
-    def __init__(self, qScore, parent = None):
+    def __init__(self, qScore, parent):
         super(QNote, self).__init__(qScore, parent)
         self._qMeasure = parent
         self._drumIndex = None
@@ -157,10 +157,20 @@ class QNote(QDBGridItem):
             event.ignore()
 
 class QLineLabel(QDBGridItem):
-    def __init__(self, lineName, qScore, parent = None):
+    def __init__(self, lineName, qScore, parent):
         super(QLineLabel, self).__init__(qScore, parent)
-        self.prepareGeometryChange()
+        self._index = None
         self.setText(lineName)
+
+    def cellHeight(self):
+        return self._props.ySpacing
 
     def cellWidth(self):
         return self._props.LINELABELWIDTH
+
+    def ySpacingChanged(self):
+        self.prepareGeometryChange()
+        self._rect.setBottom(self.cellHeight())
+
+    def setIndex(self, index):
+        self._index = index
