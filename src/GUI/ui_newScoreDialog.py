@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\newScoreDialog.ui'
 #
-# Created: Sun Jan 09 19:26:38 2011
+# Created: Sun Jan 09 20:37:31 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_newScoreDialog(object):
     def setupUi(self, newScoreDialog):
         newScoreDialog.setObjectName(_fromUtf8("newScoreDialog"))
-        newScoreDialog.resize(200, 109)
+        newScoreDialog.resize(243, 109)
         newScoreDialog.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.verticalLayout = QtGui.QVBoxLayout(newScoreDialog)
         self.verticalLayout.setSpacing(9)
@@ -34,7 +34,7 @@ class Ui_newScoreDialog(object):
         self.gridLayout.addWidget(self.label, 0, 1, 1, 1)
         self.numMeasuresSpinBox = QtGui.QSpinBox(newScoreDialog)
         self.numMeasuresSpinBox.setMinimum(1)
-        self.numMeasuresSpinBox.setMaximum(10000)
+        self.numMeasuresSpinBox.setMaximum(100000)
         self.numMeasuresSpinBox.setProperty(_fromUtf8("value"), 32)
         self.numMeasuresSpinBox.setObjectName(_fromUtf8("numMeasuresSpinBox"))
         self.gridLayout.addWidget(self.numMeasuresSpinBox, 0, 2, 1, 1)
@@ -49,6 +49,7 @@ class Ui_newScoreDialog(object):
         self.measureSizeSpinBox = QtGui.QSpinBox(newScoreDialog)
         self.measureSizeSpinBox.setMinimum(1)
         self.measureSizeSpinBox.setMaximum(256)
+        self.measureSizeSpinBox.setProperty(_fromUtf8("value"), 16)
         self.measureSizeSpinBox.setObjectName(_fromUtf8("measureSizeSpinBox"))
         self.gridLayout.addWidget(self.measureSizeSpinBox, 1, 2, 1, 1)
         spacerItem3 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
@@ -80,6 +81,7 @@ class Ui_newScoreDialog(object):
         self.label.setText(QtGui.QApplication.translate("newScoreDialog", "Number of measures", None, QtGui.QApplication.UnicodeUTF8))
         self.numMeasuresSpinBox.setToolTip(QtGui.QApplication.translate("newScoreDialog", "Number of measures", None, QtGui.QApplication.UnicodeUTF8))
         self.numMeasuresSpinBox.setStatusTip(QtGui.QApplication.translate("newScoreDialog", "The number of measures in the new score", None, QtGui.QApplication.UnicodeUTF8))
+        self.numMeasuresSpinBox.setSuffix(QtGui.QApplication.translate("newScoreDialog", " measures", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("newScoreDialog", "Measure size", None, QtGui.QApplication.UnicodeUTF8))
         self.measureSizeSpinBox.setToolTip(QtGui.QApplication.translate("newScoreDialog", "Measure size", None, QtGui.QApplication.UnicodeUTF8))
         self.measureSizeSpinBox.setStatusTip(QtGui.QApplication.translate("newScoreDialog", "The size of each measure in the new score in ticks", None, QtGui.QApplication.UnicodeUTF8))
