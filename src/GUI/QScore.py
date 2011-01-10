@@ -7,6 +7,7 @@ Created on 4 Jan 2011
 
 from PyQt4 import QtGui, QtCore
 from QStaff import QStaff
+from QInsertMeasuresDialog import QInsertMeasuresDialog
 from Data.Score import ScoreFactory
 _SCORE_FACTORY = ScoreFactory()
 
@@ -193,10 +194,21 @@ class QScore(QtGui.QGraphicsScene):
         self.dirty = True
 
     def insertOtherMeasures(self, np):
-        QtGui.QMessageBox.warning(self.parent(),
-                                  "Not implemented",
-                                  "Inserting multiple and/or non-standard "
-                                  "measures is not yet supported.")
+#        QtGui.QMessageBox.warning(self.parent(),
+#                                  "Not implemented",
+#                                  "Inserting multiple and/or non-standard "
+#                                  "measures is not yet supported.")
+        insertDialog = QInsertMeasuresDialog(self.parent(),
+                                             self._properties.defaultMeasureWidth)
+        if insertDialog.exec_():
+            nMeasures, measureWidth, insertBefore = insertDialog.getValues()
+            if not insertBefore:
+                np.measureIndex += 1
+            for measureIndex in range(nMeasures):
+                self._score.insertMeasureByPosition(measureWidth, np)
+            self._score.gridFormatScore(self._properties.width)
+            self.reBuild()
+            self.dirty = True
 
     def deleteMeasure(self, np):
         if self._score.numMeasures() == 1:
