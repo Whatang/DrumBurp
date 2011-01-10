@@ -214,6 +214,20 @@ class QScore(QtGui.QGraphicsScene):
             self.reBuild()
             self.dirty = True
 
+    def setSectionEnd(self, np, onOff):
+        self._score.setSectionEnd(np, onOff)
+        self._score.gridFormatScore(self._properties.width)
+        self.reBuild()
+        self.dirty = True
+
+    def setRepeatEnd(self, np, onOff):
+        self._score.setRepeatEnd(np, onOff)
+        self.dirty = True
+
+    def setRepeatStart(self, np, onOff):
+        self._score.setRepeatStart(np, onOff)
+        self.dirty = True
+
     def loadScore(self, filename):
         try:
             newScore = _SCORE_FACTORY(filename = filename)
@@ -234,6 +248,7 @@ class QScore(QtGui.QGraphicsScene):
                                       "Score save error",
                                       "Error loading DrumBurp file: %s" % str(exc))
             return False
+        self.dirty = False
         return True
 
     def newScore(self, numMeasures = None,

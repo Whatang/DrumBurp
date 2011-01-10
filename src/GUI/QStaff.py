@@ -151,3 +151,15 @@ class QStaff(QtGui.QGraphicsItemGroup):
     def deleteMeasure(self, np):
         self._augmentNotePosition(np)
         self._qScore.deleteMeasure(np)
+
+    def setSectionEnd(self, np, onOff):
+        self._augmentNotePosition(np)
+        self._qScore.setSectionEnd(np, onOff)
+
+    def setRepeatEnd(self, np, onOff):
+        self._augmentNotePosition(np)
+        self._qScore.setRepeatEnd(np, onOff)
+
+    def setRepeatStart(self, np, onOff):
+        self._augmentNotePosition(np)
+        self._qScore.setRepeatStart(np, onOff)
