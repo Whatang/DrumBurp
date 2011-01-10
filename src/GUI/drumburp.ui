@@ -21,7 +21,7 @@
     <item row="0" column="0">
      <widget class="ScoreView" name="scoreView">
       <property name="contextMenuPolicy">
-       <enum>Qt::ActionsContextMenu</enum>
+       <enum>Qt::NoContextMenu</enum>
       </property>
       <property name="acceptDrops">
        <bool>false</bool>

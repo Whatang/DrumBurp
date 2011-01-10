@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sun Jan 09 18:59:43 2011
+# Created: Sun Jan 09 23:28:49 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -24,7 +24,7 @@ class Ui_DrumBurpWindow(object):
         self.gridLayout_2 = QtGui.QGridLayout(self.centralwidget)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
         self.scoreView = ScoreView(self.centralwidget)
-        self.scoreView.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+        self.scoreView.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.scoreView.setAcceptDrops(False)
         self.scoreView.setLineWidth(1)
         self.scoreView.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
