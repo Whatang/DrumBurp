@@ -61,7 +61,7 @@
     <addaction name="actionNew"/>
     <addaction name="actionLoad"/>
     <addaction name="actionSave"/>
-    <addaction name="actionSave_As"/>
+    <addaction name="actionSaveAs"/>
     <addaction name="separator"/>
     <addaction name="actionExport_ASCII"/>
     <addaction name="separator"/>
@@ -122,7 +122,7 @@
    <addaction name="actionNew"/>
    <addaction name="actionLoad"/>
    <addaction name="actionSave"/>
-   <addaction name="actionSave_As"/>
+   <addaction name="actionSaveAs"/>
    <addaction name="actionExport_ASCII"/>
   </widget>
   <widget class="QDockWidget" name="noteHeadDock">
@@ -546,6 +546,52 @@
       </widget>
      </item>
      <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Default Measure Width</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="defaultMeasureWidthSpinBox">
+         <property name="toolTip">
+          <string>Default Measure Width</string>
+         </property>
+         <property name="statusTip">
+          <string>The number of ticks in default measures added to the Score</string>
+         </property>
+         <property name="suffix">
+          <string> ticks</string>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>256</number>
+         </property>
+         <property name="value">
+          <number>16</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
       <spacer name="verticalSpacer_2">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -622,13 +668,6 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="4">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>Default Measure Width</string>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="4">
       <widget class="QLabel" name="bpmLabel">
        <property name="text">
@@ -667,29 +706,7 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="5">
-      <widget class="QSpinBox" name="defaultMeasureWidthSpinBox">
-       <property name="toolTip">
-        <string>Default Measure Width</string>
-       </property>
-       <property name="statusTip">
-        <string>The number of ticks in default measures added to the Score</string>
-       </property>
-       <property name="suffix">
-        <string> ticks</string>
-       </property>
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>256</number>
-       </property>
-       <property name="value">
-        <number>16</number>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
+     <item row="0" column="4">
       <widget class="QLabel" name="tabberLabel">
        <property name="text">
         <string>Created by</string>
@@ -702,7 +719,7 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="0" column="5">
       <widget class="QLineEdit" name="tabberEdit">
        <property name="toolTip">
         <string>Score creator</string>
@@ -786,7 +803,7 @@
     <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="actionSave_As">
+  <action name="actionSaveAs">
    <property name="text">
     <string>Save As</string>
    </property>
@@ -1020,7 +1037,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>116</x>
-     <y>374</y>
+     <y>346</y>
     </hint>
     <hint type="destinationlabel">
      <x>378</x>
@@ -1036,7 +1053,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>131</x>
-     <y>423</y>
+     <y>395</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -1052,7 +1069,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>121</x>
-     <y>472</y>
+     <y>444</y>
     </hint>
     <hint type="destinationlabel">
      <x>431</x>
@@ -1068,7 +1085,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>166</x>
-     <y>548</y>
+     <y>520</y>
     </hint>
     <hint type="destinationlabel">
      <x>454</x>
@@ -1212,7 +1229,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>104</x>
-     <y>500</y>
+     <y>472</y>
     </hint>
     <hint type="destinationlabel">
      <x>283</x>
@@ -1228,7 +1245,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>185</x>
-     <y>502</y>
+     <y>474</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -1275,8 +1292,8 @@
    <slot>setDefaultMeasureWidth(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>763</x>
-     <y>87</y>
+     <x>161</x>
+     <y>540</y>
     </hint>
     <hint type="destinationlabel">
      <x>760</x>

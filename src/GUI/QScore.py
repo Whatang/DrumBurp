@@ -5,7 +5,7 @@ Created on 4 Jan 2011
 
 '''
 
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 from QStaff import QStaff
 from Data.Score import ScoreFactory
 _SCORE_FACTORY = ScoreFactory()
@@ -26,12 +26,23 @@ class QScore(QtGui.QGraphicsScene):
         self._qStaffs = []
         self._properties = parent.songProperties
         self._score = None
-        score = _SCORE_FACTORY(filename = parent.filename,
-                               numMeasures = 16,
-                               measureWidth = self._properties.defaultMeasureWidth)
+        self._dirty = None
         self._startMousePressItem = None
+        if parent.filename is not None:
+            if not self.loadScore(parent.filename):
+                parent.filename = None
+                self.newScore()
+        else:
+            self.newScore()
         self._properties.setScore(self)
-        self.setScore(score)
+
+    def _getdirty(self):
+        return self._dirty
+    def _setdirty(self, value):
+        if self._dirty != value:
+            self._dirty = value
+            self.emit(QtCore.SIGNAL("dirty"), self._dirty)
+    dirty = property(fget = _getdirty, fset = _setdirty)
 
     def _getkitSize(self):
         return len(self._score.drumKit)
@@ -52,6 +63,7 @@ class QScore(QtGui.QGraphicsScene):
             self._score = score
             self._score.setCallBack(self.noteChanged)
             self.build()
+            self.dirty = False
 
     def getScore(self):
         return self._score#
@@ -147,6 +159,7 @@ class QScore(QtGui.QGraphicsScene):
             self.setNote(notePosition, head)
 
     def noteChanged(self, notePosition):
+        self.dirty = True
         head = self._score.getNote(notePosition)
         self.setNote(notePosition, head)
 
@@ -177,6 +190,7 @@ class QScore(QtGui.QGraphicsScene):
         self._score.insertMeasureByPosition(width, np)
         self._score.gridFormatScore(self._properties.width)
         self.reBuild()
+        self.dirty = True
 
     def insertOtherMeasures(self, np):
         QtGui.QMessageBox.warning(self.parent(),
@@ -198,4 +212,36 @@ class QScore(QtGui.QGraphicsScene):
             self._score.deleteMeasureByPosition(np)
             self._score.gridFormatScore(self._properties.width)
             self.reBuild()
+            self.dirty = True
 
+    def loadScore(self, filename):
+        try:
+            newScore = _SCORE_FACTORY(filename = filename)
+        except IOError, exc:
+            QtGui.QMessageBox.warning(self.parent(),
+                                      "Score load error",
+                                      ("Error loading DrumBurp file %s" % filename)
+                                      + "\n" + str(exc))
+            return False
+        self.setScore(newScore)
+        return True
+
+    def saveScore(self, filename):
+        try:
+            _SCORE_FACTORY.saveScore(self._score, filename)
+        except StandardError, exc:
+            QtGui.QMessageBox.warning(self.parent(),
+                                      "Score save error",
+                                      "Error loading DrumBurp file: %s" % str(exc))
+            return False
+        return True
+
+    def newScore(self, numMeasures = None,
+                 measureWidth = None):
+        if numMeasures is None:
+            numMeasures = 16
+        if measureWidth is None:
+            measureWidth = self._properties.defaultMeasureWidth
+        newScore = _SCORE_FACTORY(numMeasures = numMeasures,
+                                  measureWidth = measureWidth)
+        self.setScore(newScore)
