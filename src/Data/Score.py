@@ -153,6 +153,24 @@ class Score(object):
         staff = self.getStaff(position.staffIndex)
         staff.deleteMeasure(position)
 
+    def setSectionEnd(self, position, onOff):
+        if not(0 <= position.staffIndex < self.numStaffs()):
+            raise BadTimeError()
+        staff = self.getStaff(position.staffIndex)
+        staff.setSectionEnd(position, onOff)
+
+    def setRepeatEnd(self, position, onOff):
+        if not(0 <= position.staffIndex < self.numStaffs()):
+            raise BadTimeError()
+        staff = self.getStaff(position.staffIndex)
+        staff.setRepeatEnd(position, onOff)
+
+    def setRepeatStart(self, position, onOff):
+        if not(0 <= position.staffIndex < self.numStaffs()):
+            raise BadTimeError()
+        staff = self.getStaff(position.staffIndex)
+        staff.setRepeatStart(position, onOff)
+
     def getNote(self, position):
         if not (0 <= position.staffIndex < self.numMeasures()):
             raise BadTimeError(position)

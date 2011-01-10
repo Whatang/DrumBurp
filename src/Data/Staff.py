@@ -80,6 +80,21 @@ class Staff(object):
             nextMeasure = self[index]
             self._setMeasureCallBack(nextMeasure, index)
 
+    def setSectionEnd(self, position, onOff):
+        if not (0 <= position.measureIndex < self.numMeasures()):
+                raise BadTimeError(position)
+        self._measures[position.measureIndex].setSectionEnd(onOff)
+
+    def setRepeatEnd(self, position, onOff):
+        if not (0 <= position.measureIndex < self.numMeasures()):
+                raise BadTimeError(position)
+        self._measures[position.measureIndex].setRepeatEnd(onOff)
+
+    def setRepeatStart(self, position, onOff):
+        if not (0 <= position.measureIndex < self.numMeasures()):
+                raise BadTimeError(position)
+        self._measures[position.measureIndex].setRepeatStart(onOff)
+
     def clear(self):
         for measure in self:
             measure.clearCallBack()
