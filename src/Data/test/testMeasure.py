@@ -6,7 +6,7 @@ Created on 12 Dec 2010
 import unittest
 from Data.Measure import Measure
 from Data.DBErrors import BadTimeError
-from Data.DBConstants  import EMPTY_NOTE, BAR_TYPES
+from Data.DBConstants  import EMPTY_NOTE
 from Data.NotePosition import NotePosition
 #pylint: disable-msg=R0904
 
@@ -20,10 +20,9 @@ class TestMeasure(unittest.TestCase):
         self.assertEqual(self.measure.getNote(NotePosition(noteTime = 0,
                                                            drumIndex = 0)),
                          EMPTY_NOTE)
-        self.assertEqual(self.measure.startBar,
-                         BAR_TYPES["NORMAL_BAR"])
-        self.assertEqual(self.measure.endBar,
-                         BAR_TYPES["NORMAL_BAR"])
+        self.assertFalse(self.measure.isSectionEnd())
+        self.assertFalse(self.measure.isRepeatEnd())
+        self.assertFalse(self.measure.isRepeatStart())
 
     def testGetNote_BadTime(self):
         self.assertRaises(BadTimeError, self.measure.getNote,
@@ -133,54 +132,40 @@ class TestMeasure(unittest.TestCase):
         self.assertFalse(self.measure.isSectionEnd())
         self.measure.setSectionEnd(True)
         self.assert_(self.measure.isSectionEnd())
-        self.assertEqual(self.measure.endBar, BAR_TYPES["SECTION_END"])
-        self.measure.setSectionEnd(True)
-        self.assert_(self.measure.isSectionEnd())
-        self.assertEqual(self.measure.endBar, BAR_TYPES["SECTION_END"])
         self.measure.setSectionEnd(False)
         self.assertFalse(self.measure.isSectionEnd())
-        self.assertEqual(self.measure.endBar, BAR_TYPES["NORMAL_BAR"])
-        self.measure.setSectionEnd(False)
-        self.assertFalse(self.measure.isSectionEnd())
-        self.assertEqual(self.measure.endBar, BAR_TYPES["NORMAL_BAR"])
 
     def testSetSectionEnd_Repeat(self):
         self.measure.setRepeatEnd(True)
         self.assertFalse(self.measure.isSectionEnd())
         self.measure.setSectionEnd(True)
         self.assert_(self.measure.isSectionEnd())
-        self.assertEqual(self.measure.endBar, BAR_TYPES["REPEAT_END"])
-        self.measure.setSectionEnd(True)
-        self.assert_(self.measure.isSectionEnd())
-        self.assertEqual(self.measure.endBar, BAR_TYPES["REPEAT_END"])
+        self.assert_(self.measure.isRepeatEnd())
         self.measure.setSectionEnd(False)
         self.assertFalse(self.measure.isSectionEnd())
-        self.assertEqual(self.measure.endBar, BAR_TYPES["REPEAT_END"])
-        self.measure.setSectionEnd(False)
+        self.assert_(self.measure.isRepeatEnd())
+        self.measure.setRepeatEnd(False)
         self.assertFalse(self.measure.isSectionEnd())
-        self.assertEqual(self.measure.endBar, BAR_TYPES["REPEAT_END"])
+        self.assertFalse(self.measure.isRepeatEnd())
 
     def testSetRepeatStart(self):
-        self.assertEqual(self.measure.startBar, BAR_TYPES["NORMAL_BAR"])
         self.measure.setRepeatStart(True)
-        self.assertEqual(self.measure.startBar, BAR_TYPES["REPEAT_START"])
+        self.assert_(self.measure.isRepeatStart())
         self.measure.setRepeatStart(False)
-        self.assertEqual(self.measure.startBar, BAR_TYPES["NORMAL_BAR"])
+        self.assertFalse(self.measure.isRepeatStart())
 
     def testSetRepeatEnd_NotSectionEnd(self):
-        self.assertEqual(self.measure.endBar, BAR_TYPES["NORMAL_BAR"])
         self.measure.setRepeatEnd(True)
-        self.assertEqual(self.measure.endBar, BAR_TYPES["REPEAT_END"])
+        self.assert_(self.measure.isRepeatEnd())
         self.measure.setRepeatEnd(False)
-        self.assertEqual(self.measure.endBar, BAR_TYPES["NORMAL_BAR"])
+        self.assertFalse(self.measure.isRepeatEnd())
 
     def testSetRepeatEnd_IsSectionEnd(self):
         self.measure.setSectionEnd(True)
-        self.assertEqual(self.measure.endBar, BAR_TYPES["SECTION_END"])
         self.measure.setRepeatEnd(True)
-        self.assertEqual(self.measure.endBar, BAR_TYPES["REPEAT_END"])
+        self.assert_(self.measure.isRepeatEnd())
         self.measure.setRepeatEnd(False)
-        self.assertEqual(self.measure.endBar, BAR_TYPES["SECTION_END"])
+        self.assertFalse(self.measure.isRepeatEnd())
 
 class TestCallBack(unittest.TestCase):
     def setUp(self):

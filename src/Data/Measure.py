@@ -20,7 +20,6 @@ class Measure(object):
         self._notes = defaultdict(lambda: defaultdict(dict))
         self.startBar = BAR_TYPES["NORMAL_BAR"]
         self.endBar = BAR_TYPES["NORMAL_BAR"]
-        self._isSectionEnd = False
         self._callBack = None
 
     def __len__(self):
@@ -48,28 +47,36 @@ class Measure(object):
 
     def setSectionEnd(self, boolean):
         self._isSectionEnd = boolean
-        if boolean and self.endBar == BAR_TYPES["NORMAL_BAR"]:
-            self.endBar = BAR_TYPES["SECTION_END"]
-        if not boolean and self.endBar == BAR_TYPES["SECTION_END"]:
-            self.endBar = BAR_TYPES["NORMAL_BAR"]
+        if boolean:
+            self.endBar |= BAR_TYPES["SECTION_END"]
+        else:
+            self.endBar &= ~BAR_TYPES["SECTION_END"]
 
     def setRepeatStart(self, boolean):
+        self._isRepeatStart = boolean
         if boolean:
-            self.startBar = BAR_TYPES["REPEAT_START"]
+            self.startBar |= BAR_TYPES["REPEAT_START"]
         else:
-            self.startBar = BAR_TYPES["NORMAL_BAR"]
+            self.startBar &= ~BAR_TYPES["REPEAT_START"]
 
     def setRepeatEnd(self, boolean):
+        self._isRepeatEnd = boolean
         if boolean:
-            self.endBar = BAR_TYPES["REPEAT_END"]
+            self.endBar |= BAR_TYPES["REPEAT_END"]
         else:
-            if self.isSectionEnd():
-                self.endBar = BAR_TYPES["SECTION_END"]
-            else:
-                self.endBar = BAR_TYPES["NORMAL_BAR"]
+            self.endBar &= ~BAR_TYPES["REPEAT_END"]
 
     def isSectionEnd(self):
-        return self._isSectionEnd
+        return ((self.endBar & BAR_TYPES["SECTION_END"])
+                == BAR_TYPES["SECTION_END"])
+
+    def isRepeatStart(self):
+        return ((self.startBar & BAR_TYPES["REPEAT_START"])
+                == BAR_TYPES["REPEAT_START"])
+
+    def isRepeatEnd(self):
+        return ((self.endBar & BAR_TYPES["REPEAT_END"])
+                == BAR_TYPES["REPEAT_END"])
 
     def numNotes(self):
         return sum(len(timeDict) for timeDict in self._notes.values())
@@ -122,17 +129,15 @@ class Measure(object):
     def write(self, handle):
         print >> handle, "START_BAR %d" % len(self)
         startString = [name for name, value in BAR_TYPES.iteritems()
-                       if value == self.startBar][0]
-        print >> handle, "BARLINE %s" % startString
+                       if (self.startBar & value) == value]
+        print >> handle, "BARLINE %s" % ",".join(startString)
         for pos, head in self:
             print >> handle, "NOTE %d,%d,%s" % (pos.noteTime,
                                                 pos.drumIndex,
                                                 head)
         endString = [name for name, value in BAR_TYPES.iteritems()
-                       if value == self.endBar][0]
-        print >> handle, "BARLINE %s" % endString
-        if self.isSectionEnd():
-            print "SECTION_END"
+                     if (self.endBar & value) == value ]
+        print >> handle, "BARLINE %s" % ",".join(endString)
         print >> handle, "END_BAR"
 
     def read(self, scoreIterator):
@@ -141,10 +146,14 @@ class Measure(object):
         for lineType, lineData in scoreIterator:
             if  lineType == "BARLINE":
                 if not seenStartLine:
-                    self.startBar = BAR_TYPES[lineData]
+                    self.startBar = 0
+                    for barType in lineData.split(","):
+                        self.startBar |= BAR_TYPES[barType]
                     seenStartLine = True
                 elif not seenEndLine:
-                    self.endBar = BAR_TYPES[lineData]
+                    self.endBar = 0
+                    for barType in lineData.split(","):
+                        self.endBar |= BAR_TYPES[barType]
                     seenEndLine = True
                 else:
                     raise IOError("Too many bar lines")
@@ -153,8 +162,6 @@ class Measure(object):
                 pos = NotePosition(noteTime = int(noteTime),
                                    drumIndex = int(drumIndex))
                 self.addNote(pos, head)
-            elif lineType == "SECTION_END":
-                self.setSectionEnd(True)
             elif lineType == "END_BAR":
                 break
             else:

@@ -6,7 +6,7 @@ Created on 12 Dec 2010
 import unittest
 from Data.Staff import Staff
 from Data.Measure import Measure
-from Data.DBConstants import BAR_TYPES, EMPTY_NOTE
+from Data.DBConstants import EMPTY_NOTE
 from Data.DBErrors import BadTimeError
 from Data.NotePosition import NotePosition
 
@@ -115,7 +115,7 @@ class TestStaff(unittest.TestCase):
         self.staff.addMeasure(Measure(16))
         self.assertEqual(self.staff.characterWidth(), 52)
         endMeasure = Measure(16)
-        endMeasure.endBar = BAR_TYPES["SECTION_END"]
+        endMeasure.setSectionEnd(True)
         self.staff.addMeasure(endMeasure)
         self.assertEqual(self.staff.characterWidth(), 70)
 
@@ -128,7 +128,7 @@ class TestStaff(unittest.TestCase):
         self.staff.addMeasure(Measure(16))
         self.assertEqual(self.staff.gridWidth(), 52)
         endMeasure = Measure(16)
-        endMeasure.endBar = BAR_TYPES["SECTION_END"]
+        endMeasure.setSectionEnd(True)
         self.staff.addMeasure(endMeasure)
         self.assertEqual(self.staff.gridWidth(), 69)
 
