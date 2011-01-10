@@ -57,7 +57,7 @@
      <item row="0" column="2">
       <widget class="QSpinBox" name="numMeasuresSpinBox">
        <property name="toolTip">
-        <string>Number of measures</string>
+        <string>The number of measures in the new score</string>
        </property>
        <property name="statusTip">
         <string>The number of measures in the new score</string>
@@ -118,7 +118,7 @@
      <item row="1" column="2">
       <widget class="QSpinBox" name="measureSizeSpinBox">
        <property name="toolTip">
-        <string>Measure size</string>
+        <string>The size of each measure in the new score in ticks</string>
        </property>
        <property name="statusTip">
         <string>The size of each measure in the new score in ticks</string>
