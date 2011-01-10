@@ -111,6 +111,7 @@ class Score(object):
         if self.numStaffs() == 0:
             self.addStaff()
         self.getStaff(-1).addMeasure(newMeasure)
+        return newMeasure
 
     def _staffContainingMeasure(self, index):
         measuresSoFar = 0
@@ -226,17 +227,59 @@ class Score(object):
                                  Staff.gridWidth,
                                  True)
 
-def makeEmptyScore(numMeasures, measureWidth):
-    score = Score()
-    score.drumKit.loadDefaultKit()
-    for dummy in range(0, numMeasures):
-        score.addEmptyMeasure(measureWidth)
-    return score
+    def write(self, handle):
+        self.drumKit.write(handle)
+        for measure in self.iterMeasures():
+            measure.write(handle)
+
+    def read(self, handle):
+        def scoreHandle():
+            for line in handle:
+                line = line.rstrip()
+                fields = line.split(None, 1)
+                if len(fields) == 1:
+                    fields.append(None)
+                elif len(fields) == 0:
+                    # Blank line
+                    continue
+                lineType, lineData = fields
+                lineType = lineType.upper()
+                yield lineType, lineData
+        scoreIterator = scoreHandle()
+        for lineType, lineData in scoreIterator:
+            if lineType == "START_BAR":
+                measureWidth = int(lineData)
+                measure = self.addEmptyMeasure(measureWidth)
+                measure.read(scoreIterator)
+            elif lineType == "KIT_START":
+                self.drumKit.read(scoreIterator)
+            else:
+                raise IOError("Unrecognised line type.")
 
 class ScoreFactory(object):
     def __call__(self, filename = None, numMeasures = 32 , measureWidth = 16):
         if filename is not None:
-            pass
+            score = self.loadScore(filename)
         else:
-            score = makeEmptyScore(numMeasures, measureWidth)
+            score = self.makeEmptyScore(numMeasures, measureWidth)
         return score
+
+    @classmethod
+    def makeEmptyScore(cls, numMeasures, measureWidth):
+        score = Score()
+        score.drumKit.loadDefaultKit()
+        for dummy in range(0, numMeasures):
+            score.addEmptyMeasure(measureWidth)
+        return score
+
+    @classmethod
+    def loadScore(cls, filename):
+        score = Score()
+        with open(filename, 'rU') as handle:
+            score.read(handle)
+        return score
+
+    @classmethod
+    def saveScore(cls, score, filename):
+        with open(filename, 'w') as handle:
+            score.write(handle)

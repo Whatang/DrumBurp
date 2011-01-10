@@ -58,4 +58,21 @@ class DrumKit(object):
             raise NoSuchDrumError(index)
         self._drums.pop(index)
 
+    def write(self, handle):
+        print >> handle, "KIT_START"
+        for drum in self:
+            print >> handle, "DRUM %s,%s,%s" % (drum.name,
+                                                drum.abbr,
+                                                drum.head)
+        print >> handle, "KIT_END"
 
+    def read(self, scoreIterator):
+        for lineType, lineData in scoreIterator:
+            if  lineType == "KIT_END":
+                break
+            elif lineType == "DRUM":
+                fields = lineData.split(",")
+                drum = Drum(*fields)
+                self.addDrum(drum)
+            else:
+                raise IOError("Unrecognised line type.")

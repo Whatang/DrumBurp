@@ -99,7 +99,6 @@ class Measure(object):
                 del self._notes[position.noteTime]
             self._runCallBack(position)
 
-
     def toggleNote(self, position, head):
         if not(0 <= position.noteTime < len(self)):
             raise BadTimeError(position)
@@ -119,3 +118,44 @@ class Measure(object):
                     if noteTime >= self._width]
         for badTime in badTimes:
             del self._notes[badTime]
+
+    def write(self, handle):
+        print >> handle, "START_BAR %d" % len(self)
+        startString = [name for name, value in BAR_TYPES.iteritems()
+                       if value == self.startBar][0]
+        print >> handle, "BARLINE %s" % startString
+        for pos, head in self:
+            print >> handle, "NOTE %d,%d,%s" % (pos.noteTime,
+                                                pos.drumIndex,
+                                                head)
+        endString = [name for name, value in BAR_TYPES.iteritems()
+                       if value == self.endBar][0]
+        print >> handle, "BARLINE %s" % endString
+        if self.isSectionEnd():
+            print "SECTION_END"
+        print >> handle, "END_BAR"
+
+    def read(self, scoreIterator):
+        seenStartLine = False
+        seenEndLine = False
+        for lineType, lineData in scoreIterator:
+            if  lineType == "BARLINE":
+                if not seenStartLine:
+                    self.startBar = BAR_TYPES[lineData]
+                    seenStartLine = True
+                elif not seenEndLine:
+                    self.endBar = BAR_TYPES[lineData]
+                    seenEndLine = True
+                else:
+                    raise IOError("Too many bar lines")
+            elif lineType == "NOTE":
+                noteTime, drumIndex, head = lineData.split(",")
+                pos = NotePosition(noteTime = int(noteTime),
+                                   drumIndex = int(drumIndex))
+                self.addNote(pos, head)
+            elif lineType == "SECTION_END":
+                self.setSectionEnd(True)
+            elif lineType == "END_BAR":
+                break
+            else:
+                raise IOError("Unrecognised line type")
