@@ -109,6 +109,14 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         np = self._makeNotePosition()
         self._qStaff.deleteMeasure(np)
 
+    def copyMeasure(self):
+        np = self._makeNotePosition()
+        self._qStaff.copyMeasure(np)
+
+    def pasteMeasure(self):
+        np = self._makeNotePosition()
+        self._qStaff.pasteMeasure(np)
+
     def setNote(self, np, head):
         self._notes[np.drumIndex][np.noteTime].setText(head)
 

@@ -92,6 +92,10 @@ class Measure(object):
             return self._notes[position.noteTime][position.drumIndex]
         return EMPTY_NOTE
 
+    def clear(self):
+        for pos, dummyHead in self:
+            self.deleteNote(pos)
+
     def addNote(self, position, head):
         if not(0 <= position.noteTime < len(self)):
             raise BadTimeError(position)
@@ -128,6 +132,20 @@ class Measure(object):
                     if noteTime >= self._width]
         for badTime in badTimes:
             del self._notes[badTime]
+
+    def copyMeasure(self):
+        notes = list(self)
+        return notes
+
+    def pasteMeasure(self, position, notes):
+        self.clear()
+        for pos, head in notes:
+            try:
+                pos.staffIndex = position.staffIndex
+                pos.measureIndex = position.measureIndex
+                self.addNote(pos, head)
+            except BadTimeError:
+                continue
 
     def write(self, handle):
         print >> handle, "START_BAR %d" % len(self)

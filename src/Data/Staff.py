@@ -80,6 +80,16 @@ class Staff(object):
             nextMeasure = self[index]
             self._setMeasureCallBack(nextMeasure, index)
 
+    def copyMeasure(self, position):
+        if not (0 <= position.measureIndex <= self.numMeasures()):
+            raise BadTimeError(position)
+        return self[position.measureIndex].copyMeasure()
+
+    def pasteMeasure(self, position, notes):
+        if not (0 <= position.measureIndex <= self.numMeasures()):
+            raise BadTimeError(position)
+        self[position.measureIndex].pasteMeasure(position, notes)
+
     def setSectionEnd(self, position, onOff):
         if not (0 <= position.measureIndex < self.numMeasures()):
             raise BadTimeError(position)

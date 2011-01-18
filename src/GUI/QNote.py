@@ -138,6 +138,17 @@ class QNote(QDBGridItem):
             if self._text == DBConstants.EMPTY_NOTE:
                 repeatNoteAction.setEnabled(False)
             menu.addSeparator()
+            copyAction = menu.addAction("Copy Measure")
+            menu.connect(copyAction,
+                         QtCore.SIGNAL("triggered()"),
+                         self._qMeasure.copyMeasure)
+            pasteAction = menu.addAction("Paste Measure")
+            menu.connect(pasteAction,
+                         QtCore.SIGNAL("triggered()"),
+                         self._qMeasure.pasteMeasure)
+            if self._qScore.measureClipboard is None:
+                pasteAction.setEnabled(False)
+            menu.addSeparator()
             actionText = "Insert Default Measure"
             insertDefaultMeasureAction = menu.addAction(actionText)
             menu.connect(insertDefaultMeasureAction,

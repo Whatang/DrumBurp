@@ -30,6 +30,7 @@ class QScore(QtGui.QGraphicsScene):
         self._score = None
         self._dirty = None
         self._startMousePressItem = None
+        self.measureClipboard = None
         if parent.filename is not None:
             if not self.loadScore(parent.filename):
                 parent.filename = None
@@ -233,6 +234,13 @@ class QScore(QtGui.QGraphicsScene):
             self._score.gridFormatScore(self._properties.width)
             self.reBuild()
             self.dirty = True
+
+    def copyMeasure(self, np):
+        self.measureClipboard = self._score.copyMeasure(np)
+
+    def pasteMeasure(self, np):
+        self._score.pasteMeasure(np, self.measureClipboard)
+        self.dirty = True
 
     def setSectionEnd(self, np, onOff):
         self._score.setSectionEnd(np, onOff)

@@ -157,6 +157,14 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self._augmentNotePosition(np)
         self._qScore.deleteMeasure(np)
 
+    def copyMeasure(self, np):
+        self._augmentNotePosition(np)
+        self._qScore.copyMeasure(np)
+
+    def pasteMeasure(self, np):
+        self._augmentNotePosition(np)
+        self._qScore.pasteMeasure(np)
+
     def setSectionEnd(self, np, onOff):
         self._augmentNotePosition(np)
         self._qScore.setSectionEnd(np, onOff)

@@ -42,7 +42,7 @@ class Score(object):
 
     def _setStaffCallBack(self, staff, staffIndex):
         def wrappedCallBack(position):
-            position.staffindex = staffIndex
+            position.staffIndex = staffIndex
             self._runCallBack(position)
         staff.setCallBack(wrappedCallBack)
 
@@ -152,6 +152,18 @@ class Score(object):
             raise BadTimeError()
         staff = self.getStaff(position.staffIndex)
         staff.deleteMeasure(position)
+
+    def copyMeasure(self, position):
+        if not(0 <= position.staffIndex < self.numStaffs()):
+            raise BadTimeError()
+        staff = self.getStaff(position.staffIndex)
+        return staff.copyMeasure(position)
+
+    def pasteMeasure(self, position, notes):
+        if not(0 <= position.staffIndex < self.numStaffs()):
+            raise BadTimeError()
+        staff = self.getStaff(position.staffIndex)
+        staff.pasteMeasure(position, notes)
 
     def setSectionEnd(self, position, onOff):
         if not(0 <= position.staffIndex < self.numStaffs()):
