@@ -6,7 +6,7 @@ Created on 31 Jul 2010
 '''
 
 from ui_drumburp import Ui_DrumBurpWindow
-from PyQt4.QtGui import QMainWindow, QFontDatabase, QFileDialog, QMessageBox, QDialog
+from PyQt4.QtGui import QMainWindow, QFontDatabase, QFileDialog, QMessageBox
 from PyQt4.QtCore import QTimer, pyqtSignature, SIGNAL
 from QScore import QScore
 from QSongProperties import QSongProperties
@@ -36,7 +36,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         QTimer.singleShot(0, lambda: self.spaceSlider.setValue(xValue))
         QTimer.singleShot(0, lambda: self.verticalSlider.setValue(yValue))
         QTimer.singleShot(0, lambda: self.lineSpaceSlider.setValue(lValue))
-        QTimer.singleShot(0, lambda: self.defaultMeasureWidthSpinBox.setValue(self.songProperties.defaultMeasureWidth))
+        widthSpinSet = self.defaultMeasureWidthSpinBox.setValue
+        mWidth = self.songProperties.defaultMeasureWidth
+        QTimer.singleShot(0, lambda: widthSpinSet(mWidth))
         font = self.scoreScene.font()
         self.fontComboBox.setCurrentFont(font)
         self.connect(self.scoreScene, SIGNAL("dirty"), self.setWindowModified)
@@ -64,11 +66,13 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 return False
             elif reply == QMessageBox.Yes:
                 if not self.fileSave():
+                    msg = ("DrumBurp could not save the file."
+                           "\n\n"
+                           "Continue anyway? "
+                           "All unsaved changes will be lost!")
                     failReply = QMessageBox.warning(self,
-                                                    "Failed save!",
-                                                    "DrumBurp could not save the file. "
-                                                    + "\n\n" +
-                                                    "Continue anyway? All unsaved changes will be lost!",
+                                                    "Failed Save!",
+                                                    msg,
                                                     QMessageBox.Yes,
                                                     QMessageBox.No)
                     return failReply == QMessageBox.Yes
@@ -90,8 +94,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def on_actionLoad_triggered(self):
         if not self.okToContinue():
             return
+        caption = "Choose a DrumBurp file to open"
         fname = QFileDialog.getOpenFileName(parent = self,
-                                            caption = "Choose a DrumBurp file to open",
+                                            caption = caption,
                                             filter = "DrumBurp files (*.brp)")
         if len(fname) == 0:
             return
@@ -100,8 +105,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             self.updateStatus("Successfully loaded %s" % self.filename)
 
     def getFileName(self):
-        fname = QFileDialog.getSaveFileName(parent = self, caption = "Choose a DrumBurp file to save",
-                                            directory = self.filename if self.filename is not None else "",
+        directory = self.filename if self.filename is not None else ""
+        caption = "Choose a DrumBurp file to save"
+        fname = QFileDialog.getSaveFileName(parent = self,
+                                            caption = caption,
+                                            directory = directory,
                                             filter = "DrumBurp files (*.brp)")
         if len(fname) == 0 :
             return False
@@ -129,7 +137,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def on_actionNew_triggered(self):
         if self.okToContinue():
             dialog = QNewScoreDialog()
-            dialog.measureSizeSpinBox.setValue(self.songProperties.defaultMeasureWidth)
+            mWidth = self.songProperties.defaultMeasureWidth
+            dialog.measureSizeSpinBox.setValue(mWidth)
             if dialog.exec_():
                 nMeasures = dialog.numMeasuresSpinBox.value()
                 mWidth = dialog.measureSizeSpinBox.value()

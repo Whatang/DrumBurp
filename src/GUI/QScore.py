@@ -191,7 +191,7 @@ class QScore(QtGui.QGraphicsScene):
         repeatDialog = QRepeatDialog(self.parent())
         if repeatDialog.exec_():
             nRepeats, repInterval = repeatDialog.getValues()
-            for i in range(nRepeats):
+            for dummyIndex in range(nRepeats):
                 np = self._score.notePlus(np, repInterval)
                 if np is None:
                     break
@@ -205,13 +205,14 @@ class QScore(QtGui.QGraphicsScene):
         self.dirty = True
 
     def insertOtherMeasures(self, np):
+        mWidth = self._properties.defaultMeasureWidth
         insertDialog = QInsertMeasuresDialog(self.parent(),
-                                             self._properties.defaultMeasureWidth)
+                                             mWidth)
         if insertDialog.exec_():
             nMeasures, measureWidth, insertBefore = insertDialog.getValues()
             if not insertBefore:
                 np.measureIndex += 1
-            for measureIndex in range(nMeasures):
+            for dummyMeasureIndex in range(nMeasures):
                 self._score.insertMeasureByPosition(measureWidth, np)
             self._score.gridFormatScore(self._properties.width)
             self.reBuild()
@@ -251,10 +252,10 @@ class QScore(QtGui.QGraphicsScene):
         try:
             newScore = _SCORE_FACTORY(filename = filename)
         except IOError, exc:
+            msg = "Error loading DrumBurp file %s" % filename
             QtGui.QMessageBox.warning(self.parent(),
                                       "Score load error",
-                                      ("Error loading DrumBurp file %s" % filename)
-                                      + "\n" + str(exc))
+                                      msg + "\n" + str(exc))
             return False
         self.setScore(newScore)
         return True
@@ -263,9 +264,10 @@ class QScore(QtGui.QGraphicsScene):
         try:
             _SCORE_FACTORY.saveScore(self._score, filename)
         except StandardError, exc:
+            msg = "Error loading DrumBurp file: %s" % str(exc)
             QtGui.QMessageBox.warning(self.parent(),
                                       "Score save error",
-                                      "Error loading DrumBurp file: %s" % str(exc))
+                                      msg)
             return False
         self.dirty = False
         return True

@@ -4,6 +4,8 @@ Created on 12 Dec 2010
 @author: Mike Thomas
 '''
 
+#pylint:disable-msg=C0301
+
 EMPTY_NOTE = "-"
 BAR_TYPES = {"NO_BAR": 0,
              "NORMAL_BAR": 1,

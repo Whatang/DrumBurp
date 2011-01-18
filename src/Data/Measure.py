@@ -21,6 +21,9 @@ class Measure(object):
         self.startBar = BAR_TYPES["NORMAL_BAR"]
         self.endBar = BAR_TYPES["NORMAL_BAR"]
         self._callBack = None
+        self._isRepeatEnd = False
+        self._isRepeatStart = False
+        self._isSectionEnd = False
 
     def __len__(self):
         return self._width

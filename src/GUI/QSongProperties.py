@@ -147,7 +147,8 @@ class QSongProperties(object):
     def _setdefaultMeasureWidth(self, value):
         if self._defaultMeasureWidth != value:
             self._defaultMeasureWidth = value
-    defaultMeasureWidth = property(fget = _getdefaultMeasureWidth, fset = _setdefaultMeasureWidth)
+    defaultMeasureWidth = property(fget = _getdefaultMeasureWidth,
+                                   fset = _setdefaultMeasureWidth)
 
     def proportionalSpacing(self):
         return ((float(self.xSpacing - self.MIN_NOTE_WIDTH)
@@ -161,5 +162,6 @@ class QSongProperties(object):
         widthInPixels -= (2 * self.xMargins + self.LINELABELWIDTH)
         return int(widthInPixels / self.xSpacing)
 
-    def allowedNoteHeads(self):
+    @staticmethod
+    def allowedNoteHeads():
         return ("x", "X", "o", "O", "g", "+")

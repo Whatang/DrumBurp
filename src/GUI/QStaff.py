@@ -10,6 +10,7 @@ from QMeasure import QMeasure
 from QMeasureLine import QMeasureLine
 from QNote import QLineLabel
 
+#pylint: disable-msg=R0904
 class QStaff(QtGui.QGraphicsItemGroup):
     '''
     classdocs
