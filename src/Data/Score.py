@@ -172,14 +172,14 @@ class Score(object):
         staff.setRepeatStart(position, onOff)
 
     def getNote(self, position):
-        if not (0 <= position.staffIndex < self.numMeasures()):
+        if not (0 <= position.staffIndex < self.numStaffs()):
             raise BadTimeError(position)
         if not (0 <= position.drumIndex < len(self.drumKit)):
             raise BadTimeError(position)
         return self.getStaff(position.staffIndex).getNote(position)
 
     def addNote(self, position, head = None):
-        if not (0 <= position.staffIndex < self.numMeasures()):
+        if not (0 <= position.staffIndex < self.numStaffs()):
             raise BadTimeError(position)
         if not (0 <= position.drumIndex < len(self.drumKit)):
             raise BadTimeError(position)
@@ -188,20 +188,40 @@ class Score(object):
         self.getStaff(position.staffIndex).addNote(position, head)
 
     def deleteNote(self, position):
-        if not (0 <= position.staffIndex < self.numMeasures()):
+        if not (0 <= position.staffIndex < self.numStaffs()):
             raise BadTimeError(position)
         if not (0 <= position.drumIndex < len(self.drumKit)):
             raise BadTimeError(position)
         self.getStaff(position.staffIndex).deleteNote(position)
 
     def toggleNote(self, position, head = None):
-        if not (0 <= position.staffIndex < self.numMeasures()):
+        if not (0 <= position.staffIndex < self.numStaffs()):
             raise BadTimeError(position)
         if not (0 <= position.drumIndex < len(self.drumKit)):
             raise BadTimeError(position)
         if head is None:
             head = self.drumKit[position.drumIndex].head
         self.getStaff(position.staffIndex).toggleNote(position, head)
+
+    def notePlus(self, pos, ticks):
+        if not (0 <= pos.staffIndex < self.numStaffs()):
+            raise BadTimeError(pos)
+        if not (0 <= pos.drumIndex < len(self.drumKit)):
+            raise BadTimeError(pos)
+        staff = self.getStaff(pos.staffIndex)
+        measure = staff[pos.measureIndex]
+        pos.noteTime += ticks
+        while pos.noteTime >= len(measure):
+            pos.noteTime -= len(measure)
+            pos.measureIndex += 1
+            if pos.measureIndex >= staff.numMeasures():
+                pos.measureIndex = 0
+                pos.staffIndex += 1
+                if pos.staffIndex == self.numStaffs():
+                    return None
+                staff = self.getStaff(pos.staffIndex)
+            measure = staff[pos.measureIndex]
+        return pos
 
     def _formatScore(self, width,
                      widthFunction, ignoreErrors = False):
