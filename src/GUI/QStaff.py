@@ -140,6 +140,10 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self._augmentNotePosition(np)
         self._qScore.toggleNote(np, head)
 
+    def repeatNote(self, np, head):
+        self._augmentNotePosition(np)
+        self._qScore.repeatNote(np, head)
+
     def insertMeasure(self, np):
         self._augmentNotePosition(np)
         self._qScore.insertMeasure(np)

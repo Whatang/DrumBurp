@@ -91,6 +91,11 @@ class QNote(QDBGridItem):
                           noteTime = self._noteTime)
         self._qMeasure.toggleNote(np, head)
 
+    def repeatNote(self):
+        np = NotePosition(drumIndex = self._drumIndex,
+                          noteTime = self._noteTime)
+        self._qMeasure.repeatNote(np, self._text)
+
     def setIndex(self, drumIndex, noteTime):
         if (drumIndex, noteTime) != (self._drumIndex, self._noteTime):
             self._drumIndex = drumIndex
@@ -125,15 +130,19 @@ class QNote(QDBGridItem):
         elif event.button() == QtCore.Qt.RightButton:
             event.accept()
             menu = QtGui.QMenu()
+            actionText = "Repeat note"
+            repeatNoteAction = menu.addAction(actionText)
+            menu.connect(repeatNoteAction,
+                         QtCore.SIGNAL("triggered()"),
+                         self.repeatNote)
+            if self._text == DBConstants.EMPTY_NOTE:
+                repeatNoteAction.setEnabled(False)
+            menu.addSeparator()
             actionText = "Insert Default Measure"
             insertDefaultMeasureAction = menu.addAction(actionText)
             menu.connect(insertDefaultMeasureAction,
                          QtCore.SIGNAL("triggered()"),
                          self._qMeasure.insertMeasureBefore)
-            deleteAction = menu.addAction("Delete Measure")
-            menu.connect(deleteAction, QtCore.SIGNAL("triggered()"),
-                         self._qMeasure.deleteMeasure)
-            menu.addSeparator()
             insertMenu = menu.addMenu("Insert...")
             insertAfterAction = insertMenu.addAction("Default Measure After")
             insertMenu.connect(insertAfterAction,
@@ -143,6 +152,10 @@ class QNote(QDBGridItem):
             insertMenu.connect(insertOtherMeasures,
                                QtCore.SIGNAL("triggered()"),
                                self._qMeasure.insertOtherMeasures)
+            menu.addSeparator()
+            deleteAction = menu.addAction("Delete Measure")
+            menu.connect(deleteAction, QtCore.SIGNAL("triggered()"),
+                         self._qMeasure.deleteMeasure)
             menu.exec_(event.screenPos())
         else:
             event.ignore()

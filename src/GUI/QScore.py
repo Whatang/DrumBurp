@@ -8,6 +8,7 @@ Created on 4 Jan 2011
 from PyQt4 import QtGui, QtCore
 from QStaff import QStaff
 from QInsertMeasuresDialog import QInsertMeasuresDialog
+from QRepeatDialog import QRepeatDialog
 from Data.Score import ScoreFactory
 _SCORE_FACTORY = ScoreFactory()
 
@@ -186,6 +187,16 @@ class QScore(QtGui.QGraphicsScene):
         head = head if head is not None else self._properties.head
         self._score.toggleNote(np, head)
 
+    def repeatNote(self, np, head):
+        repeatDialog = QRepeatDialog(self.parent())
+        if repeatDialog.exec_():
+            nRepeats, repInterval = repeatDialog.getValues()
+            for i in range(nRepeats):
+                np = self._score.notePlus(np, repInterval)
+                if np is None:
+                    break
+                self._score.addNote(np, head)
+
     def insertMeasure(self, np):
         width = self._properties.defaultMeasureWidth
         self._score.insertMeasureByPosition(width, np)
@@ -194,10 +205,6 @@ class QScore(QtGui.QGraphicsScene):
         self.dirty = True
 
     def insertOtherMeasures(self, np):
-#        QtGui.QMessageBox.warning(self.parent(),
-#                                  "Not implemented",
-#                                  "Inserting multiple and/or non-standard "
-#                                  "measures is not yet supported.")
         insertDialog = QInsertMeasuresDialog(self.parent(),
                                              self._properties.defaultMeasureWidth)
         if insertDialog.exec_():

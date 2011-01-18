@@ -88,6 +88,10 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         self._augmentNotePosition(np)
         self._qStaff.toggleNote(np, head)
 
+    def repeatNote(self, np, head):
+        self._augmentNotePosition(np)
+        self._qStaff.repeatNote(np, head)
+
     def insertMeasureBefore(self):
         np = self._makeNotePosition()
         self._qStaff.insertMeasure(np)
