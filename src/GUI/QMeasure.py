@@ -124,18 +124,17 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         yOffsets = self._qScore.lineOffsets()
         for noteTime in range(0, len(self._measure)):
             xOffset = noteTime * self._props.xSpacing
-            for drumIndex, yOffset in enumerate(yOffsets):
+            for drumIndex, dummyyOffset in enumerate(yOffsets):
                 qNote = self._notes[drumIndex][noteTime]
-                qNote.setPos(xOffset, yOffset)
+                qNote.setX(xOffset)
                 qNote.xSpacingChanged()
         self._setWidth()
 
     def ySpacingChanged(self):
         yOffsets = self._qScore.lineOffsets()
         for noteTime in range(0, len(self._measure)):
-            xOffset = noteTime * self._props.xSpacing
             for drumIndex, yOffset in enumerate(yOffsets):
                 qNote = self._notes[drumIndex][noteTime]
-                qNote.setPos(xOffset, yOffset)
+                qNote.setY(yOffset)
                 qNote.ySpacingChanged()
         self._setHeight()
