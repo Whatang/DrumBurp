@@ -164,4 +164,4 @@ class QSongProperties(object):
 
     @staticmethod
     def allowedNoteHeads():
-        return ("x", "X", "o", "O", "g", "+")
+        return ("x", "X", "o", "O", "g", "f", "d", "+")

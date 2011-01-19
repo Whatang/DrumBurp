@@ -58,8 +58,21 @@
     <property name="title">
      <string>File</string>
     </property>
+    <widget class="QMenu" name="menuRecentScores">
+     <property name="toolTip">
+      <string>Recently opened scores</string>
+     </property>
+     <property name="statusTip">
+      <string>Open recently visited scores</string>
+     </property>
+     <property name="title">
+      <string>Recent Scores...</string>
+     </property>
+     <addaction name="actionXxx"/>
+    </widget>
     <addaction name="actionNew"/>
     <addaction name="actionLoad"/>
+    <addaction name="menuRecentScores"/>
     <addaction name="actionSave"/>
     <addaction name="actionSaveAs"/>
     <addaction name="separator"/>
@@ -162,7 +175,7 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
+     <item row="8" column="0">
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -207,7 +220,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="5" column="1">
       <widget class="RadioButtonTeller" name="bigONoteHeadButton">
        <property name="toolTip">
         <string>O note head</string>
@@ -223,7 +236,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="RadioButtonTeller" name="oNoteHeadButton">
        <property name="toolTip">
         <string>o note head</string>
@@ -236,22 +249,6 @@
        </property>
        <property name="buttonValue" stdset="0">
         <string>o</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="2">
-      <widget class="RadioButtonTeller" name="plusNoteHeadButton">
-       <property name="toolTip">
-        <string>+ note head</string>
-       </property>
-       <property name="statusTip">
-        <string>Use &quot;+&quot; as the note head</string>
-       </property>
-       <property name="text">
-        <string>+</string>
-       </property>
-       <property name="buttonValue" stdset="0">
-        <string>+</string>
        </property>
       </widget>
      </item>
@@ -268,6 +265,36 @@
        </property>
        <property name="buttonValue" stdset="0">
         <string>g</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="2">
+      <widget class="RadioButtonTeller" name="flamNoteTeller">
+       <property name="text">
+        <string>f</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="RadioButtonTeller" name="plusNoteHeadButton">
+       <property name="toolTip">
+        <string>+ note head</string>
+       </property>
+       <property name="statusTip">
+        <string>Use &quot;+&quot; as the note head</string>
+       </property>
+       <property name="text">
+        <string>+</string>
+       </property>
+       <property name="buttonValue" stdset="0">
+        <string>+</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="2">
+      <widget class="RadioButtonTeller" name="dragNoteTeller">
+       <property name="text">
+        <string>d</string>
        </property>
       </widget>
      </item>
@@ -780,10 +807,10 @@
   </action>
   <action name="actionLoad">
    <property name="text">
-    <string>Load</string>
+    <string>Open</string>
    </property>
    <property name="toolTip">
-    <string>Load Score</string>
+    <string>Open Score</string>
    </property>
    <property name="statusTip">
     <string>Load a saved DrumBurp score</string>
@@ -902,6 +929,11 @@
     <string>Change visibility of Display tool bar</string>
    </property>
   </action>
+  <action name="actionXxx">
+   <property name="text">
+    <string>fakeFileName</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -925,7 +957,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>76</x>
-     <y>207</y>
+     <y>181</y>
     </hint>
     <hint type="destinationlabel">
      <x>440</x>
@@ -941,7 +973,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>48</x>
-     <y>230</y>
+     <y>204</y>
     </hint>
     <hint type="destinationlabel">
      <x>380</x>
@@ -956,8 +988,8 @@
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>102</x>
-     <y>230</y>
+     <x>150</x>
+     <y>204</y>
     </hint>
     <hint type="destinationlabel">
      <x>371</x>
@@ -973,7 +1005,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>56</x>
-     <y>246</y>
+     <y>227</y>
     </hint>
     <hint type="destinationlabel">
      <x>373</x>
@@ -988,8 +1020,8 @@
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>92</x>
-     <y>253</y>
+     <x>140</x>
+     <y>227</y>
     </hint>
     <hint type="destinationlabel">
      <x>369</x>
@@ -1004,8 +1036,8 @@
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>172</x>
-     <y>253</y>
+     <x>80</x>
+     <y>250</y>
     </hint>
     <hint type="destinationlabel">
      <x>365</x>
@@ -1020,8 +1052,8 @@
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>162</x>
-     <y>230</y>
+     <x>235</x>
+     <y>204</y>
     </hint>
     <hint type="destinationlabel">
      <x>462</x>
@@ -1293,11 +1325,59 @@
    <hints>
     <hint type="sourcelabel">
      <x>161</x>
-     <y>540</y>
+     <y>554</y>
     </hint>
     <hint type="destinationlabel">
      <x>760</x>
      <y>194</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionQuit</sender>
+   <signal>triggered()</signal>
+   <receiver>DrumBurpWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>flamNoteTeller</sender>
+   <signal>emitValue(QString)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setNoteHead(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>194</x>
+     <y>219</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>309</x>
+     <y>219</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dragNoteTeller</sender>
+   <signal>emitValue(QString)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setNoteHead(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>219</x>
+     <y>240</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>268</x>
+     <y>240</y>
     </hint>
    </hints>
   </connection>

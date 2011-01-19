@@ -7,7 +7,7 @@ Created on 31 Jul 2010
 
 from ui_drumburp import Ui_DrumBurpWindow
 from PyQt4.QtGui import QMainWindow, QFontDatabase, QFileDialog, QMessageBox
-from PyQt4.QtCore import QTimer, pyqtSignature, SIGNAL
+from PyQt4.QtCore import QTimer, pyqtSignature, SIGNAL, QSettings, QVariant
 from QScore import QScore
 from QSongProperties import QSongProperties
 from QNewScoreDialog import QNewScoreDialog
@@ -26,7 +26,13 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         '''
         super(DrumBurp, self).__init__(parent)
         self.setupUi(self)
-        self.filename = None
+        settings = QSettings()
+        self.recentFiles = [unicode(fname) for fname in
+                            settings.value("RecentFiles").toStringList()]
+        self.filename = (None
+                         if len(self.recentFiles) == 0
+                         else self.recentFiles[0])
+        self.updateRecentFiles()
         self.songProperties = QSongProperties()
         self.scoreScene = QScore(self)
         self.scoreView.setScene(self.scoreScene)
@@ -43,11 +49,12 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.fontComboBox.setCurrentFont(font)
         self.connect(self.scoreScene, SIGNAL("dirty"), self.setWindowModified)
         self.updateStatus("Welcome to %s" % APPNAME)
+        self.restoreGeometry(settings.value("Geometry").toByteArray())
+        self.restoreState(settings.value("MainWindow/State").toByteArray())
 
     def updateStatus(self, message):
         self.statusBar().showMessage(message, 5000)
         if self.filename is not None:
-            print repr(self.filename)
             self.setWindowTitle("DrumBurp - %s[*]"
                                 % os.path.basename(self.filename))
         else:
@@ -80,7 +87,13 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     def closeEvent(self, event):
         if self.okToContinue():
-            pass
+            settings = QSettings()
+            settings.setValue("RecentFiles",
+                              QVariant(self.recentFiles))
+            settings.setValue("Geometry",
+                              QVariant(self.saveGeometry()))
+            settings.setValue("MainWindow/State",
+                              QVariant(self.saveState()))
         else:
             event.ignore()
 
@@ -103,6 +116,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if self.scoreScene.loadScore(fname):
             self.filename = unicode(fname)
             self.updateStatus("Successfully loaded %s" % self.filename)
+            self.addToRecentFiles()
+            self.updateRecentFiles()
 
     def getFileName(self):
         directory = self.filename if self.filename is not None else ""
@@ -120,6 +135,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if self.filename is None:
             if not self.getFileName():
                 return False
+            self.addToRecentFiles()
+            self.updateRecentFiles()
         return self.scoreScene.saveScore(self.filename)
 
     @pyqtSignature("")
@@ -132,6 +149,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if self.getFileName():
             self.scoreScene.saveScore(self.filename)
             self.updateStatus("Successfully saved %s" % self.filename)
+            self.addToRecentFiles()
+            self.updateRecentFiles()
 
     @pyqtSignature("")
     def on_actionNew_triggered(self):
@@ -145,5 +164,31 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 self.scoreScene.newScore(numMeasures = nMeasures,
                                          measureWidth = mWidth)
                 self.filename = None
+                self.updateRecentFiles()
                 self.defaultMeasureWidthSpinBox.setValue(mWidth)
                 self.updateStatus("Created a new blank score")
+
+    def addToRecentFiles(self):
+        if self.filename is not None and self.filename not in self.recentFiles:
+            self.recentFiles.insert(0, self.filename)
+            if len(self.recentFiles) > 10:
+                self.recentFiles.pop()
+
+    def updateRecentFiles(self):
+        self.menuRecentScores.clear()
+        for fname in self.recentFiles:
+            if fname != self.filename and os.path.exists(fname):
+                def openRecentFile(filename = fname):
+                    if not self.okToContinue():
+                        return
+                    if self.scoreScene.loadScore(filename):
+                        self.filename = filename
+                        self.updateStatus("Successfully loaded %s" % filename)
+                    self.updateRecentFiles()
+                action = self.menuRecentScores.addAction(fname)
+                self.connect(action, SIGNAL("triggered()"),
+                             openRecentFile)
+
+
+
+
