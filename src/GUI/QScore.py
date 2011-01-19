@@ -10,6 +10,8 @@ from QStaff import QStaff
 from QInsertMeasuresDialog import QInsertMeasuresDialog
 from QRepeatDialog import QRepeatDialog
 from Data.Score import ScoreFactory
+from Data.TimeCounter import counterMaker
+
 _SCORE_FACTORY = ScoreFactory()
 
 #pylint: disable-msg=R0904
@@ -199,22 +201,30 @@ class QScore(QtGui.QGraphicsScene):
                 self._score.addNote(np, head)
 
     def insertMeasure(self, np):
-        width = self._properties.defaultMeasureWidth
-        self._score.insertMeasureByPosition(width, np)
+        counter = self._properties.beatCounter.beatLength
+        width = (self._properties.beatsPerMeasure *
+                 counter)
+        self._score.insertMeasureByPosition(width, np,
+                                            counter = counter)
         self._score.gridFormatScore(self._properties.width)
         self.reBuild()
         self.dirty = True
 
     def insertOtherMeasures(self, np):
-        mWidth = self._properties.defaultMeasureWidth
+        beats = self._properties.beatsPerMeasure
+        counter = self._properties.beatCounter
         insertDialog = QInsertMeasuresDialog(self.parent(),
-                                             mWidth)
+                                             beats,
+                                             counter)
         if insertDialog.exec_():
-            nMeasures, measureWidth, insertBefore = insertDialog.getValues()
+            nMeasures, beats, counter, insertBefore = insertDialog.getValues()
+            counter = counterMaker(counter)
+            measureWidth = beats * counter.beatLength
             if not insertBefore:
                 np.measureIndex += 1
             for dummyMeasureIndex in range(nMeasures):
-                self._score.insertMeasureByPosition(measureWidth, np)
+                self._score.insertMeasureByPosition(measureWidth, np,
+                                                    counter = counter)
             self._score.gridFormatScore(self._properties.width)
             self.reBuild()
             self.dirty = True
@@ -280,12 +290,12 @@ class QScore(QtGui.QGraphicsScene):
         self.dirty = False
         return True
 
-    def newScore(self, numMeasures = None,
-                 measureWidth = None):
-        if numMeasures is None:
-            numMeasures = 16
+    def newScore(self, numMeasures = 16,
+                 measureWidth = None,
+                 counter = None):
         if measureWidth is None:
             measureWidth = self._properties.defaultMeasureWidth
         newScore = _SCORE_FACTORY(numMeasures = numMeasures,
-                                  measureWidth = measureWidth)
+                                  measureWidth = measureWidth,
+                                  counter = counter)
         self.setScore(newScore)

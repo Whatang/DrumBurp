@@ -6,6 +6,8 @@ Created on 12 Dec 2010
 '''
 from DBErrors import BadTimeError
 from DBConstants import COMBINED_BARLINE_STRING, BAR_TYPES
+
+#pylint:disable-msg=R0904
 class Staff(object):
     '''
     classdocs
@@ -89,6 +91,11 @@ class Staff(object):
         if not (0 <= position.measureIndex <= self.numMeasures()):
             raise BadTimeError(position)
         self[position.measureIndex].pasteMeasure(position, notes)
+
+    def setMeasureCounter(self, position, counter):
+        if not (0 <= position.measureIndex <= self.numMeasures()):
+            raise BadTimeError(position)
+        self[position.measureIndex].counter = counter
 
     def setSectionEnd(self, position, onOff):
         if not (0 <= position.measureIndex < self.numMeasures()):

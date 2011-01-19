@@ -11,6 +11,8 @@ from PyQt4.QtCore import QTimer, pyqtSignature, SIGNAL, QSettings, QVariant
 from QScore import QScore
 from QSongProperties import QSongProperties
 from QNewScoreDialog import QNewScoreDialog
+import DBUtility
+from Data.TimeCounter import counterMaker
 import os
 
 APPNAME = "DrumBurp"
@@ -25,6 +27,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         Constructor
         '''
         super(DrumBurp, self).__init__(parent)
+        self._state = None
         self.setupUi(self)
         settings = QSettings()
         self.recentFiles = [unicode(fname) for fname in
@@ -33,7 +36,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                          if len(self.recentFiles) == 0
                          else self.recentFiles[0])
         self.updateRecentFiles()
-        self.songProperties = QSongProperties()
+        self.songProperties = QSongProperties(settings)
         self.scoreScene = QScore(self)
         self.scoreView.setScene(self.scoreScene)
         self.fontComboBox.setWritingSystem(QFontDatabase.Latin)
@@ -42,12 +45,15 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         QTimer.singleShot(0, lambda: self.spaceSlider.setValue(xValue))
         QTimer.singleShot(0, lambda: self.verticalSlider.setValue(yValue))
         QTimer.singleShot(0, lambda: self.lineSpaceSlider.setValue(lValue))
-        widthSpinSet = self.defaultMeasureWidthSpinBox.setValue
-        mWidth = self.songProperties.defaultMeasureWidth
-        QTimer.singleShot(0, lambda: widthSpinSet(mWidth))
+        self.beatsSpinBox.setValue(self.songProperties.beatsPerMeasure)
+        DBUtility.populateCounterCombo(self.beatCountComboBox,
+                                       self.songProperties.beatCounter)
         font = self.scoreScene.font()
         self.fontComboBox.setCurrentFont(font)
         self.connect(self.scoreScene, SIGNAL("dirty"), self.setWindowModified)
+        beatsChanged = self.songProperties.measureBeatsChanged
+        self.connect(self.beatsSpinBox, SIGNAL("valueChanged(int)"),
+                                               beatsChanged)
         self.updateStatus("Welcome to %s" % APPNAME)
         self.restoreGeometry(settings.value("Geometry").toByteArray())
         self.restoreState(settings.value("MainWindow/State").toByteArray())
@@ -94,6 +100,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                               QVariant(self.saveGeometry()))
             settings.setValue("MainWindow/State",
                               QVariant(self.saveState()))
+            self.songProperties.save(settings)
         else:
             event.ignore()
 
@@ -155,17 +162,23 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     @pyqtSignature("")
     def on_actionNew_triggered(self):
         if self.okToContinue():
-            dialog = QNewScoreDialog()
-            mWidth = self.songProperties.defaultMeasureWidth
-            dialog.measureSizeSpinBox.setValue(mWidth)
+            beats = self.songProperties.beatsPerMeasure
+            counter = self.songProperties.beatCounter
+            dialog = QNewScoreDialog(self.parent(),
+                                     beats,
+                                     counter)
             if dialog.exec_():
-                nMeasures = dialog.numMeasuresSpinBox.value()
-                mWidth = dialog.measureSizeSpinBox.value()
+                nMeasures, beats, counter = dialog.getValues()
+                counter = counterMaker(counter)
+                mWidth = beats * counter.beatLength
                 self.scoreScene.newScore(numMeasures = nMeasures,
-                                         measureWidth = mWidth)
+                                         measureWidth = mWidth,
+                                         counter = counter)
                 self.filename = None
                 self.updateRecentFiles()
-                self.defaultMeasureWidthSpinBox.setValue(mWidth)
+                self.beatsSpinBox.setValue(beats)
+                DBUtility.populateCounterCombo(self.beatCountComboBox,
+                                               counter)
                 self.updateStatus("Created a new blank score")
 
     def addToRecentFiles(self):
@@ -189,6 +202,20 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 self.connect(action, SIGNAL("triggered()"),
                              openRecentFile)
 
+    @pyqtSignature("int")
+    def on_beatCountComboBox_currentIndexChanged(self, index):
+        if index == -1:
+            return
+        counter = self.beatCountComboBox.itemData(index)
+        counter = counter.toInt()[0]
+        counter = counterMaker(counter)
+        self.songProperties.beatCounter = counter
 
+    def hideEvent(self, event):
+        self._state = self.saveState()
+        super(DrumBurp, self).hideEvent(event)
 
-
+    def showEvent(self, event):
+        if self._state is not None:
+            self.restoreState(self._state)
+            self._state = None

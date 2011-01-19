@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>600</height>
+    <height>626</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,6 +15,12 @@
   </property>
   <property name="animated">
    <bool>true</bool>
+  </property>
+  <property name="dockNestingEnabled">
+   <bool>true</bool>
+  </property>
+  <property name="dockOptions">
+   <set>QMainWindow::AllowNestedDocks|QMainWindow::AnimatedDocks</set>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
@@ -573,16 +579,26 @@
       </widget>
      </item>
      <item>
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>Default Measure Options:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QLabel" name="label_4">
          <property name="text">
-          <string>Default Measure Width</string>
+          <string>Beats per measure</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QSpinBox" name="defaultMeasureWidthSpinBox">
+        <widget class="QSpinBox" name="beatsSpinBox">
          <property name="toolTip">
           <string>Default Measure Width</string>
          </property>
@@ -590,7 +606,7 @@
           <string>The number of ticks in default measures added to the Score</string>
          </property>
          <property name="suffix">
-          <string> ticks</string>
+          <string> beats</string>
          </property>
          <property name="minimum">
           <number>1</number>
@@ -599,7 +615,7 @@
           <number>256</number>
          </property>
          <property name="value">
-          <number>16</number>
+          <number>4</number>
          </property>
         </widget>
        </item>
@@ -612,6 +628,37 @@
           <size>
            <width>40</width>
            <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Beat count</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="beatCountComboBox">
+         <property name="maxCount">
+          <number>20</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>0</height>
           </size>
          </property>
         </spacer>
@@ -957,7 +1004,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>76</x>
-     <y>181</y>
+     <y>180</y>
     </hint>
     <hint type="destinationlabel">
      <x>440</x>
@@ -973,7 +1020,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>48</x>
-     <y>204</y>
+     <y>203</y>
     </hint>
     <hint type="destinationlabel">
      <x>380</x>
@@ -989,7 +1036,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>150</x>
-     <y>204</y>
+     <y>203</y>
     </hint>
     <hint type="destinationlabel">
      <x>371</x>
@@ -1005,7 +1052,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>56</x>
-     <y>227</y>
+     <y>226</y>
     </hint>
     <hint type="destinationlabel">
      <x>373</x>
@@ -1021,7 +1068,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>140</x>
-     <y>227</y>
+     <y>226</y>
     </hint>
     <hint type="destinationlabel">
      <x>369</x>
@@ -1037,7 +1084,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>80</x>
-     <y>250</y>
+     <y>249</y>
     </hint>
     <hint type="destinationlabel">
      <x>365</x>
@@ -1053,7 +1100,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>235</x>
-     <y>204</y>
+     <y>203</y>
     </hint>
     <hint type="destinationlabel">
      <x>462</x>
@@ -1069,7 +1116,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>116</x>
-     <y>346</y>
+     <y>326</y>
     </hint>
     <hint type="destinationlabel">
      <x>378</x>
@@ -1085,7 +1132,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>131</x>
-     <y>395</y>
+     <y>375</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -1101,7 +1148,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>121</x>
-     <y>444</y>
+     <y>424</y>
     </hint>
     <hint type="destinationlabel">
      <x>431</x>
@@ -1117,7 +1164,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>166</x>
-     <y>520</y>
+     <y>500</y>
     </hint>
     <hint type="destinationlabel">
      <x>454</x>
@@ -1261,7 +1308,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>104</x>
-     <y>472</y>
+     <y>452</y>
     </hint>
     <hint type="destinationlabel">
      <x>283</x>
@@ -1277,7 +1324,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>185</x>
-     <y>474</y>
+     <y>454</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -1318,7 +1365,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>defaultMeasureWidthSpinBox</sender>
+   <sender>beatsSpinBox</sender>
    <signal>valueChanged(int)</signal>
    <receiver>scoreView</receiver>
    <slot>setDefaultMeasureWidth(int)</slot>

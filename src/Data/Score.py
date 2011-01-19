@@ -106,8 +106,9 @@ class Score(object):
     def numMeasures(self):
         return sum(staff.numMeasures() for staff in self.iterStaffs())
 
-    def addEmptyMeasure(self, width):
+    def addEmptyMeasure(self, width, counter = None):
         newMeasure = Measure(width)
+        newMeasure.counter = counter
         if self.numStaffs() == 0:
             self.addStaff()
         self.getStaff(-1).addMeasure(newMeasure)
@@ -121,7 +122,7 @@ class Score(object):
             measuresSoFar += staff.numMeasures()
         raise BadTimeError()
 
-    def insertMeasureByIndex(self, width, index):
+    def insertMeasureByIndex(self, width, index, counter = None):
         if not (0 <= index <= self.numMeasures()):
             raise BadTimeError()
         if self.numStaffs() == 0:
@@ -132,14 +133,18 @@ class Score(object):
             index = staff.numMeasures()
         else:
             staff, index = self._staffContainingMeasure(index)
+        newMeasure = Measure(width)
+        newMeasure.counter = counter
         staff.insertMeasure(NotePosition(measureIndex = index),
-                            Measure(width))
+                            newMeasure)
 
-    def insertMeasureByPosition(self, width, position):
+    def insertMeasureByPosition(self, width, position, counter = None):
         if not(0 <= position.staffIndex < self.numStaffs()):
             raise BadTimeError()
+        newMeasure = Measure(width)
+        newMeasure.counter = counter
         staff = self.getStaff(position.staffIndex)
-        staff.insertMeasure(position, Measure(width))
+        staff.insertMeasure(position, newMeasure)
 
     def deleteMeasureByIndex(self, index):
         if not (0 <= index < self.numMeasures()):
@@ -164,6 +169,12 @@ class Score(object):
             raise BadTimeError()
         staff = self.getStaff(position.staffIndex)
         staff.pasteMeasure(position, notes)
+
+    def setMeasureCounter(self, position, counter):
+        if not(0 <= position.staffIndex < self.numStaffs()):
+            raise BadTimeError()
+        staff = self.getStaff(position.staffIndex)
+        staff.setMeasureCounter(position, counter)
 
     def setSectionEnd(self, position, onOff):
         if not(0 <= position.staffIndex < self.numStaffs()):
@@ -307,19 +318,21 @@ class Score(object):
                 raise IOError("Unrecognised line type.")
 
 class ScoreFactory(object):
-    def __call__(self, filename = None, numMeasures = 32 , measureWidth = 16):
+    def __call__(self, filename = None,
+                 numMeasures = 32 , measureWidth = 16,
+                 counter = None):
         if filename is not None:
             score = self.loadScore(filename)
         else:
-            score = self.makeEmptyScore(numMeasures, measureWidth)
+            score = self.makeEmptyScore(numMeasures, measureWidth, counter)
         return score
 
     @classmethod
-    def makeEmptyScore(cls, numMeasures, measureWidth):
+    def makeEmptyScore(cls, numMeasures, measureWidth, counter):
         score = Score()
         score.drumKit.loadDefaultKit()
         for dummy in range(0, numMeasures):
-            score.addEmptyMeasure(measureWidth)
+            score.addEmptyMeasure(measureWidth, counter = counter)
         return score
 
     @classmethod

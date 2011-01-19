@@ -9,6 +9,7 @@ from collections import defaultdict
 from DBConstants import EMPTY_NOTE, BAR_TYPES
 from DBErrors import BadTimeError
 from NotePosition import NotePosition
+import TimeCounter
 
 class Measure(object):
     '''
@@ -24,6 +25,7 @@ class Measure(object):
         self._isRepeatEnd = False
         self._isRepeatStart = False
         self._isSectionEnd = False
+        self.counter = None
 
     def __len__(self):
         return self._width
@@ -149,6 +151,8 @@ class Measure(object):
 
     def write(self, handle):
         print >> handle, "START_BAR %d" % len(self)
+        if self.counter is not None:
+            print >> handle, "BEATLENGTH %d" % self.counter.beatLength
         startString = [name for name, value in BAR_TYPES.iteritems()
                        if (self.startBar & value) == value]
         print >> handle, "BARLINE %s" % ",".join(startString)
@@ -185,5 +189,8 @@ class Measure(object):
                 self.addNote(pos, head)
             elif lineType == "END_BAR":
                 break
+            elif lineType == "BEATLENGTH":
+                lineData = int(lineData)
+                self.counter = TimeCounter.counterMaker(lineData)
             else:
                 raise IOError("Unrecognised line type")

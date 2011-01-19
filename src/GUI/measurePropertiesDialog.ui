@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>newScoreDialog</class>
- <widget class="QDialog" name="newScoreDialog">
+ <class>measurePropertiesDialog</class>
+ <widget class="QDialog" name="measurePropertiesDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>243</width>
-    <height>135</height>
+    <width>226</width>
+    <height>109</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
    <enum>Qt::NoContextMenu</enum>
   </property>
   <property name="windowTitle">
-   <string>New Score</string>
+   <string>Measure Properties</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
@@ -29,67 +29,6 @@
       <number>6</number>
      </property>
      <item row="0" column="0">
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Number of measures</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-       <property name="buddy">
-        <cstring>numMeasuresSpinBox</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QSpinBox" name="numMeasuresSpinBox">
-       <property name="toolTip">
-        <string>The number of measures in the new score</string>
-       </property>
-       <property name="statusTip">
-        <string>The number of measures in the new score</string>
-       </property>
-       <property name="suffix">
-        <string> measures</string>
-       </property>
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>100000</number>
-       </property>
-       <property name="value">
-        <number>32</number>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="3">
-      <spacer name="horizontalSpacer_3">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="1" column="0">
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -102,10 +41,10 @@
        </property>
       </spacer>
      </item>
-     <item row="1" column="1">
+     <item row="0" column="1">
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Beats per measure</string>
+        <string>Beats</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -115,7 +54,7 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="2">
+     <item row="0" column="2">
       <widget class="QSpinBox" name="beatsSpinBox">
        <property name="toolTip">
         <string>The size of each measure in the new score in ticks</string>
@@ -133,11 +72,11 @@
         <number>256</number>
        </property>
        <property name="value">
-        <number>16</number>
+        <number>4</number>
        </property>
       </widget>
      </item>
-     <item row="1" column="3">
+     <item row="0" column="3">
       <spacer name="horizontalSpacer_4">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -150,7 +89,7 @@
        </property>
       </spacer>
      </item>
-     <item row="2" column="1">
+     <item row="1" column="1">
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string>Beat count</string>
@@ -160,7 +99,7 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="2">
+     <item row="1" column="2">
       <widget class="QComboBox" name="beatCountComboBox"/>
      </item>
     </layout>
@@ -215,7 +154,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>newScoreDialog</receiver>
+   <receiver>measurePropertiesDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -231,7 +170,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>newScoreDialog</receiver>
+   <receiver>measurePropertiesDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

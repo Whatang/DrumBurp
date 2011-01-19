@@ -3,6 +3,9 @@ Created on 8 Jan 2011
 
 @author: Mike Thomas
 '''
+
+from Data.TimeCounter import getCounters
+
 class Null(object):
     def __init__(self, *args, **kwargs):
         "Ignore parameters."
@@ -36,6 +39,8 @@ class Null(object):
         "Convert to a string and return it."
         return "Null"
 
+#pylint: disable-msg=R0902
+
 class QSongProperties(object):
     _START_NOTE_WIDTH = 12
     MIN_NOTE_WIDTH = 12
@@ -54,7 +59,7 @@ class QSongProperties(object):
 
     LINELABELWIDTH = 30
 
-    def __init__(self, qScore = Null()):
+    def __init__(self, settings = None, qScore = Null()):
         self._qScore = qScore
         self._xMargins = 20
         self._yMargins = 30
@@ -64,7 +69,8 @@ class QSongProperties(object):
         self._noteFont = None
         self._head = None
         self._width = 80
-        self._defaultMeasureWidth = 16
+        self.beatsPerMeasure = 4
+        self.beatCounter = getCounters()[0][1]
 
     def setScore(self, score):
         self._qScore = score
@@ -142,14 +148,6 @@ class QSongProperties(object):
             self._qScore.setWidth()
     width = property(fget = _getwidth, fset = _setwidth)
 
-    def _getdefaultMeasureWidth(self):
-        return self._defaultMeasureWidth
-    def _setdefaultMeasureWidth(self, value):
-        if self._defaultMeasureWidth != value:
-            self._defaultMeasureWidth = value
-    defaultMeasureWidth = property(fget = _getdefaultMeasureWidth,
-                                   fset = _setdefaultMeasureWidth)
-
     def proportionalSpacing(self):
         return ((float(self.xSpacing - self.MIN_NOTE_WIDTH)
                  / self.NOTE_WIDTH_RANGE * 100),
@@ -165,3 +163,9 @@ class QSongProperties(object):
     @staticmethod
     def allowedNoteHeads():
         return ("x", "X", "o", "O", "g", "f", "d", "+")
+
+    def save(self, settings):
+        pass
+
+    def measureBeatsChanged(self, beats):
+        self.beatsPerMeasure = beats

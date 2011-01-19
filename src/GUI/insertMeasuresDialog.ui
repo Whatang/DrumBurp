@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>231</width>
-    <height>129</height>
+    <height>155</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -51,23 +51,26 @@
      <item row="1" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Measure size</string>
+        <string>Beats per measure</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
        <property name="buddy">
-        <cstring>measureSizeSpinBox</cstring>
+        <cstring>beatsSpinBox</cstring>
        </property>
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QSpinBox" name="measureSizeSpinBox">
+      <widget class="QSpinBox" name="beatsSpinBox">
        <property name="toolTip">
-        <string>Size of each measure in ticks</string>
+        <string>Size of each measure in beatss</string>
+       </property>
+       <property name="statusTip">
+        <string/>
        </property>
        <property name="suffix">
-        <string> ticks</string>
+        <string> beats</string>
        </property>
        <property name="minimum">
         <number>1</number>
@@ -89,6 +92,26 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Beat count</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QComboBox" name="countComboBox">
+       <property name="toolTip">
+        <string>How to count the beat</string>
+       </property>
+       <property name="maxCount">
+        <number>20</number>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\newScoreDialog.ui'
 #
-# Created: Sun Jan 09 23:39:51 2011
+# Created: Wed Jan 19 01:06:15 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_newScoreDialog(object):
     def setupUi(self, newScoreDialog):
         newScoreDialog.setObjectName(_fromUtf8("newScoreDialog"))
-        newScoreDialog.resize(243, 109)
+        newScoreDialog.resize(243, 135)
         newScoreDialog.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.verticalLayout = QtGui.QVBoxLayout(newScoreDialog)
         self.verticalLayout.setSpacing(9)
@@ -46,14 +46,21 @@ class Ui_newScoreDialog(object):
         self.label_2.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.gridLayout.addWidget(self.label_2, 1, 1, 1, 1)
-        self.measureSizeSpinBox = QtGui.QSpinBox(newScoreDialog)
-        self.measureSizeSpinBox.setMinimum(1)
-        self.measureSizeSpinBox.setMaximum(256)
-        self.measureSizeSpinBox.setProperty(_fromUtf8("value"), 16)
-        self.measureSizeSpinBox.setObjectName(_fromUtf8("measureSizeSpinBox"))
-        self.gridLayout.addWidget(self.measureSizeSpinBox, 1, 2, 1, 1)
+        self.beatsSpinBox = QtGui.QSpinBox(newScoreDialog)
+        self.beatsSpinBox.setMinimum(1)
+        self.beatsSpinBox.setMaximum(256)
+        self.beatsSpinBox.setProperty(_fromUtf8("value"), 16)
+        self.beatsSpinBox.setObjectName(_fromUtf8("beatsSpinBox"))
+        self.gridLayout.addWidget(self.beatsSpinBox, 1, 2, 1, 1)
         spacerItem3 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem3, 1, 3, 1, 1)
+        self.label_3 = QtGui.QLabel(newScoreDialog)
+        self.label_3.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.label_3.setObjectName(_fromUtf8("label_3"))
+        self.gridLayout.addWidget(self.label_3, 2, 1, 1, 1)
+        self.beatCountComboBox = QtGui.QComboBox(newScoreDialog)
+        self.beatCountComboBox.setObjectName(_fromUtf8("beatCountComboBox"))
+        self.gridLayout.addWidget(self.beatCountComboBox, 2, 2, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         spacerItem4 = QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem4)
@@ -69,7 +76,7 @@ class Ui_newScoreDialog(object):
         self.horizontalLayout.addWidget(self.buttonBox)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.label.setBuddy(self.numMeasuresSpinBox)
-        self.label_2.setBuddy(self.measureSizeSpinBox)
+        self.label_2.setBuddy(self.beatsSpinBox)
 
         self.retranslateUi(newScoreDialog)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), newScoreDialog.accept)
@@ -82,8 +89,9 @@ class Ui_newScoreDialog(object):
         self.numMeasuresSpinBox.setToolTip(QtGui.QApplication.translate("newScoreDialog", "The number of measures in the new score", None, QtGui.QApplication.UnicodeUTF8))
         self.numMeasuresSpinBox.setStatusTip(QtGui.QApplication.translate("newScoreDialog", "The number of measures in the new score", None, QtGui.QApplication.UnicodeUTF8))
         self.numMeasuresSpinBox.setSuffix(QtGui.QApplication.translate("newScoreDialog", " measures", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("newScoreDialog", "Measure size", None, QtGui.QApplication.UnicodeUTF8))
-        self.measureSizeSpinBox.setToolTip(QtGui.QApplication.translate("newScoreDialog", "The size of each measure in the new score in ticks", None, QtGui.QApplication.UnicodeUTF8))
-        self.measureSizeSpinBox.setStatusTip(QtGui.QApplication.translate("newScoreDialog", "The size of each measure in the new score in ticks", None, QtGui.QApplication.UnicodeUTF8))
-        self.measureSizeSpinBox.setSuffix(QtGui.QApplication.translate("newScoreDialog", " ticks", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_2.setText(QtGui.QApplication.translate("newScoreDialog", "Beats per measure", None, QtGui.QApplication.UnicodeUTF8))
+        self.beatsSpinBox.setToolTip(QtGui.QApplication.translate("newScoreDialog", "The size of each measure in the new score in ticks", None, QtGui.QApplication.UnicodeUTF8))
+        self.beatsSpinBox.setStatusTip(QtGui.QApplication.translate("newScoreDialog", "The size of each measure in the new score in ticks", None, QtGui.QApplication.UnicodeUTF8))
+        self.beatsSpinBox.setSuffix(QtGui.QApplication.translate("newScoreDialog", " beats", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_3.setText(QtGui.QApplication.translate("newScoreDialog", "Beat count", None, QtGui.QApplication.UnicodeUTF8))
 
