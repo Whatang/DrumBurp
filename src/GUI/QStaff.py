@@ -5,10 +5,11 @@ Created on 4 Jan 2011
 
 '''
 
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui
 from QMeasure import QMeasure
 from QMeasureLine import QMeasureLine
-from QNote import QLineLabel
+from QLineLabel import QLineLabel
+import itertools
 
 #pylint: disable-msg=R0904
 class QStaff(QtGui.QGraphicsItemGroup):
@@ -104,7 +105,9 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self._measureLines[-1].setPos(xOffset, 0)
         self._measureLines[-1].setDimensions()
         self._width = xOffset + self._measureLines[-1].width()
-        self._height = self._measureLines[0].height()
+        self._height = max(element.height()
+                           for element in
+                           itertools.chain(self._measures, self._measureLines))
 
     def xSpacingChanged(self):
         xOffset = self._props.LINELABELWIDTH
@@ -130,7 +133,9 @@ class QStaff(QtGui.QGraphicsItemGroup):
             qMeasureLine.ySpacingChanged()
             qMeasure.ySpacingChanged()
         self._measureLines[-1].ySpacingChanged()
-        self._height = self._measureLines[0].height()
+        self._height = max(element.height()
+                           for element in
+                           zip(self._measures, self._measureLines))
 
     def setNote(self, np, head):
         self._measures[np.measureIndex].setNote(np, head)

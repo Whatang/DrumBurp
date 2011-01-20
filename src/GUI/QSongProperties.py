@@ -4,7 +4,7 @@ Created on 8 Jan 2011
 @author: Mike Thomas
 '''
 
-from Data.TimeCounter import getCounters
+from Data.TimeCounter import getCounters, counterMaker, TimeCounter
 
 class Null(object):
     def __init__(self, *args, **kwargs):
@@ -70,7 +70,7 @@ class QSongProperties(object):
         self._head = None
         self._width = 80
         self.beatsPerMeasure = 4
-        self.beatCounter = getCounters()[0][1]
+        self._beatCounter = getCounters()[0][1]
 
     def setScore(self, score):
         self._qScore = score
@@ -169,3 +169,13 @@ class QSongProperties(object):
 
     def measureBeatsChanged(self, beats):
         self.beatsPerMeasure = beats
+
+    def _getbeatCounter(self):
+        return self._beatCounter
+    def _setbeatCounter(self, value):
+        if isinstance(value, int):
+            value = counterMaker(value)
+        assert(isinstance(value, TimeCounter))
+        if self._beatCounter != value:
+            self._beatCounter = value
+    beatCounter = property(fget = _getbeatCounter, fset = _setbeatCounter)

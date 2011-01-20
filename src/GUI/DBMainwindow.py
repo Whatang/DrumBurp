@@ -16,7 +16,7 @@ from Data.TimeCounter import counterMaker
 import os
 
 APPNAME = "DrumBurp"
-
+#pylint:disable-msg=R0904
 class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     '''
     classdocs

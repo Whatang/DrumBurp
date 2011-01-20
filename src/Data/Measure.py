@@ -139,6 +139,12 @@ class Measure(object):
         notes = list(self)
         return notes
 
+    def count(self):
+        if self.counter is None:
+            return [" "] * len(self)
+        else:
+            return list(self.counter.countTicks(len(self)))
+
     def pasteMeasure(self, position, notes):
         self.clear()
         for pos, head in notes:

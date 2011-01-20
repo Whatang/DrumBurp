@@ -85,7 +85,6 @@ class QScore(QtGui.QGraphicsScene):
 
     def clearStaffs(self):
         for qStaff in self._qStaffs:
-            qStaff.clear()
             self.removeItem(qStaff)
         self._qStaffs = []
 
@@ -197,9 +196,9 @@ class QScore(QtGui.QGraphicsScene):
                 self._score.addNote(np, head)
 
     def insertMeasure(self, np):
-        counter = self._properties.beatCounter.beatLength
+        counter = self._properties.beatCounter
         width = (self._properties.beatsPerMeasure *
-                 counter)
+                 counter.beatLength)
         self._score.insertMeasureByPosition(width, np,
                                             counter = counter)
         self._score.gridFormatScore(self._properties.width)

@@ -43,19 +43,8 @@ class TimeCounter(object):
                 yield count
 
     def countTicks(self, numTicks):
-        beat = 1
-        count = 0
-        ticks = 0
-        while ticks < numTicks:
-            if count == 0:
-                yield str(beat)
-            else:
-                yield self._counts[count]
-            ticks += 1
-            count += 1
-            if count == self.beatLength:
-                count = 0
-                beat += 1
+        for dummyIndex, count in zip(range(0, numTicks), self.count()):
+            yield count
 
 _QUARTERS = TimeCounter(".", "Quarter Notes")
 _EIGHTHS = TimeCounter(".+", "Eighth Notes")

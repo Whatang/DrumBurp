@@ -7,6 +7,7 @@ Created on 5 Jan 2011
 
 from PyQt4 import QtGui
 from QNote import QNote
+from QCount import QCount
 from Data.NotePosition import NotePosition
 
 class QMeasure(QtGui.QGraphicsItemGroup):
@@ -27,6 +28,7 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         self._measure = None
         self._index = None
         self._notes = []
+        self._counts = []
         self._width = 0
         self._height = 0
         self.setMeasure(measure)
@@ -47,7 +49,7 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         self._index = index
 
     def clear(self):
-        self._notes = []
+        self._counts = []
 
     def build(self):
         self.clear()
@@ -59,15 +61,24 @@ class QMeasure(QtGui.QGraphicsItemGroup):
                 qNote.setIndex(drumIndex, noteTime)
                 noteLine.append(qNote)
                 self.addToGroup(qNote)
+        for noteTime, count in enumerate(self._measure.count()):
+            qCount = QCount(count, self._qScore, parent = self)
+            qCount.setIndex(noteTime)
+            self._counts.append(qCount)
+            self.addToGroup(qCount)
 
     def placeNotes(self):
         yOffsets = self._qScore.lineOffsets()
+        countOffset = self._qScore.kitSize * self._props.ySpacing
         for noteTime in range(0, len(self._measure)):
             xOffset = noteTime * self._props.xSpacing
             for drumIndex, yOffset in enumerate(yOffsets):
                 qNote = self._notes[drumIndex][noteTime]
                 qNote.setDimensions()
                 qNote.setPos(xOffset, yOffset)
+            qCount = self._counts[noteTime]
+            qCount.setDimensions()
+            qCount.setPos(xOffset, countOffset)
         self._setWidth()
         self._setHeight()
 
@@ -75,7 +86,7 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         self._width = len(self._measure) * self._props.xSpacing
 
     def _setHeight(self):
-        self._height = self._qScore.kitSize * self._props.ySpacing
+        self._height = (self._qScore.kitSize + 1) * self._props.ySpacing
 
     def _makeNotePosition(self):
         np = NotePosition()
@@ -129,13 +140,20 @@ class QMeasure(QtGui.QGraphicsItemGroup):
                 qNote = self._notes[drumIndex][noteTime]
                 qNote.setX(xOffset)
                 qNote.xSpacingChanged()
+            qCount = self._counts[noteTime]
+            qCount.setX(xOffset)
+            qCount.xSpacingChanged()
         self._setWidth()
 
     def ySpacingChanged(self):
         yOffsets = self._qScore.lineOffsets()
+        countOffset = self._qScore.kitSize * self._props.ySpacing
         for noteTime in range(0, len(self._measure)):
             for drumIndex, yOffset in enumerate(yOffsets):
                 qNote = self._notes[drumIndex][noteTime]
                 qNote.setY(yOffset)
                 qNote.ySpacingChanged()
+            qCount = self._counts[noteTime]
+            qCount.setY(countOffset)
+            qCount.ySpacingChanged()
         self._setHeight()
