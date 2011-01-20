@@ -219,3 +219,4 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if self._state is not None:
             self.restoreState(self._state)
             self._state = None
+        super(DrumBurp, self).showEvent(event)
