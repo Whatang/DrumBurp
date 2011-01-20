@@ -30,6 +30,7 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         self._width = 0
         self._height = 0
         self.setMeasure(measure)
+        self.setHandlesChildEvents(False)
 
     def width(self):
         return self._width

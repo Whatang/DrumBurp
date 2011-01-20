@@ -5,7 +5,7 @@ Created on 4 Jan 2011
 
 '''
 
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 from QMeasure import QMeasure
 from QMeasureLine import QMeasureLine
 from QNote import QLineLabel
@@ -33,6 +33,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self._width = 0
         self._height = 0
         self.setStaff(staff)
+        self.setHandlesChildEvents(False)
 
     def width(self):
         return self._width

@@ -5,6 +5,7 @@ Created on 5 Dec 2010
 
 '''
 from PyQt4 import QtGui, QtCore
+from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 from Data import DBConstants
 from Data.NotePosition import NotePosition
 
@@ -118,18 +119,18 @@ class QNote(QDBGridItem):
         self._rect.setBottom(self.cellHeight())
 
     def mousePressEvent(self, event):
+        menu = None
         if event.button() == QtCore.Qt.MiddleButton:
-            event.accept()
-            menu = QtGui.QMenu()
+            event.ignore()
+            menu = QMenuIgnoreCancelClick(self._qScore)
             for noteHead in self._props.allowedNoteHeads():
                 action = menu.addAction(noteHead)
                 def noteAction(nh = noteHead):
                     self.toggleNote(nh)
                 menu.connect(action, QtCore.SIGNAL("triggered()"), noteAction)
-            menu.exec_(event.screenPos())
         elif event.button() == QtCore.Qt.RightButton:
-            event.accept()
-            menu = QtGui.QMenu()
+            event.ignore()
+            menu = QMenuIgnoreCancelClick(self._qScore)
             actionText = "Repeat note"
             repeatNoteAction = menu.addAction(actionText)
             menu.connect(repeatNoteAction,
@@ -167,14 +168,15 @@ class QNote(QDBGridItem):
             deleteAction = menu.addAction("Delete Measure")
             menu.connect(deleteAction, QtCore.SIGNAL("triggered()"),
                          self._qMeasure.deleteMeasure)
-            menu.exec_(event.screenPos())
         else:
-            event.ignore()
+            pass
+        if menu is not None:
+            menu.exec_(event.screenPos())
 
 
     def mouseReleaseEvent(self, event):
         if (event.button() == QtCore.Qt.LeftButton and
-            self._qScore.getMousePressStartItem() == self):
+            self._qScore.itemAt(event.scenePos()) == self):
             self.toggleNote()
             event.accept()
         else:

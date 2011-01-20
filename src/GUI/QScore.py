@@ -31,7 +31,7 @@ class QScore(QtGui.QGraphicsScene):
         self._properties = parent.songProperties
         self._score = None
         self._dirty = None
-        self._startMousePressItem = None
+        self._ignoreNext = False
         self.measureClipboard = None
         if parent.filename is not None:
             if not self.loadScore(parent.filename):
@@ -171,20 +171,16 @@ class QScore(QtGui.QGraphicsScene):
     def setNote(self, np, head):
         self._qStaffs[np.staffIndex].setNote(np, head)
 
+    def ignoreNextClick(self):
+        self._ignoreNext = True
+
     def mousePressEvent(self, event):
-        item = self.itemAt(event.scenePos())
-        if item is not None:
-            self._startMousePressItem = item
-            item.mousePressEvent(event)
+        event.ignore()
+        if self._ignoreNext:
+            self._ignoreNext = False
+        else:
+            super(QScore, self).mousePressEvent(event)
 
-    def getMousePressStartItem(self):
-        return self._startMousePressItem
-
-    def mouseReleaseEvent(self, event):
-        item = self.itemAt(event.scenePos())
-        if item is not None:
-            item.mouseReleaseEvent(event)
-        self._startMousePressItem = None
 
     def toggleNote(self, np, head):
         head = head if head is not None else self._properties.head
