@@ -6,6 +6,7 @@ Created on 19 Jan 2011
 '''
 
 from QDBGridItem import QDBGridItem
+from PyQt4.QtCore import Qt
 
 class QCount(QDBGridItem):
     '''
@@ -20,6 +21,7 @@ class QCount(QDBGridItem):
         super(QCount, self).__init__(qScore, parent)
         self._qMeasure = parent
         self._index = None
+        self.setCursor(Qt.PointingHandCursor)
         self.setText(count)
 
     def setIndex(self, index):
