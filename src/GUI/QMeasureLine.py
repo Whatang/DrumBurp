@@ -7,6 +7,7 @@ Created on 5 Jan 2011
 
 from PyQt4 import QtGui, QtCore
 from Data.NotePosition import NotePosition
+from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 
 class QMeasureLine(QtGui.QGraphicsItem):
     '''
@@ -90,7 +91,7 @@ class QMeasureLine(QtGui.QGraphicsItem):
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.RightButton:
             event.accept()
-            menu = QtGui.QMenu()
+            menu = QMenuIgnoreCancelClick(self._qScore)
             # Repeat Start
             if self._nextMeasure is not None:
                 repeatStartAction = QtGui.QAction("Repeat Start", menu)
@@ -117,7 +118,7 @@ class QMeasureLine(QtGui.QGraphicsItem):
                 menu.addAction(sectionEndAction)
             menu.exec_(event.screenPos())
         else:
-            event.ignore()
+            pass
 
 class BarLinePainter(object):
     THICK_LINE_WIDTH = 3
