@@ -136,7 +136,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self._measureLines[-1].ySpacingChanged()
         self._height = max(element.height()
                            for element in
-                           zip(self._measures, self._measureLines))
+                           itertools.chain(self._measures, self._measureLines))
 
     def setNote(self, np, head):
         self._measures[np.measureIndex].setNote(np, head)
