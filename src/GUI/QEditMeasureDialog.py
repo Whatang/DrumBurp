@@ -8,7 +8,6 @@ Created on 20 Jan 2011
 from ui_measurePropertiesDialog import Ui_measurePropertiesDialog
 from PyQt4.QtGui import QDialog
 from PyQt4.QtCore import pyqtSignature
-from Data.TimeCounter import counterMaker
 import DBUtility
 
 
@@ -26,10 +25,10 @@ class QEditMeasureDialog(QDialog, Ui_measurePropertiesDialog):
         super(QEditMeasureDialog, self).__init__(parent = parent)
         self.setupUi(self)
         if beatCounter == None:
-            beatCounter = counterMaker(1)
+            beatCounter = defaultBeatCounter
         DBUtility.populateCounterCombo(self.beatCountComboBox,
                                        beatCounter)
-        self.beats = numTicks / beatCounter.beatLength
+        self.beats = max(1, numTicks / beatCounter.beatLength)
         self.beatsSpinBox.setValue(self.beats)
         self.beatCounter = beatCounter
         self.defaultBeats = defaultBeats
