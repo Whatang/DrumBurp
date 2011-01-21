@@ -19,3 +19,6 @@ class Drum(object):
 
     def __eq__(self, other):
         return self.name == other.name or self.abbr == other.abbr
+
+    def exportASCII(self):
+        return "%2s - %s" % (self.abbr, self.name)

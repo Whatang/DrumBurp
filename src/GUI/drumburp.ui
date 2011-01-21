@@ -82,7 +82,7 @@
     <addaction name="actionSave"/>
     <addaction name="actionSaveAs"/>
     <addaction name="separator"/>
-    <addaction name="actionExport_ASCII"/>
+    <addaction name="actionExportASCII"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -142,7 +142,7 @@
    <addaction name="actionLoad"/>
    <addaction name="actionSave"/>
    <addaction name="actionSaveAs"/>
-   <addaction name="actionExport_ASCII"/>
+   <addaction name="actionExportASCII"/>
   </widget>
   <widget class="QDockWidget" name="noteHeadDock">
    <property name="toolTip">
@@ -885,7 +885,7 @@
     <string>Save this DrumBurp score with a new name</string>
    </property>
   </action>
-  <action name="actionExport_ASCII">
+  <action name="actionExportASCII">
    <property name="text">
     <string>&amp;Export ASCII</string>
    </property>

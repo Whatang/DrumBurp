@@ -9,7 +9,8 @@ from DrumKit import DrumKit
 from Staff import Staff
 from Measure import Measure
 from DBErrors import BadTimeError, OverSizeMeasure
-from Data.NotePosition import NotePosition
+from NotePosition import NotePosition
+import os
 
 #pylint: disable-msg=R0904
 
@@ -176,6 +177,10 @@ class Score(object):
         staff = self.getStaff(position.staffIndex)
         staff.setMeasureBeatCount(position, beats, counter)
 
+    def setAllBeats(self, beats, counter):
+        for measure in self.iterMeasures():
+            measure.setBeatCount(beats, counter)
+
     def setSectionEnd(self, position, onOff):
         if not(0 <= position.staffIndex < self.numStaffs()):
             raise BadTimeError()
@@ -316,6 +321,20 @@ class Score(object):
                 self.drumKit.read(scoreIterator)
             else:
                 raise IOError("Unrecognised line type.")
+
+    def exportASCII(self, handle):
+        asciiString = []
+        for staff in self.iterStaffs():
+            asciiString.extend(staff.exportASCII(self.drumKit))
+            asciiString.append("")
+        asciiString = asciiString[:-1]
+        kitString = []
+        for instr in self.drumKit:
+            kitString.append(instr.exportASCII())
+        kitString.reverse()
+        kitString.append("")
+        handle.writelines(iString + os.linesep for iString in kitString)
+        handle.writelines(sString + os.linesep for sString in asciiString)
 
 class ScoreFactory(object):
     def __call__(self, filename = None,

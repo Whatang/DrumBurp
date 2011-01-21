@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Thu Jan 20 20:32:45 2011
+# Created: Thu Jan 20 22:57:55 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -292,8 +292,8 @@ class Ui_DrumBurpWindow(object):
         self.actionSave.setObjectName(_fromUtf8("actionSave"))
         self.actionSaveAs = QtGui.QAction(DrumBurpWindow)
         self.actionSaveAs.setObjectName(_fromUtf8("actionSaveAs"))
-        self.actionExport_ASCII = QtGui.QAction(DrumBurpWindow)
-        self.actionExport_ASCII.setObjectName(_fromUtf8("actionExport_ASCII"))
+        self.actionExportASCII = QtGui.QAction(DrumBurpWindow)
+        self.actionExportASCII.setObjectName(_fromUtf8("actionExportASCII"))
         self.actionDisplayOptionsIsVisible = QtGui.QAction(DrumBurpWindow)
         self.actionDisplayOptionsIsVisible.setCheckable(True)
         self.actionDisplayOptionsIsVisible.setObjectName(_fromUtf8("actionDisplayOptionsIsVisible"))
@@ -322,7 +322,7 @@ class Ui_DrumBurpWindow(object):
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionSaveAs)
         self.menuFile.addSeparator()
-        self.menuFile.addAction(self.actionExport_ASCII)
+        self.menuFile.addAction(self.actionExportASCII)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionQuit)
         self.menuShow.addAction(self.actionDisplayOptionsIsVisible)
@@ -339,7 +339,7 @@ class Ui_DrumBurpWindow(object):
         self.fileToolBar.addAction(self.actionLoad)
         self.fileToolBar.addAction(self.actionSave)
         self.fileToolBar.addAction(self.actionSaveAs)
-        self.fileToolBar.addAction(self.actionExport_ASCII)
+        self.fileToolBar.addAction(self.actionExportASCII)
         self.displayToolBar.addAction(self.actionFitInWindow)
         self.spacingLabel.setBuddy(self.spaceSlider)
         self.label.setBuddy(self.verticalSlider)
@@ -486,9 +486,9 @@ class Ui_DrumBurpWindow(object):
         self.actionSave.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+S", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSaveAs.setText(QtGui.QApplication.translate("DrumBurpWindow", "Save As", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSaveAs.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Save this DrumBurp score with a new name", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionExport_ASCII.setText(QtGui.QApplication.translate("DrumBurpWindow", "&Export ASCII", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionExport_ASCII.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Write an ASCII representation of this score to a file", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionExport_ASCII.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+E", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExportASCII.setText(QtGui.QApplication.translate("DrumBurpWindow", "&Export ASCII", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExportASCII.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Write an ASCII representation of this score to a file", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExportASCII.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+E", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDisplayOptionsIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "Display Options", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDisplayOptionsIsVisible.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Change visibility of display options", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDisplayOptionsIsVisible.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Change visibility of display options", None, QtGui.QApplication.UnicodeUTF8))

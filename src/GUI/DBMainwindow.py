@@ -182,7 +182,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 self.updateStatus("Created a new blank score")
 
     def addToRecentFiles(self):
-        if self.filename is not None and self.filename not in self.recentFiles:
+        if self.filename is not None:
+            if self.filename in self.recentFiles:
+                self.recentFiles.remove(self.filename)
             self.recentFiles.insert(0, self.filename)
             if len(self.recentFiles) > 10:
                 self.recentFiles.pop()
@@ -197,7 +199,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                     if self.scoreScene.loadScore(filename):
                         self.filename = filename
                         self.updateStatus("Successfully loaded %s" % filename)
-                    self.updateRecentFiles()
+                        self.addToRecentFiles()
+                        self.updateRecentFiles()
                 action = self.menuRecentScores.addAction(fname)
                 self.connect(action, SIGNAL("triggered()"),
                              openRecentFile)
@@ -220,3 +223,18 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             self.restoreState(self._state)
             self._state = None
         super(DrumBurp, self).showEvent(event)
+
+    @pyqtSignature("")
+    def on_actionExportASCII_triggered(self):
+        caption = "Select an ASCII file to export to"
+        directory = self.filename if self.filename is not None else ""
+        fname = QFileDialog.getSaveFileName(parent = self,
+                                            caption = caption,
+                                            directory = directory,
+                                            filter = "Text files (*.txt)")
+        if len(fname) == 0 :
+            return
+        with open(fname, 'w') as txtHandle:
+            self.scoreScene.exportASCII(txtHandle)
+            self.updateStatus("Successfully exported ASCII to " + fname)
+

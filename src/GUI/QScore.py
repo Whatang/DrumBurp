@@ -265,6 +265,7 @@ class QScore(QtGui.QGraphicsScene):
                 self._score.setMeasureBeatCount(np, beats, newCounter)
                 self.dirty = True
                 if newTicks != numTicks:
+                    self._score.gridFormatScore(self._properties.width)
                     self.reBuild()
                 else:
                     self.countChanged(np)
@@ -320,3 +321,12 @@ class QScore(QtGui.QGraphicsScene):
                                   measureWidth = measureWidth,
                                   counter = counter)
         self.setScore(newScore)
+
+    def setAllBeats(self):
+        self._score.setAllBeats(self._properties.beatsPerMeasure,
+                                self._properties.beatCounter)
+        self.reBuild()
+        self.dirty = True
+
+    def exportASCII(self, handle):
+        self._score.exportASCII(handle)

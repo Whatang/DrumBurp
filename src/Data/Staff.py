@@ -5,7 +5,8 @@ Created on 12 Dec 2010
 
 '''
 from DBErrors import BadTimeError
-from DBConstants import COMBINED_BARLINE_STRING, BAR_TYPES
+from DBConstants import COMBINED_BARLINE_STRING, BAR_TYPES, EMPTY_NOTE
+from NotePosition import NotePosition
 
 #pylint:disable-msg=R0904
 class Staff(object):
@@ -155,3 +156,39 @@ class Staff(object):
             raise BadTimeError(position)
         self[position.measureIndex].toggleNote(position, head)
 
+    def exportASCII(self, kit):
+        kitSize = len(kit)
+        indices = range(0, kitSize)
+        indices.reverse()
+        position = NotePosition()
+        staffString = []
+        countString = ""
+        countsDone = False
+        for drumIndex in indices:
+            position.drumIndex = drumIndex
+            lastEnd = BAR_TYPES["NO_BAR"]
+            lineString = "%2s" % kit[drumIndex].abbr
+            if not countsDone:
+                countString += "  "
+            for measureIndex, measure in enumerate(self):
+                position.measureIndex = measureIndex
+                key = (lastEnd, measure.startBar)
+                barString = COMBINED_BARLINE_STRING[key]
+                lineString += barString
+                lastEnd = measure.endBar
+                if not countsDone:
+                    countString += " " * len(barString)
+                    countString += "".join(measure.count())
+                for noteTime in range(len(measure)):
+                    position.noteTime = noteTime
+                    note = measure.getNote(position)
+                    lineString += note
+            key = (lastEnd, BAR_TYPES["NO_BAR"])
+            barString = COMBINED_BARLINE_STRING[key]
+            lineString += barString
+            staffString.append(lineString)
+            if not countsDone:
+                countString += " " * len(barString)
+                countsDone = True
+        staffString.append(countString)
+        return staffString
