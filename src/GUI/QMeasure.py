@@ -129,6 +129,16 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         np = self._makeNotePosition()
         self._qStaff.pasteMeasure(np)
 
+    def editMeasureProperties(self):
+        np = self._makeNotePosition()
+        self._qStaff.editMeasureProperties(np,
+                                           len(self._measure),
+                                           self._measure.counter)
+
+    def countChanged(self):
+        for qCount, count in zip(self._counts, self._measure.count()):
+            qCount.setText(count)
+
     def setNote(self, np, head):
         self._notes[np.drumIndex][np.noteTime].setText(head)
 

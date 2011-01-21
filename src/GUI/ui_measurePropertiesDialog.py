@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\measurePropertiesDialog.ui'
 #
-# Created: Wed Jan 19 01:06:14 2011
+# Created: Thu Jan 20 20:32:46 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_measurePropertiesDialog(object):
     def setupUi(self, measurePropertiesDialog):
         measurePropertiesDialog.setObjectName(_fromUtf8("measurePropertiesDialog"))
-        measurePropertiesDialog.resize(226, 109)
+        measurePropertiesDialog.resize(240, 115)
         measurePropertiesDialog.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.verticalLayout = QtGui.QVBoxLayout(measurePropertiesDialog)
         self.verticalLayout.setSpacing(9)
@@ -39,7 +39,7 @@ class Ui_measurePropertiesDialog(object):
         self.beatsSpinBox.setObjectName(_fromUtf8("beatsSpinBox"))
         self.gridLayout.addWidget(self.beatsSpinBox, 0, 2, 1, 1)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem1, 0, 3, 1, 1)
+        self.gridLayout.addItem(spacerItem1, 0, 5, 1, 1)
         self.label_3 = QtGui.QLabel(measurePropertiesDialog)
         self.label_3.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_3.setObjectName(_fromUtf8("label_3"))
@@ -47,6 +47,12 @@ class Ui_measurePropertiesDialog(object):
         self.beatCountComboBox = QtGui.QComboBox(measurePropertiesDialog)
         self.beatCountComboBox.setObjectName(_fromUtf8("beatCountComboBox"))
         self.gridLayout.addWidget(self.beatCountComboBox, 1, 2, 1, 1)
+        self.restoreButton = QtGui.QPushButton(measurePropertiesDialog)
+        self.restoreButton.setObjectName(_fromUtf8("restoreButton"))
+        self.gridLayout.addWidget(self.restoreButton, 0, 6, 1, 1)
+        self.defaultButton = QtGui.QPushButton(measurePropertiesDialog)
+        self.defaultButton.setObjectName(_fromUtf8("defaultButton"))
+        self.gridLayout.addWidget(self.defaultButton, 1, 6, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         spacerItem2 = QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem2)
@@ -75,4 +81,6 @@ class Ui_measurePropertiesDialog(object):
         self.beatsSpinBox.setStatusTip(QtGui.QApplication.translate("measurePropertiesDialog", "The size of each measure in the new score in ticks", None, QtGui.QApplication.UnicodeUTF8))
         self.beatsSpinBox.setSuffix(QtGui.QApplication.translate("measurePropertiesDialog", " beats", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("measurePropertiesDialog", "Beat count", None, QtGui.QApplication.UnicodeUTF8))
+        self.restoreButton.setText(QtGui.QApplication.translate("measurePropertiesDialog", "Restore", None, QtGui.QApplication.UnicodeUTF8))
+        self.defaultButton.setText(QtGui.QApplication.translate("measurePropertiesDialog", "Defaults", None, QtGui.QApplication.UnicodeUTF8))
 

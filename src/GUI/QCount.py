@@ -13,11 +13,12 @@ class QCount(QDBGridItem):
     '''
 
 
-    def __init__(self, count, qScore, parent = None):
+    def __init__(self, count, qScore, parent):
         '''
         Constructor
         '''
         super(QCount, self).__init__(qScore, parent)
+        self._qMeasure = parent
         self._index = None
         self.setText(count)
 
@@ -29,3 +30,6 @@ class QCount(QDBGridItem):
 
     def cellHeight(self):
         return self._props.ySpacing
+
+    def mouseDoubleClickEvent(self, event):
+        self._qMeasure.editMeasureProperties()

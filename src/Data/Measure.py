@@ -135,6 +135,10 @@ class Measure(object):
         for badTime in badTimes:
             del self._notes[badTime]
 
+    def setBeatCount(self, beats, counter):
+        self._width = beats * counter.beatLength
+        self.counter = counter
+
     def copyMeasure(self):
         notes = list(self)
         return notes

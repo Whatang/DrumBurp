@@ -170,11 +170,11 @@ class Score(object):
         staff = self.getStaff(position.staffIndex)
         staff.pasteMeasure(position, notes)
 
-    def setMeasureCounter(self, position, counter):
+    def setMeasureBeatCount(self, position, beats, counter):
         if not(0 <= position.staffIndex < self.numStaffs()):
             raise BadTimeError()
         staff = self.getStaff(position.staffIndex)
-        staff.setMeasureCounter(position, counter)
+        staff.setMeasureBeatCount(position, beats, counter)
 
     def setSectionEnd(self, position, onOff):
         if not(0 <= position.staffIndex < self.numStaffs()):

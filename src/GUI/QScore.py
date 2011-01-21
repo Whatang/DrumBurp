@@ -8,6 +8,7 @@ Created on 4 Jan 2011
 from PyQt4 import QtGui, QtCore
 from QStaff import QStaff
 from QInsertMeasuresDialog import QInsertMeasuresDialog
+from QEditMeasureDialog import QEditMeasureDialog
 from QRepeatDialog import QRepeatDialog
 from Data.Score import ScoreFactory
 from Data.TimeCounter import counterMaker
@@ -246,6 +247,31 @@ class QScore(QtGui.QGraphicsScene):
     def pasteMeasure(self, np):
         self._score.pasteMeasure(np, self.measureClipboard)
         self.dirty = True
+
+    def editMeasureProperties(self, np, numTicks, counter):
+        defBeats = self._properties.beatsPerMeasure
+        defCounter = self._properties.beatCounter
+        editDialog = QEditMeasureDialog(self.parent(),
+                                        numTicks,
+                                        counter,
+                                        defBeats,
+                                        defCounter)
+        if editDialog.exec_():
+            beats, newCounter = editDialog.getValues()
+            newCounter = counterMaker(newCounter)
+            newTicks = newCounter.beatLength * beats
+            if (newCounter != counter
+                or newTicks != numTicks):
+                self._score.setMeasureBeatCount(np, beats, newCounter)
+                self.dirty = True
+                if newTicks != numTicks:
+                    self.reBuild()
+                else:
+                    self.countChanged(np)
+
+    def countChanged(self, np):
+        staff = self._qStaffs[np.staffIndex]
+        staff.countChanged(np)
 
     def setSectionEnd(self, np, onOff):
         self._score.setSectionEnd(np, onOff)

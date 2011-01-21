@@ -9,6 +9,7 @@ from PyQt4 import QtGui
 from QMeasure import QMeasure
 from QMeasureLine import QMeasureLine
 from QLineLabel import QLineLabel
+from Data.NotePosition import NotePosition
 import itertools
 
 #pylint: disable-msg=R0904
@@ -140,6 +141,10 @@ class QStaff(QtGui.QGraphicsItemGroup):
     def setNote(self, np, head):
         self._measures[np.measureIndex].setNote(np, head)
 
+    def _makeNotePosition(self):
+        np = NotePosition(measureIndex = self._index)
+        return np
+
     def _augmentNotePosition(self, np):
         np.staffIndex = self._index
 
@@ -170,6 +175,14 @@ class QStaff(QtGui.QGraphicsItemGroup):
     def pasteMeasure(self, np):
         self._augmentNotePosition(np)
         self._qScore.pasteMeasure(np)
+
+    def editMeasureProperties(self, np, numTicks, counter):
+        self._augmentNotePosition(np)
+        self._qScore.editMeasureProperties(np, numTicks, counter)
+
+    def countChanged(self, np):
+        measure = self._measures[np.measureIndex]
+        measure.countChanged()
 
     def setSectionEnd(self, np, onOff):
         self._augmentNotePosition(np)
