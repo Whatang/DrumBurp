@@ -1,0 +1,34 @@
+Bugs
+
+- "Not a mouse grabber" on insert/delete measure. Other cases?  
+- ScoreView doesn't accept a click after QEditMeasureDialog box shown.
+ 
+Requirements/Features
+
+- Add options to affect how ASCII export functions
+- Make width a property of the Score, not of the ScoreView
+- Section titles
+- Alternate repeat endings
+- Repeat counts
+- Line breaks which aren't section ends
+- Data structures for song properties
+- Song properties to be set/loaded/saved from GUI
+- Printing
+- Save/restore preferences on startup
+- Edit/load/save drum kits
+- Multi-bar copy paste
+- Drag & drop note movement?
+- Edit available note heads: make a part of DrumKit definition?
+- Highlight beat & instrument on mouse-over note
+- Delete empty trailing measures
+- Better ostinato input
+- Undo/redo stack
+
+
+Technical issues
+
+- Create augment/create note position helper functions
+- Refactor getting a TimeCounter from combo boxes
+- Move various context menus to their own classes
+- QScore & Score are "God objects": make a more direct connection between
+  data structures & their GUI representations? Maybe...
