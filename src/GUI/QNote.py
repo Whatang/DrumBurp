@@ -22,6 +22,7 @@ class QNote(QDBGridItem):
         self._noteTime = None
         self._notePosition = NotePosition()
         self._text = DBConstants.EMPTY_NOTE
+        self.setAcceptsHoverEvents(True)
 
     def toggleNote(self, head = None):
         np = NotePosition(drumIndex = self._drumIndex,
@@ -101,11 +102,19 @@ class QNote(QDBGridItem):
         if menu is not None:
             menu.exec_(event.screenPos())
 
-
     def mouseReleaseEvent(self, event):
         if (event.button() == QtCore.Qt.LeftButton and
             self._qScore.itemAt(event.scenePos()) == self):
             self.toggleNote()
-            event.accept()
         else:
             event.ignore()
+
+    def hoverEnterEvent(self, dummyEvent):
+        np = NotePosition(drumIndex = self._drumIndex,
+                          noteTime = self._noteTime)
+        self._qMeasure.highlightNote(np)
+
+    def hoverLeaveEvent(self, dummyEvent):
+        np = NotePosition(drumIndex = self._drumIndex,
+                          noteTime = self._noteTime)
+        self._qMeasure.highlightNote(np, False)

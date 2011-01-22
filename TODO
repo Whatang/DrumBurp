@@ -19,7 +19,6 @@ Requirements/Features
 - Multi-bar copy paste
 - Drag & drop note movement?
 - Edit available note heads: make a part of DrumKit definition?
-- Highlight beat & instrument on mouse-over note
 - Delete empty trailing measures
 - Better ostinato input
 - Undo/redo stack
@@ -32,3 +31,8 @@ Technical issues
 - Move various context menus to their own classes
 - QScore & Score are "God objects": make a more direct connection between
   data structures & their GUI representations? Maybe...
+
+
+Finished issues
+
+- Highlight beat & instrument on mouse-over note : DONE 22/01/2010

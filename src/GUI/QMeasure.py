@@ -104,6 +104,16 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         self._augmentNotePosition(np)
         self._qStaff.repeatNote(np, head)
 
+    def highlightNote(self, np, onOff = True):
+        self._augmentNotePosition(np)
+        self._qStaff.highlightNote(np, onOff)
+
+    def setHighlight(self, np, onOff):
+        qCount = self._counts[np.noteTime]
+        qCount.setHighlight(onOff)
+        qNote = self._notes[np.drumIndex][np.noteTime]
+        qNote.setHighlight(onOff)
+
     def insertMeasureBefore(self):
         np = self._makeNotePosition()
         self._qStaff.insertMeasure(np)

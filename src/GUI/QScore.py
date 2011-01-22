@@ -31,6 +31,7 @@ class QScore(QtGui.QGraphicsScene):
         self._qStaffs = []
         self._properties = parent.songProperties
         self._score = None
+        self._highlightedNote = None
         self._dirty = None
         self._ignoreNext = False
         self.measureClipboard = None
@@ -41,6 +42,26 @@ class QScore(QtGui.QGraphicsScene):
         else:
             self.newScore()
         self._properties.setScore(self)
+
+    def _gethighlightedNote(self):
+        return self._highlightedNote
+    def _sethighlightedNote(self, np):
+        if self._highlightedNote != np:
+            self.clearHighlight()
+            self.makeHighlight(np)
+            self._highlightedNote = np
+    highlightedNote = property(fget = _gethighlightedNote,
+                               fset = _sethighlightedNote)
+
+    def clearHighlight(self):
+        if self.highlightedNote != None:
+            qStaff = self._qStaffs[self.highlightedNote.staffIndex]
+            qStaff.setHighlight(self.highlightedNote, False)
+
+    def makeHighlight(self, np):
+        if np != None:
+            qStaff = self._qStaffs[np.staffIndex]
+            qStaff.setHighlight(np, True)
 
     def _getdirty(self):
         return self._dirty
@@ -195,6 +216,12 @@ class QScore(QtGui.QGraphicsScene):
                 if np is None:
                     break
                 self._score.addNote(np, head)
+
+    def highlightNote(self, np, onOff):
+        if onOff:
+            self.highlightedNote = np
+        else:
+            self.highlightedNote = None
 
     def insertMeasure(self, np):
         counter = self._properties.beatCounter

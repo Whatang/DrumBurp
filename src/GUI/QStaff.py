@@ -156,6 +156,16 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self._augmentNotePosition(np)
         self._qScore.repeatNote(np, head)
 
+    def highlightNote(self, np, onOff):
+        self._augmentNotePosition(np)
+        self._qScore.highlightNote(np, onOff)
+
+    def setHighlight(self, np, onOff):
+        lineLabel = self._lineLabels[np.drumIndex]
+        lineLabel.setHighlight(onOff)
+        qMeasure = self._measures[np.measureIndex]
+        qMeasure.setHighlight(np, onOff)
+
     def insertMeasure(self, np):
         self._augmentNotePosition(np)
         self._qScore.insertMeasure(np)

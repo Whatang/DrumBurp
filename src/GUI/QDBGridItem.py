@@ -39,6 +39,7 @@ class QDBGridItem(QtGui.QGraphicsItem):
         self._rect = QtCore.QRectF(0, 0,
                                    self.cellWidth(),
                                    self.cellHeight())
+        self._highlighted = False
 
     def setText(self, text):
         self._text = text
@@ -78,9 +79,20 @@ class QDBGridItem(QtGui.QGraphicsItem):
                 left = (self.cellWidth() - pix.width() + 2) / 2
                 top = (self.cellHeight() - pix.height() + 2) / 2
                 painter.drawPixmap(left, top, pix)
+        if self._highlighted:
+            painter.setPen(QtCore.Qt.SolidLine)
+            painter.setPen(self.scene().palette().highlight().color())
+            painter.setBrush(QtCore.Qt.NoBrush)
+            painter.drawRect(0, 0, self.cellWidth() - 1, self.cellHeight())
 
     def cellWidth(self):
         raise NotImplementedError()
 
     def cellHeight(self):
         raise NotImplementedError()
+
+    def setHighlight(self, onOff):
+        if onOff != self._highlighted:
+            self._highlighted = onOff
+            self.update()
+
