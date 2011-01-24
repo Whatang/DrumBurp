@@ -415,8 +415,10 @@ class QScore(QtGui.QGraphicsScene):
     def newScore(self, numMeasures = 16,
                  measureWidth = None,
                  counter = None):
+        if counter is None:
+            counter = self._properties.beatCounter
         if measureWidth is None:
-            measureWidth = self._properties.defaultMeasureWidth
+            measureWidth = self._properties.beatsPerMeasure * counter.beatLength
         newScore = _SCORE_FACTORY(numMeasures = numMeasures,
                                   measureWidth = measureWidth,
                                   counter = counter)
