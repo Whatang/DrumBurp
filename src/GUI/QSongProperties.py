@@ -140,14 +140,6 @@ class QSongProperties(object):
             self._head = value
     head = property(fget = _gethead, fset = _sethead)
 
-    def _getwidth(self):
-        return self._width
-    def _setwidth(self, value):
-        if self._width != value:
-            self._width = value
-            self._qScore.setWidth()
-    width = property(fget = _getwidth, fset = _setwidth)
-
     def proportionalSpacing(self):
         return ((float(self.xSpacing - self.MIN_NOTE_WIDTH)
                  / self.NOTE_WIDTH_RANGE * 100),

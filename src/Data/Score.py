@@ -27,6 +27,7 @@ class Score(object):
         self._staffs = []
         self.drumKit = DrumKit()
         self._callBack = None
+        self.width = 80
 
     def __len__(self):
         return sum(len(staff) for staff in self._staffs)
@@ -253,6 +254,8 @@ class Score(object):
 
     def _formatScore(self, width,
                      widthFunction, ignoreErrors = False):
+        if width is None:
+            width = self.width
         measures = list(self.iterMeasures())
         oldNumMeasures = [staff.numMeasures() for staff in self.iterStaffs()]
         for staff in self.iterStaffs():
@@ -294,6 +297,7 @@ class Score(object):
                                  True)
 
     def write(self, handle):
+        print >> handle, "LINE_WIDTH", self.width
         self.drumKit.write(handle)
         for measure in self.iterMeasures():
             measure.write(handle)
@@ -313,7 +317,9 @@ class Score(object):
                 yield lineType, lineData
         scoreIterator = scoreHandle()
         for lineType, lineData in scoreIterator:
-            if lineType == "START_BAR":
+            if lineType == "LINE_WIDTH":
+                self.width = int(lineData)
+            elif lineType == "START_BAR":
                 measureWidth = int(lineData)
                 measure = self.addEmptyMeasure(measureWidth)
                 measure.read(scoreIterator)

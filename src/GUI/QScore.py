@@ -33,6 +33,7 @@ class QScore(QtGui.QGraphicsScene):
         self._score = None
         self._highlightedNote = None
         self._dirty = None
+        self._scoreWidth = None
         self._ignoreNext = False
         self.measureClipboard = None
         if parent.filename is not None:
@@ -86,7 +87,9 @@ class QScore(QtGui.QGraphicsScene):
 
     def setScore(self, score):
         if score != self._score:
-            score.gridFormatScore(self._properties.width)
+            if score is not None:
+                self.setWidth(score.width)
+            score.gridFormatScore(self._scoreWidth)
             self._score = score
             self._score.setCallBack(self.noteChanged)
             self.build()
@@ -175,10 +178,17 @@ class QScore(QtGui.QGraphicsScene):
         self.build()
         self.update(oldSceneRect)
 
-    def setWidth(self):
-        formatChanged = self._score.gridFormatScore(self._properties.width)
-        if formatChanged:
-            self.reBuild()
+    def setWidth(self, width):
+        if self._scoreWidth != width:
+            self._scoreWidth = width
+            if self._score is not None:
+                self._score.width = width
+                formatChanged = self._score.gridFormatScore(width)
+                if formatChanged:
+                    self.reBuild()
+            for view in self.views():
+                view.setWidth(width)
+            self.dirty = True
 
     def populate(self):
         for notePosition, head in self._score.iterNotes():
@@ -229,7 +239,7 @@ class QScore(QtGui.QGraphicsScene):
                  counter.beatLength)
         self._score.insertMeasureByPosition(width, np,
                                             counter = counter)
-        self._score.gridFormatScore(self._properties.width)
+        self._score.gridFormatScore(self._scoreWidth)
         self.reBuild()
         self.dirty = True
 
@@ -248,7 +258,7 @@ class QScore(QtGui.QGraphicsScene):
             for dummyMeasureIndex in range(nMeasures):
                 self._score.insertMeasureByPosition(measureWidth, np,
                                                     counter = counter)
-            self._score.gridFormatScore(self._properties.width)
+            self._score.gridFormatScore(self._scoreWidth)
             self.reBuild()
             self.dirty = True
 
@@ -264,7 +274,7 @@ class QScore(QtGui.QGraphicsScene):
                                               QtGui.QMessageBox.Cancel)
         if yesNo == QtGui.QMessageBox.Ok:
             self._score.deleteMeasureByPosition(np)
-            self._score.gridFormatScore(self._properties.width)
+            self._score.gridFormatScore(self._scoreWidth)
             self.reBuild()
             self.dirty = True
 
@@ -292,7 +302,7 @@ class QScore(QtGui.QGraphicsScene):
                 self._score.setMeasureBeatCount(np, beats, newCounter)
                 self.dirty = True
                 if newTicks != numTicks:
-                    self._score.gridFormatScore(self._properties.width)
+                    self._score.gridFormatScore(self._scoreWidth)
                     self.reBuild()
                 else:
                     self.countChanged(np)
@@ -303,7 +313,7 @@ class QScore(QtGui.QGraphicsScene):
 
     def setSectionEnd(self, np, onOff):
         self._score.setSectionEnd(np, onOff)
-        self._score.gridFormatScore(self._properties.width)
+        self._score.gridFormatScore(self._scoreWidth)
         self.reBuild()
         self.dirty = True
 

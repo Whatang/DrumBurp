@@ -9,12 +9,12 @@ from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 from QDBGridItem import QDBGridItem
 from Data import DBConstants
 from Data.NotePosition import NotePosition
+import DBIcons
 
 class QNote(QDBGridItem):
     '''
     classdocs
     '''
-
     def __init__(self, qScore, parent):
         super(QNote, self).__init__(qScore, parent)
         self._qMeasure = parent
@@ -61,18 +61,20 @@ class QNote(QDBGridItem):
             event.ignore()
             menu = QMenuIgnoreCancelClick(self._qScore)
             actionText = "Repeat note"
-            repeatNoteAction = menu.addAction(actionText)
+            repeatNoteAction = menu.addAction(DBIcons.getIcon("repeat"), actionText)
             menu.connect(repeatNoteAction,
                          QtCore.SIGNAL("triggered()"),
                          self.repeatNote)
             if self._text == DBConstants.EMPTY_NOTE:
                 repeatNoteAction.setEnabled(False)
             menu.addSeparator()
-            copyAction = menu.addAction("Copy Measure")
+            copyAction = menu.addAction(DBIcons.getIcon("copy"),
+                                        "Copy Measure")
             menu.connect(copyAction,
                          QtCore.SIGNAL("triggered()"),
                          self._qMeasure.copyMeasure)
-            pasteAction = menu.addAction("Paste Measure")
+            pasteAction = menu.addAction(DBIcons.getIcon("paste"),
+                                         "Paste Measure")
             menu.connect(pasteAction,
                          QtCore.SIGNAL("triggered()"),
                          self._qMeasure.pasteMeasure)
@@ -94,7 +96,8 @@ class QNote(QDBGridItem):
                                QtCore.SIGNAL("triggered()"),
                                self._qMeasure.insertOtherMeasures)
             menu.addSeparator()
-            deleteAction = menu.addAction("Delete Measure")
+            deleteAction = menu.addAction(DBIcons.getIcon("delete"),
+                                          "Delete Measure")
             menu.connect(deleteAction, QtCore.SIGNAL("triggered()"),
                          self._qMeasure.deleteMeasure)
         else:

@@ -13,6 +13,7 @@ from QSongProperties import QSongProperties
 from QNewScoreDialog import QNewScoreDialog
 import DBUtility
 from Data.TimeCounter import counterMaker
+import DBIcons
 import os
 
 APPNAME = "DrumBurp"
@@ -29,6 +30,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         super(DrumBurp, self).__init__(parent)
         self._state = None
         self.setupUi(self)
+        DBIcons.initialiseIcons()
         settings = QSettings()
         self.recentFiles = [unicode(fname) for fname in
                             settings.value("RecentFiles").toStringList()]
@@ -40,11 +42,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreScene = QScore(self)
         self.scoreView.setScene(self.scoreScene)
         self.fontComboBox.setWritingSystem(QFontDatabase.Latin)
-#        QTimer.singleShot(0, lambda: self.widthSpinBox.setValue(80))
         xValue, yValue, lValue = self.songProperties.proportionalSpacing()
         QTimer.singleShot(0, lambda: self.spaceSlider.setValue(xValue))
         QTimer.singleShot(0, lambda: self.verticalSlider.setValue(yValue))
         QTimer.singleShot(0, lambda: self.lineSpaceSlider.setValue(lValue))
+        QTimer.singleShot(0, lambda: self.widthSpinBox.setValue(self.scoreScene._scoreWidth))
         self.beatsSpinBox.setValue(self.songProperties.beatsPerMeasure)
         DBUtility.populateCounterCombo(self.beatCountComboBox,
                                        self.songProperties.beatCounter)
@@ -202,6 +204,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                         self.addToRecentFiles()
                         self.updateRecentFiles()
                 action = self.menuRecentScores.addAction(fname)
+                action.setIcon(DBIcons.getIcon("score"))
                 self.connect(action, SIGNAL("triggered()"),
                              openRecentFile)
 
