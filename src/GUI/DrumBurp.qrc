@@ -1,0 +1,21 @@
+<RCC>
+  <qresource prefix="Icons">
+    <file>Icons/view-refresh.png</file>
+    <file>Icons/audio-x-generic.png</file>
+    <file>Icons/folder.png</file>
+    <file>Icons/edit-delete.png</file>
+    <file>Icons/document-new.png</file>
+    <file>Icons/document-open.png</file>
+    <file>Icons/document-print.png</file>
+    <file>Icons/document-save.png</file>
+    <file>Icons/document-save-as.png</file>
+    <file>Icons/edit-copy.png</file>
+    <file>Icons/edit-paste.png</file>
+    <file>Icons/edit-redo.png</file>
+    <file>Icons/edit-undo.png</file>
+    <file>Icons/format-justify-fill.png</file>
+    <file>Icons/format-text-bold.png</file>
+    <file>Icons/process-stop.png</file>
+    <file>Icons/system-log-out.png</file>
+  </qresource>
+</RCC>
