@@ -33,5 +33,5 @@ class QCount(QDBGridItem):
     def cellHeight(self):
         return self._props.ySpacing
 
-    def mouseDoubleClickEvent(self, event):
+    def mouseDoubleClickEvent(self, dummyEvent):
         self._qMeasure.editMeasureProperties()
