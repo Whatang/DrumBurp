@@ -11,10 +11,8 @@ Requirements/Features
 - Alternate repeat endings
 - Repeat counts
 - Line breaks which aren't section ends
-- Data structures for song properties
-- Song properties to be set/loaded/saved from GUI
 - Printing
-- Save/restore preferences on startup
+- Save/restore display preferences on startup
 - Edit/load/save drum kits
 - Multi-bar copy paste
 - Drag & drop note movement?
@@ -32,6 +30,7 @@ Technical issues
 - Move various context menus to their own classes
 - QScore & Score are "God objects": make a more direct connection between
   data structures & their GUI representations? Maybe...
+- Refactor score metadata setters/getters in QScore
 
 
 Finished issues
@@ -39,3 +38,5 @@ Finished issues
 - Highlight beat & instrument on mouse-over note : DONE 22/01/2011
 - Add icons to actions : DONE 23/01/2011
 - Make width a property of the Score, not of the ScoreView : DONE 23/01/2011
+- Data structures for song properties : DONE 23/01/2011
+- Song properties to be set/loaded/saved from GUI : DONE 23/01/2011
