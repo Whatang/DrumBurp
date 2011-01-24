@@ -2,11 +2,11 @@ Bugs
 
 - "Not a mouse grabber" on insert/delete measure. Other cases?  
 - ScoreView doesn't accept a click after QEditMeasureDialog box shown.
+- Suggested ASCII export name includes .brp
  
 Requirements/Features
 
 - Add options to affect how ASCII export functions
-- Make width a property of the Score, not of the ScoreView
 - Section titles
 - Alternate repeat endings
 - Repeat counts
@@ -24,6 +24,7 @@ Requirements/Features
 - Undo/redo stack
 
 
+
 Technical issues
 
 - Create augment/create note position helper functions
@@ -35,4 +36,6 @@ Technical issues
 
 Finished issues
 
-- Highlight beat & instrument on mouse-over note : DONE 22/01/2010
+- Highlight beat & instrument on mouse-over note : DONE 22/01/2011
+- Add icons to actions : DONE 23/01/2011
+- Make width a property of the Score, not of the ScoreView : DONE 23/01/2011
