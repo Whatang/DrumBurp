@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>DrumBurp</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="DrumBurp.qrc">
+    <normaloff>:/Icons/Icons/audio-x-generic.png</normaloff>:/Icons/Icons/audio-x-generic.png</iconset>
+  </property>
   <property name="animated">
    <bool>true</bool>
   </property>
@@ -646,17 +650,17 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_3">
     <layout class="QGridLayout" name="gridLayout_3">
-     <item row="0" column="0">
+     <item row="1" column="0">
       <widget class="QLabel" name="songNameLabel">
        <property name="text">
-        <string>Name</string>
+        <string>Title</string>
        </property>
        <property name="buddy">
         <cstring>songNameEdit</cstring>
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
+     <item row="1" column="1">
       <widget class="QLineEdit" name="songNameEdit">
        <property name="toolTip">
         <string>Song name</string>
@@ -666,50 +670,7 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="2">
-      <widget class="QLabel" name="tabberLabel">
-       <property name="text">
-        <string>Created by</string>
-       </property>
-       <property name="textInteractionFlags">
-        <set>Qt::NoTextInteraction</set>
-       </property>
-       <property name="buddy">
-        <cstring>tabberEdit</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="3">
-      <widget class="QLineEdit" name="tabberEdit">
-       <property name="toolTip">
-        <string>Score creator</string>
-       </property>
-       <property name="statusTip">
-        <string>Who created this DrumBurp score</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="artistNameLabel">
-       <property name="text">
-        <string>&amp;Artist</string>
-       </property>
-       <property name="buddy">
-        <cstring>artistNameEdit</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="artistNameEdit">
-       <property name="toolTip">
-        <string>Song artist</string>
-       </property>
-       <property name="statusTip">
-        <string>Song artist</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
+     <item row="3" column="2">
       <widget class="QLabel" name="bpmLabel">
        <property name="text">
         <string>&amp;BPM</string>
@@ -719,7 +680,7 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="3">
+     <item row="3" column="3">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
         <widget class="QSpinBox" name="bpmSpinBox">
@@ -824,6 +785,49 @@
         </spacer>
        </item>
       </layout>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="tabberEdit">
+       <property name="toolTip">
+        <string>Score creator</string>
+       </property>
+       <property name="statusTip">
+        <string>Who created this DrumBurp score</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QLineEdit" name="artistNameEdit">
+       <property name="toolTip">
+        <string>Song artist</string>
+       </property>
+       <property name="statusTip">
+        <string>Song artist</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QLabel" name="artistNameLabel">
+       <property name="text">
+        <string>&amp;Artist</string>
+       </property>
+       <property name="buddy">
+        <cstring>artistNameEdit</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="tabberLabel">
+       <property name="text">
+        <string>Tabbed by</string>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::NoTextInteraction</set>
+       </property>
+       <property name="buddy">
+        <cstring>tabberEdit</cstring>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -1039,6 +1043,30 @@
    <header>Widgets.ScoreView_plugin</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>songNameEdit</tabstop>
+  <tabstop>artistNameEdit</tabstop>
+  <tabstop>tabberEdit</tabstop>
+  <tabstop>bpmSpinBox</tabstop>
+  <tabstop>widthSpinBox</tabstop>
+  <tabstop>fitWindowButton</tabstop>
+  <tabstop>spaceSlider</tabstop>
+  <tabstop>verticalSlider</tabstop>
+  <tabstop>lineSpaceSlider</tabstop>
+  <tabstop>fontComboBox</tabstop>
+  <tabstop>beatsSpinBox</tabstop>
+  <tabstop>beatCountComboBox</tabstop>
+  <tabstop>defaultNoteHeadButton</tabstop>
+  <tabstop>xNoteHeadButton</tabstop>
+  <tabstop>bigXNoteHeadButton</tabstop>
+  <tabstop>gNoteHeadButton</tabstop>
+  <tabstop>oNoteHeadButton</tabstop>
+  <tabstop>bigONoteHeadButton</tabstop>
+  <tabstop>flamNoteTeller</tabstop>
+  <tabstop>plusNoteHeadButton</tabstop>
+  <tabstop>dragNoteTeller</tabstop>
+  <tabstop>scoreView</tabstop>
+ </tabstops>
  <resources>
   <include location="DrumBurp.qrc"/>
  </resources>
@@ -1247,7 +1275,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>112</x>
-     <y>160</y>
+     <y>165</y>
     </hint>
    </hints>
   </connection>
@@ -1370,8 +1398,8 @@
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>742</x>
-     <y>143</y>
+     <x>741</x>
+     <y>145</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -1488,6 +1516,134 @@
     <hint type="destinationlabel">
      <x>642</x>
      <y>130</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>bpmSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setBPM(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>457</x>
+     <y>133</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>459</x>
+     <y>175</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scoreView</sender>
+   <signal>bpmChanged(int)</signal>
+   <receiver>bpmSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>495</x>
+     <y>178</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>499</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>artistNameEdit</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setArtist(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>666</x>
+     <y>113</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>264</x>
+     <y>175</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scoreView</sender>
+   <signal>artistChanged(QString)</signal>
+   <receiver>artistNameEdit</receiver>
+   <slot>setText(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>337</x>
+     <y>174</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>753</x>
+     <y>108</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>songNameEdit</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setTitle(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>299</x>
+     <y>107</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>304</x>
+     <y>172</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scoreView</sender>
+   <signal>titleChanged(QString)</signal>
+   <receiver>songNameEdit</receiver>
+   <slot>setText(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>323</x>
+     <y>174</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>328</x>
+     <y>106</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tabberEdit</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setCreator(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>175</x>
+     <y>141</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>560</x>
+     <y>188</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scoreView</sender>
+   <signal>creatorChanged(QString)</signal>
+   <receiver>tabberEdit</receiver>
+   <slot>setText(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>601</x>
+     <y>180</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>217</x>
+     <y>136</y>
     </hint>
    </hints>
   </connection>

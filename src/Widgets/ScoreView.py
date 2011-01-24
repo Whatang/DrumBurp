@@ -47,8 +47,31 @@ class ScoreView(QtGui.QGraphicsView):
     def setWidth(self, width):
         self.scene().setWidth(width)
         self.emit(QtCore.SIGNAL("widthChanged(int)"), width)
-
     widthChanged = QtCore.pyqtSignal(int)
+
+    @QtCore.pyqtSlot(int)
+    def setBPM(self, bpm):
+        self.scene().bpm = bpm
+        self.emit(QtCore.SIGNAL("bpmChanged(int)"), bpm)
+    bpmChanged = QtCore.pyqtSignal(int)
+
+    @QtCore.pyqtSlot(QtCore.QString)
+    def setTitle(self, title):
+        self.scene().title = title
+        self.emit(QtCore.SIGNAL("titleChanged(QString)"), title)
+    titleChanged = QtCore.pyqtSignal(QtCore.QString)
+
+    @QtCore.pyqtSlot(QtCore.QString)
+    def setArtist(self, artist):
+        self.scene().artist = artist
+        self.emit(QtCore.SIGNAL("artistChanged(QString)"), artist)
+    artistChanged = QtCore.pyqtSignal(QtCore.QString)
+
+    @QtCore.pyqtSlot(QtCore.QString)
+    def setCreator(self, creator):
+        self.scene().creator = creator
+        self.emit(QtCore.SIGNAL("creatorChanged(QString)"), creator)
+    creatorChanged = QtCore.pyqtSignal(QtCore.QString)
 
     @QtCore.pyqtSlot(QtGui.QFont)
     def setFont(self, font):
@@ -58,3 +81,6 @@ class ScoreView(QtGui.QGraphicsView):
     @QtCore.pyqtSlot(int)
     def setDefaultMeasureWidth(self, width):
         self.scene().getProperties().defaultMeasureWidth = width
+
+    def startUp(self):
+        self.scene().startUp()
