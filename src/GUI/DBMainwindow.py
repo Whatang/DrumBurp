@@ -118,8 +118,14 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if not self.okToContinue():
             return
         caption = "Choose a DrumBurp file to open"
+        directory = self.filename
+        if len(self.recentFiles) > 0:
+            directory = os.path.dirname(self.recentFiles[-1])
+        else:
+            directory = ""
         fname = QFileDialog.getOpenFileName(parent = self,
                                             caption = caption,
+                                            directory = directory,
                                             filter = "DrumBurp files (*.brp)")
         if len(fname) == 0:
             return
@@ -130,7 +136,14 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             self.updateRecentFiles()
 
     def getFileName(self):
-        directory = self.filename if self.filename is not None else ""
+        directory = self.filename
+        if directory is None:
+            if len(self.recentFiles) > 0:
+                directory = os.path.dirname(self.recentFiles[-1])
+            else:
+                directory = ""
+        if os.path.splitext(directory)[-1] == '.brp':
+            directory = os.path.splitext(directory)[0]
         caption = "Choose a DrumBurp file to save"
         fname = QFileDialog.getSaveFileName(parent = self,
                                             caption = caption,
@@ -232,6 +245,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def on_actionExportASCII_triggered(self):
         caption = "Select an ASCII file to export to"
         directory = self.filename if self.filename is not None else ""
+        if os.path.splitext(directory)[-1] == '.brp':
+            directory = os.path.splitext(directory)[0]
         fname = QFileDialog.getSaveFileName(parent = self,
                                             caption = caption,
                                             directory = directory,
