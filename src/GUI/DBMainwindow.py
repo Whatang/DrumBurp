@@ -6,7 +6,8 @@ Created on 31 Jul 2010
 '''
 
 from ui_drumburp import Ui_DrumBurpWindow
-from PyQt4.QtGui import QMainWindow, QFontDatabase, QFileDialog, QMessageBox
+from PyQt4.QtGui import (QMainWindow, QFontDatabase,
+                         QFileDialog, QMessageBox, QPrintPreviewDialog)
 from PyQt4.QtCore import QTimer, pyqtSignature, SIGNAL, QSettings, QVariant
 from QScore import QScore
 from QSongProperties import QSongProperties
@@ -241,3 +242,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             self.scoreScene.exportASCII(txtHandle)
             self.updateStatus("Successfully exported ASCII to " + fname)
 
+    @pyqtSignature("")
+    def on_actionPrint_triggered(self):
+        dialog = QPrintPreviewDialog(self)
+        self.connect(dialog, SIGNAL("paintRequested(QPrinter *)"),
+                     self.scoreScene.printScore)
+        dialog.exec_()

@@ -89,6 +89,7 @@
     <addaction name="actionSave"/>
     <addaction name="actionSaveAs"/>
     <addaction name="separator"/>
+    <addaction name="actionPrint"/>
     <addaction name="actionExportASCII"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
@@ -155,6 +156,7 @@
    <addaction name="actionLoad"/>
    <addaction name="actionSave"/>
    <addaction name="actionSaveAs"/>
+   <addaction name="actionPrint"/>
    <addaction name="actionExportASCII"/>
   </widget>
   <widget class="QDockWidget" name="noteHeadDock">
@@ -1028,6 +1030,24 @@
    </property>
    <property name="toolTip">
     <string>Change visibility of Display tool bar</string>
+   </property>
+  </action>
+  <action name="actionPrint">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/document-print.png</normaloff>:/Icons/Icons/document-print.png</iconset>
+   </property>
+   <property name="text">
+    <string>Print</string>
+   </property>
+   <property name="toolTip">
+    <string>Print this Score</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
    </property>
   </action>
  </widget>

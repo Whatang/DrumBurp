@@ -275,7 +275,6 @@ class QScore(QtGui.QGraphicsScene):
         else:
             super(QScore, self).mousePressEvent(event)
 
-
     def toggleNote(self, np, head):
         head = head if head is not None else self._properties.head
         self._score.toggleNote(np, head)
@@ -432,3 +431,9 @@ class QScore(QtGui.QGraphicsScene):
 
     def exportASCII(self, handle):
         self._score.exportASCII(handle)
+
+    def printScore(self, qprinter):
+        painter = QtGui.QPainter(qprinter)
+        self.render(painter)
+        painter.end()
+
