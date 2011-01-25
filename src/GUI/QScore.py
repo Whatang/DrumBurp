@@ -12,10 +12,16 @@ from QEditMeasureDialog import QEditMeasureDialog
 from QRepeatDialog import QRepeatDialog
 from Data.Score import ScoreFactory
 from Data.TimeCounter import counterMaker
-
+import functools
 _SCORE_FACTORY = ScoreFactory()
 
 #pylint: disable-msg=R0904
+
+def delayCall(method):
+    @functools.wraps(method)
+    def delayer(*args, **kwargs):
+        QtCore.QTimer.singleShot(0, lambda: method(*args, **kwargs))
+    return delayer
 
 class QScore(QtGui.QGraphicsScene):
     '''
@@ -295,6 +301,7 @@ class QScore(QtGui.QGraphicsScene):
         else:
             self.highlightedNote = None
 
+    @delayCall
     def insertMeasure(self, np):
         counter = self._properties.beatCounter
         width = (self._properties.beatsPerMeasure *
@@ -305,6 +312,7 @@ class QScore(QtGui.QGraphicsScene):
         self.reBuild()
         self.dirty = True
 
+    @delayCall
     def insertOtherMeasures(self, np):
         beats = self._properties.beatsPerMeasure
         counter = self._properties.beatCounter
@@ -324,6 +332,7 @@ class QScore(QtGui.QGraphicsScene):
             self.reBuild()
             self.dirty = True
 
+    @delayCall
     def deleteMeasure(self, np):
         if self._score.numMeasures() == 1:
             QtGui.QMessageBox.warning(self.parent(),
@@ -343,10 +352,14 @@ class QScore(QtGui.QGraphicsScene):
     def copyMeasure(self, np):
         self.measureClipboard = self._score.copyMeasure(np)
 
+    @delayCall
     def pasteMeasure(self, np):
         self._score.pasteMeasure(np, self.measureClipboard)
+        if self._score.gridFormatScore(None):
+            self.reBuild()
         self.dirty = True
 
+    @delayCall
     def editMeasureProperties(self, np, numTicks, counter):
         defBeats = self._properties.beatsPerMeasure
         defCounter = self._properties.beatCounter
@@ -367,12 +380,13 @@ class QScore(QtGui.QGraphicsScene):
                     self._score.gridFormatScore(None)
                     self.reBuild()
                 else:
-                    self.countChanged(np)
+                    self._countChanged(np)
 
-    def countChanged(self, np):
+    def _countChanged(self, np):
         staff = self._qStaffs[np.staffIndex]
         staff.countChanged(np)
 
+    @delayCall
     def setSectionEnd(self, np, onOff):
         self._score.setSectionEnd(np, onOff)
         self._score.gridFormatScore(None)
