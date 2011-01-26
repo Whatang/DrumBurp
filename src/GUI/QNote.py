@@ -113,6 +113,10 @@ class QNote(QDBGridItem):
                                           "Delete Measure")
             menu.connect(deleteAction, QtCore.SIGNAL("triggered()"),
                          self._qMeasure.deleteMeasure)
+            deleteMenu = menu.addMenu("Delete...")
+            deleteEmptyAction = deleteMenu.addAction("Empty Trailing Measures")
+            menu.connect(deleteEmptyAction, QtCore.SIGNAL("triggered()"),
+                         self._qMeasure.deleteEmptyMeasures)
         else:
             pass
         if menu is not None:

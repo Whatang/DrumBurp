@@ -50,6 +50,9 @@ class Measure(object):
     def clearCallBack(self):
         self._callBack = None
 
+    def isEmpty(self):
+        return len(list(self)) == 0
+
     def setSectionEnd(self, boolean):
         self._isSectionEnd = boolean
         if boolean:

@@ -158,6 +158,24 @@ class QMeasure(QtGui.QGraphicsItemGroup):
             self.scene().reBuild()
             self.scene().dirty = True
 
+    def deleteEmptyMeasures(self):
+        score = self.scene().score
+        if score.numMeasures() == 1:
+            QtGui.QMessageBox.warning(self.parent(),
+                                      "Invalid delete",
+                                      "Cannot delete last measure.")
+            return
+        msg = "This will delete all empty trailing measures.\nContinue?"
+        yesNo = QtGui.QMessageBox.question(self.scene().parent(),
+                                           "Delete Empty Measures",
+                                           msg,
+                                           QtGui.QMessageBox.Ok,
+                                           QtGui.QMessageBox.Cancel)
+        if yesNo == QtGui.QMessageBox.Ok:
+            score.deleteEmptyMeasures()
+            self.scene().reBuild()
+            self.scene().dirty = True
+
     def copyMeasure(self):
         self.scene().copyMeasure(self._makeNotePosition())
 
