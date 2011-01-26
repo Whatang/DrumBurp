@@ -25,7 +25,22 @@ class Measure(object):
         self._isRepeatEnd = False
         self._isRepeatStart = False
         self._isSectionEnd = False
+        self._isLineBreak = False
         self.counter = None
+
+    @staticmethod
+    def barlineKey(first, second):
+        if first is None:
+            first = BAR_TYPES["NO_BAR"]
+        else:
+            first = first.startBar
+        if second is None:
+            second = BAR_TYPES["NO_BAR"]
+        else:
+            second = second.startBar
+        first &= ~BAR_TYPES["LINE_BREAK"]
+        second &= ~BAR_TYPES["LINE_BREAK"]
+        return first, second
 
     def __len__(self):
         return self._width
@@ -74,17 +89,27 @@ class Measure(object):
         else:
             self.endBar &= ~BAR_TYPES["REPEAT_END"]
 
+    def setLineBreak(self, boolean):
+        self._isLineBreak = boolean
+        if boolean:
+            self.endBar |= BAR_TYPES["LINE_BREAK"]
+        else:
+            self.endBar &= ~BAR_TYPES["LINE_BREAK"]
+
     def isSectionEnd(self):
-        return ((self.endBar & BAR_TYPES["SECTION_END"])
-                == BAR_TYPES["SECTION_END"])
+        return self._isSectionEnd
 
     def isRepeatStart(self):
-        return ((self.startBar & BAR_TYPES["REPEAT_START"])
-                == BAR_TYPES["REPEAT_START"])
+        return self._isRepeatStart
 
     def isRepeatEnd(self):
-        return ((self.endBar & BAR_TYPES["REPEAT_END"])
-                == BAR_TYPES["REPEAT_END"])
+        return self._isRepeatEnd
+
+    def isLineBreak(self):
+        return self._isLineBreak
+
+    def isLineEnd(self):
+        return self.isLineBreak() or self.isSectionEnd()
 
     def getNote(self, position):
         if not(0 <= position.noteTime < len(self)):
@@ -178,17 +203,27 @@ class Measure(object):
     def read(self, scoreIterator):
         seenStartLine = False
         seenEndLine = False
+        def doNothing(dummy):
+            pass
+        mapping = {"NO_BAR" : doNothing,
+                   "NORMAL_BAR" : doNothing,
+                   "REPEAT_START": self.setRepeatStart,
+                   "REPEAT_END": self.setRepeatEnd,
+                   "SECTION_END": self.setSectionEnd,
+                   "LINE_BREAK": self.setLineBreak}
         for lineType, lineData in scoreIterator:
             if  lineType == "BARLINE":
                 if not seenStartLine:
                     self.startBar = 0
                     for barType in lineData.split(","):
                         self.startBar |= BAR_TYPES[barType]
+                        mapping[barType](True)
                     seenStartLine = True
                 elif not seenEndLine:
                     self.endBar = 0
                     for barType in lineData.split(","):
                         self.endBar |= BAR_TYPES[barType]
+                        mapping[barType](True)
                     seenEndLine = True
                 else:
                     raise IOError("Too many bar lines")

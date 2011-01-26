@@ -7,6 +7,7 @@ Created on 12 Dec 2010
 from DBErrors import BadTimeError
 from DBConstants import COMBINED_BARLINE_STRING, BAR_TYPES
 from NotePosition import NotePosition
+from Measure import Measure
 
 #pylint:disable-msg=R0904
 class Staff(object):
@@ -103,6 +104,11 @@ class Staff(object):
             raise BadTimeError(position)
         self._measures[position.measureIndex].setSectionEnd(onOff)
 
+    def setLineBreak(self, position, onOff):
+        if not (0 <= position.measureIndex < self.numMeasures()):
+            raise BadTimeError(position)
+        self._measures[position.measureIndex].setLineBreak(onOff)
+
     def setRepeatEnd(self, position, onOff):
         if not (0 <= position.measureIndex < self.numMeasures()):
             raise BadTimeError(position)
@@ -122,12 +128,12 @@ class Staff(object):
         if self.numMeasures() == 0:
             return 0
         total = len(self)
-        lastEnd = BAR_TYPES["NO_BAR"]
+        lastBar = None
         for measure in self:
-            key = (lastEnd, measure.startBar)
+            key = Measure.barlineKey(lastBar, measure)
             total += len(COMBINED_BARLINE_STRING[key])
-            lastEnd = measure.endBar
-        key = (lastEnd, BAR_TYPES["NO_BAR"])
+            lastBar = measure
+        key = Measure.barlineKey(lastBar, None)
         total += len(COMBINED_BARLINE_STRING[key])
         return total
 
@@ -158,33 +164,33 @@ class Staff(object):
 
     def _getDrumLine(self, drum, position, drumIndex):
         position.drumIndex = drumIndex
-        lastEnd = BAR_TYPES["NO_BAR"]
+        lastBar = None
         lineString = "%2s" % drum.abbr
         for measureIndex, measure in enumerate(self):
             position.measureIndex = measureIndex
-            key = lastEnd, measure.startBar
+            key = Measure.barlineKey(lastBar, measure)
             barString = COMBINED_BARLINE_STRING[key]
             lineString += barString
-            lastEnd = measure.endBar
+            lastBar = measure
             for noteTime in range(len(measure)):
                 position.noteTime = noteTime
                 note = measure.getNote(position)
                 lineString += note
-        key = lastEnd, BAR_TYPES["NO_BAR"]
+        key = Measure.barlineKey(lastBar, None)
         barString = COMBINED_BARLINE_STRING[key]
         lineString += barString
         return lineString
 
     def _getCountLine(self):
         countString = "  "
-        lastEnd = BAR_TYPES["NO_BAR"]
+        lastBar = None
         for measure in self:
-            key = lastEnd, measure.startBar
+            key = Measure.barlineKey(lastBar, measure)
             barString = COMBINED_BARLINE_STRING[key]
-            lastEnd = measure.endBar
+            lastBar = measure
             countString += " " * len(barString)
             countString += "".join(measure.count())
-        key = lastEnd, BAR_TYPES["NO_BAR"]
+        key = Measure.barlineKey(lastBar, None)
         barString = COMBINED_BARLINE_STRING[key]
         countString += " " * len(barString)
         return countString

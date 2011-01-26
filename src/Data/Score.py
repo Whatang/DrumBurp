@@ -199,6 +199,12 @@ class Score(object):
         staff = self.getStaff(position.staffIndex)
         staff.setSectionEnd(position, onOff)
 
+    def setLineBreak(self, position, onOff):
+        if not(0 <= position.staffIndex < self.numStaffs()):
+            raise BadTimeError()
+        staff = self.getStaff(position.staffIndex)
+        staff.setLineBreak(position, onOff)
+
     def setRepeatEnd(self, position, onOff):
         if not(0 <= position.staffIndex < self.numStaffs()):
             raise BadTimeError()
@@ -288,7 +294,7 @@ class Score(object):
                         self.addStaff()
                     staff = self.getStaff(staffIndex)
                     staff.addMeasure(measure)
-            if (measure.isSectionEnd() and
+            if (measure.isLineEnd() and
                 measureIndex != len(measures) - 1):
                 staffIndex += 1
                 if staffIndex == self.numStaffs():

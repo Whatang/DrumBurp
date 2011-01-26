@@ -11,7 +11,8 @@ BAR_TYPES = {"NO_BAR": 0,
              "NORMAL_BAR": 1,
              "REPEAT_START": 2,
              "REPEAT_END":4,
-             "SECTION_END":8}
+             "SECTION_END":8,
+             "LINE_BREAK":16}
 COMBINED_BARLINE_STRING = {(BAR_TYPES["NO_BAR"],
                             BAR_TYPES["NORMAL_BAR"]) : "|",
                            (BAR_TYPES["NO_BAR"],

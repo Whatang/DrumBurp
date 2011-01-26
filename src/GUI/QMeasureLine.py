@@ -82,6 +82,12 @@ class QMeasureLine(QtGui.QGraphicsItem):
         self.scene().reBuild()
         self._setPainter()
 
+    def _setLineBreak(self, onOff):
+        self.scene().score.setLineBreak(self._getEndNotePosition(), onOff)
+        self.scene().dirty = True
+        self.scene().reBuild()
+        self._setPainter()
+
     def _setRepeatEnd(self, onOff):
         self.scene().score.setRepeatEnd(self._getEndNotePosition(), onOff)
         self.scene().dirty = True
@@ -115,13 +121,19 @@ class QMeasureLine(QtGui.QGraphicsItem):
                              self._setRepeatEnd)
                 menu.addAction(repeatEndAction)
             # Section Ending
-            if self._lastMeasure is not None:
                 sectionEndAction = QtGui.QAction("Section End", menu)
                 sectionEndAction.setCheckable(True)
                 sectionEndAction.setChecked(self._lastMeasure.isSectionEnd())
                 menu.connect(sectionEndAction, QtCore.SIGNAL("toggled(bool)"),
                             self._setSectionEnd)
                 menu.addAction(sectionEndAction)
+            # Line break
+                lineBreakAction = QtGui.QAction("Line Break", menu)
+                lineBreakAction.setCheckable(True)
+                lineBreakAction.setChecked(self._lastMeasure.isLineBreak())
+                menu.connect(lineBreakAction, QtCore.SIGNAL("toggled(bool)"),
+                            self._setLineBreak)
+                menu.addAction(lineBreakAction)
             menu.exec_(event.screenPos())
         else:
             pass
