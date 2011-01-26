@@ -83,9 +83,6 @@ class Measure(object):
         return ((self.endBar & BAR_TYPES["REPEAT_END"])
                 == BAR_TYPES["REPEAT_END"])
 
-    def numNotes(self):
-        return sum(len(timeDict) for timeDict in self._notes.values())
-
     def getNote(self, position):
         if not(0 <= position.noteTime < len(self)):
             raise BadTimeError(position)
