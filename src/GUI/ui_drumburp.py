@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Mon Jan 24 22:15:43 2011
+# Created: Wed Jan 26 00:17:35 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -344,10 +344,16 @@ class Ui_DrumBurpWindow(object):
         self.actionDisplayToolBarIsVisible.setCheckable(True)
         self.actionDisplayToolBarIsVisible.setObjectName(_fromUtf8("actionDisplayToolBarIsVisible"))
         self.actionPrint = QtGui.QAction(DrumBurpWindow)
+        self.actionPrint.setEnabled(False)
         icon9 = QtGui.QIcon()
         icon9.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/document-print.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionPrint.setIcon(icon9)
         self.actionPrint.setObjectName(_fromUtf8("actionPrint"))
+        self.actionWhatsThis = QtGui.QAction(DrumBurpWindow)
+        icon10 = QtGui.QIcon()
+        icon10.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/help-browser.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionWhatsThis.setIcon(icon10)
+        self.actionWhatsThis.setObjectName(_fromUtf8("actionWhatsThis"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.menuRecentScores.menuAction())
@@ -374,6 +380,7 @@ class Ui_DrumBurpWindow(object):
         self.fileToolBar.addAction(self.actionSaveAs)
         self.fileToolBar.addAction(self.actionPrint)
         self.fileToolBar.addAction(self.actionExportASCII)
+        self.fileToolBar.addAction(self.actionWhatsThis)
         self.displayToolBar.addAction(self.actionFitInWindow)
         self.spacingLabel.setBuddy(self.spaceSlider)
         self.label.setBuddy(self.verticalSlider)
@@ -552,6 +559,9 @@ class Ui_DrumBurpWindow(object):
         self.actionSaveAs.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Save this DrumBurp score with a new name", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExportASCII.setText(QtGui.QApplication.translate("DrumBurpWindow", "&Export ASCII", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExportASCII.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Write an ASCII representation of this score to a file", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExportASCII.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "Export this Score to an ASCII file.\n"
+"\n"
+"Writes this Score as a plain .txt file.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExportASCII.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+E", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDisplayOptionsIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "Display Options", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDisplayOptionsIsVisible.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Change visibility of display options", None, QtGui.QApplication.UnicodeUTF8))
@@ -573,6 +583,9 @@ class Ui_DrumBurpWindow(object):
         self.actionPrint.setText(QtGui.QApplication.translate("DrumBurpWindow", "Print", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrint.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Print this Score", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrint.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+P", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionWhatsThis.setText(QtGui.QApplication.translate("DrumBurpWindow", "What\'s this?", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionWhatsThis.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Get help on DrumBurp elements", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionWhatsThis.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Shift+F1", None, QtGui.QApplication.UnicodeUTF8))
 
 from Widgets.ScoreView_plugin import ScoreView
 from Widgets.RadioButtonTeller_plugin import RadioButtonTeller

@@ -2,6 +2,7 @@
   <qresource prefix="Icons">
     <file>Icons/view-refresh.png</file>
     <file>Icons/audio-x-generic.png</file>
+    <file>Icons/help-browser.png</file>
     <file>Icons/folder.png</file>
     <file>Icons/edit-delete.png</file>
     <file>Icons/document-new.png</file>
