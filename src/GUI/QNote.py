@@ -7,9 +7,11 @@ Created on 5 Dec 2010
 from PyQt4 import QtCore
 from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 from QDBGridItem import QDBGridItem
+from QRepeatDialog import QRepeatDialog
 from Data import DBConstants
 from Data.NotePosition import NotePosition
 import DBIcons
+import copy
 
 class QNote(QDBGridItem):
     '''
@@ -18,28 +20,38 @@ class QNote(QDBGridItem):
     def __init__(self, qScore, parent):
         super(QNote, self).__init__(qScore, parent)
         self._qMeasure = parent
-        self._drumIndex = None
-        self._noteTime = None
         self._notePosition = NotePosition()
         self._text = DBConstants.EMPTY_NOTE
         self.setAcceptsHoverEvents(True)
 
+    def _getNotePosition(self):
+        np = copy.copy(self._notePosition)
+        return self._qMeasure.augmentNotePosition(np)
+
+    def _score(self):
+        return self.scene().score
+
     def toggleNote(self, head = None):
-        np = NotePosition(drumIndex = self._drumIndex,
-                          noteTime = self._noteTime)
-        self._qMeasure.toggleNote(np, head)
+        if head is None:
+            head = self._props.head
+        self._score().toggleNote(self._getNotePosition(), head)
+
 
     def repeatNote(self):
-        np = NotePosition(drumIndex = self._drumIndex,
-                          noteTime = self._noteTime)
-        self._qMeasure.repeatNote(np, self._text)
+        np = self._getNotePosition()
+        head = self._text
+        repeatDialog = QRepeatDialog(self.scene().parent())
+        if repeatDialog.exec_():
+            nRepeats, repInterval = repeatDialog.getValues()
+            for dummyIndex in range(nRepeats):
+                np = self._score().notePlus(np, repInterval)
+                if np is None:
+                    break
+                self._score().addNote(np, head)
 
     def setIndex(self, drumIndex, noteTime):
-        if (drumIndex, noteTime) != (self._drumIndex, self._noteTime):
-            self._drumIndex = drumIndex
-            self._noteTime = noteTime
-            self._notePosition.drumIndex = drumIndex
-            self._notePosition.noteTime = noteTime
+        self._notePosition.noteTime = noteTime
+        self._notePosition.drumIndex = drumIndex
 
     def cellWidth(self):
         return self._props.xSpacing
@@ -51,7 +63,7 @@ class QNote(QDBGridItem):
         menu = None
         if event.button() == QtCore.Qt.MiddleButton:
             event.ignore()
-            menu = QMenuIgnoreCancelClick(self._qScore)
+            menu = QMenuIgnoreCancelClick(self.scene())
             for noteHead in self._props.allowedNoteHeads():
                 action = menu.addAction(noteHead)
                 def noteAction(nh = noteHead):
@@ -59,9 +71,10 @@ class QNote(QDBGridItem):
                 menu.connect(action, QtCore.SIGNAL("triggered()"), noteAction)
         elif event.button() == QtCore.Qt.RightButton:
             event.ignore()
-            menu = QMenuIgnoreCancelClick(self._qScore)
+            menu = QMenuIgnoreCancelClick(self.scene())
             actionText = "Repeat note"
-            repeatNoteAction = menu.addAction(DBIcons.getIcon("repeat"), actionText)
+            repeatNoteAction = menu.addAction(DBIcons.getIcon("repeat"),
+                                              actionText)
             menu.connect(repeatNoteAction,
                          QtCore.SIGNAL("triggered()"),
                          self.repeatNote)
@@ -78,7 +91,7 @@ class QNote(QDBGridItem):
             menu.connect(pasteAction,
                          QtCore.SIGNAL("triggered()"),
                          self._qMeasure.pasteMeasure)
-            if self._qScore.measureClipboard is None:
+            if self.scene().measureClipboard is None:
                 pasteAction.setEnabled(False)
             menu.addSeparator()
             actionText = "Insert Default Measure"
@@ -107,17 +120,13 @@ class QNote(QDBGridItem):
 
     def mouseReleaseEvent(self, event):
         if (event.button() == QtCore.Qt.LeftButton and
-            self._qScore.itemAt(event.scenePos()) == self):
+            self.scene().itemAt(event.scenePos()) == self):
             self.toggleNote()
         else:
             event.ignore()
 
     def hoverEnterEvent(self, dummyEvent):
-        np = NotePosition(drumIndex = self._drumIndex,
-                          noteTime = self._noteTime)
-        self._qMeasure.highlightNote(np)
+        self.scene().highlightNote(self._getNotePosition())
 
     def hoverLeaveEvent(self, dummyEvent):
-        np = NotePosition(drumIndex = self._drumIndex,
-                          noteTime = self._noteTime)
-        self._qMeasure.highlightNote(np, False)
+        self.scene().highlightNote(self._getNotePosition(), False)

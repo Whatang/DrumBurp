@@ -9,7 +9,6 @@ from QDBGridItem import QDBGridItem
 class QLineLabel(QDBGridItem):
     def __init__(self, lineName, qScore, parent):
         super(QLineLabel, self).__init__(qScore, parent)
-        self._index = None
         self.setText(lineName)
 
     def cellHeight(self):
@@ -18,5 +17,3 @@ class QLineLabel(QDBGridItem):
     def cellWidth(self):
         return self._props.LINELABELWIDTH
 
-    def setIndex(self, index):
-        self._index = index

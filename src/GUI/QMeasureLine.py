@@ -20,10 +20,8 @@ class QMeasureLine(QtGui.QGraphicsItem):
         Constructor
         '''
         super(QMeasureLine, self).__init__(parent)
-        self._qScore = qScore
         self._qStaff = parent
-        self._score = self._qScore.getScore()
-        self._props = self._qScore.getProperties()
+        self._props = qScore.displayProperties
         self._height = None
         self._rect = QtCore.QRectF(0, 0, 0, 0)
         self._lastMeasure = lastMeasure
@@ -46,7 +44,7 @@ class QMeasureLine(QtGui.QGraphicsItem):
         self._painter(self, painter, dummyOption, dummyWidget = None)
 
     def _setHeight(self):
-        self._height = self._props.ySpacing * self._qScore.kitSize
+        self._height = self._props.ySpacing * self.scene().kitSize
 
     def setDimensions(self):
         self.prepareGeometryChange()
@@ -69,29 +67,37 @@ class QMeasureLine(QtGui.QGraphicsItem):
     def width(self):
         return self._props.xSpacing
 
-    def _setSectionEnd(self, onOff):
+    def _getEndNotePosition(self):
         assert(self._index > 0)
         np = NotePosition(measureIndex = self._index - 1)
-        self._qStaff.setSectionEnd(np, onOff)
+        return self._qStaff.augmentNotePosition(np)
+
+    def _getStartNotePosition(self):
+        np = NotePosition(measureIndex = self._index)
+        return self._qStaff.augmentNotePosition(np)
+
+    def _setSectionEnd(self, onOff):
+        self.scene().score.setSectionEnd(self._getEndNotePosition(), onOff)
+        self.scene().dirty = True
+        self.scene().reBuild()
         self._setPainter()
 
     def _setRepeatEnd(self, onOff):
-        assert(self._index > 0)
-        np = NotePosition(measureIndex = self._index - 1)
-        self._qStaff.setRepeatEnd(np, onOff)
+        self.scene().score.setRepeatEnd(self._getEndNotePosition(), onOff)
+        self.scene().dirty = True
         self._setPainter()
         self.update()
 
     def _setRepeatStart(self, onOff):
-        np = NotePosition(measureIndex = self._index)
-        self._qStaff.setRepeatStart(np, onOff)
+        self.scene().score.setRepeatStart(self._getStartNotePosition(), onOff)
+        self.scene().dirty = True
         self._setPainter()
         self.update()
 
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.RightButton:
             event.accept()
-            menu = QMenuIgnoreCancelClick(self._qScore)
+            menu = QMenuIgnoreCancelClick(self.scene())
             # Repeat Start
             if self._nextMeasure is not None:
                 repeatStartAction = QtGui.QAction("Repeat Start", menu)

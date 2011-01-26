@@ -28,14 +28,13 @@ def _stringToPixMap(character, font, scene):
         _CHAR_PIXMAPS[key] = pix
     return _CHAR_PIXMAPS[key]
 
-
+#pylint: disable-msg=R0921
 class QDBGridItem(QtGui.QGraphicsItem):
     def __init__(self, qScore, parent):
         super(QDBGridItem, self).__init__(parent = None,
                                           scene = qScore)
         self._text = ""
-        self._qScore = qScore
-        self._props = qScore.getProperties()
+        self._props = qScore.displayProperties
         self._rect = QtCore.QRectF(0, 0,
                                    self.cellWidth(),
                                    self.cellHeight())

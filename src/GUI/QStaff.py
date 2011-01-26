@@ -12,21 +12,18 @@ from QLineLabel import QLineLabel
 from Data.NotePosition import NotePosition
 import itertools
 
-#pylint: disable-msg=R0904
 class QStaff(QtGui.QGraphicsItemGroup):
     '''
     classdocs
     '''
 
 
-    def __init__(self, staff, parent = None):
+    def __init__(self, staff, qScore):
         '''
         Constructor
         '''
-        super(QStaff, self).__init__(scene = parent)
-        self._qScore = parent
-        self._score = self._qScore.getScore()
-        self._props = self._qScore.getProperties()
+        super(QStaff, self).__init__(scene = qScore)
+        self._props = qScore.displayProperties
         self._staff = None
         self._index = None
         self._lineLabels = []
@@ -34,7 +31,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self._measureLines = []
         self._width = 0
         self._height = 0
-        self.setStaff(staff)
+        self._setStaff(staff)
         self.setHandlesChildEvents(False)
 
     def width(self):
@@ -46,51 +43,51 @@ class QStaff(QtGui.QGraphicsItemGroup):
     def setIndex(self, index):
         self._index = index
 
-    def setStaff(self, staff):
+    def _setStaff(self, staff):
         if staff != self._staff:
             self._staff = staff
-            self.build()
+            self._build()
 
-    def clear(self):
+    def _clear(self):
         self._lineLabels = []
         self._measures = []
         self._measureLines = []
 
-    def build(self):
-        self.clear()
-        for label in self._qScore.iterLineLabels():
-            self.addLineLabel(label)
+    def _build(self):
+        self._clear()
+        abbrs = (drum.abbr for drum in self.scene().score.drumKit)
+        for label in abbrs:
+            self._addLineLabel(label)
         lastMeasure = None
         for measure in self._staff:
-            self.addMeasureLine(lastMeasure, measure)
-            self.addMeasure(measure)
+            self._addMeasureLine(lastMeasure, measure)
+            self._addMeasure(measure)
             lastMeasure = measure
-        self.addMeasureLine(lastMeasure, None)
+        self._addMeasureLine(lastMeasure, None)
 
     def numMeasures(self):
         return len(self._measures)
 
-    def addLineLabel(self, label):
-        qLabel = QLineLabel(label, self._qScore, self)
-        qLabel.setIndex(len(self._lineLabels))
+    def _addLineLabel(self, label):
+        qLabel = QLineLabel(label, self.scene(), self)
         self._lineLabels.append(qLabel)
         self.addToGroup(qLabel)
 
-    def addMeasure(self, measure):
-        qMeasure = QMeasure(self._qScore, measure, parent = self)
+    def _addMeasure(self, measure):
+        qMeasure = QMeasure(self.scene(), measure, parent = self)
         qMeasure.setIndex(self.numMeasures())
         self._measures.append(qMeasure)
         self.addToGroup(qMeasure)
 
-    def addMeasureLine(self, lastMeasure, nextMeasure):
-        qMeasureLine = QMeasureLine(self._qScore,
+    def _addMeasureLine(self, lastMeasure, nextMeasure):
+        qMeasureLine = QMeasureLine(self.scene(),
                                     lastMeasure, nextMeasure, parent = self)
         qMeasureLine.setIndex(len(self._measureLines))
         self._measureLines.append(qMeasureLine)
         self.addToGroup(qMeasureLine)
 
     def placeMeasures(self):
-        lineOffsets = self._qScore.lineOffsets()
+        lineOffsets = self.scene().lineOffsets
         xOffset = 0
         for yOffset, label in zip(lineOffsets, self._lineLabels):
             label.setPos(xOffset, yOffset)
@@ -125,7 +122,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self._width = xOffset + self._measureLines[-1].width()
 
     def ySpacingChanged(self):
-        lineOffsets = self._qScore.lineOffsets()
+        lineOffsets = self.scene().lineOffsets
         for yOffset, label in zip(lineOffsets, self._lineLabels):
             label.setY(yOffset)
             label.ySpacingChanged()
@@ -145,63 +142,12 @@ class QStaff(QtGui.QGraphicsItemGroup):
         np = NotePosition(measureIndex = self._index)
         return np
 
-    def _augmentNotePosition(self, np):
+    def augmentNotePosition(self, np):
         np.staffIndex = self._index
-
-    def toggleNote(self, np, head):
-        self._augmentNotePosition(np)
-        self._qScore.toggleNote(np, head)
-
-    def repeatNote(self, np, head):
-        self._augmentNotePosition(np)
-        self._qScore.repeatNote(np, head)
-
-    def highlightNote(self, np, onOff):
-        self._augmentNotePosition(np)
-        self._qScore.highlightNote(np, onOff)
+        return np
 
     def setHighlight(self, np, onOff):
         lineLabel = self._lineLabels[np.drumIndex]
         lineLabel.setHighlight(onOff)
         qMeasure = self._measures[np.measureIndex]
         qMeasure.setHighlight(np, onOff)
-
-    def insertMeasure(self, np):
-        self._augmentNotePosition(np)
-        self._qScore.insertMeasure(np)
-
-    def insertOtherMeasures(self, np):
-        self._augmentNotePosition(np)
-        self._qScore.insertOtherMeasures(np)
-
-    def deleteMeasure(self, np):
-        self._augmentNotePosition(np)
-        self._qScore.deleteMeasure(np)
-
-    def copyMeasure(self, np):
-        self._augmentNotePosition(np)
-        self._qScore.copyMeasure(np)
-
-    def pasteMeasure(self, np):
-        self._augmentNotePosition(np)
-        self._qScore.pasteMeasure(np)
-
-    def editMeasureProperties(self, np, numTicks, counter):
-        self._augmentNotePosition(np)
-        self._qScore.editMeasureProperties(np, numTicks, counter)
-
-    def countChanged(self, np):
-        measure = self._measures[np.measureIndex]
-        measure.countChanged()
-
-    def setSectionEnd(self, np, onOff):
-        self._augmentNotePosition(np)
-        self._qScore.setSectionEnd(np, onOff)
-
-    def setRepeatEnd(self, np, onOff):
-        self._augmentNotePosition(np)
-        self._qScore.setRepeatEnd(np, onOff)
-
-    def setRepeatStart(self, np, onOff):
-        self._augmentNotePosition(np)
-        self._qScore.setRepeatStart(np, onOff)

@@ -47,7 +47,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         QTimer.singleShot(0, lambda: self.spaceSlider.setValue(xValue))
         QTimer.singleShot(0, lambda: self.verticalSlider.setValue(yValue))
         QTimer.singleShot(0, lambda: self.lineSpaceSlider.setValue(lValue))
-        QTimer.singleShot(0, lambda: self.scoreView.startUp())
+        QTimer.singleShot(0, self.scoreView.startUp)
         self.beatsSpinBox.setValue(self.songProperties.beatsPerMeasure)
         DBUtility.populateCounterCombo(self.beatCountComboBox,
                                        self.songProperties.beatCounter)

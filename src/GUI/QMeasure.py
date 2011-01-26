@@ -9,6 +9,9 @@ from PyQt4 import QtGui
 from QNote import QNote
 from QCount import QCount
 from Data.NotePosition import NotePosition
+from QInsertMeasuresDialog import QInsertMeasuresDialog
+from QEditMeasureDialog import QEditMeasureDialog
+from Data.TimeCounter import counterMaker
 
 class QMeasure(QtGui.QGraphicsItemGroup):
     '''
@@ -22,9 +25,7 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         '''
         super(QMeasure, self).__init__(parent)
         self._qStaff = parent
-        self._qScore = qScore
-        self._score = self._qScore.getScore()
-        self._props = self._qScore.getProperties()
+        self._props = qScore.displayProperties
         self._measure = None
         self._index = None
         self._notes = []
@@ -43,33 +44,33 @@ class QMeasure(QtGui.QGraphicsItemGroup):
     def setMeasure(self, measure):
         if self._measure != measure:
             self._measure = measure
-            self.build()
+            self._build()
 
     def setIndex(self, index):
         self._index = index
 
-    def clear(self):
+    def _clear(self):
         self._counts = []
 
-    def build(self):
-        self.clear()
-        for drumIndex in range(0, self._qScore.kitSize):
+    def _build(self):
+        self._clear()
+        for drumIndex in range(0, self.scene().kitSize):
             noteLine = []
             self._notes.append(noteLine)
             for noteTime in range(0, len(self._measure)):
-                qNote = QNote(self._qScore, parent = self)
+                qNote = QNote(self.scene(), parent = self)
                 qNote.setIndex(drumIndex, noteTime)
                 noteLine.append(qNote)
                 self.addToGroup(qNote)
         for noteTime, count in enumerate(self._measure.count()):
-            qCount = QCount(count, self._qScore, parent = self)
+            qCount = QCount(count, self.scene(), parent = self)
             qCount.setIndex(noteTime)
             self._counts.append(qCount)
             self.addToGroup(qCount)
 
     def placeNotes(self):
-        yOffsets = self._qScore.lineOffsets()
-        countOffset = self._qScore.kitSize * self._props.ySpacing
+        yOffsets = self.scene().lineOffsets
+        countOffset = self.scene().kitSize * self._props.ySpacing
         for noteTime in range(0, len(self._measure)):
             xOffset = noteTime * self._props.xSpacing
             for drumIndex, yOffset in enumerate(yOffsets):
@@ -86,27 +87,15 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         self._width = len(self._measure) * self._props.xSpacing
 
     def _setHeight(self):
-        self._height = (self._qScore.kitSize + 1) * self._props.ySpacing
+        self._height = (self.scene().kitSize + 1) * self._props.ySpacing
 
     def _makeNotePosition(self):
         np = NotePosition()
-        self._augmentNotePosition(np)
-        return np
+        return self.augmentNotePosition(np)
 
-    def _augmentNotePosition(self, np):
+    def augmentNotePosition(self, np):
         np.measureIndex = self._index
-
-    def toggleNote(self, np, head):
-        self._augmentNotePosition(np)
-        self._qStaff.toggleNote(np, head)
-
-    def repeatNote(self, np, head):
-        self._augmentNotePosition(np)
-        self._qStaff.repeatNote(np, head)
-
-    def highlightNote(self, np, onOff = True):
-        self._augmentNotePosition(np)
-        self._qStaff.highlightNote(np, onOff)
+        return self._qStaff.augmentNotePosition(np)
 
     def setHighlight(self, np, onOff):
         qCount = self._counts[np.noteTime]
@@ -114,38 +103,93 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         qNote = self._notes[np.drumIndex][np.noteTime]
         qNote.setHighlight(onOff)
 
+    def _insertMeasure(self, np):
+        qScore = self.scene()
+        counter = self._props.beatCounter
+        width = (self._props.beatsPerMeasure *
+                 counter.beatLength)
+        qScore.score.insertMeasureByPosition(width, np,
+                                             counter = counter)
+        qScore.reBuild()
+        qScore.dirty = True
+
     def insertMeasureBefore(self):
-        np = self._makeNotePosition()
-        self._qStaff.insertMeasure(np)
+        self._insertMeasure(self._makeNotePosition())
 
     def insertMeasureAfter(self):
         np = self._makeNotePosition()
         np.measureIndex += 1
-        self._qStaff.insertMeasure(np)
+        self._insertMeasure(np)
 
     def insertOtherMeasures(self):
         np = self._makeNotePosition()
-        self._qStaff.insertOtherMeasures(np)
+        beats = self._props.beatsPerMeasure
+        counter = self._props.beatCounter
+        insertDialog = QInsertMeasuresDialog(self.scene().parent(),
+                                             beats,
+                                             counter)
+        if insertDialog.exec_():
+            nMeasures, beats, counter, insertBefore = insertDialog.getValues()
+            counter = counterMaker(counter)
+            measureWidth = beats * counter.beatLength
+            if not insertBefore:
+                np.measureIndex += 1
+            score = self.scene().score
+            for dummyMeasureIndex in range(nMeasures):
+                score.insertMeasureByPosition(measureWidth, np,
+                                              counter = counter)
+            self.scene().reBuild()
+            self.scene().dirty = True
 
     def deleteMeasure(self):
-        np = self._makeNotePosition()
-        self._qStaff.deleteMeasure(np)
+        score = self.scene().score
+        if score.numMeasures() == 1:
+            QtGui.QMessageBox.warning(self.parent(),
+                                      "Invalid delete",
+                                      "Cannot delete last measure.")
+            return
+        yesNo = QtGui.QMessageBox.question(self.scene().parent(),
+                                           "Delete Measure",
+                                           "Really delete this measure?",
+                                           QtGui.QMessageBox.Ok,
+                                           QtGui.QMessageBox.Cancel)
+        if yesNo == QtGui.QMessageBox.Ok:
+            score.deleteMeasureByPosition(self._makeNotePosition())
+            self.scene().reBuild()
+            self.scene().dirty = True
 
     def copyMeasure(self):
-        np = self._makeNotePosition()
-        self._qStaff.copyMeasure(np)
+        self.scene().copyMeasure(self._makeNotePosition())
 
     def pasteMeasure(self):
-        np = self._makeNotePosition()
-        self._qStaff.pasteMeasure(np)
+        self.scene().pasteMeasure(self._makeNotePosition())
 
     def editMeasureProperties(self):
-        np = self._makeNotePosition()
-        self._qStaff.editMeasureProperties(np,
-                                           len(self._measure),
-                                           self._measure.counter)
+        numTicks = len(self._measure)
+        counter = self._measure.counter
+        defBeats = self._props.beatsPerMeasure
+        defCounter = self._props.beatCounter
+        editDialog = QEditMeasureDialog(self.scene().parent(),
+                                        numTicks,
+                                        counter,
+                                        defBeats,
+                                        defCounter)
+        if editDialog.exec_():
+            beats, newCounter = editDialog.getValues()
+            newCounter = counterMaker(newCounter)
+            newTicks = newCounter.beatLength * beats
+            score = self.scene().score
+            if (newCounter != counter
+                or newTicks != numTicks):
+                score.setMeasureBeatCount(self._makeNotePosition(),
+                                          beats, newCounter)
+                self.scene().dirty = True
+                if newTicks != numTicks:
+                    self.scene().reBuild()
+                else:
+                    self._countChanged()
 
-    def countChanged(self):
+    def _countChanged(self):
         for qCount, count in zip(self._counts, self._measure.count()):
             qCount.setText(count)
 
@@ -153,7 +197,7 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         self._notes[np.drumIndex][np.noteTime].setText(head)
 
     def xSpacingChanged(self):
-        yOffsets = self._qScore.lineOffsets()
+        yOffsets = self.scene().lineOffsets
         for noteTime in range(0, len(self._measure)):
             xOffset = noteTime * self._props.xSpacing
             for drumIndex, dummyyOffset in enumerate(yOffsets):
@@ -166,8 +210,8 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         self._setWidth()
 
     def ySpacingChanged(self):
-        yOffsets = self._qScore.lineOffsets()
-        countOffset = self._qScore.kitSize * self._props.ySpacing
+        yOffsets = self.scene().lineOffsets
+        countOffset = self.scene().kitSize * self._props.ySpacing
         for noteTime in range(0, len(self._measure)):
             for drumIndex, yOffset in enumerate(yOffsets):
                 qNote = self._notes[drumIndex][noteTime]
