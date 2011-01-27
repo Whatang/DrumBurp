@@ -175,7 +175,7 @@ class Staff(object):
         position.drumIndex = drumIndex
         lastBar = None
         lineString = "%2s" % drum.abbr
-        lineOK = False
+        lineOk = False
         for measureIndex, measure in enumerate(self):
             position.measureIndex = measureIndex
             key = Measure.barlineKey(lastBar, measure)
@@ -186,11 +186,11 @@ class Staff(object):
                 position.noteTime = noteTime
                 note = measure.getNote(position)
                 lineString += note
-                lineOK = lineOK or note != EMPTY_NOTE
+                lineOk = lineOk or note != EMPTY_NOTE
         key = Measure.barlineKey(lastBar, None)
         barString = COMBINED_BARLINE_STRING[key]
         lineString += barString
-        return lineString, lineOK
+        return lineString, lineOk
 
     def _getCountLine(self):
         countString = "  "
@@ -214,10 +214,10 @@ class Staff(object):
         staffString = []
         for drumIndex in indices:
             drum = kit[drumIndex]
-            lineString, lineOK = self._getDrumLine(drum,
+            lineString, lineOk = self._getDrumLine(drum,
                                                    position,
                                                    drumIndex)
-            if lineOK or drum.locked:
+            if lineOk or drum.locked:
                 staffString.append(lineString)
         countString = self._getCountLine()
         staffString.append(countString)
