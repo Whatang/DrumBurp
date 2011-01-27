@@ -37,7 +37,7 @@ class Measure(object):
         if first is None:
             first = BAR_TYPES["NO_BAR"]
         else:
-            first = first.startBar
+            first = first.endBar
         if second is None:
             second = BAR_TYPES["NO_BAR"]
         else:
