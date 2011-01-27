@@ -392,7 +392,19 @@ class Score(object):
 
     def exportASCII(self, handle):
         asciiString = []
+        newSection = True
+        sectionIndex = 0
         for staff in self.iterStaffs():
+            assert(staff.isConsistent())
+            if newSection:
+                newSection = False
+                if sectionIndex < self.numSections():
+                    if len(asciiString) > 0:
+                        asciiString.append("")
+                    asciiString.append(self.getSectionTitle(sectionIndex))
+                    asciiString.append("")
+                    sectionIndex += 1
+            newSection = staff.isSectionEnd()
             asciiString.extend(staff.exportASCII(self.drumKit))
             asciiString.append("")
         asciiString = asciiString[:-1]
