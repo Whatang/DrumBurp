@@ -255,7 +255,12 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if len(fname) == 0 :
             return
         with open(fname, 'w') as txtHandle:
-            self.scoreScene.exportASCII(txtHandle)
+            try:
+                self.scoreScene.exportASCII(txtHandle)
+            except StandardError:
+                QMessageBox.warning(self.parent(), "Export failed!",
+                                    "Could not export to " + fname)
+                raise
             self.updateStatus("Successfully exported ASCII to " + fname)
 
     @pyqtSignature("")

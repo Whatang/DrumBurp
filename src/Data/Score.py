@@ -13,6 +13,7 @@ from NotePosition import NotePosition
 from ScoreMetaData import ScoreMetaData
 import os
 import bisect
+import time
 
 #pylint: disable-msg=R0904
 
@@ -391,6 +392,13 @@ class Score(object):
 
 
     def exportASCII(self, handle):
+        metadataString = []
+        metadataString.append("Title     : " + self.scoreData.title)
+        metadataString.append("Artist    : " + self.scoreData.artist)
+        metadataString.append("BPM       : " + str(self.scoreData.bpm))
+        metadataString.append("Tabbed by : " + self.scoreData.creator)
+        metadataString.append("Date      : " + time.strftime("%d %B %Y"))
+        metadataString.append("")
         asciiString = []
         newSection = True
         sectionIndex = 0
@@ -413,6 +421,7 @@ class Score(object):
             kitString.append(instr.exportASCII())
         kitString.reverse()
         kitString.append("")
+        handle.writelines(mString + os.linesep for mString in metadataString)
         handle.writelines(iString + os.linesep for iString in kitString)
         handle.writelines(sString + os.linesep for sString in asciiString)
 
