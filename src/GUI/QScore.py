@@ -209,6 +209,7 @@ class QScore(QtGui.QGraphicsScene):
                     qSection.setPos(xMargins, yOffset)
                     yOffset += qSection.boundingRect().height()
                     yOffset += lineSpacing
+            newSection = qStaff.isSectionEnd()
             qStaff.setPos(xMargins, yOffset)
             qStaff.placeMeasures()
             yOffset += qStaff.height() + lineSpacing
@@ -231,7 +232,18 @@ class QScore(QtGui.QGraphicsScene):
         yMargins = self._properties.yMargins
         lineSpacing = self._properties.lineSpacing
         yOffset = yMargins
+        newSection = True
+        sectionIndex = 0
         for qStaff in self:
+            if newSection:
+                newSection = False
+                if sectionIndex < len(self._qSections):
+                    qSection = self._qSections[sectionIndex]
+                    sectionIndex += 1
+                    qSection.setPos(xMargins, yOffset)
+                    yOffset += qSection.boundingRect().height()
+                    yOffset += lineSpacing
+            newSection = qStaff.isSectionEnd()
             qStaff.setPos(xMargins, yOffset)
             qStaff.ySpacingChanged()
             yOffset += qStaff.height() + lineSpacing
@@ -244,7 +256,18 @@ class QScore(QtGui.QGraphicsScene):
         yMargins = self._properties.yMargins
         lineSpacing = self._properties.lineSpacing
         yOffset = yMargins
+        sectionIndex = 0
+        newSection = True
         for qStaff in self:
+            if newSection:
+                newSection = False
+                if sectionIndex < len(self._qSections):
+                    qSection = self._qSections[sectionIndex]
+                    sectionIndex += 1
+                    qSection.setPos(xMargins, yOffset)
+                    yOffset += qSection.boundingRect().height()
+                    yOffset += lineSpacing
+            newSection = qStaff.isSectionEnd()
             qStaff.setPos(xMargins, yOffset)
             yOffset += qStaff.height() + lineSpacing
         self.setSceneRect(0, 0,
