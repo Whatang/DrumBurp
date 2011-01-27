@@ -10,6 +10,10 @@ from DBConstants import EMPTY_NOTE, BAR_TYPES
 from DBErrors import BadTimeError
 from NotePosition import NotePosition
 import TimeCounter
+import copy
+
+def _makeNoteDict():
+    return defaultdict(lambda: defaultdict(dict))
 
 class Measure(object):
     '''
@@ -18,7 +22,7 @@ class Measure(object):
 
     def __init__(self, width = 0):
         self._width = width
-        self._notes = defaultdict(lambda: defaultdict(dict))
+        self._notes = _makeNoteDict()
         self.startBar = BAR_TYPES["NORMAL_BAR"]
         self.endBar = BAR_TYPES["NORMAL_BAR"]
         self._callBack = None
@@ -183,6 +187,16 @@ class Measure(object):
                 self.addNote(pos, head)
             except BadTimeError:
                 continue
+
+    def changeKit(self, changes):
+        oldNotes = copy.deepcopy(self._notes)
+        self._notes = _makeNoteDict()
+        for noteTime, line in oldNotes.iteritems():
+            for drumIndex, head in line.iteritems():
+                if changes[drumIndex] == -1:
+                    continue
+                self._notes[noteTime][changes[drumIndex]] = head
+
 
     def write(self, handle):
         print >> handle, "START_BAR %d" % len(self)

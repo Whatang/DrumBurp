@@ -337,6 +337,11 @@ class Score(object):
                                  Staff.gridWidth,
                                  True)
 
+    def changeKit(self, newKit, changes):
+        for measure in self.iterMeasures():
+            measure.changeKit(changes)
+        self.drumKit = newKit
+
     def write(self, handle):
         self.scoreData.save(handle)
         self.drumKit.write(handle)
