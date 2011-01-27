@@ -14,9 +14,9 @@ class DrumKit(object):
     '''
 
     DEFAULT_KIT = [("Foot pedal", "Fo", "x"),
-                   ("Kick", "Bd", "o"),
+                   ("Kick", "Bd", "o", True),
                    ("Low Tom", "LT", "o"),
-                   ("Snare", "Sn", "o"),
+                   ("Snare", "Sn", "o", True),
                    ("Mid Tom", "MT", "o"),
                    ("High Tom", "HT", "o"),
                    ("Ride", "Ri", "x"),
@@ -73,7 +73,7 @@ class DrumKit(object):
                 break
             elif lineType == "DRUM":
                 fields = lineData.split(",")
-                drum = Drum(*fields[:3])
+                drum = Drum(*fields)
                 if len(fields) == 4:
                     drum.locked = (fields[3] == "True")
                 self.addDrum(drum)
