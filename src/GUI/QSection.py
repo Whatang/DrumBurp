@@ -6,7 +6,7 @@ Created on 26 Jan 2011
 '''
 
 from PyQt4.QtGui import QGraphicsTextItem
-from PyQt4.QtCore import Qt, SIGNAL
+from PyQt4.QtCore import Qt
 
 class QSection(QGraphicsTextItem):
     '''

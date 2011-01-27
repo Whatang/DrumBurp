@@ -154,7 +154,7 @@ class QScore(QtGui.QGraphicsScene):
         self._clearStaffs()
         for staff in self._score.iterStaffs():
             self._addStaff(staff)
-        for i, title in enumerate(self._score.iterSections()):
+        for title in self._score.iterSections():
             self._addSection(title)
         self._placeStaffs()
         self._populate()

@@ -5,7 +5,7 @@ Created on 12 Dec 2010
 
 '''
 from DBErrors import BadTimeError
-from DBConstants import COMBINED_BARLINE_STRING, BAR_TYPES
+from DBConstants import COMBINED_BARLINE_STRING
 from NotePosition import NotePosition
 from Measure import Measure
 

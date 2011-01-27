@@ -7,7 +7,8 @@ Created on 31 Jul 2010
 
 from ui_drumburp import Ui_DrumBurpWindow
 from PyQt4.QtGui import (QMainWindow, QFontDatabase,
-                         QFileDialog, QMessageBox, QPrintPreviewDialog, QWhatsThis)
+                         QFileDialog, QMessageBox,
+                         QPrintPreviewDialog, QWhatsThis)
 from PyQt4.QtCore import QTimer, pyqtSignature, SIGNAL, QSettings, QVariant
 from QScore import QScore
 from QSongProperties import QSongProperties
