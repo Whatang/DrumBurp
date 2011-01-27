@@ -9,10 +9,11 @@ class Drum(object):
     '''
     classdocs
     '''
-    def __init__(self, name, abbr, head):
+    def __init__(self, name, abbr, head, locked = False):
         self.name = name
         self.abbr = abbr
         self.head = head
+        self.locked = locked
         assert(len(name) > 0)
         assert(1 <= len(abbr) <= 2)
         assert(len(head) == 1)

@@ -61,9 +61,10 @@ class DrumKit(object):
     def write(self, handle):
         print >> handle, "KIT_START"
         for drum in self:
-            print >> handle, "DRUM %s,%s,%s" % (drum.name,
-                                                drum.abbr,
-                                                drum.head)
+            print >> handle, "DRUM %s,%s,%s,%s" % (drum.name,
+                                                   drum.abbr,
+                                                   drum.head,
+                                                   str(drum.locked))
         print >> handle, "KIT_END"
 
     def read(self, scoreIterator):
@@ -72,7 +73,9 @@ class DrumKit(object):
                 break
             elif lineType == "DRUM":
                 fields = lineData.split(",")
-                drum = Drum(*fields)
+                drum = Drum(*fields[:3])
+                if len(fields) == 4:
+                    drum.locked = (fields[3] == "True")
                 self.addDrum(drum)
             else:
                 raise IOError("Unrecognised line type.")
