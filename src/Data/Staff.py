@@ -5,7 +5,7 @@ Created on 12 Dec 2010
 
 '''
 from DBErrors import BadTimeError
-from DBConstants import COMBINED_BARLINE_STRING
+from DBConstants import COMBINED_BARLINE_STRING, EMPTY_NOTE
 from NotePosition import NotePosition
 from Measure import Measure
 
@@ -175,6 +175,7 @@ class Staff(object):
         position.drumIndex = drumIndex
         lastBar = None
         lineString = "%2s" % drum.abbr
+        lineOK = False
         for measureIndex, measure in enumerate(self):
             position.measureIndex = measureIndex
             key = Measure.barlineKey(lastBar, measure)
@@ -185,10 +186,11 @@ class Staff(object):
                 position.noteTime = noteTime
                 note = measure.getNote(position)
                 lineString += note
+                lineOK = lineOK or note != EMPTY_NOTE
         key = Measure.barlineKey(lastBar, None)
         barString = COMBINED_BARLINE_STRING[key]
         lineString += barString
-        return lineString
+        return lineString, lineOK
 
     def _getCountLine(self):
         countString = "  "
@@ -212,10 +214,11 @@ class Staff(object):
         staffString = []
         for drumIndex in indices:
             drum = kit[drumIndex]
-            lineString = self._getDrumLine(drum,
-                                           position,
-                                           drumIndex)
-            staffString.append(lineString)
+            lineString, lineOK = self._getDrumLine(drum,
+                                                   position,
+                                                   drumIndex)
+            if lineOK or drum.locked:
+                staffString.append(lineString)
         countString = self._getCountLine()
         staffString.append(countString)
         return staffString

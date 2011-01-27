@@ -409,7 +409,9 @@ class Score(object):
                 if sectionIndex < self.numSections():
                     if len(asciiString) > 0:
                         asciiString.append("")
-                    asciiString.append(self.getSectionTitle(sectionIndex))
+                    title = self.getSectionTitle(sectionIndex)
+                    asciiString.append(title)
+                    asciiString.append("".join(["~"] * len(title)))
                     asciiString.append("")
                     sectionIndex += 1
             newSection = staff.isSectionEnd()
