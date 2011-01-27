@@ -80,7 +80,7 @@ class ScoreView(QtGui.QGraphicsView):
 
     @QtCore.pyqtSlot(int)
     def setDefaultMeasureWidth(self, width):
-        self._props.defaultMeasureWidth = width
+        self._props.beatsPerMeasure = width
 
     def startUp(self):
         self.scene().startUp()
