@@ -58,9 +58,8 @@ class QStaff(QtGui.QGraphicsItemGroup):
 
     def _build(self):
         self._clear()
-        abbrs = (drum.abbr for drum in self.scene().score.drumKit)
-        for label in abbrs:
-            self._addLineLabel(label)
+        for drum in self.scene().score.drumKit:
+            self._addLineLabel(drum)
         lastMeasure = None
         for measure in self._staff:
             self._addMeasureLine(lastMeasure, measure)
@@ -71,8 +70,8 @@ class QStaff(QtGui.QGraphicsItemGroup):
     def numMeasures(self):
         return len(self._measures)
 
-    def _addLineLabel(self, label):
-        qLabel = QLineLabel(label, self.scene(), self)
+    def _addLineLabel(self, drum):
+        qLabel = QLineLabel(drum, self.scene(), self)
         self._lineLabels.append(qLabel)
         self.addToGroup(qLabel)
 
