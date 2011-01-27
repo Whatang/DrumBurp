@@ -48,6 +48,9 @@ class QStaff(QtGui.QGraphicsItemGroup):
             self._staff = staff
             self._build()
 
+    def isSectionEnd(self):
+        return self._staff.isSectionEnd()
+
     def _clear(self):
         self._lineLabels = []
         self._measures = []

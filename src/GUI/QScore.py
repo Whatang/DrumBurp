@@ -7,6 +7,7 @@ Created on 4 Jan 2011
 
 from PyQt4 import QtGui, QtCore
 from QStaff import QStaff
+from QSection import QSection
 from Data.Score import ScoreFactory
 import functools
 _SCORE_FACTORY = ScoreFactory()
@@ -46,6 +47,7 @@ class QScore(QtGui.QGraphicsScene):
         '''
         super(QScore, self).__init__(parent)
         self._qStaffs = []
+        self._qSections = []
         self._properties = parent.songProperties
         self._score = None
         self._highlightedNote = None
@@ -152,8 +154,13 @@ class QScore(QtGui.QGraphicsScene):
         self._clearStaffs()
         for staff in self._score.iterStaffs():
             self._addStaff(staff)
+        print self._score.numSections()
+        for i, title in enumerate(self._score.iterSections()):
+            self._addSection(title)
+            print title
         self._placeStaffs()
         self._populate()
+
 
     @delayCall
     def reBuild(self):
@@ -173,32 +180,50 @@ class QScore(QtGui.QGraphicsScene):
         for qStaff in self._qStaffs:
             self.removeItem(qStaff)
         self._qStaffs = []
+        for qSection in self._qSections:
+            self.removeItem(qSection)
+        self._qSections = []
 
     def _addStaff(self, staff):
         qStaff = QStaff(staff, self)
         qStaff.setIndex(len(self._qStaffs))
         self._qStaffs.append(qStaff)
 
+    def _addSection(self, title):
+        qSection = QSection(title, qScore = self)
+        qSection.setIndex(len(self._qSections))
+        self._qSections.append(qSection)
+
     def _placeStaffs(self):
         xMargins = self._properties.xMargins
         yMargins = self._properties.yMargins
         lineSpacing = self._properties.lineSpacing
         yOffset = yMargins
+        newSection = True
+        sectionIndex = 0
         maxWidth = 0
         for qStaff in self:
+            if newSection:
+                newSection = False
+                if sectionIndex < len(self._qSections):
+                    qSection = self._qSections[sectionIndex]
+                    sectionIndex += 1
+                    qSection.setPos(xMargins, yOffset)
+                    yOffset += qSection.boundingRect().height()
+                    yOffset += lineSpacing
             qStaff.setPos(xMargins, yOffset)
             qStaff.placeMeasures()
             yOffset += qStaff.height() + lineSpacing
             maxWidth = max(maxWidth, qStaff.width())
+            newSection = qStaff.isSectionEnd()
         self.setSceneRect(0, 0,
                           maxWidth + 2 * xMargins,
                           yOffset - lineSpacing + yMargins)
 
     def xSpacingChanged(self):
-        maxWidth = 0
         for qStaff in self:
             qStaff.xSpacingChanged()
-            maxWidth = max(maxWidth, qStaff.width())
+        maxWidth = max(qStaff.width() for qStaff in self)
         self.setSceneRect(0, 0,
                           maxWidth + 2 * self._properties.xMargins,
                           self.height())

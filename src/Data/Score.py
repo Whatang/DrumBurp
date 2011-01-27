@@ -12,6 +12,7 @@ from DBErrors import BadTimeError, OverSizeMeasure
 from NotePosition import NotePosition
 from ScoreMetaData import ScoreMetaData
 import os
+import bisect
 
 #pylint: disable-msg=R0904
 
@@ -29,6 +30,7 @@ class Score(object):
         self.drumKit = DrumKit()
         self._callBack = None
         self.scoreData = ScoreMetaData()
+        self._sections = []
 
     def __len__(self):
         return sum(len(staff) for staff in self._staffs)
@@ -170,7 +172,6 @@ class Score(object):
             else:
                 break
 
-
     def copyMeasure(self, position):
         if not(0 <= position.staffIndex < self.numStaffs()):
             raise BadTimeError()
@@ -189,14 +190,37 @@ class Score(object):
         staff = self.getStaff(position.staffIndex)
         staff.setMeasureBeatCount(position, beats, counter)
 
-    def setAllBeats(self, beats, counter):
-        for measure in self.iterMeasures():
-            measure.setBeatCount(beats, counter)
+    def numSections(self):
+        return len(self._sections)
+
+    def getSectionIndex(self, position):
+        ends = []
+        for staffIndex, staff in enumerate(self.iterStaffs()):
+            assert(staff.isConsistent())
+            if staff.isSectionEnd():
+                ends.append(staffIndex)
+        assert(len(ends) == self.numSections())
+        return bisect.bisect_left(ends, position.staffIndex)
+
+    def getSectionTitle(self, index):
+        return self._sections[index]
+
+    def setSectionTitle(self, index, title):
+        self._sections[index] = title
+
+    def iterSections(self):
+        return iter(self._sections)
 
     def setSectionEnd(self, position, onOff):
         if not(0 <= position.staffIndex < self.numStaffs()):
             raise BadTimeError()
         staff = self.getStaff(position.staffIndex)
+        sectionIndex = self.getSectionIndex(position)
+        if onOff:
+            self._sections.insert(sectionIndex, "Section Title")
+        else:
+            if sectionIndex < self.numSections():
+                self._sections.pop(sectionIndex)
         staff.setSectionEnd(position, onOff)
 
     def setLineBreak(self, position, onOff):
@@ -318,6 +342,8 @@ class Score(object):
         self.drumKit.write(handle)
         for measure in self.iterMeasures():
             measure.write(handle)
+        for title in self._sections:
+            print >> handle, "SECTION_TITLE", title
 
     def read(self, handle):
         def scoreHandle():
@@ -342,8 +368,22 @@ class Score(object):
                 measure.read(scoreIterator)
             elif lineType == "KIT_START":
                 self.drumKit.read(scoreIterator)
+            elif lineType == "SECTION_TITLE":
+                self._sections.append(lineData)
             else:
                 raise IOError("Unrecognised line type.")
+        # Format the score appropriately
+        self.gridFormatScore(self.scoreData.width)
+        # Make sure we've got the right number of section titles
+        assert(all(staff.isConsistent() for staff in self.iterStaffs()))
+        numSections = len([staff for staff in self.iterStaffs()
+                           if staff.isSectionEnd()])
+        if numSections > self.numSections():
+            self._sections += ["Section Title"] * (numSections
+                                                   - self.numSections())
+        elif numSections < self.numSections():
+            self._sections = self._sections[:numSections]
+
 
     def exportASCII(self, handle):
         asciiString = []

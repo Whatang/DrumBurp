@@ -104,6 +104,15 @@ class Staff(object):
             raise BadTimeError(position)
         self._measures[position.measureIndex].setSectionEnd(onOff)
 
+    def isSectionEnd(self):
+        return self[-1].isSectionEnd()
+
+    def isConsistent(self):
+        ok = True
+        for measure in self[:-1]:
+            ok = ok and not measure.isSectionEnd()
+        return ok
+
     def setLineBreak(self, position, onOff):
         if not (0 <= position.measureIndex < self.numMeasures()):
             raise BadTimeError(position)
