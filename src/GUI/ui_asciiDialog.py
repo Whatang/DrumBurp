@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike\workspace\DrumBurp\src\GUI\asciiDialog.ui'
 #
-# Created: Thu Jan 27 18:13:58 2011
+# Created: Thu Jan 27 19:04:08 2011
 #      by: PyQt4 UI code generator 4.8.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_asciiDialog(object):
     def setupUi(self, asciiDialog):
         asciiDialog.setObjectName(_fromUtf8("asciiDialog"))
-        asciiDialog.resize(284, 168)
+        asciiDialog.resize(287, 168)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -27,26 +27,18 @@ class Ui_asciiDialog(object):
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.label = QtGui.QLabel(asciiDialog)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy)
-        self.label.setObjectName(_fromUtf8("label"))
-        self.horizontalLayout.addWidget(self.label)
+        self.filenameButton = QtGui.QPushButton(asciiDialog)
+        self.filenameButton.setObjectName(_fromUtf8("filenameButton"))
+        self.horizontalLayout.addWidget(self.filenameButton)
         self.filenameLabel = QtGui.QLabel(asciiDialog)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.filenameLabel.sizePolicy().hasHeightForWidth())
         self.filenameLabel.setSizePolicy(sizePolicy)
-        self.filenameLabel.setFrameShape(QtGui.QFrame.Panel)
+        self.filenameLabel.setFrameShape(QtGui.QFrame.NoFrame)
         self.filenameLabel.setObjectName(_fromUtf8("filenameLabel"))
         self.horizontalLayout.addWidget(self.filenameLabel)
-        self.filenameButton = QtGui.QPushButton(asciiDialog)
-        self.filenameButton.setObjectName(_fromUtf8("filenameButton"))
-        self.horizontalLayout.addWidget(self.filenameButton)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
@@ -55,15 +47,19 @@ class Ui_asciiDialog(object):
         self.verticalLayout = QtGui.QVBoxLayout()
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.metadataCheck = QtGui.QCheckBox(asciiDialog)
+        self.metadataCheck.setChecked(True)
         self.metadataCheck.setObjectName(_fromUtf8("metadataCheck"))
         self.verticalLayout.addWidget(self.metadataCheck)
         self.kitKeyCheck = QtGui.QCheckBox(asciiDialog)
+        self.kitKeyCheck.setChecked(True)
         self.kitKeyCheck.setObjectName(_fromUtf8("kitKeyCheck"))
         self.verticalLayout.addWidget(self.kitKeyCheck)
         self.omitEmptyCheck = QtGui.QCheckBox(asciiDialog)
+        self.omitEmptyCheck.setChecked(True)
         self.omitEmptyCheck.setObjectName(_fromUtf8("omitEmptyCheck"))
         self.verticalLayout.addWidget(self.omitEmptyCheck)
         self.underlineCheck = QtGui.QCheckBox(asciiDialog)
+        self.underlineCheck.setChecked(True)
         self.underlineCheck.setObjectName(_fromUtf8("underlineCheck"))
         self.verticalLayout.addWidget(self.underlineCheck)
         self.horizontalLayout_2.addLayout(self.verticalLayout)
@@ -83,9 +79,8 @@ class Ui_asciiDialog(object):
 
     def retranslateUi(self, asciiDialog):
         asciiDialog.setWindowTitle(QtGui.QApplication.translate("asciiDialog", "Export ASCII file", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("asciiDialog", "ASCII Filename:", None, QtGui.QApplication.UnicodeUTF8))
+        self.filenameButton.setText(QtGui.QApplication.translate("asciiDialog", "Filename:", None, QtGui.QApplication.UnicodeUTF8))
         self.filenameLabel.setText(QtGui.QApplication.translate("asciiDialog", "Filename", None, QtGui.QApplication.UnicodeUTF8))
-        self.filenameButton.setText(QtGui.QApplication.translate("asciiDialog", "Edit", None, QtGui.QApplication.UnicodeUTF8))
         self.metadataCheck.setText(QtGui.QApplication.translate("asciiDialog", "Song metadata (Title, artist, etc.)", None, QtGui.QApplication.UnicodeUTF8))
         self.kitKeyCheck.setText(QtGui.QApplication.translate("asciiDialog", "Drum kit key", None, QtGui.QApplication.UnicodeUTF8))
         self.omitEmptyCheck.setText(QtGui.QApplication.translate("asciiDialog", "Omit empty lines for unlocked drums", None, QtGui.QApplication.UnicodeUTF8))

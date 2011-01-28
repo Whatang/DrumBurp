@@ -346,9 +346,6 @@ class QScore(QtGui.QGraphicsScene):
                                   counter = counter)
         self._setScore(newScore)
 
-    def exportASCII(self, handle):
-        self._score.exportASCII(handle)
-
     def printScore(self, qprinter):
         painter = QtGui.QPainter(qprinter)
         self.render(painter)

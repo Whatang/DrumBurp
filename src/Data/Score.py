@@ -391,7 +391,9 @@ class Score(object):
             self._sections = self._sections[:numSections]
 
 
-    def exportASCII(self, handle):
+    def exportASCII(self, handle, metadata = True,
+                    kitKey = True, omitEmpty = True,
+                    underline = True):
         metadataString = []
         metadataString.append("Title     : " + self.scoreData.title)
         metadataString.append("Artist    : " + self.scoreData.artist)
@@ -411,11 +413,12 @@ class Score(object):
                         asciiString.append("")
                     title = self.getSectionTitle(sectionIndex)
                     asciiString.append(title)
-                    asciiString.append("".join(["~"] * len(title)))
+                    if underline:
+                        asciiString.append("".join(["~"] * len(title)))
                     asciiString.append("")
                     sectionIndex += 1
             newSection = staff.isSectionEnd()
-            asciiString.extend(staff.exportASCII(self.drumKit))
+            asciiString.extend(staff.exportASCII(self.drumKit, omitEmpty))
             asciiString.append("")
         asciiString = asciiString[:-1]
         kitString = []
@@ -423,8 +426,12 @@ class Score(object):
             kitString.append(instr.exportASCII())
         kitString.reverse()
         kitString.append("")
-        handle.writelines(mString + os.linesep for mString in metadataString)
-        handle.writelines(iString + os.linesep for iString in kitString)
+        if metadata:
+            handle.writelines(mString + os.linesep
+                              for mString in metadataString)
+        if kitKey:
+            handle.writelines(iString + os.linesep
+                              for iString in kitString)
         handle.writelines(sString + os.linesep for sString in asciiString)
 
 class ScoreFactory(object):

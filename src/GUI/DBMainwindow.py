@@ -13,6 +13,7 @@ from PyQt4.QtCore import QTimer, pyqtSignature, SIGNAL, QSettings, QVariant
 from QScore import QScore
 from QSongProperties import QSongProperties
 from QNewScoreDialog import QNewScoreDialog
+from QAsciiExportDialog import QAsciiExportDialog
 import DBUtility
 from Data.TimeCounter import counterMaker
 import DBIcons
@@ -244,19 +245,17 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionExportASCII_triggered(self):
-        caption = "Select an ASCII file to export to"
-        directory = self.filename if self.filename is not None else ""
-        if os.path.splitext(directory)[-1] == '.brp':
-            directory = os.path.splitext(directory)[0]
-        fname = QFileDialog.getSaveFileName(parent = self,
-                                            caption = caption,
-                                            directory = directory,
-                                            filter = "Text files (*.txt)")
-        if len(fname) == 0 :
+        fname = self.filename if self.filename is not None else ""
+        if os.path.splitext(fname)[-1] == '.brp':
+            fname = os.path.splitext(fname)[0] + '.txt'
+        asciiDialog = QAsciiExportDialog(fname, self)
+        if not asciiDialog.exec_():
             return
+        fname = asciiDialog.getFilename()
+        options = asciiDialog.getOptions()
         with open(fname, 'w') as txtHandle:
             try:
-                self.scoreScene.exportASCII(txtHandle)
+                self.scoreScene.score.exportASCII(txtHandle, **options)
             except StandardError:
                 QMessageBox.warning(self.parent(), "Export failed!",
                                     "Could not export to " + fname)
