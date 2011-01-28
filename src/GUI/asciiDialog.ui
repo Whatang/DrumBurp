@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>287</width>
-    <height>168</height>
+    <width>359</width>
+    <height>220</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -98,6 +98,16 @@
         <widget class="QCheckBox" name="underlineCheck">
          <property name="text">
           <string>Underline section titles with ~ characters</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="countCheck">
+         <property name="text">
+          <string>Beat count</string>
          </property>
          <property name="checked">
           <bool>true</bool>

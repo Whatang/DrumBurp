@@ -206,7 +206,9 @@ class Staff(object):
         countString += " " * len(barString)
         return countString
 
-    def exportASCII(self, kit, omitEmpty = True):
+    def exportASCII(self, kit,
+                    omitEmpty = True,
+                    printCounts = True):
         kitSize = len(kit)
         indices = range(0, kitSize)
         indices.reverse()
@@ -219,6 +221,7 @@ class Staff(object):
                                                    drumIndex)
             if lineOk or drum.locked or not omitEmpty:
                 staffString.append(lineString)
-        countString = self._getCountLine()
-        staffString.append(countString)
+        if printCounts:
+            countString = self._getCountLine()
+            staffString.append(countString)
         return staffString

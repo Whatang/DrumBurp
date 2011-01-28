@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike\workspace\DrumBurp\src\GUI\asciiDialog.ui'
 #
-# Created: Thu Jan 27 19:04:08 2011
+# Created: Thu Jan 27 22:27:19 2011
 #      by: PyQt4 UI code generator 4.8.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_asciiDialog(object):
     def setupUi(self, asciiDialog):
         asciiDialog.setObjectName(_fromUtf8("asciiDialog"))
-        asciiDialog.resize(287, 168)
+        asciiDialog.resize(359, 220)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -62,6 +62,10 @@ class Ui_asciiDialog(object):
         self.underlineCheck.setChecked(True)
         self.underlineCheck.setObjectName(_fromUtf8("underlineCheck"))
         self.verticalLayout.addWidget(self.underlineCheck)
+        self.countCheck = QtGui.QCheckBox(asciiDialog)
+        self.countCheck.setChecked(True)
+        self.countCheck.setObjectName(_fromUtf8("countCheck"))
+        self.verticalLayout.addWidget(self.countCheck)
         self.horizontalLayout_2.addLayout(self.verticalLayout)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem1)
@@ -85,4 +89,5 @@ class Ui_asciiDialog(object):
         self.kitKeyCheck.setText(QtGui.QApplication.translate("asciiDialog", "Drum kit key", None, QtGui.QApplication.UnicodeUTF8))
         self.omitEmptyCheck.setText(QtGui.QApplication.translate("asciiDialog", "Omit empty lines for unlocked drums", None, QtGui.QApplication.UnicodeUTF8))
         self.underlineCheck.setText(QtGui.QApplication.translate("asciiDialog", "Underline section titles with ~ characters", None, QtGui.QApplication.UnicodeUTF8))
+        self.countCheck.setText(QtGui.QApplication.translate("asciiDialog", "Beat count", None, QtGui.QApplication.UnicodeUTF8))
 

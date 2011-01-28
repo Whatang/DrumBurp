@@ -51,7 +51,8 @@ class QAsciiExportDialog(QDialog, Ui_asciiDialog):
         return {'metadata': self.metadataCheck.isChecked(),
                 'kitKey': self.kitKeyCheck.isChecked(),
                 'omitEmpty': self.omitEmptyCheck.isChecked(),
-                'underline': self.underlineCheck.isChecked()}
+                'underline': self.underlineCheck.isChecked(),
+                'printCounts': self.countCheck.isChecked()}
 
     def accept(self):
         if not os.path.exists(self._filename):

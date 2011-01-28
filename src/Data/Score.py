@@ -393,7 +393,7 @@ class Score(object):
 
     def exportASCII(self, handle, metadata = True,
                     kitKey = True, omitEmpty = True,
-                    underline = True):
+                    underline = True, printCounts = True):
         metadataString = []
         metadataString.append("Title     : " + self.scoreData.title)
         metadataString.append("Artist    : " + self.scoreData.artist)
@@ -418,7 +418,8 @@ class Score(object):
                     asciiString.append("")
                     sectionIndex += 1
             newSection = staff.isSectionEnd()
-            asciiString.extend(staff.exportASCII(self.drumKit, omitEmpty))
+            asciiString.extend(staff.exportASCII(self.drumKit,
+                                                 omitEmpty, printCounts))
             asciiString.append("")
         asciiString = asciiString[:-1]
         kitString = []
