@@ -86,10 +86,13 @@ class ScoreView(QtGui.QGraphicsView):
         self.scene().startUp()
 
     def keyPressEvent(self, event):
+        if isinstance(self.scene().focusItem(), QtGui.QGraphicsTextItem):
+            event.ignore()
+            return super(ScoreView, self).keyPressEvent(event)
         if event.key() == QtCore.Qt.Key_Home:
             self.centerOn(0, 0)
         elif event.key() == QtCore.Qt.Key_End:
             self.centerOn(0, self.sceneRect().height())
         else:
             event.ignore()
-            super(ScoreView, self).keyPressEvent(event)
+            return super(ScoreView, self).keyPressEvent(event)

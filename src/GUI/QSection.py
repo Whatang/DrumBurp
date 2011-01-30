@@ -5,7 +5,7 @@ Created on 26 Jan 2011
 
 '''
 
-from PyQt4.QtGui import QGraphicsTextItem
+from PyQt4.QtGui import QGraphicsTextItem, QTextCursor
 from PyQt4.QtCore import Qt
 
 class QSection(QGraphicsTextItem):
@@ -32,6 +32,12 @@ class QSection(QGraphicsTextItem):
     def setIndex(self, index):
         self._index = index
 
+    _keyMoves = {Qt.Key_Left:QTextCursor.Left,
+                 Qt.Key_Right:QTextCursor.Right,
+                 Qt.Key_Home:QTextCursor.Start,
+                 Qt.Key_End:QTextCursor.End,
+                 Qt.Key_Up:QTextCursor.NoMove,
+                 Qt.Key_Down:QTextCursor.NoMove}
     def keyPressEvent(self, event):
         if event.key() in (Qt.Key_Return, Qt.Key_Enter):
             event.ignore()
@@ -40,6 +46,10 @@ class QSection(QGraphicsTextItem):
             event.ignore()
             self.setPlainText(self._title)
             self.clearFocus()
+        elif event.key() in self._keyMoves:
+            cursor = self.textCursor()
+            cursor.movePosition(self._keyMoves[event.key()])
+            self.setTextCursor(cursor)
         else:
             super(QSection, self).keyPressEvent(event)
 
