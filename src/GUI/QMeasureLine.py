@@ -100,6 +100,9 @@ class QMeasureLine(QtGui.QGraphicsItem):
         self._setPainter()
         self.update()
 
+    def _setRepeatCount(self):
+        self.scene().changeRepeatCount(self._getEndNotePosition())
+
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.RightButton:
             event.accept()
@@ -112,28 +115,36 @@ class QMeasureLine(QtGui.QGraphicsItem):
                 menu.connect(repeatStartAction, QtCore.SIGNAL("toggled(bool)"),
                              self._setRepeatStart)
                 menu.addAction(repeatStartAction)
-            # Repeat End
             if self._lastMeasure is not None:
+                # Repeat End
                 repeatEndAction = QtGui.QAction("Repeat End", menu)
                 repeatEndAction.setCheckable(True)
                 repeatEndAction.setChecked(self._lastMeasure.isRepeatEnd())
                 menu.connect(repeatEndAction, QtCore.SIGNAL("toggled(bool)"),
                              self._setRepeatEnd)
                 menu.addAction(repeatEndAction)
-            # Section Ending
+                # Section Ending
                 sectionEndAction = QtGui.QAction("Section End", menu)
                 sectionEndAction.setCheckable(True)
                 sectionEndAction.setChecked(self._lastMeasure.isSectionEnd())
                 menu.connect(sectionEndAction, QtCore.SIGNAL("toggled(bool)"),
                             self._setSectionEnd)
                 menu.addAction(sectionEndAction)
-            # Line break
+                # Line break
                 lineBreakAction = QtGui.QAction("Line Break", menu)
                 lineBreakAction.setCheckable(True)
                 lineBreakAction.setChecked(self._lastMeasure.isLineBreak())
                 menu.connect(lineBreakAction, QtCore.SIGNAL("toggled(bool)"),
                             self._setLineBreak)
                 menu.addAction(lineBreakAction)
+                menu.addSeparator()
+                # Repeat count
+                repeatCountAction = QtGui.QAction("Set repeat count", menu)
+                repeatCountAction.setEnabled(self._lastMeasure.isRepeatEnd())
+                menu.connect(repeatCountAction, QtCore.SIGNAL("triggered()"),
+                             self._setRepeatCount)
+                menu.addAction(repeatCountAction)
+
             menu.exec_(event.screenPos())
         else:
             pass

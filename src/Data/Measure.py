@@ -30,6 +30,7 @@ class Measure(object):
         self._isRepeatStart = False
         self._isSectionEnd = False
         self._isLineBreak = False
+        self.repeatCount = 1
         self.counter = None
 
     @staticmethod
@@ -197,7 +198,6 @@ class Measure(object):
                     continue
                 self._notes[noteTime][changes[drumIndex]] = head
 
-
     def write(self, handle):
         print >> handle, "START_BAR %d" % len(self)
         if self.counter is not None:
@@ -212,6 +212,7 @@ class Measure(object):
         endString = [name for name, value in BAR_TYPES.iteritems()
                      if (self.endBar & value) == value ]
         print >> handle, "BARLINE %s" % ",".join(endString)
+        print >> handle, "REPEAT_COUNT %d" % self.repeatCount
         print >> handle, "END_BAR"
 
     def read(self, scoreIterator):
@@ -251,5 +252,7 @@ class Measure(object):
             elif lineType == "BEATLENGTH":
                 lineData = int(lineData)
                 self.counter = TimeCounter.counterMaker(lineData)
+            elif lineType == "REPEAT_COUNT":
+                self.repeatCount = int(lineData)
             else:
                 raise IOError("Unrecognised line type")

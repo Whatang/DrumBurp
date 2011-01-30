@@ -12,6 +12,7 @@ from Data.NotePosition import NotePosition
 from QInsertMeasuresDialog import QInsertMeasuresDialog
 from QEditMeasureDialog import QEditMeasureDialog
 from Data.TimeCounter import counterMaker
+from QRepeatCountDialog import QRepeatCountDialog
 
 class QMeasure(QtGui.QGraphicsItemGroup):
     '''
@@ -32,6 +33,7 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         self._counts = []
         self._width = 0
         self._height = 0
+        self._repeatCount = None
         self.setMeasure(measure)
         self.setHandlesChildEvents(False)
 
@@ -51,6 +53,7 @@ class QMeasure(QtGui.QGraphicsItemGroup):
 
     def _clear(self):
         self._counts = []
+        self._repeatCount = None
 
     def _build(self):
         self._clear()
@@ -67,6 +70,7 @@ class QMeasure(QtGui.QGraphicsItemGroup):
             qCount.setIndex(noteTime)
             self._counts.append(qCount)
             self.addToGroup(qCount)
+        self._setRepeatCount(self._measure.repeatCount)
 
     def placeNotes(self):
         yOffsets = self.scene().lineOffsets
@@ -82,6 +86,7 @@ class QMeasure(QtGui.QGraphicsItemGroup):
             qCount.setPos(xOffset, countOffset)
         self._setWidth()
         self._setHeight()
+        self._positionRepeatCount()
 
     def _setWidth(self):
         self._width = len(self._measure) * self._props.xSpacing
@@ -213,6 +218,32 @@ class QMeasure(QtGui.QGraphicsItemGroup):
 
     def setNote(self, np, head):
         self._notes[np.drumIndex][np.noteTime].setText(head)
+
+    def _setRepeatCount(self, count):
+        self._measure.repeatCount = count
+        if count <= 2:
+            if self._repeatCount is not None:
+                self.scene().removeItem(self._repeatCount)
+            self._repeatCount = None
+        else:
+            if self._repeatCount is None:
+                self._repeatCount = QtGui.QGraphicsTextItem()
+                self.addToGroup(self._repeatCount)
+            self._repeatCount.setPlainText("%dx" % count)
+        self._positionRepeatCount()
+
+    def _positionRepeatCount(self):
+        if self._repeatCount is not None:
+            rect = self._repeatCount.boundingRect()
+            self._repeatCount.setPos(self.width() - rect.width(),
+                                     - rect.height())
+
+    def changeRepeatCount(self):
+        repDialog = QRepeatCountDialog(self._measure.repeatCount,
+                                       self.scene().parent())
+        if repDialog.exec_():
+            self._setRepeatCount(repDialog.getValue())
+
 
     def xSpacingChanged(self):
         yOffsets = self.scene().lineOffsets

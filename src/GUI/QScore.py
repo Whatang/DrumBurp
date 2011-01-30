@@ -310,6 +310,10 @@ class QScore(QtGui.QGraphicsScene):
         self.checkFormatting()
         self.dirty = True
 
+    def changeRepeatCount(self, np):
+        qStaff = self._qStaffs[np.staffIndex]
+        qStaff.changeRepeatCount(np)
+
     def loadScore(self, filename):
         try:
             newScore = _SCORE_FACTORY(filename = filename)

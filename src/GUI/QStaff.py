@@ -153,3 +153,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
         lineLabel.setHighlight(onOff)
         qMeasure = self._measures[np.measureIndex]
         qMeasure.setHighlight(np, onOff)
+
+    def changeRepeatCount(self, np):
+        qMeasure = self._measures[np.measureIndex]
+        qMeasure.changeRepeatCount()

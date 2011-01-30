@@ -156,12 +156,18 @@ class Score(object):
         if not (0 <= index < self.numMeasures()):
             raise BadTimeError()
         staff, index = self._staffContainingMeasure(index)
-        staff.deleteMeasure(NotePosition(measureIndex = index))
+        np = NotePosition(staffIndex = self._staffs.index(staff),
+                          measureIndex = index)
+        self.deleteMeasureByPosition(np)
 
     def deleteMeasureByPosition(self, position):
         if not(0 <= position.staffIndex < self.numStaffs()):
             raise BadTimeError()
         staff = self.getStaff(position.staffIndex)
+        if (staff.isSectionEnd()
+            and position.measureIndex == staff.numMeasures() - 1):
+            sectionIndex = self.getSectionIndex(position)
+            self.deleteSectionTitle(sectionIndex)
         staff.deleteMeasure(position)
 
     def deleteEmptyMeasures(self):
@@ -208,6 +214,9 @@ class Score(object):
 
     def setSectionTitle(self, index, title):
         self._sections[index] = title
+
+    def deleteSectionTitle(self, index):
+        self._sections.pop(index)
 
     def iterSections(self):
         return iter(self._sections)
