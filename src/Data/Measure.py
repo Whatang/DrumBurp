@@ -32,7 +32,7 @@ class Measure(object):
         self._isRepeatStart = False
         self._isSectionEnd = False
         self._isLineBreak = False
-        self.repeatCount = _DEFAULTREPEATCOUNT
+        self._repeatCount = _DEFAULTREPEATCOUNT
         self.counter = None
 
     @staticmethod
@@ -41,6 +41,16 @@ class Measure(object):
             return ""
         else:
             return BARLINE
+
+    def _getrepeatCount(self):
+        return self._repeatCount
+    def _setrepeatCount(self, value):
+        if self.isRepeatEnd():
+            self._repeatCount = max(value, 2)
+        else:
+            self._repeatCount = 1
+    repeatCount = property(fget = _getrepeatCount,
+                         fset = _setrepeatCount)
 
     def __len__(self):
         return self._width
@@ -86,7 +96,9 @@ class Measure(object):
         self._isRepeatEnd = boolean
         if boolean:
             self.endBar |= BAR_TYPES["REPEAT_END"]
+            self.repeatCount = max(self.repeatCount, 2)
         else:
+            self.repeatCount = 1
             self.endBar &= ~BAR_TYPES["REPEAT_END"]
 
     def setLineBreak(self, boolean):
