@@ -6,7 +6,7 @@ Created on 12 Dec 2010
 '''
 
 from collections import defaultdict
-from DBConstants import EMPTY_NOTE, BAR_TYPES
+from DBConstants import EMPTY_NOTE, BARLINE, BAR_TYPES
 from DBErrors import BadTimeError
 from NotePosition import NotePosition
 import TimeCounter
@@ -36,18 +36,11 @@ class Measure(object):
         self.counter = None
 
     @staticmethod
-    def barlineKey(first, second):
-        if first is None:
-            first = BAR_TYPES["NO_BAR"]
+    def barString(first, second):
+        if first is None and second is None:
+            return ""
         else:
-            first = first.endBar
-        if second is None:
-            second = BAR_TYPES["NO_BAR"]
-        else:
-            second = second.startBar
-        first &= ~BAR_TYPES["LINE_BREAK"]
-        second &= ~BAR_TYPES["LINE_BREAK"]
-        return first, second
+            return BARLINE
 
     def __len__(self):
         return self._width

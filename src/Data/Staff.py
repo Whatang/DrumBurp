@@ -5,7 +5,9 @@ Created on 12 Dec 2010
 
 '''
 from DBErrors import BadTimeError
-from DBConstants import COMBINED_BARLINE_STRING, EMPTY_NOTE
+import itertools
+from DBConstants import (BARLINE, EMPTY_NOTE,
+                         REPEAT_STARTER, REPEAT_END, REPEAT_EXTENDER)
 from NotePosition import NotePosition
 from Measure import Measure
 
@@ -134,17 +136,7 @@ class Staff(object):
         self._measures = []
 
     def characterWidth(self):
-        if self.numMeasures() == 0:
-            return 0
-        total = len(self)
-        lastBar = None
-        for measure in self:
-            key = Measure.barlineKey(lastBar, measure)
-            total += len(COMBINED_BARLINE_STRING[key])
-            lastBar = measure
-        key = Measure.barlineKey(lastBar, None)
-        total += len(COMBINED_BARLINE_STRING[key])
-        return total
+        return self.gridWidth()
 
     def gridWidth(self):
         if self.numMeasures() == 0:
@@ -178,8 +170,7 @@ class Staff(object):
         lineOk = False
         for measureIndex, measure in enumerate(self):
             position.measureIndex = measureIndex
-            key = Measure.barlineKey(lastBar, measure)
-            barString = COMBINED_BARLINE_STRING[key]
+            barString = Measure.barString(lastBar, measure)
             lineString += barString
             lastBar = measure
             for noteTime in range(len(measure)):
@@ -187,8 +178,7 @@ class Staff(object):
                 note = measure.getNote(position)
                 lineString += note
                 lineOk = lineOk or note != EMPTY_NOTE
-        key = Measure.barlineKey(lastBar, None)
-        barString = COMBINED_BARLINE_STRING[key]
+        barString = Measure.barString(lastBar, None)
         lineString += barString
         return lineString, lineOk
 
@@ -196,32 +186,64 @@ class Staff(object):
         countString = "  "
         lastBar = None
         for measure in self:
-            key = Measure.barlineKey(lastBar, measure)
-            barString = COMBINED_BARLINE_STRING[key]
+            barString = Measure.barString(lastBar, measure)
             lastBar = measure
             countString += " " * len(barString)
             countString += "".join(measure.count())
-        key = Measure.barlineKey(lastBar, None)
-        barString = COMBINED_BARLINE_STRING[key]
+        barString = Measure.barString(lastBar, None)
         countString += " " * len(barString)
         return countString
 
-    def exportASCII(self, kit,
-                    omitEmpty = True,
-                    printCounts = True):
+
+    def _getRepeatString(self, isRepeating):
+        staffString = []
+        hasRepeat = isRepeating or any(measure.isRepeatStart()
+                                       for measure in self)
+        if not hasRepeat:
+            return staffString, isRepeating
+        repeatString = "  "
+        lastMeasure = None
+        for measure in list(self) + [None]:
+            if not isRepeating:
+                if measure and measure.isRepeatStart():
+                    isRepeating = True
+                    repeatString += REPEAT_STARTER
+                elif (lastMeasure and
+                    lastMeasure.isRepeatEnd()):
+                    repeatString += REPEAT_END
+                elif measure:
+                    repeatString += " "
+            elif isRepeating:
+                repeatString += REPEAT_EXTENDER
+            if measure is not None:
+                if isRepeating:
+                    repeatString += REPEAT_EXTENDER * len(measure)
+                else:
+                    repeatString += " " * len(measure)
+            if isRepeating and measure.isRepeatEnd():
+                isRepeating = False
+                repeatCount = "%dx" % measure.repeatCount
+                repeatCountLength = len(repeatCount)
+                repeatString = repeatString[:-(repeatCountLength + 1)] + repeatCount + repeatString[-1:]
+            lastMeasure = measure
+
+        staffString = [repeatString]
+        return staffString, isRepeating
+
+    def exportASCII(self, kit, settings, isRepeating):
         kitSize = len(kit)
         indices = range(0, kitSize)
         indices.reverse()
         position = NotePosition()
-        staffString = []
+        staffString, isRepeating = self._getRepeatString(isRepeating)
         for drumIndex in indices:
             drum = kit[drumIndex]
             lineString, lineOk = self._getDrumLine(drum,
                                                    position,
                                                    drumIndex)
-            if lineOk or drum.locked or not omitEmpty:
+            if lineOk or drum.locked or not settings.omitEmpty:
                 staffString.append(lineString)
-        if printCounts:
+        if settings.printCounts:
             countString = self._getCountLine()
             staffString.append(countString)
-        return staffString
+        return staffString, isRepeating

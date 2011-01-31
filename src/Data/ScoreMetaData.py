@@ -4,6 +4,7 @@ Created on 23 Jan 2011
 @author: Mike Thomas
 
 '''
+import time
 
 class ScoreMetaData(object):
     '''
@@ -46,3 +47,13 @@ class ScoreMetaData(object):
         print >> handle, "BPM", self.bpm
         print >> handle, "WIDTH", self.width
         print >> handle, "END_SCORE_METADATA"
+
+    def exportASCII(self):
+        metadataString = []
+        metadataString.append("Title     : " + self.title)
+        metadataString.append("Artist    : " + self.artist)
+        metadataString.append("BPM       : " + str(self.bpm))
+        metadataString.append("Tabbed by : " + self.creator)
+        metadataString.append("Date      : " + time.strftime("%d %B %Y"))
+        metadataString.append("")
+        return metadataString

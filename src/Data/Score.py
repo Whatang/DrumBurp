@@ -400,35 +400,31 @@ class Score(object):
             self._sections = self._sections[:numSections]
 
 
-    def exportASCII(self, handle, metadata = True,
-                    kitKey = True, omitEmpty = True,
-                    underline = True, printCounts = True):
-        metadataString = []
-        metadataString.append("Title     : " + self.scoreData.title)
-        metadataString.append("Artist    : " + self.scoreData.artist)
-        metadataString.append("BPM       : " + str(self.scoreData.bpm))
-        metadataString.append("Tabbed by : " + self.scoreData.creator)
-        metadataString.append("Date      : " + time.strftime("%d %B %Y"))
-        metadataString.append("")
+    def exportASCII(self, handle, settings):
+        metadataString = self.scoreData.exportASCII()
         asciiString = []
         newSection = True
         sectionIndex = 0
+        isRepeating = False
         for staff in self.iterStaffs():
             assert(staff.isConsistent())
             if newSection:
                 newSection = False
                 if sectionIndex < self.numSections():
-                    if len(asciiString) > 0:
+                    if len(asciiString) > 0 and settings.emptyLineBeforeSection:
                         asciiString.append("")
                     title = self.getSectionTitle(sectionIndex)
                     asciiString.append(title)
-                    if underline:
+                    if settings.underline:
                         asciiString.append("".join(["~"] * len(title)))
-                    asciiString.append("")
+                    if settings.emptyLineAfterSection:
+                        asciiString.append("")
                     sectionIndex += 1
             newSection = staff.isSectionEnd()
-            asciiString.extend(staff.exportASCII(self.drumKit,
-                                                 omitEmpty, printCounts))
+            staffString, isRepeating = staff.exportASCII(self.drumKit,
+                                                       settings,
+                                                       isRepeating)
+            asciiString.extend(staffString)
             asciiString.append("")
         asciiString = asciiString[:-1]
         kitString = []
@@ -436,10 +432,10 @@ class Score(object):
             kitString.append(instr.exportASCII())
         kitString.reverse()
         kitString.append("")
-        if metadata:
+        if settings.metadata:
             handle.writelines(mString + os.linesep
                               for mString in metadataString)
-        if kitKey:
+        if settings.kitKey:
             handle.writelines(iString + os.linesep
                               for iString in kitString)
         handle.writelines(sString + os.linesep for sString in asciiString)

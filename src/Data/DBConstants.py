@@ -13,25 +13,7 @@ BAR_TYPES = {"NO_BAR": 0,
              "REPEAT_END":4,
              "SECTION_END":8,
              "LINE_BREAK":16}
-COMBINED_BARLINE_STRING = {(BAR_TYPES["NO_BAR"],
-                            BAR_TYPES["NORMAL_BAR"]) : "|",
-                           (BAR_TYPES["NO_BAR"],
-                            BAR_TYPES["REPEAT_START"] | BAR_TYPES["NORMAL_BAR"]) : ">",
-                           (BAR_TYPES["NORMAL_BAR"],
-                            BAR_TYPES["NO_BAR"]) : "|",
-                           (BAR_TYPES["REPEAT_END"] | BAR_TYPES["NORMAL_BAR"],
-                            BAR_TYPES["NO_BAR"]) : "<",
-                           (BAR_TYPES["REPEAT_END"] | BAR_TYPES["SECTION_END"] | BAR_TYPES["NORMAL_BAR"],
-                            BAR_TYPES["NO_BAR"]) : "<",
-                           (BAR_TYPES["SECTION_END"] | BAR_TYPES["NORMAL_BAR"],
-                            BAR_TYPES["NO_BAR"]) : "|",
-                           (BAR_TYPES["NORMAL_BAR"],
-                            BAR_TYPES["NORMAL_BAR"]) : "|",
-                           (BAR_TYPES["NORMAL_BAR"],
-                            BAR_TYPES["REPEAT_START"] | BAR_TYPES["NORMAL_BAR"]) : ">",
-                           (BAR_TYPES["REPEAT_END"] | BAR_TYPES["NORMAL_BAR"],
-                            BAR_TYPES["NORMAL_BAR"]) : "<",
-                           (BAR_TYPES["REPEAT_END"] | BAR_TYPES["NORMAL_BAR"],
-                            BAR_TYPES["REPEAT_START"] | BAR_TYPES["NORMAL_BAR"]) : "#"
-                           }
-
+BARLINE = "|"
+REPEAT_STARTER = BARLINE
+REPEAT_END = BARLINE
+REPEAT_EXTENDER = EMPTY_NOTE

@@ -253,14 +253,16 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             return
         fname = asciiDialog.getFilename()
         options = asciiDialog.getOptions()
-        with open(fname, 'w') as txtHandle:
-            try:
-                self.scoreScene.score.exportASCII(txtHandle, **options)
-            except StandardError:
-                QMessageBox.warning(self.parent(), "Export failed!",
-                                    "Could not export to " + fname)
-                raise
+        try:
+            with open(fname, 'w') as txtHandle:
+                self.scoreScene.score.exportASCII(txtHandle, options)
+        except StandardError:
+            QMessageBox.warning(self.parent(), "Export failed!",
+                                "Could not export to " + fname)
+            raise
+        else:
             self.updateStatus("Successfully exported ASCII to " + fname)
+
 
     @pyqtSignature("")
     def on_actionPrint_triggered(self):

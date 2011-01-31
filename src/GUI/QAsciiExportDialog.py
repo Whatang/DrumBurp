@@ -7,6 +7,7 @@ Created on Jan 27, 2011
 from ui_asciiDialog import Ui_asciiDialog
 from PyQt4.QtGui import QDialog, QFileDialog, QMessageBox
 from PyQt4.QtCore import pyqtSignature
+from Data.ASCIISettings import ASCIISettings
 import os
 
 class QAsciiExportDialog(QDialog, Ui_asciiDialog):
@@ -14,13 +15,17 @@ class QAsciiExportDialog(QDialog, Ui_asciiDialog):
     classdocs
     '''
 
-
-    def __init__(self, filename, parent = None):
+    def __init__(self, filename, parent = None, settings = None):
         '''
         Constructor
         '''
         super(QAsciiExportDialog, self).__init__(parent)
         self.setupUi(self)
+        if settings is None:
+            settings = ASCIISettings()
+        self._setInitialState(filename, settings)
+
+    def _setInitialState(self, filename, settings):
         self._filename = filename
         self.filenameLabel.setText(self._filename
                                    if self._filename is not None
@@ -48,11 +53,11 @@ class QAsciiExportDialog(QDialog, Ui_asciiDialog):
         return self._filename
 
     def getOptions(self):
-        return {'metadata': self.metadataCheck.isChecked(),
-                'kitKey': self.kitKeyCheck.isChecked(),
-                'omitEmpty': self.omitEmptyCheck.isChecked(),
-                'underline': self.underlineCheck.isChecked(),
-                'printCounts': self.countCheck.isChecked()}
+        settings = ASCIISettings()
+        for checkName in settings.checkNames():
+            value = getattr(self, checkName + "Check").isChecked()
+            setattr(settings, checkName, value)
+        return settings
 
     def accept(self):
         if not os.path.exists(self._filename):
