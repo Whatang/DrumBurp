@@ -15,7 +15,7 @@ class DrumKit(object):
 
     DEFAULT_KIT = [("Foot pedal", "Fo", "x"),
                    ("Kick", "Bd", "o", True),
-                   ("Low Tom", "LT", "o"),
+                   ("Floor Tom", "FT", "o"),
                    ("Snare", "Sn", "o", True),
                    ("Mid Tom", "MT", "o"),
                    ("High Tom", "HT", "o"),
