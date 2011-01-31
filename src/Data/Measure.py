@@ -15,6 +15,8 @@ import copy
 def _makeNoteDict():
     return defaultdict(lambda: defaultdict(dict))
 
+_DEFAULTREPEATCOUNT = 1
+
 class Measure(object):
     '''
     classdocs
@@ -30,7 +32,7 @@ class Measure(object):
         self._isRepeatStart = False
         self._isSectionEnd = False
         self._isLineBreak = False
-        self.repeatCount = 1
+        self.repeatCount = _DEFAULTREPEATCOUNT
         self.counter = None
 
     @staticmethod
@@ -212,7 +214,8 @@ class Measure(object):
         endString = [name for name, value in BAR_TYPES.iteritems()
                      if (self.endBar & value) == value ]
         print >> handle, "BARLINE %s" % ",".join(endString)
-        print >> handle, "REPEAT_COUNT %d" % self.repeatCount
+        if self.repeatCount != _DEFAULTREPEATCOUNT:
+            print >> handle, "REPEAT_COUNT %d" % self.repeatCount
         print >> handle, "END_BAR"
 
     def read(self, scoreIterator):
