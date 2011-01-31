@@ -13,7 +13,7 @@ class DrumKit(object):
     classdocs
     '''
 
-    DEFAULT_KIT = [("Foot pedal", "Fo", "x"),
+    DEFAULT_KIT = [("Foot pedal", "Hf", "x"),
                    ("Kick", "Bd", "o", True),
                    ("Floor Tom", "FT", "o"),
                    ("Snare", "Sn", "o", True),
