@@ -31,6 +31,10 @@ class QNote(QDBGridItem):
     def _score(self):
         return self.scene().score
 
+    def dataChanged(self, notePosition):
+        head = self._score().getNote(notePosition)
+        self.setText(head)
+
     def toggleNote(self, head = None):
         if head is None:
             head = self._props.head

@@ -171,14 +171,18 @@ class Measure(object):
                     if noteTime >= self._width]
         for badTime in badTimes:
             del self._notes[badTime]
+        self._runCallBack(NotePosition())
 
     def setBeatCount(self, beats, counter):
         self.setWidth(beats * counter.beatLength)
-        self.counter = counter
+        if counter != self.counter:
+            self.counter = counter
+            self._runCallBack(NotePosition())
 
     def copyMeasure(self):
-        notes = list(self)
-        return notes
+        copyMeasure = copy.deepcopy(self)
+        copyMeasure.clearCallBack()
+        return copyMeasure
 
     def count(self):
         if self.counter is None:
@@ -186,12 +190,11 @@ class Measure(object):
         else:
             return list(self.counter.countTicks(len(self)))
 
-    def pasteMeasure(self, position, notes):
+    def pasteMeasure(self, other):
         self.clear()
-        for pos, head in notes:
+        self.setBeatCount(len(other) / other.counter.beatLength, other.counter)
+        for pos, head in other:
             try:
-                pos.staffIndex = position.staffIndex
-                pos.measureIndex = position.measureIndex
                 self.addNote(pos, head)
             except BadTimeError:
                 continue

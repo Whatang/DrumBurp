@@ -52,6 +52,7 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         self._index = index
 
     def _clear(self):
+        self._notes = []
         self._counts = []
         self._repeatCount = None
 
@@ -93,6 +94,14 @@ class QMeasure(QtGui.QGraphicsItemGroup):
 
     def _setHeight(self):
         self._height = (self.scene().kitSize + 1) * self._props.ySpacing
+
+    def dataChanged(self, notePosition):
+        if None not in (notePosition.noteTime, notePosition.drumIndex):
+            qnote = self._notes[notePosition.drumIndex][notePosition.noteTime]
+            qnote.dataChanged(notePosition)
+        else:
+            self._build()
+            self._qStaff.placeMeasures()
 
     def _makeNotePosition(self):
         np = NotePosition()
@@ -197,9 +206,6 @@ class QMeasure(QtGui.QGraphicsItemGroup):
     def _countChanged(self):
         for qCount, count in zip(self._counts, self._measure.count()):
             qCount.setText(count)
-
-    def setNote(self, np, head):
-        self._notes[np.drumIndex][np.noteTime].setText(head)
 
     def _setRepeatCount(self, count):
         self._measure.repeatCount = count

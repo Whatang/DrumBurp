@@ -142,7 +142,7 @@ class QScore(QtGui.QGraphicsScene):
             self._score = score
             if score is not None:
                 self.startUp()
-            self._score.setCallBack(self._noteChanged)
+            self._score.setCallBack(self._dataChanged)
             self._build()
             self.dirty = False
 
@@ -275,16 +275,13 @@ class QScore(QtGui.QGraphicsScene):
                           yOffset - lineSpacing + yMargins)
 
     def _populate(self):
-        for notePosition, head in self._score.iterNotes():
-            self._setNote(notePosition, head)
+        for notePosition, head_ in self._score.iterNotes():
+            self._dataChanged(notePosition)
 
-    def _noteChanged(self, notePosition):
+    def _dataChanged(self, notePosition):
         self.dirty = True
-        head = self._score.getNote(notePosition)
-        self._setNote(notePosition, head)
-
-    def _setNote(self, np, head):
-        self._qStaffs[np.staffIndex].setNote(np, head)
+        staff = self._qStaffs[notePosition.staffIndex]
+        staff.dataChanged(notePosition)
 
     def ignoreNextClick(self):
         self._ignoreNext = True

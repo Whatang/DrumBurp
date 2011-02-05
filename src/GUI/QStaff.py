@@ -137,8 +137,12 @@ class QStaff(QtGui.QGraphicsItemGroup):
                            for element in
                            itertools.chain(self._measures, self._measureLines))
 
-    def setNote(self, np, head):
-        self._measures[np.measureIndex].setNote(np, head)
+    def dataChanged(self, notePosition):
+        if notePosition.measureIndex is not None:
+            measure = self._measures[notePosition.measureIndex]
+            measure.dataChanged(notePosition)
+        else:
+            self._build()
 
     def _makeNotePosition(self):
         np = NotePosition(measureIndex = self._index)
