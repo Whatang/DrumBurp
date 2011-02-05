@@ -5,8 +5,7 @@ Created on 12 Dec 2010
 
 '''
 from DBErrors import BadTimeError
-import itertools
-from DBConstants import (BARLINE, EMPTY_NOTE,
+from DBConstants import (EMPTY_NOTE,
                          REPEAT_STARTER, REPEAT_END, REPEAT_EXTENDER)
 from NotePosition import NotePosition
 from Measure import Measure
