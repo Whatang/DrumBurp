@@ -60,7 +60,7 @@ class QScore(QtGui.QGraphicsScene):
                 self.newScore()
         else:
             self.newScore()
-        self._properties.setScore(self)
+        self._properties.connectScore(self)
 
     def startUp(self):
         for view in self.views():
