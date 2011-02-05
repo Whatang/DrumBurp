@@ -5,7 +5,7 @@ Created on 12 Dec 2010
 
 '''
 from DBErrors import BadTimeError
-from DBConstants import (EMPTY_NOTE,
+from DBConstants import (EMPTY_NOTE, DRUM_ABBR_WIDTH,
                          REPEAT_STARTER, REPEAT_END, REPEAT_EXTENDER)
 from NotePosition import NotePosition
 from Measure import Measure
@@ -140,7 +140,8 @@ class Staff(object):
     def gridWidth(self):
         if self.numMeasures() == 0:
             return 0
-        return len(self) + self.numMeasures() + 1
+        return (len(self) + self.numMeasures() + 1
+                + DRUM_ABBR_WIDTH)
 
     def getNote(self, position):
         if not (0 <= position.measureIndex < self.numMeasures()):
@@ -165,7 +166,7 @@ class Staff(object):
     def _getDrumLine(self, drum, position, drumIndex):
         position.drumIndex = drumIndex
         lastBar = None
-        lineString = "%2s" % drum.abbr
+        lineString = "%*s" % (DRUM_ABBR_WIDTH, drum.abbr)
         lineOk = False
         for measureIndex, measure in enumerate(self):
             position.measureIndex = measureIndex

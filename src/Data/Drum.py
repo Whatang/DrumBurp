@@ -5,6 +5,8 @@ Created on 12 Dec 2010
 
 '''
 
+from DBConstants import DRUM_ABBR_WIDTH
+
 class Drum(object):
     '''
     classdocs
@@ -15,7 +17,7 @@ class Drum(object):
         self.head = head
         self.locked = locked
         assert(len(name) > 0)
-        assert(1 <= len(abbr) <= 2)
+        assert(1 <= len(abbr) <= DRUM_ABBR_WIDTH)
         assert(len(head) == 1)
 
     def __eq__(self, other):
