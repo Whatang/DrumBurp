@@ -41,7 +41,7 @@ class Null(object):
 
 #pylint: disable-msg=R0902
 
-class QSongProperties(object):
+class QDisplayProperties(object):
     _START_NOTE_WIDTH = 12
     MIN_NOTE_WIDTH = 12
     MAX_NOTE_WIDTH = 20

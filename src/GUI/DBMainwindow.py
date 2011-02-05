@@ -11,7 +11,7 @@ from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QPrintPreviewDialog, QWhatsThis)
 from PyQt4.QtCore import QTimer, pyqtSignature, SIGNAL, QSettings, QVariant
 from QScore import QScore
-from QSongProperties import QSongProperties
+from QDisplayProperties import QDisplayProperties
 from QNewScoreDialog import QNewScoreDialog
 from QAsciiExportDialog import QAsciiExportDialog
 import DBUtility
@@ -41,7 +41,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                          if len(self.recentFiles) == 0
                          else self.recentFiles[0])
         self.updateRecentFiles()
-        self.songProperties = QSongProperties(settings)
+        self.songProperties = QDisplayProperties(settings)
         self.scoreScene = QScore(self)
         self.scoreView.setScene(self.scoreScene)
         self.fontComboBox.setWritingSystem(QFontDatabase.Latin)
