@@ -113,6 +113,14 @@ class QNote(QDBGridItem):
             insertMenu.connect(insertOtherMeasures,
                                QtCore.SIGNAL("triggered()"),
                                self._qMeasure.insertOtherMeasures)
+            sectionCopyMenu = insertMenu.addMenu("Section Copy")
+            sectionCopyMenu.setEnabled(self._score().numSections() > 0)
+            for sectionIndex, sectionTitle in enumerate(self._score().iterSections()):
+                sectionCopyAction = sectionCopyMenu.addAction(sectionTitle)
+                copyIt = lambda si = sectionIndex: self._copySection(si)
+                sectionCopyMenu.connect(sectionCopyAction,
+                                        QtCore.SIGNAL("triggered()"),
+                                        copyIt)
             menu.addSeparator()
             deleteAction = menu.addAction(DBIcons.getIcon("delete"),
                                           "Delete Measure")
@@ -204,3 +212,7 @@ class QNote(QDBGridItem):
             self.scene().reBuild()
             self.scene().dirty = True
 
+    def _copySection(self, sectionIndex):
+        self._score().insertSectionCopy(self._getNotePosition(),
+                                        sectionIndex)
+        self.scene().reBuild()

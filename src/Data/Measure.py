@@ -190,7 +190,7 @@ class Measure(object):
         else:
             return list(self.counter.countTicks(len(self)))
 
-    def pasteMeasure(self, other):
+    def pasteMeasure(self, other, copyMeasureDecorations = False):
         self.clear()
         self.setBeatCount(len(other) / other.counter.beatLength, other.counter)
         for pos, head in other:
@@ -198,6 +198,10 @@ class Measure(object):
                 self.addNote(pos, head)
             except BadTimeError:
                 continue
+        if copyMeasureDecorations:
+            self.setRepeatStart(other.isRepeatStart())
+            self.setRepeatEnd(other.isRepeatEnd())
+            self.setSectionEnd(other.isSectionEnd())
 
     def changeKit(self, changes):
         oldNotes = copy.deepcopy(self._notes)

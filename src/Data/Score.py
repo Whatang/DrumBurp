@@ -29,6 +29,7 @@ class Score(object):
         self._staffs = []
         self.drumKit = DrumKit()
         self._callBack = None
+        self._callBacksEnabled = True
         self.scoreData = ScoreMetaData()
         self._sections = []
 
@@ -36,8 +37,14 @@ class Score(object):
         return sum(len(staff) for staff in self._staffs)
 
     def _runCallBack(self, position):
-        if self._callBack is not None:
+        if self._callBack is not None and self._callBacksEnabled:
             self._callBack(position)
+
+    def _turnOnCallBacks(self):
+        self._callBacksEnabled = True
+
+    def _turnOffCallBacks(self):
+        self._callBacksEnabled = False
 
     def setCallBack(self, callBack):
         self._callBack = callBack
@@ -153,6 +160,7 @@ class Score(object):
         newMeasure.counter = counter
         staff.insertMeasure(NotePosition(measureIndex = index),
                             newMeasure)
+        return newMeasure
 
     def insertMeasureByPosition(self, width, position, counter = None):
         if not(0 <= position.staffIndex < self.numStaffs()):
@@ -161,6 +169,7 @@ class Score(object):
         newMeasure.counter = counter
         staff = self.getStaff(position.staffIndex)
         staff.insertMeasure(position, newMeasure)
+        return newMeasure
 
     def deleteMeasureByIndex(self, index):
         if not (0 <= index < self.numMeasures()):
@@ -240,7 +249,6 @@ class Score(object):
             self.deleteStaffByIndex(startIndex)
         self.deleteStaffByIndex(startIndex)
 
-
     def iterSections(self):
         return iter(self._sections)
 
@@ -255,6 +263,36 @@ class Score(object):
             if sectionIndex < self.numSections():
                 self._sections.pop(sectionIndex)
         staff.setSectionEnd(position, onOff)
+
+    def iterMeasuresInSection(self, sectionIndex):
+        if not(0 <= sectionIndex < self.numSections()):
+            raise BadTimeError()
+        thisSection = 0
+        inSection = (thisSection == sectionIndex)
+        for measure in self.iterMeasures():
+            if inSection:
+                yield measure
+            if measure.isSectionEnd():
+                thisSection += 1
+                inSection = (thisSection == sectionIndex)
+
+    def insertSectionCopy(self, position, sectionIndex):
+        self._turnOffCallBacks()
+        try:
+            if not(0 <= position.staffIndex < self.numStaffs()):
+                raise BadTimeError()
+            sectionMeasures = list(self.iterMeasuresInSection(sectionIndex))
+            sectionTitle = "Copy of " + self.getSectionTitle(sectionIndex)
+            newIndex = self.getSectionIndex(position)
+            self._sections.insert(newIndex, sectionTitle)
+            for measure in sectionMeasures:
+                newMeasure = self.insertMeasureByPosition(len(measure),
+                                                          position,
+                                                          measure.counter)
+                newMeasure.pasteMeasure(measure, True)
+                position.measureIndex += 1
+        finally:
+            self._turnOnCallBacks()
 
     def setLineBreak(self, position, onOff):
         if not(0 <= position.staffIndex < self.numStaffs()):
