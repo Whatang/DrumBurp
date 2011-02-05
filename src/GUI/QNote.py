@@ -114,6 +114,9 @@ class QNote(QDBGridItem):
             menu.connect(deleteAction, QtCore.SIGNAL("triggered()"),
                          self._qMeasure.deleteMeasure)
             deleteMenu = menu.addMenu("Delete...")
+            deleteStaffAction = deleteMenu.addAction("Staff")
+            menu.connect(deleteStaffAction, QtCore.SIGNAL("triggered()"),
+                         self._qMeasure.deleteStaff)
             deleteEmptyAction = deleteMenu.addAction("Empty Trailing Measures")
             menu.connect(deleteEmptyAction, QtCore.SIGNAL("triggered()"),
                          self._qMeasure.deleteEmptyMeasures)

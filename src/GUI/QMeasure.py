@@ -163,6 +163,24 @@ class QMeasure(QtGui.QGraphicsItemGroup):
             self.scene().reBuild()
             self.scene().dirty = True
 
+    def deleteStaff(self):
+        score = self.scene().score
+        if score.numStaffs() == 1:
+            QtGui.QMessageBox.warning(self.parent(),
+                                      "Invalid delete",
+                                      "Cannot delete last staff.")
+            return
+        msg = "Really delete this staff?"
+        yesNo = QtGui.QMessageBox.question(self.scene().parent(),
+                                           "Delete Staff?",
+                                           msg,
+                                           QtGui.QMessageBox.Ok,
+                                           QtGui.QMessageBox.Cancel)
+        if yesNo == QtGui.QMessageBox.Ok:
+            score.deleteStaff(self._makeNotePosition())
+            self.scene().reBuild()
+            self.scene().dirty = True
+
     def deleteEmptyMeasures(self):
         score = self.scene().score
         if score.numMeasures() == 1:
