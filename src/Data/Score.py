@@ -13,7 +13,6 @@ from NotePosition import NotePosition
 from ScoreMetaData import ScoreMetaData
 import os
 import bisect
-import time
 
 #pylint: disable-msg=R0904
 
@@ -90,8 +89,19 @@ class Score(object):
     def deleteStaffByIndex(self, index):
         if not (0 <= index < self.numStaffs()):
             raise BadTimeError(index)
-        staff = self._staffs.pop(index)
+        staff = self._staffs[index]
         staff.clearCallBack()
+        if staff.isSectionEnd():
+            if index == 0 or self.getStaff(index - 1).isSectionEnd():
+                position = NotePosition(staffIndex = index)
+                sectionIndex = self.getSectionIndex(position)
+                self.deleteSectionTitle(sectionIndex)
+            else:
+                prevStaff = self.getStaff(index - 1)
+                position = NotePosition(staffIndex = index - 1,
+                                        measureIndex = prevStaff.numMeasures() - 1)
+                prevStaff.setSectionEnd(position, True)
+        self._staffs.pop(index)
         for offset, nextStaff in enumerate(self._staffs[index:]):
             self._setStaffCallBack(nextStaff, index + offset)
 
@@ -217,6 +227,19 @@ class Score(object):
 
     def deleteSectionTitle(self, index):
         self._sections.pop(index)
+
+    def deleteSection(self, position):
+        sectionIndex = self.getSectionIndex(position)
+        if sectionIndex == self.numSections():
+            return
+        startIndex = position.staffIndex
+        while (startIndex > 0 and
+               not self.getStaff(startIndex - 1).isSectionEnd()):
+            startIndex -= 1
+        while not self.getStaff(startIndex).isSectionEnd():
+            self.deleteStaffByIndex(startIndex)
+        self.deleteStaffByIndex(startIndex)
+
 
     def iterSections(self):
         return iter(self._sections)

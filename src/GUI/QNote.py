@@ -4,7 +4,7 @@ Created on 5 Dec 2010
 @author: Mike Thomas
 
 '''
-from PyQt4 import QtCore
+from PyQt4 import QtCore, QtGui
 from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 from QDBGridItem import QDBGridItem
 from QRepeatDialog import QRepeatDialog
@@ -60,6 +60,7 @@ class QNote(QDBGridItem):
         return self._props.ySpacing
 
     def mousePressEvent(self, event):
+        score = self.scene().score
         menu = None
         if event.button() == QtCore.Qt.MiddleButton:
             event.ignore()
@@ -111,15 +112,22 @@ class QNote(QDBGridItem):
             menu.addSeparator()
             deleteAction = menu.addAction(DBIcons.getIcon("delete"),
                                           "Delete Measure")
+            deleteAction.setEnabled(score.numMeasures() > 1)
             menu.connect(deleteAction, QtCore.SIGNAL("triggered()"),
                          self._qMeasure.deleteMeasure)
             deleteMenu = menu.addMenu("Delete...")
             deleteStaffAction = deleteMenu.addAction("Staff")
+            deleteStaffAction.setEnabled(score.numStaffs() > 1)
             menu.connect(deleteStaffAction, QtCore.SIGNAL("triggered()"),
-                         self._qMeasure.deleteStaff)
+                         self.deleteStaff)
+            deleteSectionAction = deleteMenu.addAction("Section")
+            deleteSectionAction.setEnabled(score.numSections() > 1)
+            menu.connect(deleteSectionAction, QtCore.SIGNAL("triggered()"),
+                         self.deleteSection)
             deleteEmptyAction = deleteMenu.addAction("Empty Trailing Measures")
             menu.connect(deleteEmptyAction, QtCore.SIGNAL("triggered()"),
-                         self._qMeasure.deleteEmptyMeasures)
+                         self.deleteEmptyMeasures)
+            deleteEmptyAction.setEnabled(score.numMeasures() > 1)
         else:
             pass
         if menu is not None:
@@ -137,3 +145,58 @@ class QNote(QDBGridItem):
 
     def hoverLeaveEvent(self, dummyEvent):
         self.scene().highlightNote(self._getNotePosition(), False)
+
+    def deleteStaff(self):
+        score = self.scene().score
+        if score.numStaffs() == 1:
+            QtGui.QMessageBox.warning(self.parent(),
+                                      "Invalid delete",
+                                      "Cannot delete last staff.")
+            return
+        msg = "Really delete this staff?"
+        yesNo = QtGui.QMessageBox.question(self.scene().parent(),
+                                           "Delete Staff?",
+                                           msg,
+                                           QtGui.QMessageBox.Ok,
+                                           QtGui.QMessageBox.Cancel)
+        if yesNo == QtGui.QMessageBox.Ok:
+            score.deleteStaff(self._getNotePosition())
+            self.scene().reBuild()
+            self.scene().dirty = True
+
+    def deleteEmptyMeasures(self):
+        score = self.scene().score
+        if score.numMeasures() == 1:
+            QtGui.QMessageBox.warning(self.parent(),
+                                      "Invalid delete",
+                                      "Cannot delete last measure.")
+            return
+        msg = "This will delete all empty trailing measures.\nContinue?"
+        yesNo = QtGui.QMessageBox.question(self.scene().parent(),
+                                           "Delete Empty Measures",
+                                           msg,
+                                           QtGui.QMessageBox.Ok,
+                                           QtGui.QMessageBox.Cancel)
+        if yesNo == QtGui.QMessageBox.Ok:
+            score.deleteEmptyMeasures()
+            self.scene().reBuild()
+            self.scene().dirty = True
+
+    def deleteSection(self):
+        score = self.scene().score
+        if score.numSections() <= 1:
+            QtGui.QMessageBox.warning(self.parent(),
+                                      "Invalid delete",
+                                      "Cannot delete last staff.")
+            return
+        msg = "Really delete this section?"
+        yesNo = QtGui.QMessageBox.question(self.scene().parent(),
+                                           "Delete Staff?",
+                                           msg,
+                                           QtGui.QMessageBox.Ok,
+                                           QtGui.QMessageBox.Cancel)
+        if yesNo == QtGui.QMessageBox.Ok:
+            score.deleteSection(self._getNotePosition())
+            self.scene().reBuild()
+            self.scene().dirty = True
+
