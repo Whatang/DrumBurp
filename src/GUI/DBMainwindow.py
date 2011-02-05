@@ -137,14 +137,19 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             self.addToRecentFiles()
             self.updateRecentFiles()
 
-    def getFileName(self):
+    def _getFileName(self):
         directory = self.filename
         if directory is None:
+            suggestion = unicode(self.scoreScene.title)
+            if len(suggestion) == 0:
+                suggestion = "Untitled"
+            suggestion = os.extsep.join([suggestion, "brp"])
             if len(self.recentFiles) > 0:
-                directory = os.path.dirname(self.recentFiles[-1])
+                directory = os.path.join(os.path.dirname(self.recentFiles[-1]),
+                                         suggestion)
             else:
-                directory = ""
-        if os.path.splitext(directory)[-1] == '.brp':
+                directory = suggestion
+        if os.path.splitext(directory)[-1] == os.extsep + 'brp':
             directory = os.path.splitext(directory)[0]
         caption = "Choose a DrumBurp file to save"
         fname = QFileDialog.getSaveFileName(parent = self,
@@ -158,7 +163,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     def fileSave(self):
         if self.filename is None:
-            if not self.getFileName():
+            if not self._getFileName():
                 return False
             self.addToRecentFiles()
             self.updateRecentFiles()
@@ -171,7 +176,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionSaveAs_triggered(self):
-        if self.getFileName():
+        if self._getFileName():
             self.scoreScene.saveScore(self.filename)
             self.updateStatus("Successfully saved %s" % self.filename)
             self.addToRecentFiles()
