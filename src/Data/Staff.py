@@ -203,9 +203,13 @@ class Staff(object):
             return staffString, isRepeating
         repeatString = "  "
         lastMeasure = None
+        delta = 0
         for measure in list(self) + [None]:
             if not isRepeating:
                 if measure and measure.isRepeatStart():
+                    if (lastMeasure and lastMeasure.isRepeatEnd()):
+                        repeatString += REPEAT_END
+                        delta = 1
                     isRepeating = True
                     repeatString += REPEAT_STARTER
                 elif (lastMeasure and
@@ -217,10 +221,11 @@ class Staff(object):
                 repeatString += REPEAT_EXTENDER
             if measure is not None:
                 if isRepeating:
-                    repeatString += REPEAT_EXTENDER * len(measure)
+                    repeatString += REPEAT_EXTENDER * (len(measure) - delta)
+                    delta = 0
                 else:
                     repeatString += " " * len(measure)
-            if isRepeating and measure.isRepeatEnd():
+            if isRepeating and measure and measure.isRepeatEnd():
                 isRepeating = False
                 repeatCount = "%dx" % measure.repeatCount
                 repeatCountLength = len(repeatCount)
