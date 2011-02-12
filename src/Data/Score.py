@@ -493,7 +493,7 @@ class Score(object):
             kitString.append(instr.exportASCII())
         kitString.reverse()
         kitString.append("")
-        print >> handle, "Tabbed with DrumBurp, www.whatang.org"
+        print >> handle, "Tabbed with DrumBurp, a drum tab editor from www.whatang.org"
         if settings.metadata:
             handle.writelines(mString + os.linesep
                               for mString in metadataString)
