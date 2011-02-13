@@ -52,8 +52,15 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         self._index = index
 
     def _clear(self):
+        for noteLine in self._notes:
+            for qNote in noteLine:
+                self.scene().removeItem(qNote)
         self._notes = []
+        for qCount in self._counts:
+            self.scene().removeItem(qCount)
         self._counts = []
+        if self._repeatCount is not None:
+            self.scene().removeItem(self._repeatCount)
         self._repeatCount = None
 
     def _build(self):

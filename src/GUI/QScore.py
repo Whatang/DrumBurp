@@ -302,6 +302,7 @@ class QScore(QtGui.QGraphicsScene):
     def copyMeasure(self, np):
         self.measureClipboard = self._score.copyMeasure(np)
 
+    @delayCall
     def pasteMeasure(self, np):
         self._score.pasteMeasure(np, self.measureClipboard)
         self.checkFormatting()
