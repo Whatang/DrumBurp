@@ -6,7 +6,8 @@ Created on 23 Jan 2011
 
 from PyQt4 import QtGui
 
-_ICON_CACHE = {"repeat":"view-refresh",
+_ICON_CACHE = {"drumburp":"drumburp",
+               "repeat":"view-refresh",
                "score":"audio-x-generic",
                "copy":"edit-copy",
                "paste":"edit-paste",

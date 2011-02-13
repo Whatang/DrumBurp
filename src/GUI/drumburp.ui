@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="DrumBurp.qrc">
-    <normaloff>:/Icons/Icons/audio-x-generic.png</normaloff>:/Icons/Icons/audio-x-generic.png</iconset>
+    <normaloff>:/Icons/Icons/drumburp.png</normaloff>:/Icons/Icons/drumburp.png</iconset>
   </property>
   <property name="animated">
    <bool>true</bool>

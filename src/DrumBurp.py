@@ -18,7 +18,7 @@ def main():
     app.setApplicationName(GUI.DBMainwindow.APPNAME)
     mainWindow = GUI.DBMainwindow.DrumBurp()
     mainWindow.show()
-    app.setWindowIcon(GUI.DBIcons.getIcon("repeat"))
+    app.setWindowIcon(GUI.DBIcons.getIcon("drumburp"))
     app.exec_()
 
 if __name__ == '__main__':

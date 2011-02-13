@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Wed Jan 26 00:17:35 2011
+# Created: Sun Feb 13 16:05:21 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -19,7 +19,7 @@ class Ui_DrumBurpWindow(object):
         DrumBurpWindow.setObjectName(_fromUtf8("DrumBurpWindow"))
         DrumBurpWindow.resize(800, 626)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/audio-x-generic.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/drumburp.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         DrumBurpWindow.setWindowIcon(icon)
         DrumBurpWindow.setAnimated(True)
         DrumBurpWindow.setDockNestingEnabled(True)
