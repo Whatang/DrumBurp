@@ -279,3 +279,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     @pyqtSignature("")
     def on_actionWhatsThis_triggered(self):
         QWhatsThis.enterWhatsThisMode()
+
+    @pyqtSignature("")
+    def on_actionUndo_triggered(self):
+        self.scoreScene.undo()
+
+    @pyqtSignature("")
+    def on_actionRedo_triggered(self):
+        self.scoreScene.redo()

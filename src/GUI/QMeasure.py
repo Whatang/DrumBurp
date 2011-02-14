@@ -11,6 +11,7 @@ from QInsertMeasuresDialog import QInsertMeasuresDialog
 from QEditMeasureDialog import QEditMeasureDialog
 from Data.TimeCounter import counterMaker
 from Data import DBConstants
+from DBCommands import ToggleNote
 from QRepeatCountDialog import QRepeatCountDialog
 
 _CHAR_PIXMAPS = {}
@@ -198,7 +199,8 @@ class QMeasure(QtGui.QGraphicsItem):
         notePosition = self._makeNotePosition(noteTime, drumIndex)
         if head is None:
             head = self._props.head
-        self.scene().score.toggleNote(notePosition, head)
+        command = ToggleNote(self.scene(), notePosition, head)
+        self.scene().addCommand(command)
 
     def mousePressEvent(self, event):
         point = self.mapFromScene(event.scenePos())

@@ -93,7 +93,7 @@ class Staff(object):
     def pasteMeasure(self, position, notes):
         if not (0 <= position.measureIndex <= self.numMeasures()):
             raise BadTimeError(position)
-        self[position.measureIndex].pasteMeasure(notes)
+        return self[position.measureIndex].pasteMeasure(notes)
 
     def setMeasureBeatCount(self, position, beats, counter):
         if not (0 <= position.measureIndex <= self.numMeasures()):

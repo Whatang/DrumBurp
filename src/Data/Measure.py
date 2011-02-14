@@ -194,6 +194,7 @@ class Measure(object):
             return list(self.counter.countTicks(len(self)))
 
     def pasteMeasure(self, other, copyMeasureDecorations = False):
+        oldMeasure = self.copyMeasure()
         self.clear()
         self.setBeatCount(len(other) / other.counter.beatLength, other.counter)
         for pos, head in other:
@@ -205,6 +206,8 @@ class Measure(object):
             self.setRepeatStart(other.isRepeatStart())
             self.setRepeatEnd(other.isRepeatEnd())
             self.setSectionEnd(other.isSectionEnd())
+        return oldMeasure
+
 
     def changeKit(self, changes):
         oldNotes = copy.deepcopy(self._notes)

@@ -9,6 +9,7 @@ from PyQt4 import QtGui, QtCore
 from QStaff import QStaff
 from QSection import QSection
 from Data.Score import ScoreFactory
+from DBCommands import MetaDataCommand, ScoreWidthCommand, PasteMeasure
 import functools
 _SCORE_FACTORY = ScoreFactory()
 
@@ -28,10 +29,8 @@ def _metaDataProperty(varname, setName = None):
         return getattr(self.score.scoreData, varname)
     def _setData(self, value):
         if getattr(self, varname) != value:
-            setattr(self.score.scoreData, varname, value)
-            for view in self.views():
-                getattr(view, setName)(value)
-            self.dirty = True
+            command = MetaDataCommand(self, varname, setName, value)
+            self.addCommand(command)
     return property(fget = _getData, fset = _setData)
 
 
@@ -53,6 +52,7 @@ class QScore(QtGui.QGraphicsScene):
         self._dirty = None
         self._ignoreNext = False
         self.measureClipboard = None
+        self._undoStack = QtGui.QUndoStack(self)
         if parent.filename is not None:
             if not self.loadScore(parent.filename):
                 parent.filename = None
@@ -60,6 +60,18 @@ class QScore(QtGui.QGraphicsScene):
         else:
             self.newScore()
         self._properties.connectScore(self)
+
+    def addCommand(self, command):
+        self._undoStack.push(command)
+        self.dirty = not self._undoStack.isClean()
+
+    def undo(self):
+        self._undoStack.undo()
+        self.dirty = not self._undoStack.isClean()
+
+    def redo(self):
+        self._undoStack.redo()
+        self.dirty = not self._undoStack.isClean()
 
     def startUp(self):
         for view in self.views():
@@ -78,12 +90,8 @@ class QScore(QtGui.QGraphicsScene):
         if self._score is None:
             return
         if self.scoreWidth != value:
-            self._score.scoreData.width = value
-            for view in self.views():
-                view.setWidth(value)
-            if self._score is not None:
-                self.checkFormatting()
-            self.dirty = True
+            command = ScoreWidthCommand(self, value)
+            self.addCommand(command)
     scoreWidth = property(fget = _getscoreWidth,
                           fset = _setscoreWidth)
 
@@ -124,6 +132,8 @@ class QScore(QtGui.QGraphicsScene):
             self._score.setCallBack(self._dataChanged)
             self._build()
             self.dirty = False
+            self._undoStack.clear()
+            self._undoStack.setClean()
 
     @_readOnly
     def score(self):
@@ -136,8 +146,6 @@ class QScore(QtGui.QGraphicsScene):
         for title in self._score.iterSections():
             self._addSection(title)
         self._placeStaffs()
-        self._populate()
-
 
     @delayCall
     def reBuild(self):
@@ -253,12 +261,7 @@ class QScore(QtGui.QGraphicsScene):
                           self.width(),
                           yOffset - lineSpacing + yMargins)
 
-    def _populate(self):
-        for notePosition, head_ in self._score.iterNotes():
-            self._dataChanged(notePosition)
-
     def _dataChanged(self, notePosition):
-        self.dirty = True
         staff = self._qStaffs[notePosition.staffIndex]
         staff.dataChanged(notePosition)
 
@@ -277,9 +280,8 @@ class QScore(QtGui.QGraphicsScene):
 
     @delayCall
     def pasteMeasure(self, np):
-        self._score.pasteMeasure(np, self.measureClipboard)
-        self.checkFormatting()
-        self.dirty = True
+        command = PasteMeasure(self, np, self.measureClipboard)
+        self.addCommand(command)
 
     def changeRepeatCount(self, np):
         qStaff = self._qStaffs[np.staffIndex]
@@ -306,6 +308,7 @@ class QScore(QtGui.QGraphicsScene):
                                       "Score save error",
                                       msg)
             return False
+        self._undoStack.setClean()
         self.dirty = False
         return True
 

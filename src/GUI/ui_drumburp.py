@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sun Feb 13 16:05:21 2011
+# Created: Sun Feb 13 21:41:08 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -54,6 +54,8 @@ class Ui_DrumBurpWindow(object):
         self.menuShow.setObjectName(_fromUtf8("menuShow"))
         self.menuShowToolBars = QtGui.QMenu(self.menuView)
         self.menuShowToolBars.setObjectName(_fromUtf8("menuShowToolBars"))
+        self.menuEdit = QtGui.QMenu(self.menubar)
+        self.menuEdit.setObjectName(_fromUtf8("menuEdit"))
         DrumBurpWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(DrumBurpWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
@@ -354,6 +356,10 @@ class Ui_DrumBurpWindow(object):
         icon10.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/help-browser.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionWhatsThis.setIcon(icon10)
         self.actionWhatsThis.setObjectName(_fromUtf8("actionWhatsThis"))
+        self.actionUndo = QtGui.QAction(DrumBurpWindow)
+        self.actionUndo.setObjectName(_fromUtf8("actionUndo"))
+        self.actionRedo = QtGui.QAction(DrumBurpWindow)
+        self.actionRedo.setObjectName(_fromUtf8("actionRedo"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.menuRecentScores.menuAction())
@@ -372,7 +378,10 @@ class Ui_DrumBurpWindow(object):
         self.menuView.addAction(self.actionFitInWindow)
         self.menuView.addAction(self.menuShow.menuAction())
         self.menuView.addAction(self.menuShowToolBars.menuAction())
+        self.menuEdit.addAction(self.actionUndo)
+        self.menuEdit.addAction(self.actionRedo)
         self.menubar.addAction(self.menuFile.menuAction())
+        self.menubar.addAction(self.menuEdit.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
         self.fileToolBar.addAction(self.actionNew)
         self.fileToolBar.addAction(self.actionLoad)
@@ -464,6 +473,7 @@ class Ui_DrumBurpWindow(object):
         self.menuShow.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Select visible components", None, QtGui.QApplication.UnicodeUTF8))
         self.menuShow.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "Show...", None, QtGui.QApplication.UnicodeUTF8))
         self.menuShowToolBars.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "Show Tool Bars...", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuEdit.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "Edit", None, QtGui.QApplication.UnicodeUTF8))
         self.fileToolBar.setWindowTitle(QtGui.QApplication.translate("DrumBurpWindow", "File Tool Bar", None, QtGui.QApplication.UnicodeUTF8))
         self.noteHeadDock.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Select the note head", None, QtGui.QApplication.UnicodeUTF8))
         self.noteHeadDock.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "The note head determines what note will be placed in the Score", None, QtGui.QApplication.UnicodeUTF8))
@@ -586,6 +596,12 @@ class Ui_DrumBurpWindow(object):
         self.actionWhatsThis.setText(QtGui.QApplication.translate("DrumBurpWindow", "What\'s this?", None, QtGui.QApplication.UnicodeUTF8))
         self.actionWhatsThis.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Get help on DrumBurp elements", None, QtGui.QApplication.UnicodeUTF8))
         self.actionWhatsThis.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Shift+F1", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionUndo.setText(QtGui.QApplication.translate("DrumBurpWindow", "Undo", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionUndo.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Undo the last action", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionUndo.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+Z", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionRedo.setText(QtGui.QApplication.translate("DrumBurpWindow", "Redo", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionRedo.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Redo the last undone action", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionRedo.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+Y", None, QtGui.QApplication.UnicodeUTF8))
 
 from Widgets.ScoreView_plugin import ScoreView
 from Widgets.RadioButtonTeller_plugin import RadioButtonTeller
