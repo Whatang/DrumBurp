@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sun Feb 13 21:41:08 2011
+# Created: Sun Feb 13 23:41:32 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -432,11 +432,8 @@ class Ui_DrumBurpWindow(object):
         QtCore.QObject.connect(self.scoreView, QtCore.SIGNAL(_fromUtf8("widthChanged(int)")), self.widthSpinBox.setValue)
         QtCore.QObject.connect(self.bpmSpinBox, QtCore.SIGNAL(_fromUtf8("valueChanged(int)")), self.scoreView.setBPM)
         QtCore.QObject.connect(self.scoreView, QtCore.SIGNAL(_fromUtf8("bpmChanged(int)")), self.bpmSpinBox.setValue)
-        QtCore.QObject.connect(self.artistNameEdit, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), self.scoreView.setArtist)
         QtCore.QObject.connect(self.scoreView, QtCore.SIGNAL(_fromUtf8("artistChanged(QString)")), self.artistNameEdit.setText)
-        QtCore.QObject.connect(self.songNameEdit, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), self.scoreView.setTitle)
         QtCore.QObject.connect(self.scoreView, QtCore.SIGNAL(_fromUtf8("titleChanged(QString)")), self.songNameEdit.setText)
-        QtCore.QObject.connect(self.tabberEdit, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), self.scoreView.setCreator)
         QtCore.QObject.connect(self.scoreView, QtCore.SIGNAL(_fromUtf8("creatorChanged(QString)")), self.tabberEdit.setText)
         QtCore.QMetaObject.connectSlotsByName(DrumBurpWindow)
         DrumBurpWindow.setTabOrder(self.songNameEdit, self.artistNameEdit)

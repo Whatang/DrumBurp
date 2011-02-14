@@ -268,6 +268,20 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         else:
             self.updateStatus("Successfully exported ASCII to " + fname)
 
+    @pyqtSignature("")
+    def on_songNameEdit_editingFinished(self):
+        newTitle = self.songNameEdit.text()
+        self.scoreView.setTitle(newTitle)
+
+    @pyqtSignature("")
+    def on_artistNameEdit_editingFinished(self):
+        newValue = self.artistNameEdit.text()
+        self.scoreView.setArtist(newValue)
+
+    @pyqtSignature("")
+    def on_tabberEdit_editingFinished(self):
+        newValue = self.tabberEdit.text()
+        self.scoreView.setCreator(newValue)
 
     @pyqtSignature("")
     def on_actionPrint_triggered(self):

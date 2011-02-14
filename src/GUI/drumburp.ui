@@ -1469,8 +1469,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>741</x>
-     <y>145</y>
+     <x>740</x>
+     <y>143</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -1623,22 +1623,6 @@ Writes this Score as a plain .txt file.</string>
    </hints>
   </connection>
   <connection>
-   <sender>artistNameEdit</sender>
-   <signal>textChanged(QString)</signal>
-   <receiver>scoreView</receiver>
-   <slot>setArtist(QString)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>666</x>
-     <y>113</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>264</x>
-     <y>175</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>scoreView</sender>
    <signal>artistChanged(QString)</signal>
    <receiver>artistNameEdit</receiver>
@@ -1655,22 +1639,6 @@ Writes this Score as a plain .txt file.</string>
    </hints>
   </connection>
   <connection>
-   <sender>songNameEdit</sender>
-   <signal>textChanged(QString)</signal>
-   <receiver>scoreView</receiver>
-   <slot>setTitle(QString)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>299</x>
-     <y>107</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>304</x>
-     <y>172</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>scoreView</sender>
    <signal>titleChanged(QString)</signal>
    <receiver>songNameEdit</receiver>
@@ -1683,22 +1651,6 @@ Writes this Score as a plain .txt file.</string>
     <hint type="destinationlabel">
      <x>328</x>
      <y>106</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>tabberEdit</sender>
-   <signal>textChanged(QString)</signal>
-   <receiver>scoreView</receiver>
-   <slot>setCreator(QString)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>175</x>
-     <y>141</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>560</x>
-     <y>188</y>
     </hint>
    </hints>
   </connection>
