@@ -13,6 +13,8 @@ from Data.TimeCounter import counterMaker
 from Data import DBConstants
 from DBCommands import ToggleNote
 from QRepeatCountDialog import QRepeatCountDialog
+from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
+import DBIcons
 
 _CHAR_PIXMAPS = {}
 def _stringToPixMap(character, font, scene):
@@ -55,6 +57,7 @@ class QMeasure(QtGui.QGraphicsItem):
         self._height = 0
         self._highlight = None
         self._rect = QtCore.QRectF(0, 0, 0, 0)
+        self._startClick = None
         self.setAcceptsHoverEvents(True)
         self.setMeasure(measure)
 
@@ -140,7 +143,7 @@ class QMeasure(QtGui.QGraphicsItem):
         else:
             self._setDimensions()
             self.update()
-            self.parent().placeMeasures()
+            self.parentItem().placeMeasures()
 
     def xSpacingChanged(self):
         self._setDimensions()
@@ -202,18 +205,126 @@ class QMeasure(QtGui.QGraphicsItem):
         command = ToggleNote(self.scene(), notePosition, head)
         self.scene().addCommand(command)
 
+    def repeatNote(self, noteTime, drumIndex):
+        raise NotImplementedError()
+
     def mousePressEvent(self, event):
         point = self.mapFromScene(event.scenePos())
         if self._isOverNotes(point):
             noteTime, drumIndex = self._getNotePosition(point)
-            self.toggleNote(noteTime, drumIndex)
+            self._notePressEvent(event, noteTime, drumIndex)
+        else:
+            event.ignore()
+
+    def _notePressEvent(self, event, noteTime, drumIndex):
+        score = self.scene().score
+        menu = None
+        if event.button() == QtCore.Qt.MiddleButton:
+            event.ignore()
+            menu = QMenuIgnoreCancelClick(self.scene())
+            for noteHead in self._props.allowedNoteHeads():
+                action = menu.addAction(noteHead)
+                def noteAction(nh = noteHead):
+                    self.toggleNote(noteTime, drumIndex, nh)
+                menu.connect(action, QtCore.SIGNAL("triggered()"), noteAction)
+        elif event.button() == QtCore.Qt.RightButton:
+            event.ignore()
+            menu = QMenuIgnoreCancelClick(self.scene())
+            actionText = "Repeat note"
+            repeatNoteAction = menu.addAction(DBIcons.getIcon("repeat"),
+                                              actionText)
+            menu.connect(repeatNoteAction,
+                         QtCore.SIGNAL("triggered()"),
+                         lambda : self.repeatNote(noteTime, drumIndex))
+            if self._measure.noteAt(noteTime, drumIndex) == DBConstants.EMPTY_NOTE:
+                repeatNoteAction.setEnabled(False)
+            menu.addSeparator()
+            copyAction = menu.addAction(DBIcons.getIcon("copy"),
+                                        "Copy Measure")
+            menu.connect(copyAction,
+                         QtCore.SIGNAL("triggered()"),
+                         self.copyMeasure)
+            pasteAction = menu.addAction(DBIcons.getIcon("paste"),
+                                         "Paste Measure")
+            menu.connect(pasteAction,
+                         QtCore.SIGNAL("triggered()"),
+                         self.pasteMeasure)
+            if self.scene().measureClipboard is None:
+                pasteAction.setEnabled(False)
+            menu.addSeparator()
+            actionText = "Insert Default Measure"
+            insertDefaultMeasureAction = menu.addAction(actionText)
+            menu.connect(insertDefaultMeasureAction,
+                         QtCore.SIGNAL("triggered()"),
+                         self.insertMeasureBefore)
+            insertMenu = menu.addMenu("Insert...")
+            insertAfterAction = insertMenu.addAction("Default Measure After")
+            insertMenu.connect(insertAfterAction,
+                               QtCore.SIGNAL("triggered()"),
+                               self.insertMeasureAfter)
+            insertOtherMeasures = insertMenu.addAction("Other Measures")
+            insertMenu.connect(insertOtherMeasures,
+                               QtCore.SIGNAL("triggered()"),
+                               self.insertOtherMeasures)
+            sectionCopyMenu = insertMenu.addMenu("Section Copy")
+            sectionCopyMenu.setEnabled(score.numSections() > 0)
+            for sectionIndex, sectionTitle in enumerate(score.iterSections()):
+                sectionCopyAction = sectionCopyMenu.addAction(sectionTitle)
+                copyIt = lambda si = sectionIndex: self._copySection(si)
+                sectionCopyMenu.connect(sectionCopyAction,
+                                        QtCore.SIGNAL("triggered()"),
+                                        copyIt)
+            menu.addSeparator()
+            deleteAction = menu.addAction(DBIcons.getIcon("delete"),
+                                          "Delete Measure")
+            deleteAction.setEnabled(score.numMeasures() > 1)
+            menu.connect(deleteAction, QtCore.SIGNAL("triggered()"),
+                         self.deleteMeasure)
+            deleteMenu = menu.addMenu("Delete...")
+            deleteStaffAction = deleteMenu.addAction("Staff")
+            deleteStaffAction.setEnabled(score.numStaffs() > 1)
+            menu.connect(deleteStaffAction, QtCore.SIGNAL("triggered()"),
+                         self.deleteStaff)
+            deleteSectionAction = deleteMenu.addAction("Section")
+            deleteSectionAction.setEnabled(score.numSections() > 1)
+            menu.connect(deleteSectionAction, QtCore.SIGNAL("triggered()"),
+                         self.deleteSection)
+            deleteEmptyAction = deleteMenu.addAction("Empty Trailing Measures")
+            menu.connect(deleteEmptyAction, QtCore.SIGNAL("triggered()"),
+                         self.deleteEmptyMeasures)
+            deleteEmptyAction.setEnabled(score.numMeasures() > 1)
+        else:
+            self._startClick = (noteTime, drumIndex)
+        if menu is not None:
+            menu.exec_(event.screenPos())
+
+    def mouseReleaseEvent(self, event):
+        point = self.mapFromScene(event.scenePos())
+        if self._isOverNotes(point):
+            noteTime, drumIndex = self._getNotePosition(point)
+            if (event.button() == QtCore.Qt.LeftButton and
+                self._startClick == (noteTime, drumIndex)):
+                self.toggleNote(noteTime, drumIndex)
+            else:
+                event.ignore()
+        else:
+            event.ignore()
+
+    def deleteStaff(self):
+        raise NotImplementedError()
+
+    def deleteSection(self):
+        raise NotImplementedError()
+
+    def deleteEmptyMeasures(self):
+        raise NotImplementedError()
 
     def _makeNotePosition(self, noteTime, drumIndex):
         np = NotePosition(measureIndex = self._index, noteTime = noteTime, drumIndex = drumIndex)
         return self.parentItem().augmentNotePosition(np)
 
     def _measurePosition(self):
-        return NotePosition(measureIndex = self._index)
+        return self.parentItem().augmentNotePosition(NotePosition(measureIndex = self._index))
 
     def _insertMeasure(self, np):
         qScore = self.scene()
