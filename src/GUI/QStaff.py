@@ -26,6 +26,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self._props = qScore.displayProperties
         self._staff = None
         self._index = None
+        self._highlightedLine = None
         self._lineLabels = []
         self._measures = []
         self._measureLines = []
@@ -96,13 +97,12 @@ class QStaff(QtGui.QGraphicsItemGroup):
         xOffset += self._props.LINELABELWIDTH
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
-            qMeasureLine.setPos(xOffset, 0)
+            qMeasureLine.setPos(xOffset, self._props.ySpacing)
             qMeasureLine.setDimensions()
             xOffset += qMeasureLine.width()
             qMeasure.setPos(xOffset, 0)
-            qMeasure.placeNotes()
             xOffset += qMeasure.width()
-        self._measureLines[-1].setPos(xOffset, 0)
+        self._measureLines[-1].setPos(xOffset, self._props.ySpacing)
         self._measureLines[-1].setDimensions()
         self._width = xOffset + self._measureLines[-1].width()
         self._height = max(element.height()
@@ -113,14 +113,14 @@ class QStaff(QtGui.QGraphicsItemGroup):
         xOffset = self._props.LINELABELWIDTH
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
-            qMeasureLine.setPos(xOffset, 0)
+            qMeasureLine.setPos(xOffset, self._props.ySpacing)
             qMeasureLine.xSpacingChanged()
             xOffset += qMeasureLine.width()
             qMeasure.setPos(xOffset, 0)
             qMeasure.xSpacingChanged()
             xOffset += qMeasure.width()
         self._measureLines[-1].xSpacingChanged()
-        self._measureLines[-1].setPos(xOffset, 0)
+        self._measureLines[-1].setPos(xOffset, self._props.ySpacing)
         self._width = xOffset + self._measureLines[-1].width()
 
     def ySpacingChanged(self):
@@ -136,6 +136,18 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self._height = max(element.height()
                            for element in
                            itertools.chain(self._measures, self._measureLines))
+
+    def clearHighlight(self):
+        if self._highlightedLine != None:
+            self._lineLabels[self._highlightedLine].setHighlight(False)
+        self._highlightedLine = None
+
+    def setLineHighlight(self, lineIndex):
+        if lineIndex != self._highlightedLine:
+            if self._highlightedLine != None:
+                self._lineLabels[self._highlightedLine].setHighlight(False)
+            self._highlightedLine = lineIndex
+            self._lineLabels[self._highlightedLine].setHighlight(True)
 
     def dataChanged(self, notePosition):
         if notePosition.measureIndex is not None:

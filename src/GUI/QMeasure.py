@@ -5,16 +5,38 @@ Created on 5 Jan 2011
 
 '''
 
-from PyQt4 import QtGui
-from QNote import QNote
-from QCount import QCount
+from PyQt4 import QtGui, QtCore
 from Data.NotePosition import NotePosition
 from QInsertMeasuresDialog import QInsertMeasuresDialog
 from QEditMeasureDialog import QEditMeasureDialog
 from Data.TimeCounter import counterMaker
+from Data import DBConstants
 from QRepeatCountDialog import QRepeatCountDialog
 
-class QMeasure(QtGui.QGraphicsItemGroup):
+_CHAR_PIXMAPS = {}
+def _stringToPixMap(character, font, scene):
+    key = (character, font.key())
+    if key not in _CHAR_PIXMAPS:
+        fm = QtGui.QFontMetrics(font)
+        br = fm.tightBoundingRect(character)
+        dx = -br.x() + 1
+        dy = -br.y() + 1
+        br.translate(dx, dy)
+        pix = QtGui.QPixmap(br.width() + 2, br.height() + 2)
+        painter = QtGui.QPainter(pix)
+        painter.setPen(QtCore.Qt.NoPen)
+        painter.setBrush(scene.palette().base())
+        painter.drawRect(0, 0, br.width() + 2, br.height() + 2)
+        painter.setBrush(scene.palette().text())
+        painter.setPen(QtCore.Qt.SolidLine)
+        painter.setFont(font)
+        painter.drawText(dx, dy, character)
+        painter.end()
+        _CHAR_PIXMAPS[key] = pix
+    return _CHAR_PIXMAPS[key]
+
+
+class QMeasure(QtGui.QGraphicsItem):
     '''
     classdocs
     '''
@@ -25,17 +47,24 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         Constructor
         '''
         super(QMeasure, self).__init__(parent)
-        self._qStaff = parent
         self._props = qScore.displayProperties
         self._measure = None
         self._index = None
-        self._notes = []
-        self._counts = []
         self._width = 0
         self._height = 0
-        self._repeatCount = None
+        self._highlight = None
+        self._rect = QtCore.QRectF(0, 0, 0, 0)
+        self.setAcceptsHoverEvents(True)
         self.setMeasure(measure)
-        self.setHandlesChildEvents(False)
+
+    def _setDimensions(self):
+        self.prepareGeometryChange()
+        self._width = self._props.xSpacing * len(self._measure)
+        self._height = (self.scene().kitSize + 2) * self._props.ySpacing
+        self._rect.setBottomRight(QtCore.QPointF(self._width, self._height))
+
+    def boundingRect(self):
+        return self._rect
 
     def width(self):
         return self._width
@@ -46,83 +75,143 @@ class QMeasure(QtGui.QGraphicsItemGroup):
     def setMeasure(self, measure):
         if self._measure != measure:
             self._measure = measure
-            self._build()
+            self._setDimensions()
+            self.update()
 
     def setIndex(self, index):
         self._index = index
 
-    def _clear(self):
-        for noteLine in self._notes:
-            for qNote in noteLine:
-                self.scene().removeItem(qNote)
-        self._notes = []
-        for qCount in self._counts:
-            self.scene().removeItem(qCount)
-        self._counts = []
-        if self._repeatCount is not None:
-            self.scene().removeItem(self._repeatCount)
-        self._repeatCount = None
-
-    def _build(self):
-        self._clear()
+    def paint(self, painter, dummyOption, dummyWidget = None):
+        painter.setPen(QtCore.Qt.NoPen)
+        painter.setBrush(self.scene().palette().base())
+        painter.drawRect(self._rect)
+        painter.setPen(QtCore.Qt.SolidLine)
+        font = self._props.noteFont
+        if font is None:
+            font = painter.font()
+        xValues = [noteTime * self._props.xSpacing
+                   for noteTime in range(0, len(self._measure))]
         for drumIndex in range(0, self.scene().kitSize):
-            noteLine = []
-            self._notes.append(noteLine)
-            for noteTime in range(0, len(self._measure)):
-                qNote = QNote(self.scene(), parent = self)
-                qNote.setIndex(drumIndex, noteTime)
-                noteLine.append(qNote)
-                self.addToGroup(qNote)
+            baseline = (self.scene().kitSize - drumIndex) * self._props.ySpacing
+            lineHeight = baseline + (self._props.ySpacing / 2.0)
+            for noteTime, x in enumerate(xValues):
+                text = self._measure.noteAt(noteTime, drumIndex)
+                if text == DBConstants.EMPTY_NOTE:
+                    painter.drawLine(x + 1, lineHeight,
+                                     x + self._props.xSpacing - 1, lineHeight)
+                else:
+                    pix = _stringToPixMap(text, font, self.scene())
+                    left = x + (self._props.xSpacing - pix.width() + 2) / 2
+                    top = baseline + (self._props.ySpacing
+                                      - pix.height() + 2) / 2
+                    painter.drawPixmap(left, top, pix)
+                if self._highlight == (noteTime, drumIndex):
+                    painter.setPen(self.scene().palette().highlight().color())
+                    painter.setBrush(QtCore.Qt.NoBrush)
+                    painter.drawRect(x, baseline,
+                                     self._props.xSpacing - 1,
+                                     self._props.ySpacing - 1)
+                    painter.setPen(self.scene().palette().text().color())
+        baseline = (self.scene().kitSize + 1) * self._props.ySpacing
         for noteTime, count in enumerate(self._measure.count()):
-            qCount = QCount(count, self.scene(), parent = self)
-            qCount.setIndex(noteTime)
-            self._counts.append(qCount)
-            self.addToGroup(qCount)
-        self._setRepeatCount(self._measure.repeatCount)
+            x = xValues[noteTime]
+            pix = _stringToPixMap(count, font, self.scene())
+            left = x + (self._props.xSpacing - pix.width() + 2) / 2
+            top = baseline + (self._props.ySpacing - pix.height() + 2) / 2
+            painter.drawPixmap(left, top, pix)
+            if self._highlight and noteTime == self._highlight[0]:
+                painter.setPen(self.scene().palette().highlight().color())
+                painter.setBrush(QtCore.Qt.NoBrush)
+                painter.drawRect(x, baseline,
+                                 self._props.xSpacing - 1,
+                                 self._props.ySpacing - 1)
+        if self._measure.isRepeatEnd() and self._measure.repeatCount > 2:
+            repeatText = '%dx' % self._measure.repeatCount
+            textWidth = QtGui.QFontMetrics(font).width(repeatText)
+            textLocation = QtCore.QPointF(self.width() - textWidth,
+                                          self._props.ySpacing)
+            painter.drawText(textLocation, repeatText)
 
-    def placeNotes(self):
-        yOffsets = self.scene().lineOffsets
-        countOffset = self.scene().kitSize * self._props.ySpacing
-        for noteTime in range(0, len(self._measure)):
-            xOffset = noteTime * self._props.xSpacing
-            for drumIndex, yOffset in enumerate(yOffsets):
-                qNote = self._notes[drumIndex][noteTime]
-                qNote.setDimensions()
-                qNote.setPos(xOffset, yOffset)
-            qCount = self._counts[noteTime]
-            qCount.setDimensions()
-            qCount.setPos(xOffset, countOffset)
-        self._setWidth()
-        self._setHeight()
-        self._positionRepeatCount()
-
-    def _setWidth(self):
-        self._width = len(self._measure) * self._props.xSpacing
-
-    def _setHeight(self):
-        self._height = (self.scene().kitSize + 1) * self._props.ySpacing
 
     def dataChanged(self, notePosition):
         if None not in (notePosition.noteTime, notePosition.drumIndex):
-            qnote = self._notes[notePosition.drumIndex][notePosition.noteTime]
-            qnote.dataChanged(notePosition)
+            self.update()
         else:
-            self._build()
-            self._qStaff.placeMeasures()
+            self._setDimensions()
+            self.update()
+            self.parent().placeMeasures()
 
-    def _makeNotePosition(self):
-        np = NotePosition()
-        return self.augmentNotePosition(np)
+    def xSpacingChanged(self):
+        self._setDimensions()
+        self.update()
 
-    def augmentNotePosition(self, np):
-        np.measureIndex = self._index
-        return self._qStaff.augmentNotePosition(np)
+    def ySpacingChanged(self):
+        self._setDimensions()
+        self.update()
 
-    def setHighlight(self, np, onOff):
-        qCount = self._counts[np.noteTime]
-        qCount.setHighlight(onOff)
-        qNote = self._notes[np.drumIndex][np.noteTime]
-        qNote.setHighlight(onOff)
+    def _countChanged(self):
+        self.update()
+
+    def _setRepeatCount(self, count):
+        self._measure.repeatCount = count
+        self.update()
+
+    def _isOverNotes(self, point):
+        return (1 <= (point.y() / self._props.ySpacing) < (1 + self.scene().kitSize))
+
+    def _isOverCount(self, point):
+        return (point.y() / self._props.ySpacing) >= self.scene().kitSize
+
+    def _getNotePosition(self, point):
+        x = self._getNoteTime(point)
+        y = self.scene().kitSize - int(point.y() / self._props.ySpacing)
+        return x, y
+
+    def _getNoteTime(self, point):
+        return int(point.x() / self._props.xSpacing)
+
+    def _hovering(self, event):
+        point = self.mapFromScene(event.scenePos())
+        if self._isOverNotes(point):
+            newPlace = self._getNotePosition(point)
+            if newPlace != self._highlight:
+                self._highlight = newPlace
+                self.update()
+                self.parentItem().setLineHighlight(newPlace[1])
+        elif self._highlight != None:
+            self._highlight = None
+            self.parentItem().clearHighlight()
+            self.update()
+
+    def hoverEnterEvent(self, event):
+        self._hovering(event)
+
+    def hoverMoveEvent(self, event):
+        self._hovering(event)
+
+    def hoverLeaveEvent(self, event_):
+        self._highlight = None
+        self.update()
+        self.parentItem().clearHighlight()
+
+    def toggleNote(self, noteTime, drumIndex, head = None):
+        notePosition = self._makeNotePosition(noteTime, drumIndex)
+        if head is None:
+            head = self._props.head
+        self.scene().score.toggleNote(notePosition, head)
+
+    def mousePressEvent(self, event):
+        point = self.mapFromScene(event.scenePos())
+        if self._isOverNotes(point):
+            noteTime, drumIndex = self._getNotePosition(point)
+            self.toggleNote(noteTime, drumIndex)
+
+    def _makeNotePosition(self, noteTime, drumIndex):
+        np = NotePosition(measureIndex = self._index, noteTime = noteTime, drumIndex = drumIndex)
+        return self.parentItem().augmentNotePosition(np)
+
+    def _measurePosition(self):
+        return NotePosition(measureIndex = self._index)
 
     def _insertMeasure(self, np):
         qScore = self.scene()
@@ -135,15 +224,15 @@ class QMeasure(QtGui.QGraphicsItemGroup):
         qScore.dirty = True
 
     def insertMeasureBefore(self):
-        self._insertMeasure(self._makeNotePosition())
+        self._insertMeasure(self._measurePosition())
 
     def insertMeasureAfter(self):
-        np = self._makeNotePosition()
+        np = self._measurePosition()
         np.measureIndex += 1
         self._insertMeasure(np)
 
     def insertOtherMeasures(self):
-        np = self._makeNotePosition()
+        np = self._measurePosition()
         beats = self._props.beatsPerMeasure
         counter = self._props.beatCounter
         insertDialog = QInsertMeasuresDialog(self.scene().parent(),
@@ -175,15 +264,15 @@ class QMeasure(QtGui.QGraphicsItemGroup):
                                            QtGui.QMessageBox.Ok,
                                            QtGui.QMessageBox.Cancel)
         if yesNo == QtGui.QMessageBox.Ok:
-            score.deleteMeasureByPosition(self._makeNotePosition())
+            score.deleteMeasureByPosition(self._measurePosition())
             self.scene().reBuild()
             self.scene().dirty = True
 
     def copyMeasure(self):
-        self.scene().copyMeasure(self._makeNotePosition())
+        self.scene().copyMeasure(self._measurePosition())
 
     def pasteMeasure(self):
-        self.scene().pasteMeasure(self._makeNotePosition())
+        self.scene().pasteMeasure(self._measurePosition())
 
     def editMeasureProperties(self):
         numTicks = len(self._measure)
@@ -202,7 +291,7 @@ class QMeasure(QtGui.QGraphicsItemGroup):
             score = self.scene().score
             if (newCounter != counter
                 or newTicks != numTicks):
-                score.setMeasureBeatCount(self._makeNotePosition(),
+                score.setMeasureBeatCount(self._measurePosition(),
                                           beats, newCounter)
                 self.scene().dirty = True
                 if newTicks != numTicks:
@@ -210,58 +299,8 @@ class QMeasure(QtGui.QGraphicsItemGroup):
                 else:
                     self._countChanged()
 
-    def _countChanged(self):
-        for qCount, count in zip(self._counts, self._measure.count()):
-            qCount.setText(count)
-
-    def _setRepeatCount(self, count):
-        self._measure.repeatCount = count
-        if count <= 2:
-            if self._repeatCount is not None:
-                self.scene().removeItem(self._repeatCount)
-            self._repeatCount = None
-        else:
-            if self._repeatCount is None:
-                self._repeatCount = QtGui.QGraphicsTextItem()
-                self.addToGroup(self._repeatCount)
-            self._repeatCount.setPlainText("%dx" % count)
-        self._positionRepeatCount()
-
-    def _positionRepeatCount(self):
-        if self._repeatCount is not None:
-            rect = self._repeatCount.boundingRect()
-            self._repeatCount.setPos(self.width() - rect.width(),
-                                     - rect.height())
-
     def changeRepeatCount(self):
         repDialog = QRepeatCountDialog(self._measure.repeatCount,
                                        self.scene().parent())
         if repDialog.exec_():
             self._setRepeatCount(repDialog.getValue())
-
-
-    def xSpacingChanged(self):
-        yOffsets = self.scene().lineOffsets
-        for noteTime in range(0, len(self._measure)):
-            xOffset = noteTime * self._props.xSpacing
-            for drumIndex, dummyyOffset in enumerate(yOffsets):
-                qNote = self._notes[drumIndex][noteTime]
-                qNote.setX(xOffset)
-                qNote.xSpacingChanged()
-            qCount = self._counts[noteTime]
-            qCount.setX(xOffset)
-            qCount.xSpacingChanged()
-        self._setWidth()
-
-    def ySpacingChanged(self):
-        yOffsets = self.scene().lineOffsets
-        countOffset = self.scene().kitSize * self._props.ySpacing
-        for noteTime in range(0, len(self._measure)):
-            for drumIndex, yOffset in enumerate(yOffsets):
-                qNote = self._notes[drumIndex][noteTime]
-                qNote.setY(yOffset)
-                qNote.ySpacingChanged()
-            qCount = self._counts[noteTime]
-            qCount.setY(countOffset)
-            qCount.ySpacingChanged()
-        self._setHeight()

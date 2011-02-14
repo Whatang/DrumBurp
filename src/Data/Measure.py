@@ -124,11 +124,14 @@ class Measure(object):
         return self.isLineBreak() or self.isSectionEnd()
 
     def getNote(self, position):
-        if not(0 <= position.noteTime < len(self)):
-            raise BadTimeError(position)
-        if (position.noteTime in self._notes and
-            position.drumIndex in self._notes[position.noteTime]):
-            return self._notes[position.noteTime][position.drumIndex]
+        return self.noteAt(position.noteTime, position.drumIndex)
+
+    def noteAt(self, noteTime, drumIndex):
+        if not(0 <= noteTime < len(self)):
+            raise BadTimeError(noteTime)
+        if (noteTime in self._notes and
+            drumIndex in self._notes[noteTime]):
+            return self._notes[noteTime][drumIndex]
         return EMPTY_NOTE
 
     def clear(self):

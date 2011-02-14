@@ -50,7 +50,6 @@ class QScore(QtGui.QGraphicsScene):
         self._qSections = []
         self._properties = parent.songProperties
         self._score = None
-        self._highlightedNote = None
         self._dirty = None
         self._ignoreNext = False
         self.measureClipboard = None
@@ -97,26 +96,6 @@ class QScore(QtGui.QGraphicsScene):
     def displayProperties(self):
         return self._properties
 
-    def _gethighlightedNote(self):
-        return self._highlightedNote
-    def _sethighlightedNote(self, np):
-        if self._highlightedNote != np:
-            self._clearHighlight()
-            self._makeHighlight(np)
-            self._highlightedNote = np
-    highlightedNote = property(fget = _gethighlightedNote,
-                               fset = _sethighlightedNote)
-
-    def _clearHighlight(self):
-        if self.highlightedNote != None:
-            qStaff = self._qStaffs[self.highlightedNote.staffIndex]
-            qStaff.setHighlight(self.highlightedNote, False)
-
-    def _makeHighlight(self, np):
-        if np != None:
-            qStaff = self._qStaffs[np.staffIndex]
-            qStaff.setHighlight(np, True)
-
     def _getdirty(self):
         return self._dirty
     def _setdirty(self, value):
@@ -131,7 +110,7 @@ class QScore(QtGui.QGraphicsScene):
 
     @_readOnly
     def lineOffsets(self):
-        yOffsets = [drumIndex * self._properties.ySpacing
+        yOffsets = [(drumIndex + 1) * self._properties.ySpacing
                     for drumIndex in range(0, self.kitSize)]
         yOffsets.reverse()
         return yOffsets
@@ -208,7 +187,7 @@ class QScore(QtGui.QGraphicsScene):
                     sectionIndex += 1
                     qSection.setPos(xMargins, yOffset)
                     yOffset += qSection.boundingRect().height()
-                    yOffset += lineSpacing
+#                    yOffset += lineSpacing
             newSection = qStaff.isSectionEnd()
             qStaff.setPos(xMargins, yOffset)
             qStaff.placeMeasures()
@@ -242,7 +221,7 @@ class QScore(QtGui.QGraphicsScene):
                     sectionIndex += 1
                     qSection.setPos(xMargins, yOffset)
                     yOffset += qSection.boundingRect().height()
-                    yOffset += lineSpacing
+#                    yOffset += lineSpacing
             newSection = qStaff.isSectionEnd()
             qStaff.setPos(xMargins, yOffset)
             qStaff.ySpacingChanged()
@@ -266,7 +245,7 @@ class QScore(QtGui.QGraphicsScene):
                     sectionIndex += 1
                     qSection.setPos(xMargins, yOffset)
                     yOffset += qSection.boundingRect().height()
-                    yOffset += lineSpacing
+#                    yOffset += lineSpacing
             newSection = qStaff.isSectionEnd()
             qStaff.setPos(xMargins, yOffset)
             yOffset += qStaff.height() + lineSpacing
@@ -292,12 +271,6 @@ class QScore(QtGui.QGraphicsScene):
             self._ignoreNext = False
         else:
             super(QScore, self).mousePressEvent(event)
-
-    def highlightNote(self, np, onOff = True):
-        if onOff:
-            self.highlightedNote = np
-        else:
-            self.highlightedNote = None
 
     def copyMeasure(self, np):
         self.measureClipboard = self._score.copyMeasure(np)
