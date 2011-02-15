@@ -78,6 +78,16 @@ class Score(object):
         staff, index = self._staffContainingMeasure(index)
         return staff[index]
 
+    def getItemAtPosition(self, position):
+        if position.staffIndex is None:
+            return self
+        if not (0 <= position.staffIndex < self.numStaffs()):
+            raise BadTimeError()
+        staff = self.getStaff(position.staffIndex)
+        if position.measureIndex is None:
+            return staff
+        return staff.getItemAtPosition(position)
+
     def getStaff(self, index):
         return self._staffs[index]
 
@@ -204,11 +214,11 @@ class Score(object):
         staff = self.getStaff(position.staffIndex)
         return staff.copyMeasure(position)
 
-    def pasteMeasure(self, position, notes):
+    def pasteMeasure(self, position, notes, copyMeasureDecorations = False):
         if not(0 <= position.staffIndex < self.numStaffs()):
             raise BadTimeError()
         staff = self.getStaff(position.staffIndex)
-        return staff.pasteMeasure(position, notes)
+        return staff.pasteMeasure(position, notes, copyMeasureDecorations)
 
     def setMeasureBeatCount(self, position, beats, counter):
         if not(0 <= position.staffIndex < self.numStaffs()):

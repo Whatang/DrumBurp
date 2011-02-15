@@ -9,9 +9,12 @@ from PyQt4 import QtGui, QtCore
 from Data.NotePosition import NotePosition
 from QInsertMeasuresDialog import QInsertMeasuresDialog
 from QEditMeasureDialog import QEditMeasureDialog
+from QRepeatDialog import QRepeatDialog
 from Data.TimeCounter import counterMaker
 from Data import DBConstants
-from DBCommands import ToggleNote
+from DBCommands import (ToggleNote, RepeatNoteCommand,
+                        InsertMeasuresCommand, SetRepeatCountCommand,
+                        EditMeasurePropertiesCommand)
 from QRepeatCountDialog import QRepeatCountDialog
 from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 import DBIcons
@@ -57,6 +60,7 @@ class QMeasure(QtGui.QGraphicsItem):
         self._height = 0
         self._highlight = None
         self._rect = QtCore.QRectF(0, 0, 0, 0)
+        self._repeatCountRect = None
         self._startClick = None
         self.setAcceptsHoverEvents(True)
         self.setMeasure(measure)
@@ -130,11 +134,19 @@ class QMeasure(QtGui.QGraphicsItem):
                                  self._props.xSpacing - 1,
                                  self._props.ySpacing - 1)
         if self._measure.isRepeatEnd() and self._measure.repeatCount > 2:
+            painter.setPen(self.scene().palette().text().color())
             repeatText = '%dx' % self._measure.repeatCount
             textWidth = QtGui.QFontMetrics(font).width(repeatText)
             textLocation = QtCore.QPointF(self.width() - textWidth,
                                           self._props.ySpacing)
             painter.drawText(textLocation, repeatText)
+            if self._repeatCountRect is None:
+                self._repeatCountRect = QtCore.QRectF(0, 0, 0, 0)
+            self._repeatCountRect.setSize(QtCore.QSizeF(textWidth,
+                                                        self._props.ySpacing))
+            self._repeatCountRect.setTopRight(QtCore.QPointF(self.width(), 0))
+        else:
+            self._repeatCountRect = None
 
 
     def dataChanged(self, notePosition):
@@ -153,18 +165,27 @@ class QMeasure(QtGui.QGraphicsItem):
         self._setDimensions()
         self.update()
 
-    def _countChanged(self):
-        self.update()
-
-    def _setRepeatCount(self, count):
-        self._measure.repeatCount = count
-        self.update()
+    def changeRepeatCount(self):
+        repDialog = QRepeatCountDialog(self._measure.repeatCount,
+                                       self.scene().parent())
+        if (repDialog.exec_()
+            and self._measure.repeatCount != repDialog.getValue()):
+            command = SetRepeatCountCommand(self.scene(),
+                                            self._measurePosition(),
+                                            self._measure.repeatCount,
+                                            repDialog.getValue())
+            self.scene().addCommand(command)
 
     def _isOverNotes(self, point):
-        return (1 <= (point.y() / self._props.ySpacing) < (1 + self.scene().kitSize))
+        return (1 <= (point.y() / self._props.ySpacing)
+                < (1 + self.scene().kitSize))
 
     def _isOverCount(self, point):
         return (point.y() / self._props.ySpacing) >= self.scene().kitSize
+
+    def _isOverRepeatCount(self, point):
+        return (self._repeatCountRect is not None
+                and self._repeatCountRect.contains(point))
 
     def _getNotePosition(self, point):
         x = self._getNoteTime(point)
@@ -186,6 +207,10 @@ class QMeasure(QtGui.QGraphicsItem):
             self._highlight = None
             self.parentItem().clearHighlight()
             self.update()
+        if self._isOverCount(point) or self._isOverRepeatCount(point):
+            self.setCursor(QtCore.Qt.PointingHandCursor)
+        else:
+            self.setCursor(QtCore.Qt.ArrowCursor)
 
     def hoverEnterEvent(self, event):
         self._hovering(event)
@@ -197,6 +222,7 @@ class QMeasure(QtGui.QGraphicsItem):
         self._highlight = None
         self.update()
         self.parentItem().clearHighlight()
+        self.setCursor(QtCore.Qt.ArrowCursor)
 
     def toggleNote(self, noteTime, drumIndex, head = None):
         notePosition = self._makeNotePosition(noteTime, drumIndex)
@@ -206,7 +232,14 @@ class QMeasure(QtGui.QGraphicsItem):
         self.scene().addCommand(command)
 
     def repeatNote(self, noteTime, drumIndex):
-        raise NotImplementedError()
+        np = self._makeNotePosition(noteTime, drumIndex)
+        head = self._measure.noteAt(noteTime, drumIndex)
+        repeatDialog = QRepeatDialog(self.scene().parent())
+        if repeatDialog.exec_():
+            nRepeats, repInterval = repeatDialog.getValues()
+            command = RepeatNoteCommand(self.scene(), np, nRepeats,
+                                        repInterval, head)
+            self.scene().addCommand(command)
 
     def mousePressEvent(self, event):
         point = self.mapFromScene(event.scenePos())
@@ -236,7 +269,8 @@ class QMeasure(QtGui.QGraphicsItem):
             menu.connect(repeatNoteAction,
                          QtCore.SIGNAL("triggered()"),
                          lambda : self.repeatNote(noteTime, drumIndex))
-            if self._measure.noteAt(noteTime, drumIndex) == DBConstants.EMPTY_NOTE:
+            if (self._measure.noteAt(noteTime, drumIndex)
+                == DBConstants.EMPTY_NOTE):
                 repeatNoteAction.setEnabled(False)
             menu.addSeparator()
             copyAction = menu.addAction(DBIcons.getIcon("copy"),
@@ -310,6 +344,25 @@ class QMeasure(QtGui.QGraphicsItem):
         else:
             event.ignore()
 
+    def mouseDoubleClickEvent(self, event):
+        point = self.mapFromScene(event.scenePos())
+        if self._isOverCount(point):
+            self.editMeasureProperties()
+        elif self._isOverRepeatCount(point):
+            self.changeRepeatCount()
+        else:
+            event.ignore()
+
+    def _makeNotePosition(self, noteTime, drumIndex):
+        np = NotePosition(measureIndex = self._index,
+                          noteTime = noteTime,
+                          drumIndex = drumIndex)
+        return self.parentItem().augmentNotePosition(np)
+
+    def _measurePosition(self):
+        np = NotePosition(measureIndex = self._index)
+        return self.parentItem().augmentNotePosition(np)
+
     def deleteStaff(self):
         raise NotImplementedError()
 
@@ -319,22 +372,13 @@ class QMeasure(QtGui.QGraphicsItem):
     def deleteEmptyMeasures(self):
         raise NotImplementedError()
 
-    def _makeNotePosition(self, noteTime, drumIndex):
-        np = NotePosition(measureIndex = self._index, noteTime = noteTime, drumIndex = drumIndex)
-        return self.parentItem().augmentNotePosition(np)
-
-    def _measurePosition(self):
-        return self.parentItem().augmentNotePosition(NotePosition(measureIndex = self._index))
-
     def _insertMeasure(self, np):
-        qScore = self.scene()
         counter = self._props.beatCounter
-        width = (self._props.beatsPerMeasure *
-                 counter.beatLength)
-        qScore.score.insertMeasureByPosition(width, np,
-                                             counter = counter)
-        qScore.reBuild()
-        qScore.dirty = True
+        command = InsertMeasuresCommand(self.scene(), np, 1,
+                                        self._props.beatsPerMeasure *
+                                        counter.beatLength,
+                                        counter)
+        self.scene().addCommand(command)
 
     def insertMeasureBefore(self):
         self._insertMeasure(self._measurePosition())
@@ -357,14 +401,12 @@ class QMeasure(QtGui.QGraphicsItem):
             measureWidth = beats * counter.beatLength
             if not insertBefore:
                 np.measureIndex += 1
-            score = self.scene().score
-            for dummyMeasureIndex in range(nMeasures):
-                score.insertMeasureByPosition(measureWidth, np,
-                                              counter = counter)
-            self.scene().reBuild()
-            self.scene().dirty = True
+            command = InsertMeasuresCommand(self.scene(), np, nMeasures,
+                                            measureWidth, counter)
+            self.scene().addCommand(command)
 
     def deleteMeasure(self):
+        raise NotImplementedError()
         score = self.scene().score
         if score.numMeasures() == 1:
             QtGui.QMessageBox.warning(self.parent(),
@@ -401,19 +443,16 @@ class QMeasure(QtGui.QGraphicsItem):
             beats, newCounter = editDialog.getValues()
             newCounter = counterMaker(newCounter)
             newTicks = newCounter.beatLength * beats
-            score = self.scene().score
             if (newCounter != counter
                 or newTicks != numTicks):
-                score.setMeasureBeatCount(self._measurePosition(),
-                                          beats, newCounter)
-                self.scene().dirty = True
-                if newTicks != numTicks:
-                    self.scene().reBuild()
-                else:
-                    self._countChanged()
+                command = EditMeasurePropertiesCommand(self.scene(),
+                                                       self._measurePosition(),
+                                                       beats,
+                                                       newCounter)
+                self.scene().addCommand(command)
 
-    def changeRepeatCount(self):
-        repDialog = QRepeatCountDialog(self._measure.repeatCount,
-                                       self.scene().parent())
-        if repDialog.exec_():
-            self._setRepeatCount(repDialog.getValue())
+    def _copySection(self, sectionIndex):
+        raise NotImplementedError()
+        self._score().insertSectionCopy(self._getNotePosition(),
+                                        sectionIndex)
+        self.scene().reBuild()

@@ -8,6 +8,8 @@ Created on 5 Jan 2011
 from PyQt4 import QtGui, QtCore
 from Data.NotePosition import NotePosition
 from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
+from DBCommands import (SetSectionEndCommand, SetLineBreakCommand,
+                        SetRepeatStartCommand, SetRepeatEndCommand)
 
 class QMeasureLine(QtGui.QGraphicsItem):
     '''
@@ -77,28 +79,28 @@ class QMeasureLine(QtGui.QGraphicsItem):
         return self._qStaff.augmentNotePosition(np)
 
     def _setSectionEnd(self, onOff):
-        self.scene().score.setSectionEnd(self._getEndNotePosition(), onOff)
-        self.scene().dirty = True
-        self.scene().reBuild()
-        self._setPainter()
+        command = SetSectionEndCommand(self.scene(),
+                                       self._getEndNotePosition(),
+                                       onOff)
+        self.scene().addCommand(command)
 
     def _setLineBreak(self, onOff):
-        self.scene().score.setLineBreak(self._getEndNotePosition(), onOff)
-        self.scene().dirty = True
-        self.scene().reBuild()
-        self._setPainter()
+        command = SetLineBreakCommand(self.scene(),
+                                      self._getEndNotePosition(),
+                                      onOff)
+        self.scene().addCommand(command)
 
     def _setRepeatEnd(self, onOff):
-        self.scene().score.setRepeatEnd(self._getEndNotePosition(), onOff)
-        self.scene().dirty = True
-        self._setPainter()
-        self.update()
+        command = SetRepeatEndCommand(self.scene(),
+                                      self._getEndNotePosition(),
+                                      onOff)
+        self.scene().addCommand(command)
 
     def _setRepeatStart(self, onOff):
-        self.scene().score.setRepeatStart(self._getStartNotePosition(), onOff)
-        self.scene().dirty = True
-        self._setPainter()
-        self.update()
+        command = SetRepeatStartCommand(self.scene(),
+                                        self._getStartNotePosition(),
+                                        onOff)
+        self.scene().addCommand(command)
 
     def _setRepeatCount(self):
         self.scene().changeRepeatCount(self._getEndNotePosition())

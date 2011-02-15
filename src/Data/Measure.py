@@ -45,10 +45,12 @@ class Measure(object):
     def _getrepeatCount(self):
         return self._repeatCount
     def _setrepeatCount(self, value):
-        if self.isRepeatEnd():
-            self._repeatCount = max(value, 2)
-        else:
-            self._repeatCount = 1
+        if value != self._repeatCount:
+            if self.isRepeatEnd():
+                self._repeatCount = max(value, 2)
+            else:
+                self._repeatCount = 1
+            self._runCallBack(NotePosition())
     repeatCount = property(fget = _getrepeatCount,
                          fset = _setrepeatCount)
 

@@ -90,10 +90,10 @@ class Staff(object):
             raise BadTimeError(position)
         return self[position.measureIndex].copyMeasure()
 
-    def pasteMeasure(self, position, notes):
+    def pasteMeasure(self, position, notes, copyMeasureDecorations = False):
         if not (0 <= position.measureIndex <= self.numMeasures()):
             raise BadTimeError(position)
-        return self[position.measureIndex].pasteMeasure(notes)
+        return self[position.measureIndex].pasteMeasure(notes, copyMeasureDecorations)
 
     def setMeasureBeatCount(self, position, beats, counter):
         if not (0 <= position.measureIndex <= self.numMeasures()):
@@ -147,6 +147,14 @@ class Staff(object):
         if not (0 <= position.measureIndex < self.numMeasures()):
             raise BadTimeError(position)
         return self[position.measureIndex].getNote(position)
+
+    def getItemAtPosition(self, position):
+        if not (0 <= position.measureIndex < self.numMeasures()):
+            raise BadTimeError(position)
+        measure = self[position.measureIndex]
+        if position.noteTime is None:
+            return measure
+        return measure.getNote(position)
 
     def addNote(self, position, head):
         if not (0 <= position.measureIndex < self.numMeasures()):
