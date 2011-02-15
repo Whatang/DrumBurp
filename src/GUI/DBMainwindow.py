@@ -56,6 +56,16 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         font = self.scoreScene.font()
         self.fontComboBox.setCurrentFont(font)
         self.connect(self.scoreScene, SIGNAL("dirty"), self.setWindowModified)
+        self.actionUndo.setEnabled(False)
+        self.connect(self.scoreScene, SIGNAL("canUndoChanged"),
+                     self.actionUndo.setEnabled)
+        self.connect(self.scoreScene, SIGNAL("undoTextChanged"),
+                     lambda newText: self.actionUndo.setText(newText))
+        self.connect(self.scoreScene, SIGNAL("canRedoChanged"),
+                     self.actionRedo.setEnabled)
+        self.connect(self.scoreScene, SIGNAL("redoTextChanged"),
+                     lambda newText: self.actionRedo.setText(newText))
+        self.actionRedo.setEnabled(False)
         beatsChanged = self.songProperties.measureBeatsChanged
         self.connect(self.beatsSpinBox, SIGNAL("valueChanged(int)"),
                                                beatsChanged)

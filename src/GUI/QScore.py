@@ -53,6 +53,20 @@ class QScore(QtGui.QGraphicsScene):
         self._ignoreNext = False
         self.measureClipboard = None
         self._undoStack = QtGui.QUndoStack(self)
+        self.connect(self._undoStack, QtCore.SIGNAL("canUndoChanged(bool)"),
+                     lambda canUndo : self.emit(QtCore.SIGNAL("canUndoChanged"),
+                                                canUndo))
+        self.connect(self._undoStack, QtCore.SIGNAL("canRedoChanged(bool)"),
+                     lambda canRedo : self.emit(QtCore.SIGNAL("canRedoChanged"),
+                                                canRedo))
+        self.connect(self._undoStack,
+                     QtCore.SIGNAL("redoTextChanged(const QString&)"),
+                     lambda newText: self.emit(QtCore.SIGNAL("redoTextChanged"),
+                                               "Redo " + newText))
+        self.connect(self._undoStack,
+                     QtCore.SIGNAL("undoTextChanged(const QString&)"),
+                     lambda newText: self.emit(QtCore.SIGNAL("undoTextChanged"),
+                                               "Undo " + newText))
         if parent.filename is not None:
             if not self.loadScore(parent.filename):
                 parent.filename = None
