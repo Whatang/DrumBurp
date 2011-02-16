@@ -390,10 +390,12 @@ class QMeasure(QtGui.QGraphicsItem):
             staff = score.getStaff(np.staffIndex)
             while True:
                 arguments.extend([(NotePosition(staffIndex = startIndex,
-                                                measureIndex = 0),)] * staff.numMeasures())
+                                                measureIndex = 0),)]
+                                 * staff.numMeasures())
                 if staff.isSectionEnd():
                     break
-                np = NotePosition(staffIndex = np.staffIndex + 1, measureIndex = 0)
+                np = NotePosition(staffIndex = np.staffIndex + 1,
+                                  measureIndex = 0)
                 staff = score.getStaff(np.staffIndex)
             self.scene().addRepeatedCommand("Delete Section: " + sectionName,
                                             DeleteMeasureCommand, arguments)
@@ -448,7 +450,8 @@ class QMeasure(QtGui.QGraphicsItem):
                                            QtGui.QMessageBox.Ok,
                                            QtGui.QMessageBox.Cancel)
         if yesNo == QtGui.QMessageBox.Ok:
-            command = DeleteMeasureCommand(self.scene(), self._measurePosition())
+            command = DeleteMeasureCommand(self.scene(),
+                                           self._measurePosition())
             self.scene().addCommand(command)
 
     def copyMeasure(self):
@@ -480,6 +483,7 @@ class QMeasure(QtGui.QGraphicsItem):
                 self.scene().addCommand(command)
 
     def _copySection(self, sectionIndex, point):
+        #TODO
         raise NotImplementedError()
         self.scene().score.insertSectionCopy(self._getNotePosition(point),
                                              sectionIndex)
