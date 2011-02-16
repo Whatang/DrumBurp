@@ -111,42 +111,39 @@ class QMeasureLine(QtGui.QGraphicsItem):
             menu = QMenuIgnoreCancelClick(self.scene())
             # Repeat Start
             if self._nextMeasure is not None:
-                repeatStartAction = QtGui.QAction("Repeat Start", menu)
+                onOff = self._nextMeasure.isRepeatStart()
+                setIt = lambda v = onOff : self._setRepeatStart(not v)
+                repeatStartAction = menu.addAction("Repeat Start",
+                                                   setIt)
                 repeatStartAction.setCheckable(True)
-                repeatStartAction.setChecked(self._nextMeasure.isRepeatStart())
-                menu.connect(repeatStartAction, QtCore.SIGNAL("toggled(bool)"),
-                             self._setRepeatStart)
-                menu.addAction(repeatStartAction)
+                repeatStartAction.setChecked(onOff)
             if self._lastMeasure is not None:
                 # Repeat End
-                repeatEndAction = QtGui.QAction("Repeat End", menu)
+                onOff = self._lastMeasure.isRepeatEnd()
+                setIt = lambda v = onOff:self._setRepeatEnd(not v)
+                repeatEndAction = menu.addAction("Repeat End",
+                                                 setIt)
                 repeatEndAction.setCheckable(True)
-                repeatEndAction.setChecked(self._lastMeasure.isRepeatEnd())
-                menu.connect(repeatEndAction, QtCore.SIGNAL("toggled(bool)"),
-                             self._setRepeatEnd)
-                menu.addAction(repeatEndAction)
+                repeatEndAction.setChecked(onOff)
                 # Section Ending
-                sectionEndAction = QtGui.QAction("Section End", menu)
+                onOff = self._lastMeasure.isSectionEnd()
+                setIt = lambda v = onOff:self._setSectionEnd(not v)
+                sectionEndAction = menu.addAction("Section End",
+                                                  setIt)
                 sectionEndAction.setCheckable(True)
-                sectionEndAction.setChecked(self._lastMeasure.isSectionEnd())
-                menu.connect(sectionEndAction, QtCore.SIGNAL("toggled(bool)"),
-                            self._setSectionEnd)
-                menu.addAction(sectionEndAction)
+                sectionEndAction.setChecked(onOff)
                 # Line break
-                lineBreakAction = QtGui.QAction("Line Break", menu)
+                onOff = self._lastMeasure.isLineBreak()
+                setIt = lambda v = onOff:self._setLineBreak(not v)
+                lineBreakAction = menu.addAction("Line Break",
+                                                 setIt)
                 lineBreakAction.setCheckable(True)
-                lineBreakAction.setChecked(self._lastMeasure.isLineBreak())
-                menu.connect(lineBreakAction, QtCore.SIGNAL("toggled(bool)"),
-                            self._setLineBreak)
-                menu.addAction(lineBreakAction)
+                lineBreakAction.setChecked(onOff)
                 menu.addSeparator()
                 # Repeat count
-                repeatCountAction = QtGui.QAction("Set repeat count", menu)
+                repeatCountAction = menu.addAction("Set repeat count",
+                                                   self._setRepeatCount)
                 repeatCountAction.setEnabled(self._lastMeasure.isRepeatEnd())
-                menu.connect(repeatCountAction, QtCore.SIGNAL("triggered()"),
-                             self._setRepeatCount)
-                menu.addAction(repeatCountAction)
-
             menu.exec_(event.screenPos())
         else:
             pass

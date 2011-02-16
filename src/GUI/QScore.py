@@ -53,20 +53,10 @@ class QScore(QtGui.QGraphicsScene):
         self._ignoreNext = False
         self.measureClipboard = None
         self._undoStack = QtGui.QUndoStack(self)
-        self.connect(self._undoStack, QtCore.SIGNAL("canUndoChanged(bool)"),
-                     lambda canUndo : self.emit(QtCore.SIGNAL("canUndoChanged"),
-                                                canUndo))
-        self.connect(self._undoStack, QtCore.SIGNAL("canRedoChanged(bool)"),
-                     lambda canRedo : self.emit(QtCore.SIGNAL("canRedoChanged"),
-                                                canRedo))
-        self.connect(self._undoStack,
-                     QtCore.SIGNAL("redoTextChanged(const QString&)"),
-                     lambda newText: self.emit(QtCore.SIGNAL("redoTextChanged"),
-                                               "Redo " + newText))
-        self.connect(self._undoStack,
-                     QtCore.SIGNAL("undoTextChanged(const QString&)"),
-                     lambda newText: self.emit(QtCore.SIGNAL("undoTextChanged"),
-                                               "Undo " + newText))
+        self._undoStack.canUndoChanged.connect(self.canUndoChanged)
+        self._undoStack.undoTextChanged.connect(self.undoTextChanged)
+        self._undoStack.canRedoChanged.connect(self.canRedoChanged)
+        self._undoStack.redoTextChanged.connect(self.redoTextChanged)
         if parent.filename is not None:
             if not self.loadScore(parent.filename):
                 parent.filename = None
@@ -75,9 +65,20 @@ class QScore(QtGui.QGraphicsScene):
             self.newScore()
         self._properties.connectScore(self)
 
+    canUndoChanged = QtCore.pyqtSignal(bool)
+    canRedoChanged = QtCore.pyqtSignal(bool)
+    undoTextChanged = QtCore.pyqtSignal(str)
+    redoTextChanged = QtCore.pyqtSignal(str)
+
     def addCommand(self, command):
         self._undoStack.push(command)
         self.dirty = not self._undoStack.isClean()
+
+    def addRepeatedCommand(self, name, command, arguments):
+        self._undoStack.beginMacro(name)
+        for args in arguments:
+            self.addCommand(command(self, *args))
+        self._undoStack.endMacro()
 
     def undo(self):
         self._undoStack.undo()
@@ -123,8 +124,9 @@ class QScore(QtGui.QGraphicsScene):
     def _setdirty(self, value):
         if self._dirty != value:
             self._dirty = value
-            self.emit(QtCore.SIGNAL("dirty"), self._dirty)
+            self.dirtySignal.emit(self._dirty)
     dirty = property(fget = _getdirty, fset = _setdirty)
+    dirtySignal = QtCore.pyqtSignal(bool)
 
     @_readOnly
     def kitSize(self):

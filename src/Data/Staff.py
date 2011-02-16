@@ -93,7 +93,8 @@ class Staff(object):
     def pasteMeasure(self, position, notes, copyMeasureDecorations = False):
         if not (0 <= position.measureIndex <= self.numMeasures()):
             raise BadTimeError(position)
-        return self[position.measureIndex].pasteMeasure(notes, copyMeasureDecorations)
+        return self[position.measureIndex].pasteMeasure(notes,
+                                                        copyMeasureDecorations)
 
     def setMeasureBeatCount(self, position, beats, counter):
         if not (0 <= position.measureIndex <= self.numMeasures()):
@@ -106,7 +107,7 @@ class Staff(object):
         self._measures[position.measureIndex].setSectionEnd(onOff)
 
     def isSectionEnd(self):
-        return self[-1].isSectionEnd()
+        return self.numMeasures() > 0 and self[-1].isSectionEnd()
 
     def isConsistent(self):
         ok = True
@@ -237,7 +238,8 @@ class Staff(object):
                 isRepeating = False
                 repeatCount = "%dx" % measure.repeatCount
                 repeatCountLength = len(repeatCount)
-                repeatString = repeatString[:-(repeatCountLength + 1)] + repeatCount + repeatString[-1:]
+                repeatString = (repeatString[:-(repeatCountLength + 1)]
+                                + repeatCount + repeatString[-1:])
             lastMeasure = measure
 
         staffString = [repeatString]

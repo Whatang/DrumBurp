@@ -5,7 +5,7 @@ Created on 8 Jan 2011
 '''
 
 from Data.TimeCounter import getCounters, counterMaker, TimeCounter
-from PyQt4.QtCore import QObject, SIGNAL
+from PyQt4.QtCore import QObject, pyqtSignal
 
 class Null(object):
     def __init__(self, *args, **kwargs):
@@ -73,15 +73,16 @@ class QDisplayProperties(QObject):
         self.beatsPerMeasure = 4
         self._beatCounter = getCounters()[0][1]
 
+    xSpacingChanged = pyqtSignal()
+    ySpacingChanged = pyqtSignal()
+    lineSpacingChanged = pyqtSignal()
+    fontChanged = pyqtSignal()
+
     def connectScore(self, score):
-        self.connect(self, SIGNAL("xSpacingChanged"),
-                     score.xSpacingChanged)
-        self.connect(self, SIGNAL("ySpacingChanged"),
-                     score.ySpacingChanged)
-        self.connect(self, SIGNAL("lineSpacingChanged"),
-                     score.lineSpacingChanged)
-        self.connect(self, SIGNAL("fontChanged"),
-                     score.update)
+        self.xSpacingChanged.connect(score.xSpacingChanged)
+        self.ySpacingChanged.connect(score.ySpacingChanged)
+        self.lineSpacingChanged.connect(score.lineSpacingChanged)
+        self.fontChanged.connect(score.update)
 
     def _getxSpacing(self):
         return self._xSpacing
@@ -92,7 +93,7 @@ class QDisplayProperties(QObject):
                         ((value / 100.0) * self.NOTE_WIDTH_RANGE))
         if self._xSpacing != value:
             self._xSpacing = value
-            self.emit(SIGNAL("xSpacingChanged"))
+            self.xSpacingChanged.emit()
     xSpacing = property(fget = _getxSpacing, fset = _setxSpacing)
 
     def _getySpacing(self):
@@ -104,7 +105,7 @@ class QDisplayProperties(QObject):
                         ((value / 100.0) * self.NOTE_HEIGHT_RANGE))
         if self._ySpacing != value:
             self._ySpacing = value
-            self.emit(SIGNAL("ySpacingChanged"))
+            self.ySpacingChanged.emit()
     ySpacing = property(fget = _getySpacing, fset = _setySpacing)
 
     def _getlineSpacing(self):
@@ -116,7 +117,7 @@ class QDisplayProperties(QObject):
                         ((value / 100.0) * self.LINE_SPACE_RANGE))
         if self._lineSpacing != value:
             self._lineSpacing = value
-            self.emit(SIGNAL("lineSpacingChanged"))
+            self.lineSpacingChanged.emit()
     lineSpacing = property(fget = _getlineSpacing, fset = _setlineSpacing)
 
     def _getxMargins(self):
@@ -138,7 +139,7 @@ class QDisplayProperties(QObject):
     def _setnoteFont(self, value):
         if self._noteFont != value:
             self._noteFont = value
-            self.emit(SIGNAL("fontChanged"))
+            self.fontChanged.emit()
     noteFont = property(fget = _getnoteFont, fset = _setnoteFont)
 
     def _gethead(self):

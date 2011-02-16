@@ -116,7 +116,8 @@ class Score(object):
             else:
                 prevStaff = self.getStaff(index - 1)
                 position = NotePosition(staffIndex = index - 1,
-                                        measureIndex = prevStaff.numMeasures() - 1)
+                                        measureIndex =
+                                        prevStaff.numMeasures() - 1)
                 prevStaff.setSectionEnd(position, True)
         self._staffs.pop(index)
         for offset, nextStaff in enumerate(self._staffs[index:]):
@@ -246,6 +247,13 @@ class Score(object):
 
     def deleteSectionTitle(self, index):
         self._sections.pop(index)
+
+    def getSectionStartStaffIndex(self, position):
+        startIndex = position.staffIndex
+        while (startIndex > 0 and
+               not self.getStaff(startIndex - 1).isSectionEnd()):
+            startIndex -= 1
+        return startIndex
 
     def deleteSection(self, position):
         sectionIndex = self.getSectionIndex(position)
@@ -503,7 +511,8 @@ class Score(object):
             kitString.append(instr.exportASCII())
         kitString.reverse()
         kitString.append("")
-        print >> handle, "Tabbed with DrumBurp, a drum tab editor from www.whatang.org"
+        print >> handle, ("Tabbed with DrumBurp, "
+                          "a drum tab editor from www.whatang.org")
         if settings.metadata:
             handle.writelines(mString + os.linesep
                               for mString in metadataString)

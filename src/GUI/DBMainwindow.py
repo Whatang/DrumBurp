@@ -9,7 +9,7 @@ from ui_drumburp import Ui_DrumBurpWindow
 from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QFileDialog, QMessageBox,
                          QPrintPreviewDialog, QWhatsThis)
-from PyQt4.QtCore import QTimer, pyqtSignature, SIGNAL, QSettings, QVariant
+from PyQt4.QtCore import QTimer, pyqtSignature, QSettings, QVariant
 from QScore import QScore
 from QDisplayProperties import QDisplayProperties
 from QNewScoreDialog import QNewScoreDialog
@@ -55,20 +55,17 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                                        self.songProperties.beatCounter)
         font = self.scoreScene.font()
         self.fontComboBox.setCurrentFont(font)
-        self.connect(self.scoreScene, SIGNAL("dirty"), self.setWindowModified)
+        self.scoreScene.dirtySignal.connect(self.setWindowModified)
         self.actionUndo.setEnabled(False)
-        self.connect(self.scoreScene, SIGNAL("canUndoChanged"),
-                     self.actionUndo.setEnabled)
-        self.connect(self.scoreScene, SIGNAL("undoTextChanged"),
-                     lambda newText: self.actionUndo.setText(newText))
-        self.connect(self.scoreScene, SIGNAL("canRedoChanged"),
-                     self.actionRedo.setEnabled)
-        self.connect(self.scoreScene, SIGNAL("redoTextChanged"),
-                     lambda newText: self.actionRedo.setText(newText))
         self.actionRedo.setEnabled(False)
+        self.scoreScene.canUndoChanged.connect(self.actionUndo.setEnabled)
+        changeUndoText = lambda txt:self.actionUndo.setText("Undo " + txt)
+        self.scoreScene.undoTextChanged.connect(changeUndoText)
+        self.scoreScene.canRedoChanged.connect(self.actionRedo.setEnabled)
+        changeRedoText = lambda txt:self.actionRedo.setText("Redo " + txt)
+        self.scoreScene.redoTextChanged.connect(changeRedoText)
         beatsChanged = self.songProperties.measureBeatsChanged
-        self.connect(self.beatsSpinBox, SIGNAL("valueChanged(int)"),
-                                               beatsChanged)
+        self.beatsSpinBox.valueChanged.connect(beatsChanged)
         self.updateStatus("Welcome to %s" % APPNAME)
         self.restoreGeometry(settings.value("Geometry").toByteArray())
         self.restoreState(settings.value("MainWindow/State").toByteArray())
@@ -226,7 +223,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.menuRecentScores.clear()
         for fname in self.recentFiles:
             if fname != self.filename and os.path.exists(fname):
-                def openRecentFile(filename = fname):
+                def openRecentFile(bool_, filename = fname):
                     if not self.okToContinue():
                         return
                     if self.scoreScene.loadScore(filename):
@@ -236,8 +233,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                         self.updateRecentFiles()
                 action = self.menuRecentScores.addAction(fname)
                 action.setIcon(DBIcons.getIcon("score"))
-                self.connect(action, SIGNAL("triggered()"),
-                             openRecentFile)
+                action.triggered.connect(openRecentFile)
 
     @pyqtSignature("int")
     def on_beatCountComboBox_currentIndexChanged(self, index):
@@ -296,8 +292,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     @pyqtSignature("")
     def on_actionPrint_triggered(self):
         dialog = QPrintPreviewDialog(self)
-        self.connect(dialog, SIGNAL("paintRequested(QPrinter *)"),
-                     self.scoreScene.printScore)
+        dialog.paintRequested.connect(self.scoreScene.printScore)
         dialog.exec_()
 
     @pyqtSignature("")

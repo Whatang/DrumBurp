@@ -220,3 +220,29 @@ class SetRepeatEndCommand(SetMeasureLineCommand):
                                                   "Set Repeat End",
                                                   np, onOff,
                                                   Score.setRepeatEnd)
+
+class DeleteMeasureCommand(ScoreCommand):
+    def __init__(self, qScore, np):
+        super(DeleteMeasureCommand, self).__init__(qScore, "Delete Measure")
+        self._np = np
+        self._oldMeasure = self._score.copyMeasure(np)
+        self._sectionIndex = None
+        self._sectionTitle = None
+        if self._oldMeasure.isSectionEnd():
+            self._sectionIndex = self._score.getSectionIndex(np)
+            self._sectionTitle = self._score.getSectionTitle(self._sectionIndex)
+
+    def redo(self):
+        self._score.deleteMeasureByPosition(self._np)
+        self._score.gridFormatScore(None)
+        self._qScore.reBuild()
+
+    def undo(self):
+        self._score.insertMeasureByPosition(1, self._np)
+        if self._sectionIndex is not None:
+            self._score.setSectionEnd(self._np, True)
+            self._score.setSectionTitle(self._sectionIndex,
+                                        self._sectionTitle)
+        self._score.pasteMeasure(self._np, self._oldMeasure, True)
+        self._score.gridFormatScore(None)
+        self._qScore.reBuild()

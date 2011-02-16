@@ -8,7 +8,7 @@ from PyQt4.QtGui import (QDialog, QTableWidgetItem, QCheckBox,
                          QHBoxLayout, QFrame, QHeaderView,
                          QComboBox, QMessageBox)
 from ui_editKit import Ui_editKitDialog
-from PyQt4.QtCore import pyqtSignature, Qt, QVariant, SIGNAL
+from PyQt4.QtCore import pyqtSignature, Qt, QVariant
 from Data.DrumKit import DrumKit
 from Data.Drum import Drum
 
@@ -33,9 +33,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         header.setResizeMode(4, QHeaderView.ResizeToContents)
         self._populate()
         self.kitTable.selectRow(0)
-        self.connect(self.kitTable,
-                     SIGNAL("itemChanged(QTableWidgetItem *)"),
-                     self._checkItem)
+        self.kitTable.itemChanged.connect(self._checkItem)
 
     def _populate(self):
         self.kitTable.setRowCount(len(self._kit))
@@ -65,16 +63,13 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         def focusOnRow(dummy = None):
             self.kitTable.selectRow(self.kitTable.currentRow())
             self.kitTable.setFocus()
-        self.connect(check, SIGNAL("clicked()"),
-                     focusOnRow)
-        self.connect(combo, SIGNAL("activated(int)"),
-                     focusOnRow)
+        check.clicked.connect(focusOnRow)
+        combo.activated.connect(focusOnRow)
         def callExclusive(newValue):
             qv = combo.itemData(newValue)
             newValue = qv.toInt()[0]
             self._exclusiveCombos(self.kitTable.currentRow(), newValue)
-        self.connect(combo, SIGNAL("currentIndexChanged(int)"),
-                     callExclusive)
+        combo.currentIndexChanged.connect(callExclusive)
         self.kitTable.setCellWidget(row, 4, combo)
         return name
 

@@ -14,7 +14,8 @@ from Data.TimeCounter import counterMaker
 from Data import DBConstants
 from DBCommands import (ToggleNote, RepeatNoteCommand,
                         InsertMeasuresCommand, SetRepeatCountCommand,
-                        EditMeasurePropertiesCommand)
+                        EditMeasurePropertiesCommand,
+                        DeleteMeasureCommand)
 from QRepeatCountDialog import QRepeatCountDialog
 from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 import DBIcons
@@ -256,76 +257,56 @@ class QMeasure(QtGui.QGraphicsItem):
             event.ignore()
             menu = QMenuIgnoreCancelClick(self.scene())
             for noteHead in self._props.allowedNoteHeads():
-                action = menu.addAction(noteHead)
                 def noteAction(nh = noteHead):
                     self.toggleNote(noteTime, drumIndex, nh)
-                menu.connect(action, QtCore.SIGNAL("triggered()"), noteAction)
+                menu.addAction(noteHead, noteAction)
         elif event.button() == QtCore.Qt.RightButton:
             event.ignore()
             menu = QMenuIgnoreCancelClick(self.scene())
             actionText = "Repeat note"
+            repNote = lambda:self.repeatNote(noteTime, drumIndex)
             repeatNoteAction = menu.addAction(DBIcons.getIcon("repeat"),
-                                              actionText)
-            menu.connect(repeatNoteAction,
-                         QtCore.SIGNAL("triggered()"),
-                         lambda : self.repeatNote(noteTime, drumIndex))
+                                              actionText, repNote)
             if (self._measure.noteAt(noteTime, drumIndex)
                 == DBConstants.EMPTY_NOTE):
                 repeatNoteAction.setEnabled(False)
             menu.addSeparator()
-            copyAction = menu.addAction(DBIcons.getIcon("copy"),
-                                        "Copy Measure")
-            menu.connect(copyAction,
-                         QtCore.SIGNAL("triggered()"),
-                         self.copyMeasure)
+            menu.addAction(DBIcons.getIcon("copy"),
+                           "Copy Measure",
+                           self.copyMeasure)
             pasteAction = menu.addAction(DBIcons.getIcon("paste"),
-                                         "Paste Measure")
-            menu.connect(pasteAction,
-                         QtCore.SIGNAL("triggered()"),
-                         self.pasteMeasure)
+                                         "Paste Measure",
+                                         self.pasteMeasure)
             if self.scene().measureClipboard is None:
                 pasteAction.setEnabled(False)
             menu.addSeparator()
             actionText = "Insert Default Measure"
-            insertDefaultMeasureAction = menu.addAction(actionText)
-            menu.connect(insertDefaultMeasureAction,
-                         QtCore.SIGNAL("triggered()"),
-                         self.insertMeasureBefore)
+            menu.addAction(actionText,
+                           self.insertMeasureBefore)
             insertMenu = menu.addMenu("Insert...")
-            insertAfterAction = insertMenu.addAction("Default Measure After")
-            insertMenu.connect(insertAfterAction,
-                               QtCore.SIGNAL("triggered()"),
-                               self.insertMeasureAfter)
-            insertOtherMeasures = insertMenu.addAction("Other Measures")
-            insertMenu.connect(insertOtherMeasures,
-                               QtCore.SIGNAL("triggered()"),
-                               self.insertOtherMeasures)
+            insertMenu.addAction("Default Measure After",
+                                 self.insertMeasureAfter)
+            insertMenu.addAction("Other Measures", self.insertOtherMeasures)
             sectionCopyMenu = insertMenu.addMenu("Section Copy")
             sectionCopyMenu.setEnabled(score.numSections() > 0)
-            for sectionIndex, sectionTitle in enumerate(score.iterSections()):
-                sectionCopyAction = sectionCopyMenu.addAction(sectionTitle)
-                copyIt = lambda si = sectionIndex: self._copySection(si)
-                sectionCopyMenu.connect(sectionCopyAction,
-                                        QtCore.SIGNAL("triggered()"),
-                                        copyIt)
+            for si, sectionTitle in enumerate(score.iterSections()):
+                copyIt = lambda i = si: self._copySection(i,
+                                                          (noteTime,
+                                                           drumIndex))
+                sectionCopyMenu.addAction(sectionTitle, copyIt)
             menu.addSeparator()
             deleteAction = menu.addAction(DBIcons.getIcon("delete"),
-                                          "Delete Measure")
+                                          "Delete Measure",
+                                          self.deleteMeasure)
             deleteAction.setEnabled(score.numMeasures() > 1)
-            menu.connect(deleteAction, QtCore.SIGNAL("triggered()"),
-                         self.deleteMeasure)
             deleteMenu = menu.addMenu("Delete...")
-            deleteStaffAction = deleteMenu.addAction("Staff")
+            deleteStaffAction = deleteMenu.addAction("Staff", self.deleteStaff)
             deleteStaffAction.setEnabled(score.numStaffs() > 1)
-            menu.connect(deleteStaffAction, QtCore.SIGNAL("triggered()"),
-                         self.deleteStaff)
-            deleteSectionAction = deleteMenu.addAction("Section")
+            deleteSectionAction = deleteMenu.addAction("Section",
+                                                       self.deleteSection)
             deleteSectionAction.setEnabled(score.numSections() > 1)
-            menu.connect(deleteSectionAction, QtCore.SIGNAL("triggered()"),
-                         self.deleteSection)
-            deleteEmptyAction = deleteMenu.addAction("Empty Trailing Measures")
-            menu.connect(deleteEmptyAction, QtCore.SIGNAL("triggered()"),
-                         self.deleteEmptyMeasures)
+            deleteEmptyAction = deleteMenu.addAction("Empty Trailing Measures",
+                                                     self.deleteEmptyMeasures)
             deleteEmptyAction.setEnabled(score.numMeasures() > 1)
         else:
             self._startClick = (noteTime, drumIndex)
@@ -364,12 +345,61 @@ class QMeasure(QtGui.QGraphicsItem):
         return self.parentItem().augmentNotePosition(np)
 
     def deleteStaff(self):
-        raise NotImplementedError()
+        score = self.scene().score
+        if score.numStaffs() == 1:
+            QtGui.QMessageBox.warning(self.parent(),
+                                      "Invalid delete",
+                                      "Cannot delete last staff.")
+            return
+        msg = "Really delete this staff?"
+        yesNo = QtGui.QMessageBox.question(self.scene().parent(),
+                                           "Delete Staff?",
+                                           msg,
+                                           QtGui.QMessageBox.Ok,
+                                           QtGui.QMessageBox.Cancel)
+        if yesNo == QtGui.QMessageBox.Ok:
+            np = self._measurePosition()
+            np.measureIndex = None
+            staff = score.getItemAtPosition(np)
+            np.measureIndex = 0
+            arguments = [(np,)] * staff.numMeasures()
+            self.scene().addRepeatedCommand("Delete Staff",
+                                            DeleteMeasureCommand, arguments)
 
     def deleteSection(self):
-        raise NotImplementedError()
+        score = self.scene().score
+        if score.numSections() <= 1:
+            QtGui.QMessageBox.warning(self.parent(),
+                                      "Invalid delete",
+                                      "Cannot delete last staff.")
+            return
+        msg = "Really delete this section?"
+        yesNo = QtGui.QMessageBox.question(self.scene().parent(),
+                                           "Delete Staff?",
+                                           msg,
+                                           QtGui.QMessageBox.Ok,
+                                           QtGui.QMessageBox.Cancel)
+        if yesNo == QtGui.QMessageBox.Ok:
+            np = self._measurePosition()
+            startIndex = score.getSectionStartStaffIndex(np)
+            sectionIndex = score.getSectionIndex(np)
+            sectionName = score.getSectionTitle(sectionIndex)
+            np.staffIndex = startIndex
+            np.measureIndex = 0
+            arguments = []
+            staff = score.getStaff(np.staffIndex)
+            while True:
+                arguments.extend([(NotePosition(staffIndex = startIndex,
+                                                measureIndex = 0),)] * staff.numMeasures())
+                if staff.isSectionEnd():
+                    break
+                np = NotePosition(staffIndex = np.staffIndex + 1, measureIndex = 0)
+                staff = score.getStaff(np.staffIndex)
+            self.scene().addRepeatedCommand("Delete Section: " + sectionName,
+                                            DeleteMeasureCommand, arguments)
 
     def deleteEmptyMeasures(self):
+        #TODO
         raise NotImplementedError()
 
     def _insertMeasure(self, np):
@@ -406,7 +436,6 @@ class QMeasure(QtGui.QGraphicsItem):
             self.scene().addCommand(command)
 
     def deleteMeasure(self):
-        raise NotImplementedError()
         score = self.scene().score
         if score.numMeasures() == 1:
             QtGui.QMessageBox.warning(self.parent(),
@@ -419,9 +448,8 @@ class QMeasure(QtGui.QGraphicsItem):
                                            QtGui.QMessageBox.Ok,
                                            QtGui.QMessageBox.Cancel)
         if yesNo == QtGui.QMessageBox.Ok:
-            score.deleteMeasureByPosition(self._measurePosition())
-            self.scene().reBuild()
-            self.scene().dirty = True
+            command = DeleteMeasureCommand(self.scene(), self._measurePosition())
+            self.scene().addCommand(command)
 
     def copyMeasure(self):
         self.scene().copyMeasure(self._measurePosition())
@@ -451,8 +479,8 @@ class QMeasure(QtGui.QGraphicsItem):
                                                        newCounter)
                 self.scene().addCommand(command)
 
-    def _copySection(self, sectionIndex):
+    def _copySection(self, sectionIndex, point):
         raise NotImplementedError()
-        self._score().insertSectionCopy(self._getNotePosition(),
-                                        sectionIndex)
+        self.scene().score.insertSectionCopy(self._getNotePosition(point),
+                                             sectionIndex)
         self.scene().reBuild()
