@@ -7,18 +7,20 @@ from PyQt4.QtGui import QUndoCommand
 from Data import DBConstants
 from Data.Score import Score
 import copy
+import functools
 
 class ScoreCommand(QUndoCommand):
-    def __init__(self, qScore, description):
+    def __init__(self, qScore, np, description):
         super(ScoreCommand, self).__init__(description)
         self._qScore = qScore
+        self._np = copy.copy(np)
         self._score = self._qScore.score
 
 class NoteCommand(ScoreCommand):
     def __init__(self, qScore, notePosition, head):
-        super(NoteCommand, self).__init__(qScore, "Set note")
+        super(NoteCommand, self).__init__(qScore, notePosition,
+                                          "Set note")
         self._oldHead = self._score.getNote(notePosition)
-        self._np = notePosition
         self._head = head
 
     def undo(self):
@@ -40,7 +42,8 @@ class ToggleNote(NoteCommand):
 
 class MetaDataCommand(ScoreCommand):
     def __init__(self, qScore, varName, setName, value):
-        super(MetaDataCommand, self).__init__(qScore, "Edit metadata")
+        super(MetaDataCommand, self).__init__(qScore, None,
+                                              "Edit metadata")
         self._oldValue = getattr(self._score.scoreData, varName)
         self._varname = varName
         self._setName = setName
@@ -60,7 +63,8 @@ class MetaDataCommand(ScoreCommand):
 
 class ScoreWidthCommand(ScoreCommand):
     def __init__(self, qScore, value):
-        super(ScoreWidthCommand, self).__init__(qScore, "Set Width")
+        super(ScoreWidthCommand, self).__init__(qScore, None,
+                                                "Set Width")
         self._oldValue = self._score.scoreData.width
         self._value = value
 
@@ -81,8 +85,8 @@ class ScoreWidthCommand(ScoreCommand):
 
 class PasteMeasure(ScoreCommand):
     def __init__(self, qScore, notePosition, clipboard):
-        super(PasteMeasure, self).__init__(qScore, "Paste Measure")
-        self._np = notePosition
+        super(PasteMeasure, self).__init__(qScore, notePosition,
+                                           "Paste Measure")
         self._measure = clipboard
         self._oldMeasure = None
 
@@ -96,7 +100,8 @@ class PasteMeasure(ScoreCommand):
 
 class RepeatNoteCommand(ScoreCommand):
     def __init__(self, qScore, notePosition, nRepeats, repInterval, head):
-        super(RepeatNoteCommand, self).__init__(qScore, "Repeat Note")
+        super(RepeatNoteCommand, self).__init__(qScore, notePosition,
+                                                "Repeat Note")
         self._head = head
         np = copy.copy(notePosition)
         self._oldNotes = [(np, self._score.getNote(np))]
@@ -118,9 +123,8 @@ class RepeatNoteCommand(ScoreCommand):
 
 class InsertMeasuresCommand(ScoreCommand):
     def __init__(self, qScore, notePosition, numMeasures, width, counter):
-        super(InsertMeasuresCommand, self).__init__(qScore,
+        super(InsertMeasuresCommand, self).__init__(qScore, notePosition,
                                                     "Insert Measures")
-        self._np = notePosition
         self._numMeasures = numMeasures
         self._width = width
         self._counter = counter
@@ -136,12 +140,30 @@ class InsertMeasuresCommand(ScoreCommand):
             self._score.deleteMeasureByPosition(self._np)
         self._qScore.reBuild()
 
+class InsertSectionCommand(ScoreCommand):
+    def __init__(self, qScore, np, sectionIndex):
+        super(InsertSectionCommand, self).__init__(qScore, np,
+                                                   "Insert Section Copy")
+        self._np.measureIndex = 0
+        self._np.noteTime = None
+        self._np.drumIndex = None
+        self._index = sectionIndex
+
+    def redo(self):
+        self._score.insertSectionCopy(self._np,
+                                      self._index)
+        self._qScore.reBuild()
+
+    def undo(self):
+        self._score.deleteSection(self._np)
+        self._qScore.reBuild()
+
 class SetRepeatCountCommand(ScoreCommand):
     def __init__(self, qScore, notePosition, oldCount, newCount):
-        super(SetRepeatCountCommand, self).__init__(qScore, "Set Repeat Count")
+        super(SetRepeatCountCommand, self).__init__(qScore, notePosition,
+                                                    "Set Repeat Count")
         self._oldCount = oldCount
         self._newCount = newCount
-        self._np = notePosition
 
     def redo(self):
         measure = self._score.getItemAtPosition(self._np)
@@ -155,8 +177,8 @@ class EditMeasurePropertiesCommand(ScoreCommand):
     def __init__(self, qScore, np, beats, newCounter):
         name = "Edit Measure Properties"
         super(EditMeasurePropertiesCommand, self).__init__(qScore,
+                                                           np,
                                                            name)
-        self._np = np
         self._beats = beats
         self._newCounter = newCounter
         self._oldMeasure = self._score.copyMeasure(np)
@@ -172,8 +194,8 @@ class EditMeasurePropertiesCommand(ScoreCommand):
 
 class SetMeasureLineCommand(ScoreCommand):
     def __init__(self, qScore, descr, np, onOff, method):
-        super(SetMeasureLineCommand, self).__init__(qScore, descr)
-        self._np = np
+        super(SetMeasureLineCommand, self).__init__(qScore, np,
+                                                    descr)
         self._onOff = onOff
         self._method = method
 
@@ -223,8 +245,8 @@ class SetRepeatEndCommand(SetMeasureLineCommand):
 
 class DeleteMeasureCommand(ScoreCommand):
     def __init__(self, qScore, np):
-        super(DeleteMeasureCommand, self).__init__(qScore, "Delete Measure")
-        self._np = np
+        super(DeleteMeasureCommand, self).__init__(qScore, np,
+                                                   "Delete Measure")
         self._oldMeasure = self._score.copyMeasure(np)
         self._sectionIndex = None
         self._sectionTitle = None
@@ -238,11 +260,15 @@ class DeleteMeasureCommand(ScoreCommand):
         self._qScore.reBuild()
 
     def undo(self):
-        self._score.insertMeasureByPosition(1, self._np)
+        self._score.turnOffCallBacks()
+        if self._np.staffIndex == self._score.numStaffs():
+            self._score.addStaff()
+        self._score.insertMeasureByPosition(len(self._oldMeasure), self._np)
         if self._sectionIndex is not None:
             self._score.setSectionEnd(self._np, True)
             self._score.setSectionTitle(self._sectionIndex,
                                         self._sectionTitle)
         self._score.pasteMeasure(self._np, self._oldMeasure, True)
-        self._score.gridFormatScore(None)
+        self._score.turnOnCallBacks()
         self._qScore.reBuild()
+

@@ -78,7 +78,9 @@ class Measure(object):
         self._callBack = None
 
     def isEmpty(self):
-        return len(list(self)) == 0
+        return (len(list(self)) == 0
+                and not (self.isRepeatEnd() or
+                         self.isSectionEnd()))
 
     def setSectionEnd(self, boolean):
         self._isSectionEnd = boolean

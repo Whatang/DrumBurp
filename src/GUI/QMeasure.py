@@ -15,10 +15,13 @@ from Data import DBConstants
 from DBCommands import (ToggleNote, RepeatNoteCommand,
                         InsertMeasuresCommand, SetRepeatCountCommand,
                         EditMeasurePropertiesCommand,
-                        DeleteMeasureCommand)
+                        DeleteMeasureCommand,
+                        InsertSectionCommand)
 from QRepeatCountDialog import QRepeatCountDialog
 from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 import DBIcons
+
+import copy
 
 _CHAR_PIXMAPS = {}
 def _stringToPixMap(character, font, scene):
@@ -290,9 +293,7 @@ class QMeasure(QtGui.QGraphicsItem):
             sectionCopyMenu = insertMenu.addMenu("Section Copy")
             sectionCopyMenu.setEnabled(score.numSections() > 0)
             for si, sectionTitle in enumerate(score.iterSections()):
-                copyIt = lambda i = si: self._copySection(i,
-                                                          (noteTime,
-                                                           drumIndex))
+                copyIt = lambda i = si: self._copySection(i)
                 sectionCopyMenu.addAction(sectionTitle, copyIt)
             menu.addSeparator()
             deleteAction = menu.addAction(DBIcons.getIcon("delete"),
@@ -361,8 +362,11 @@ class QMeasure(QtGui.QGraphicsItem):
             np = self._measurePosition()
             np.measureIndex = None
             staff = score.getItemAtPosition(np)
-            np.measureIndex = 0
-            arguments = [(np,)] * staff.numMeasures()
+            arguments = []
+            np.measureIndex = staff.numMeasures() - 1
+            while np.measureIndex >= 0:
+                arguments.append((copy.copy(np),))
+                np.measureIndex -= 1
             self.scene().addRepeatedCommand("Delete Staff",
                                             DeleteMeasureCommand, arguments)
 
@@ -385,24 +389,39 @@ class QMeasure(QtGui.QGraphicsItem):
             sectionIndex = score.getSectionIndex(np)
             sectionName = score.getSectionTitle(sectionIndex)
             np.staffIndex = startIndex
-            np.measureIndex = 0
+            while (np.staffIndex < score.numStaffs()
+                   and not score.getStaff(np.staffIndex).isSectionEnd()):
+                np.staffIndex += 1
             arguments = []
-            staff = score.getStaff(np.staffIndex)
-            while True:
-                arguments.extend([(NotePosition(staffIndex = startIndex,
-                                                measureIndex = 0),)]
-                                 * staff.numMeasures())
-                if staff.isSectionEnd():
-                    break
-                np = NotePosition(staffIndex = np.staffIndex + 1,
-                                  measureIndex = 0)
+            for np.staffIndex in range(np.staffIndex, startIndex - 1, -1):
                 staff = score.getStaff(np.staffIndex)
+                for np.measureIndex in range(staff.numMeasures() - 1, -1, -1):
+                    arguments.append((copy.copy(np),))
+                np.staffIndex -= 1
             self.scene().addRepeatedCommand("Delete Section: " + sectionName,
                                             DeleteMeasureCommand, arguments)
 
     def deleteEmptyMeasures(self):
-        #TODO
-        raise NotImplementedError()
+        score = self.scene().score
+        if score.numMeasures() == 1:
+            QtGui.QMessageBox.warning(self.parent(),
+                                      "Invalid delete",
+                                      "Cannot delete last measure.")
+            return
+        msg = "This will delete all empty trailing measures.\nContinue?"
+        yesNo = QtGui.QMessageBox.question(self.scene().parent(),
+                                           "Delete Empty Measures",
+                                           msg,
+                                           QtGui.QMessageBox.Ok,
+                                           QtGui.QMessageBox.Cancel)
+        if yesNo == QtGui.QMessageBox.Ok:
+            positions = score.trailingEmptyMeasures()
+            if len(positions) == 0:
+                return
+            arguments = [(np,) for np in positions]
+            self.scene().addRepeatedCommand("Delete Empty Measures",
+                                            DeleteMeasureCommand, arguments)
+
 
     def _insertMeasure(self, np):
         counter = self._props.beatCounter
@@ -482,9 +501,7 @@ class QMeasure(QtGui.QGraphicsItem):
                                                        newCounter)
                 self.scene().addCommand(command)
 
-    def _copySection(self, sectionIndex, point):
-        #TODO
-        raise NotImplementedError()
-        self.scene().score.insertSectionCopy(self._getNotePosition(point),
-                                             sectionIndex)
-        self.scene().reBuild()
+    def _copySection(self, sectionIndex):
+        np = self._measurePosition()
+        command = InsertSectionCommand(self.scene(), np, sectionIndex)
+        self.scene().addCommand(command)

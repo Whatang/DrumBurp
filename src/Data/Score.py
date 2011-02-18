@@ -13,6 +13,7 @@ from NotePosition import NotePosition
 from ScoreMetaData import ScoreMetaData
 import os
 import bisect
+import copy
 
 #pylint: disable-msg=R0904
 
@@ -40,10 +41,10 @@ class Score(object):
         if self._callBack is not None and self._callBacksEnabled:
             self._callBack(position)
 
-    def _turnOnCallBacks(self):
+    def turnOnCallBacks(self):
         self._callBacksEnabled = True
 
-    def _turnOffCallBacks(self):
+    def turnOffCallBacks(self):
         self._callBacksEnabled = False
 
     def setCallBack(self, callBack):
@@ -200,6 +201,24 @@ class Score(object):
             self.deleteSectionTitle(sectionIndex)
         staff.deleteMeasure(position)
 
+    def trailingEmptyMeasures(self):
+        emptyMeasures = []
+        np = NotePosition(staffIndex = self.numStaffs() - 1)
+        staff = self.getItemAtPosition(np)
+        np.measureIndex = staff.numMeasures() - 1
+        measure = self.getItemAtPosition(np)
+        while ((np.staffIndex > 0 or np.measureIndex > 0)
+               and measure.isEmpty()): #pylint:disable-msg=E1103
+            emptyMeasures.append(copy.copy(np))
+            if np.measureIndex == 0:
+                np.staffIndex -= 1
+                staff = self.getStaff(np.staffIndex)
+                np.measureIndex = staff.numMeasures()
+            np.measureIndex -= 1
+            measure = self.getItemAtPosition(np)
+        return emptyMeasures
+
+
     def deleteEmptyMeasures(self):
         while self.numMeasures() > 1:
             index = self.numMeasures() - 1
@@ -295,7 +314,8 @@ class Score(object):
                 inSection = (thisSection == sectionIndex)
 
     def insertSectionCopy(self, position, sectionIndex):
-        self._turnOffCallBacks()
+        self.turnOffCallBacks()
+        position = copy.copy(position)
         try:
             if not(0 <= position.staffIndex < self.numStaffs()):
                 raise BadTimeError()
@@ -310,7 +330,7 @@ class Score(object):
                 newMeasure.pasteMeasure(measure, True)
                 position.measureIndex += 1
         finally:
-            self._turnOnCallBacks()
+            self.turnOnCallBacks()
 
     def setLineBreak(self, position, onOff):
         if not(0 <= position.staffIndex < self.numStaffs()):
