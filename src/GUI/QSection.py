@@ -25,10 +25,7 @@ class QSection(QGraphicsTextItem):
         font.setBold(True)
         self.setFont(font)
         self.setTextInteractionFlags(Qt.TextEditable | Qt.TextSelectableByMouse)
-<<<<<<< HEAD
         self._title = None
-=======
->>>>>>> origin/NoQNotes
         self.setTitle(title)
         self._index = None
         self.setCursor(Qt.PointingHandCursor)
