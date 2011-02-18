@@ -272,3 +272,23 @@ class DeleteMeasureCommand(ScoreCommand):
         self._score.turnOnCallBacks()
         self._qScore.reBuild()
 
+class SetSectionTitleCommand(ScoreCommand):
+    def __init__(self, qScore, sectionIndex, title):
+        super(SetSectionTitleCommand, self).__init__(qScore,
+                                                     None,
+                                                     "Set Section Title")
+        self._index = sectionIndex
+        self._oldTitle = self._score.getSectionTitle(sectionIndex)
+        self._title = title
+
+    def redo(self):
+        self._score.setSectionTitle(self._index,
+                                    self._title)
+        self._qScore.setSectionTitle(self._index,
+                                     self._title)
+
+    def undo(self):
+        self._score.setSectionTitle(self._index,
+                                    self._oldTitle)
+        self._qScore.setSectionTitle(self._index,
+                                     self._oldTitle)
