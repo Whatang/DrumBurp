@@ -7,6 +7,7 @@ Created on 26 Jan 2011
 
 from PyQt4.QtGui import QGraphicsTextItem, QTextCursor
 from PyQt4.QtCore import Qt
+from DBCommands import SetSectionTitleCommand
 
 class QSection(QGraphicsTextItem):
     '''
@@ -24,8 +25,8 @@ class QSection(QGraphicsTextItem):
         font.setBold(True)
         self.setFont(font)
         self.setTextInteractionFlags(Qt.TextEditable | Qt.TextSelectableByMouse)
-        self._title = title
-        self.setPlainText(title)
+        self._title = None
+        self.setTitle(title)
         self._index = None
         self.setCursor(Qt.PointingHandCursor)
 
@@ -57,6 +58,12 @@ class QSection(QGraphicsTextItem):
         text = unicode(self.document().toPlainText())
         if text != self._title:
             self._title = text
-            self.scene().score.setSectionTitle(self._index, text)
-            self.scene().dirty = True
+            command = SetSectionTitleCommand(self.scene(),
+                                             self._index,
+                                             self._title)
+            self.scene().addCommand(command)
         super(QSection, self).focusOutEvent(event)
+
+    def setTitle(self, text):
+        self._title = text
+        self.setPlainText(text)

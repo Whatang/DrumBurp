@@ -195,6 +195,10 @@ class QScore(QtGui.QGraphicsScene):
         qSection.setIndex(len(self._qSections))
         self._qSections.append(qSection)
 
+    def setSectionTitle(self, index, title):
+        qSection = self._qSections[index]
+        qSection.setTitle(title)
+
     def _placeStaffs(self):
         xMargins = self._properties.xMargins
         yMargins = self._properties.yMargins
