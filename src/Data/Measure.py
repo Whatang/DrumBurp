@@ -210,6 +210,8 @@ class Measure(object):
             self.setRepeatStart(other.isRepeatStart())
             self.setRepeatEnd(other.isRepeatEnd())
             self.setSectionEnd(other.isSectionEnd())
+            self.setLineBreak(other.isLineBreak())
+            self.repeatCount = other.repeatCount
         return oldMeasure
 
 
