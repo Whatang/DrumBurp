@@ -16,9 +16,11 @@ from DBCommands import (ToggleNote, RepeatNoteCommand,
                         InsertMeasuresCommand, SetRepeatCountCommand,
                         EditMeasurePropertiesCommand,
                         DeleteMeasureCommand,
-                        InsertSectionCommand)
+                        InsertSectionCommand,
+                        SetAlternateCommand)
 from QRepeatCountDialog import QRepeatCountDialog
 from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
+from QAlternateDialog import QAlternateDialog
 import DBIcons
 
 import copy
@@ -52,20 +54,21 @@ class QMeasure(QtGui.QGraphicsItem):
     '''
 
 
-    def __init__(self, qScore, measure, parent):
+    def __init__(self, index, qScore, measure, parent):
         '''
         Constructor
         '''
         super(QMeasure, self).__init__(parent)
         self._props = qScore.displayProperties
         self._measure = None
-        self._index = None
+        self._index = index
         self._width = 0
         self._height = 0
         self._highlight = None
         self._rect = QtCore.QRectF(0, 0, 0, 0)
         self._repeatCountRect = None
         self._startClick = None
+        self._alternate = None
         self.setAcceptsHoverEvents(True)
         self.setMeasure(measure)
 
@@ -88,12 +91,11 @@ class QMeasure(QtGui.QGraphicsItem):
         if self._measure != measure:
             self._measure = measure
             self._setDimensions()
+#            self.setAlternate()
             self.update()
 
-    def setIndex(self, index):
-        self._index = index
-
     def paint(self, painter, dummyOption, dummyWidget = None):
+        painter.save()
         painter.setPen(QtCore.Qt.NoPen)
         painter.setBrush(self.scene().palette().base())
         painter.drawRect(self._rect)
@@ -151,7 +153,27 @@ class QMeasure(QtGui.QGraphicsItem):
             self._repeatCountRect.setTopRight(QtCore.QPointF(self.width(), 0))
         else:
             self._repeatCountRect = None
-
+        if self._measure.alternateText is not None:
+            painter.setPen(self.scene().palette().text().color())
+            painter.drawLine(0, 0, self.width() - 2, 0)
+            painter.drawLine(0, 0, 0, self._props.ySpacing - 2)
+            isItalic = font.italic()
+            font.setItalic(True)
+            painter.setFont(font)
+            if self._alternate is None:
+                self._alternate = QtCore.QRectF(0, 0, 0, 0)
+            text = self._measure.alternateText
+            textWidth = QtGui.QFontMetrics(font).width(text)
+            self._alternate.setSize(QtCore.QSizeF(textWidth,
+                                                  self._props.ySpacing))
+            bottomLeft = QtCore.QPointF(1, self._props.ySpacing - 1)
+            self._alternate.setBottomLeft(bottomLeft)
+            painter.drawText(1, self._props.ySpacing - 1, text)
+            font.setItalic(isItalic)
+            painter.setFont(font)
+        else:
+            self._alternate = None
+        painter.restore()
 
     def dataChanged(self, notePosition):
         if None not in (notePosition.noteTime, notePosition.drumIndex):
@@ -180,6 +202,21 @@ class QMeasure(QtGui.QGraphicsItem):
                                             repDialog.getValue())
             self.scene().addCommand(command)
 
+    def setAlternate(self):
+        altDialog = QAlternateDialog(self._measure.alternateText,
+                                     self.scene().parent())
+        if (altDialog.exec_()
+            and self._measure.alternateText != altDialog.getValue()):
+            command = SetAlternateCommand(self.scene(), self._measurePosition(),
+                                          altDialog.getValue())
+            self.scene().addCommand(command)
+
+    def _deleteAlternate(self):
+        command = SetAlternateCommand(self.scene(), self._measurePosition(),
+                                      None)
+        self.scene().addCommand(command)
+
+
     def _isOverNotes(self, point):
         return (1 <= (point.y() / self._props.ySpacing)
                 < (1 + self.scene().kitSize))
@@ -190,6 +227,11 @@ class QMeasure(QtGui.QGraphicsItem):
     def _isOverRepeatCount(self, point):
         return (self._repeatCountRect is not None
                 and self._repeatCountRect.contains(point))
+
+    def _isOverAlternate(self, point):
+        return (self._alternate is not None
+                and self._alternate.contains(point))
+
 
     def _getNotePosition(self, point):
         x = self._getNoteTime(point)
@@ -211,7 +253,9 @@ class QMeasure(QtGui.QGraphicsItem):
             self._highlight = None
             self.parentItem().clearHighlight()
             self.update()
-        if self._isOverCount(point) or self._isOverRepeatCount(point):
+        if (self._isOverCount(point)
+            or self._isOverRepeatCount(point)
+            or self._isOverAlternate(point)):
             self.setCursor(QtCore.Qt.PointingHandCursor)
         else:
             self.setCursor(QtCore.Qt.ArrowCursor)
@@ -309,6 +353,13 @@ class QMeasure(QtGui.QGraphicsItem):
             deleteEmptyAction = deleteMenu.addAction("Empty Trailing Measures",
                                                      self.deleteEmptyMeasures)
             deleteEmptyAction.setEnabled(score.numMeasures() > 1)
+            menu.addSeparator()
+            if self._measure.alternateText is not None:
+                menu.addAction("Delete Alternate Ending",
+                               self._deleteAlternate)
+            else:
+                menu.addAction("Add Alternate Ending",
+                               self.setAlternate)
         else:
             self._startClick = (noteTime, drumIndex)
         if menu is not None:
@@ -332,6 +383,8 @@ class QMeasure(QtGui.QGraphicsItem):
             self.editMeasureProperties()
         elif self._isOverRepeatCount(point):
             self.changeRepeatCount()
+        elif self._isOverAlternate(point):
+            self.setAlternate()
         else:
             event.ignore()
 

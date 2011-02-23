@@ -292,3 +292,22 @@ class SetSectionTitleCommand(ScoreCommand):
                                     self._oldTitle)
         self._qScore.setSectionTitle(self._index,
                                      self._oldTitle)
+
+class SetAlternateCommand(ScoreCommand):
+    def __init__(self, qScore, np, alternate):
+        super(SetAlternateCommand, self).__init__(qScore,
+                                                  np,
+                                                  "Set Alternate Text")
+        self._alternate = alternate
+        measure = self._score.getItemAtPosition(np)
+        self._oldAlternate = measure.alternateText
+
+    def redo(self):
+        measure = self._score.getItemAtPosition(self._np)
+        measure.alternateText = self._alternate
+        self._qScore.dataChanged(self._np)
+
+    def undo(self):
+        measure = self._score.getItemAtPosition(self._np)
+        measure.alternateText = self._oldAlternate
+        self._qScore.dataChanged(self._np)

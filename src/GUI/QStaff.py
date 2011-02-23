@@ -18,14 +18,14 @@ class QStaff(QtGui.QGraphicsItemGroup):
     '''
 
 
-    def __init__(self, staff, qScore):
+    def __init__(self, staff, index, qScore):
         '''
         Constructor
         '''
         super(QStaff, self).__init__(scene = qScore)
         self._props = qScore.displayProperties
         self._staff = None
-        self._index = None
+        self._index = index
         self._highlightedLine = None
         self._lineLabels = []
         self._measures = []
@@ -40,9 +40,6 @@ class QStaff(QtGui.QGraphicsItemGroup):
 
     def height(self):
         return self._height
-
-    def setIndex(self, index):
-        self._index = index
 
     def _setStaff(self, staff):
         if staff != self._staff:
@@ -77,8 +74,8 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self.addToGroup(qLabel)
 
     def _addMeasure(self, measure):
-        qMeasure = QMeasure(self.scene(), measure, parent = self)
-        qMeasure.setIndex(self.numMeasures())
+        qMeasure = QMeasure(self.numMeasures(), self.scene(),
+                            measure, parent = self)
         self._measures.append(qMeasure)
         self.addToGroup(qMeasure)
 

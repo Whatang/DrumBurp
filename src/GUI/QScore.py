@@ -145,7 +145,7 @@ class QScore(QtGui.QGraphicsScene):
             self._score = score
             if score is not None:
                 self.startUp()
-            self._score.setCallBack(self._dataChanged)
+            self._score.setCallBack(self.dataChanged)
             self._build()
             self.dirty = False
             self._undoStack.clear()
@@ -186,8 +186,7 @@ class QScore(QtGui.QGraphicsScene):
         self._qSections = []
 
     def _addStaff(self, staff):
-        qStaff = QStaff(staff, self)
-        qStaff.setIndex(len(self._qStaffs))
+        qStaff = QStaff(staff, len(self._qStaffs), self)
         self._qStaffs.append(qStaff)
 
     def _addSection(self, title):
@@ -281,7 +280,7 @@ class QScore(QtGui.QGraphicsScene):
                           self.width(),
                           yOffset - lineSpacing + yMargins)
 
-    def _dataChanged(self, notePosition):
+    def dataChanged(self, notePosition):
         staff = self._qStaffs[notePosition.staffIndex]
         staff.dataChanged(notePosition)
 

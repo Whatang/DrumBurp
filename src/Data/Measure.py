@@ -34,6 +34,7 @@ class Measure(object):
         self._isLineBreak = False
         self._repeatCount = _DEFAULTREPEATCOUNT
         self.counter = None
+        self.alternateText = None
 
     @staticmethod
     def barString(first, second):
@@ -212,6 +213,7 @@ class Measure(object):
             self.setSectionEnd(other.isSectionEnd())
             self.setLineBreak(other.isLineBreak())
             self.repeatCount = other.repeatCount
+            self.alternateText = other.alternateText
         return oldMeasure
 
 
@@ -240,6 +242,8 @@ class Measure(object):
         print >> handle, "BARLINE %s" % ",".join(endString)
         if self.repeatCount != _DEFAULTREPEATCOUNT:
             print >> handle, "REPEAT_COUNT %d" % self.repeatCount
+        if self.alternateText is not None:
+            print >> handle, "ALTERNATE %s" % self.alternateText
         print >> handle, "END_BAR"
 
     def read(self, scoreIterator):
@@ -281,5 +285,7 @@ class Measure(object):
                 self.counter = TimeCounter.counterMaker(lineData)
             elif lineType == "REPEAT_COUNT":
                 self.repeatCount = int(lineData)
+            elif lineType == "ALTERNATE":
+                self.alternateText = lineData
             else:
                 raise IOError("Unrecognised line type")
