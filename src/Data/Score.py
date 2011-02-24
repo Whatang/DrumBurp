@@ -9,6 +9,7 @@ from DrumKit import DrumKit
 from Staff import Staff
 from Measure import Measure
 from DBErrors import BadTimeError, OverSizeMeasure
+from DBConstants import REPEAT_EXTENDER
 from NotePosition import NotePosition
 from ScoreMetaData import ScoreMetaData
 import os
@@ -505,6 +506,7 @@ class Score(object):
         newSection = True
         sectionIndex = 0
         isRepeating = False
+        repeatExtender = REPEAT_EXTENDER
         for staff in self.iterStaffs():
             assert(staff.isConsistent())
             if newSection:
@@ -520,9 +522,10 @@ class Score(object):
                         asciiString.append("")
                     sectionIndex += 1
             newSection = staff.isSectionEnd()
-            staffString, isRepeating = staff.exportASCII(self.drumKit,
-                                                       settings,
-                                                       isRepeating)
+            staffString, isRepeating, repeatExtender = staff.exportASCII(self.drumKit,
+                                                                         settings,
+                                                                         isRepeating,
+                                                                         repeatExtender)
             asciiString.extend(staffString)
             asciiString.append("")
         asciiString = asciiString[:-1]

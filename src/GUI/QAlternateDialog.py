@@ -14,7 +14,7 @@ class QAlternateDialog(QDialog, Ui_AlternateDialog):
             self.repeatText.setText(alternate)
 
     def getValue(self):
-        text = self.repeatText.text()
+        text = unicode(self.repeatText.text())
         if len(text) == 0:
             text = None
         return text

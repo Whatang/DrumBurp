@@ -6,7 +6,8 @@ Created on 12 Dec 2010
 '''
 from DBErrors import BadTimeError
 from DBConstants import (EMPTY_NOTE, DRUM_ABBR_WIDTH,
-                         REPEAT_STARTER, REPEAT_END, REPEAT_EXTENDER)
+                         REPEAT_STARTER, REPEAT_END,
+                         REPEAT_EXTENDER, ALTERNATE_EXTENDER)
 from NotePosition import NotePosition
 from Measure import Measure
 
@@ -204,12 +205,12 @@ class Staff(object):
         return countString
 
 
-    def _getRepeatString(self, isRepeating):
+    def _getRepeatString(self, isRepeating, repeatExtender):
         staffString = []
         hasRepeat = isRepeating or any(measure.isRepeatStart()
                                        for measure in self)
         if not hasRepeat:
-            return staffString, isRepeating
+            return staffString, isRepeating, repeatExtender
         repeatString = "  "
         lastMeasure = None
         delta = 0
@@ -220,37 +221,43 @@ class Staff(object):
                         repeatString += REPEAT_END
                         delta = 1
                     isRepeating = True
+                    repeatExtender = REPEAT_EXTENDER
                     repeatString += REPEAT_STARTER
                 elif (lastMeasure and
                     lastMeasure.isRepeatEnd()):
                     repeatString += REPEAT_END
                 elif measure:
                     repeatString += " "
-            elif isRepeating:
-                repeatString += REPEAT_EXTENDER
+            else:
+                repeatString += repeatExtender
             if measure is not None:
+                if measure.alternateText:
+                    repeatString += measure.alternateText
+                    delta += len(measure.alternateText)
+                    repeatExtender = ALTERNATE_EXTENDER
+                    isRepeating = True
                 if isRepeating:
-                    repeatString += REPEAT_EXTENDER * (len(measure) - delta)
+                    repeatString += repeatExtender * (len(measure) - delta)
                     delta = 0
                 else:
                     repeatString += " " * len(measure)
             if isRepeating and measure and measure.isRepeatEnd():
                 isRepeating = False
-                repeatCount = "%dx" % measure.repeatCount
-                repeatCountLength = len(repeatCount)
-                repeatString = (repeatString[:-(repeatCountLength + 1)]
-                                + repeatCount + repeatString[-1:])
+                if repeatExtender == REPEAT_EXTENDER:
+                    repeatCount = "%dx" % measure.repeatCount
+                    repeatCountLength = len(repeatCount)
+                    repeatString = (repeatString[:-(repeatCountLength + 1)]
+                                    + repeatCount + repeatString[-1:])
             lastMeasure = measure
-
         staffString = [repeatString]
-        return staffString, isRepeating
+        return (staffString, isRepeating, repeatExtender)
 
-    def exportASCII(self, kit, settings, isRepeating):
+    def exportASCII(self, kit, settings, isRepeating, repeatExtender):
         kitSize = len(kit)
         indices = range(0, kitSize)
         indices.reverse()
         position = NotePosition()
-        staffString, isRepeating = self._getRepeatString(isRepeating)
+        staffString, isRepeating, repeatExtender = self._getRepeatString(isRepeating, repeatExtender)
         for drumIndex in indices:
             drum = kit[drumIndex]
             lineString, lineOk = self._getDrumLine(drum,
@@ -261,4 +268,4 @@ class Staff(object):
         if settings.printCounts:
             countString = self._getCountLine()
             staffString.append(countString)
-        return staffString, isRepeating
+        return staffString, isRepeating, repeatExtender
