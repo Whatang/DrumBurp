@@ -20,9 +20,12 @@ class QSection(QGraphicsTextItem):
         Constructor
         '''
         super(QSection, self).__init__(parent = parent, scene = qScore)
-        font = self.font()
-        font.setPixelSize(30)
+        font = qScore.displayProperties.sectionFont
+#        font = self.font()
+        if font is None:
+            font = self.font()
         font.setBold(True)
+        font.setPointSize(qScore.displayProperties.sectionFontSize)
         self.setFont(font)
         self.setTextInteractionFlags(Qt.TextEditable | Qt.TextSelectableByMouse)
         self._title = None

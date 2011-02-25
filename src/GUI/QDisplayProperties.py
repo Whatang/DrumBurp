@@ -68,6 +68,8 @@ class QDisplayProperties(QObject):
         self._ySpacing = self._START_NOTE_HEIGHT
         self._lineSpacing = self._START_LINE_SPACE
         self._noteFont = None
+        self._sectionFont = None
+        self._sectionFontSize = 20
         self._head = None
         self._width = 80
         self.beatsPerMeasure = 4
@@ -77,12 +79,16 @@ class QDisplayProperties(QObject):
     ySpacingChanged = pyqtSignal()
     lineSpacingChanged = pyqtSignal()
     fontChanged = pyqtSignal()
+    sectionFontChanged = pyqtSignal()
+    sectionFontSizeChanged = pyqtSignal()
 
     def connectScore(self, score):
         self.xSpacingChanged.connect(score.xSpacingChanged)
         self.ySpacingChanged.connect(score.ySpacingChanged)
         self.lineSpacingChanged.connect(score.lineSpacingChanged)
         self.fontChanged.connect(score.update)
+        self.sectionFontChanged.connect(score.sectionFontChanged)
+        self.sectionFontSizeChanged.connect(score.sectionFontSizeChanged)
 
     def _getxSpacing(self):
         return self._xSpacing
@@ -141,6 +147,26 @@ class QDisplayProperties(QObject):
             self._noteFont = value
             self.fontChanged.emit()
     noteFont = property(fget = _getnoteFont, fset = _setnoteFont)
+
+    def _getsectionFontSize(self):
+        return self._sectionFontSize
+    def _setsectionFontSize(self, value):
+        if self._sectionFontSize != value:
+            print value
+            self._sectionFontSize = value
+            self.sectionFont.setPointSize(value)
+            self.sectionFontSizeChanged.emit()
+    sectionFontSize = property(fget = _getsectionFontSize, fset = _setsectionFontSize)
+
+    def _getsectionFont(self):
+        return self._sectionFont
+    def _setsectionFont(self, value):
+        if self._sectionFont != value:
+            value.setBold(True)
+            value.setPointSize(self._sectionFontSize)
+            self._sectionFont = value
+            self.sectionFontChanged.emit()
+    sectionFont = property(fget = _getsectionFont, fset = _setsectionFont)
 
     def _gethead(self):
         return self._head

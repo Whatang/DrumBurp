@@ -18,12 +18,13 @@ class QStaff(QtGui.QGraphicsItemGroup):
     '''
 
 
-    def __init__(self, staff, index, qScore):
+    def __init__(self, staff, index, scene, qScore = None):
         '''
         Constructor
         '''
-        super(QStaff, self).__init__(scene = qScore)
-        self._props = qScore.displayProperties
+        super(QStaff, self).__init__(scene = scene)
+        self._qScore = qScore if qScore is not None else scene
+        self._props = self._qScore.displayProperties
         self._staff = None
         self._index = index
         self._highlightedLine = None
@@ -56,7 +57,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
 
     def _build(self):
         self._clear()
-        for drum in self.scene().score.drumKit:
+        for drum in self._qScore.score.drumKit:
             self._addLineLabel(drum)
         lastMeasure = None
         for measure in self._staff:
@@ -74,7 +75,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self.addToGroup(qLabel)
 
     def _addMeasure(self, measure):
-        qMeasure = QMeasure(self.numMeasures(), self.scene(),
+        qMeasure = QMeasure(self.numMeasures(), self._qScore,
                             measure, parent = self)
         self._measures.append(qMeasure)
         self.addToGroup(qMeasure)
@@ -87,7 +88,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self.addToGroup(qMeasureLine)
 
     def placeMeasures(self):
-        lineOffsets = self.scene().lineOffsets
+        lineOffsets = self._qScore.lineOffsets
         xOffset = 0
         for yOffset, label in zip(lineOffsets, self._lineLabels):
             label.setPos(xOffset, yOffset)
@@ -121,7 +122,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self._width = xOffset + self._measureLines[-1].width()
 
     def ySpacingChanged(self):
-        lineOffsets = self.scene().lineOffsets
+        lineOffsets = self._qScore.lineOffsets
         for yOffset, label in zip(lineOffsets, self._lineLabels):
             label.setY(yOffset)
             label.ySpacingChanged()

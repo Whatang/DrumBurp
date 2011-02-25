@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>626</height>
+    <height>668</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -351,7 +351,7 @@
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_2">
-    <layout class="QVBoxLayout" name="verticalLayout_2">
+    <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QLabel" name="spacingLabel">
        <property name="text">
@@ -487,7 +487,7 @@
      <item>
       <widget class="QLabel" name="widthLabel">
        <property name="text">
-        <string>Display font</string>
+        <string>Note font</string>
        </property>
        <property name="buddy">
         <cstring>fontComboBox</cstring>
@@ -495,47 +495,131 @@
       </widget>
      </item>
      <item>
-      <widget class="QFontComboBox" name="fontComboBox">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>187</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="statusTip">
-        <string>The font used to display notes in the Score</string>
-       </property>
-       <property name="editable">
-        <bool>false</bool>
-       </property>
-       <property name="maxVisibleItems">
-        <number>20</number>
-       </property>
-       <property name="fontFilters">
-        <set>QFontComboBox::ScalableFonts</set>
-       </property>
-       <property name="currentFont">
-        <font>
-         <family>BatangChe</family>
-         <pointsize>10</pointsize>
-        </font>
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <widget class="QFontComboBox" name="fontComboBox">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>187</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="statusTip">
+          <string>The font used to display notes in the Score</string>
+         </property>
+         <property name="editable">
+          <bool>false</bool>
+         </property>
+         <property name="maxVisibleItems">
+          <number>20</number>
+         </property>
+         <property name="fontFilters">
+          <set>QFontComboBox::ScalableFonts</set>
+         </property>
+         <property name="currentFont">
+          <font>
+           <family>BatangChe</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_5">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Section Title font</string>
        </property>
       </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
+        <widget class="QFontComboBox" name="sectionFontCombo">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>187</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="statusTip">
+          <string>The font used to display notes in the Score</string>
+         </property>
+         <property name="editable">
+          <bool>false</bool>
+         </property>
+         <property name="maxVisibleItems">
+          <number>20</number>
+         </property>
+         <property name="fontFilters">
+          <set>QFontComboBox::ScalableFonts</set>
+         </property>
+         <property name="currentFont">
+          <font>
+           <family>BatangChe</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="sectionFontSizeSpinbox">
+         <property name="minimum">
+          <number>8</number>
+         </property>
+         <property name="maximum">
+          <number>48</number>
+         </property>
+         <property name="value">
+          <number>20</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <widget class="QLabel" name="label_6">
@@ -1048,7 +1132,7 @@ Writes this Score as a plain .txt file.</string>
   </action>
   <action name="actionPrint">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="DrumBurp.qrc">
@@ -1150,7 +1234,7 @@ Writes this Score as a plain .txt file.</string>
    <hints>
     <hint type="sourcelabel">
      <x>75</x>
-     <y>205</y>
+     <y>204</y>
     </hint>
     <hint type="destinationlabel">
      <x>440</x>
@@ -1166,7 +1250,7 @@ Writes this Score as a plain .txt file.</string>
    <hints>
     <hint type="sourcelabel">
      <x>48</x>
-     <y>228</y>
+     <y>227</y>
     </hint>
     <hint type="destinationlabel">
      <x>380</x>
@@ -1181,8 +1265,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>148</x>
-     <y>228</y>
+     <x>164</x>
+     <y>227</y>
     </hint>
     <hint type="destinationlabel">
      <x>371</x>
@@ -1198,7 +1282,7 @@ Writes this Score as a plain .txt file.</string>
    <hints>
     <hint type="sourcelabel">
      <x>56</x>
-     <y>251</y>
+     <y>250</y>
     </hint>
     <hint type="destinationlabel">
      <x>373</x>
@@ -1213,8 +1297,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>148</x>
-     <y>251</y>
+     <x>164</x>
+     <y>250</y>
     </hint>
     <hint type="destinationlabel">
      <x>369</x>
@@ -1230,7 +1314,7 @@ Writes this Score as a plain .txt file.</string>
    <hints>
     <hint type="sourcelabel">
      <x>75</x>
-     <y>274</y>
+     <y>273</y>
     </hint>
     <hint type="destinationlabel">
      <x>365</x>
@@ -1245,8 +1329,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>221</x>
-     <y>228</y>
+     <x>245</x>
+     <y>227</y>
     </hint>
     <hint type="destinationlabel">
      <x>462</x>
@@ -1262,7 +1346,7 @@ Writes this Score as a plain .txt file.</string>
    <hints>
     <hint type="sourcelabel">
      <x>116</x>
-     <y>372</y>
+     <y>366</y>
     </hint>
     <hint type="destinationlabel">
      <x>378</x>
@@ -1278,7 +1362,7 @@ Writes this Score as a plain .txt file.</string>
    <hints>
     <hint type="sourcelabel">
      <x>131</x>
-     <y>421</y>
+     <y>415</y>
     </hint>
     <hint type="destinationlabel">
      <x>449</x>
@@ -1294,7 +1378,7 @@ Writes this Score as a plain .txt file.</string>
    <hints>
     <hint type="sourcelabel">
      <x>121</x>
-     <y>470</y>
+     <y>464</y>
     </hint>
     <hint type="destinationlabel">
      <x>431</x>
@@ -1517,8 +1601,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setDefaultMeasureWidth(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>161</x>
-     <y>554</y>
+     <x>174</x>
+     <y>604</y>
     </hint>
     <hint type="destinationlabel">
      <x>760</x>
@@ -1549,8 +1633,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>221</x>
-     <y>251</y>
+     <x>245</x>
+     <y>250</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
@@ -1565,8 +1649,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>221</x>
-     <y>274</y>
+     <x>245</x>
+     <y>273</y>
     </hint>
     <hint type="destinationlabel">
      <x>268</x>
@@ -1667,6 +1751,38 @@ Writes this Score as a plain .txt file.</string>
     <hint type="destinationlabel">
      <x>217</x>
      <y>136</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sectionFontCombo</sender>
+   <signal>currentFontChanged(QFont)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setSectionFont(QFont)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>118</x>
+     <y>544</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>320</x>
+     <y>600</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sectionFontSizeSpinbox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setSectionFontSize(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>223</x>
+     <y>553</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>349</x>
+     <y>528</y>
     </hint>
    </hints>
   </connection>

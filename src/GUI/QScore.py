@@ -280,6 +280,15 @@ class QScore(QtGui.QGraphicsScene):
                           self.width(),
                           yOffset - lineSpacing + yMargins)
 
+    def sectionFontChanged(self):
+        for qsection in self._qSections:
+            qsection.setFont(self._properties.sectionFont)
+
+    def sectionFontSizeChanged(self):
+        self.sectionFontChanged()
+        self.lineSpacingChanged()
+
+
     def dataChanged(self, notePosition):
         staff = self._qStaffs[notePosition.staffIndex]
         staff.dataChanged(notePosition)
@@ -345,5 +354,24 @@ class QScore(QtGui.QGraphicsScene):
 
     def printScore(self, qprinter):
         painter = QtGui.QPainter(qprinter)
-        self.render(painter)
+        rect = qprinter.pageRect()
+        topLeft = QtCore.QPointF(self._properties.xMargins, self._properties.yMargins)
+        bottomRight = QtCore.QPointF(self.sceneRect().right() - self._properties.xMargins,
+                                     self._properties.yMargins)
+        for staff in self._qStaffs:
+            newY = staff.y() + staff.height()
+            if newY - topLeft.y() > rect.height():
+                sceneRect = QtCore.QRectF(topLeft, bottomRight)
+                if sceneRect.width() > rect.width():
+                    sceneRect.setWidth(rect.width())
+                pageRect = QtCore.QRectF(0, 0, sceneRect.width(), sceneRect.height())
+                self.render(painter, pageRect, sceneRect)
+                qprinter.newPage()
+                topLeft.setY(bottomRight.y() + self._properties.lineSpacing)
+            bottomRight.setY(newY)
+        sceneRect = QtCore.QRectF(topLeft, bottomRight)
+        if sceneRect.width() > rect.width():
+            sceneRect.setWidth(rect.width())
+        pageRect = QtCore.QRectF(0, 0, sceneRect.width(), sceneRect.height())
+        self.render(painter, pageRect, sceneRect)
         painter.end()
