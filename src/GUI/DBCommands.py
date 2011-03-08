@@ -180,6 +180,7 @@ class InsertSectionCommand(_COMMAND_CLASS):
         self._np.measureIndex = 0
         self._np.noteTime = None
         self._np.drumIndex = None
+        self._np.staffIndex = self._score.getSectionStartStaffIndex(np)
         self._index = sectionIndex
 
     def redo(self):
