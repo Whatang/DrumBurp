@@ -11,7 +11,10 @@ import GUI.DBIcons
 def main():
     import ctypes
     myappid = 'Whatang.DrumBurp'
-    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+    try:
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+    except AttributeError:
+        pass
     app = QApplication(sys.argv)
     app.setOrganizationName("Whatang Software")
     app.setOrganizationDomain("whatang.org")
