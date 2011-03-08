@@ -12,9 +12,12 @@ from DBErrors import BadTimeError, OverSizeMeasure
 from DBConstants import REPEAT_EXTENDER
 from NotePosition import NotePosition
 from ScoreMetaData import ScoreMetaData
+from ASCIISettings import ASCIISettings
 import os
 import bisect
 import copy
+import hashlib
+from StringIO import StringIO
 
 #pylint: disable-msg=R0904
 
@@ -34,6 +37,7 @@ class Score(object):
         self._callBacksEnabled = True
         self.scoreData = ScoreMetaData()
         self._sections = []
+        self._formatState = None
 
     def __len__(self):
         return sum(len(staff) for staff in self._staffs)
@@ -158,6 +162,30 @@ class Score(object):
             measuresSoFar += staff.numMeasures()
         raise BadTimeError()
 
+    def getMeasureIndex(self, position):
+        if not(0 <= position.staffIndex < self.numStaffs()):
+            raise BadTimeError()
+        index = 0
+        for staffIndex in range(0, position.staffIndex):
+            index += self.getStaff(staffIndex).numMeasures()
+        index += position.measureIndex
+        return index
+
+    def getMeasurePosition(self, index):
+        staffIndex = 0
+        staff = self.getStaff(0)
+        while index >= staff.numMeasures():
+            index -= staff.numMeasures()
+            staffIndex += 1
+            if staffIndex == self.numStaffs():
+                break
+            staff = self.getStaff(staffIndex)
+        if staffIndex == self.numStaffs():
+            raise BadTimeError(index)
+        return NotePosition(staffIndex = staffIndex,
+                            measureIndex = index)
+
+
     def insertMeasureByIndex(self, width, index, counter = None):
         if not (0 <= index <= self.numMeasures()):
             raise BadTimeError()
@@ -187,9 +215,7 @@ class Score(object):
     def deleteMeasureByIndex(self, index):
         if not (0 <= index < self.numMeasures()):
             raise BadTimeError()
-        staff, index = self._staffContainingMeasure(index)
-        np = NotePosition(staffIndex = self._staffs.index(staff),
-                          measureIndex = index)
+        np = self.getMeasurePosition(index)
         self.deleteMeasureByPosition(np)
 
     def deleteMeasureByPosition(self, position):
@@ -241,6 +267,10 @@ class Score(object):
         staff = self.getStaff(position.staffIndex)
         return staff.pasteMeasure(position, notes, copyMeasureDecorations)
 
+    def pasteMeasureByIndex(self, index, notes, copyMeasureDecorations = False):
+        position = self.getMeasurePosition(index)
+        self.pasteMeasure(position, notes, copyMeasureDecorations)
+
     def setMeasureBeatCount(self, position, beats, counter):
         if not(0 <= position.staffIndex < self.numStaffs()):
             raise BadTimeError()
@@ -256,7 +286,11 @@ class Score(object):
             assert(staff.isConsistent())
             if staff.isSectionEnd():
                 ends.append(staffIndex)
-        assert(len(ends) == self.numSections())
+        try:
+            assert(len(ends) == self.numSections())
+        except:
+            print len(ends), self.numSections()
+            raise
         return bisect.bisect_left(ends, position.staffIndex)
 
     def getSectionTitle(self, index):
@@ -403,12 +437,17 @@ class Score(object):
             measure = staff[pos.measureIndex]
         return pos
 
+    def saveFormatState(self):
+        self._formatState = [staff.numMeasures() for staff in self.iterStaffs()]
+
     def _formatScore(self, width,
                      widthFunction, ignoreErrors = False):
         if width is None:
             width = self.scoreData.width
         measures = list(self.iterMeasures())
-        oldNumMeasures = [staff.numMeasures() for staff in self.iterStaffs()]
+        if not self._formatState:
+            self.saveFormatState()
+#        oldNumMeasures = [staff.numMeasures() for staff in self.iterStaffs()]
         for staff in self.iterStaffs():
             staff.clear()
         staff = self.getStaff(0)
@@ -437,12 +476,12 @@ class Score(object):
         while self.numStaffs() > staffIndex + 1:
             self.deleteLastStaff()
         newNumMeasures = [staff.numMeasures() for staff in self.iterStaffs()]
-        return newNumMeasures != oldNumMeasures
+        return newNumMeasures != self._formatState
 
-    def textFormatScore(self, width, ignoreErrors = False):
+    def textFormatScore(self, width = None, ignoreErrors = False):
         return self._formatScore(width, Staff.characterWidth, ignoreErrors)
 
-    def gridFormatScore(self, width):
+    def gridFormatScore(self, width = None):
         return self._formatScore(width,
                                  Staff.gridWidth,
                                  True)
@@ -499,6 +538,14 @@ class Score(object):
         elif numSections < self.numSections():
             self._sections = self._sections[:numSections]
 
+    def hashScore(self):
+        settings = ASCIISettings()
+        scoreString = StringIO()
+        self.exportASCII(scoreString, settings)
+        scoreString.seek(0, 0)
+        scoreString = "".join(scoreString)
+        return hashlib.md5(str(scoreString)).digest()
+#        return scoreString
 
     def exportASCII(self, handle, settings):
         metadataString = self.scoreData.exportASCII()
