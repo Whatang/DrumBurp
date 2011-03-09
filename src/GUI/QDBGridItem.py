@@ -6,28 +6,6 @@ Created on 19 Jan 2011
 from PyQt4 import QtGui, QtCore
 from Data import DBConstants
 
-_CHAR_PIXMAPS = {}
-def _stringToPixMap(character, font, scene):
-    key = (character, font.key())
-    if key not in _CHAR_PIXMAPS:
-        fm = QtGui.QFontMetrics(font)
-        br = fm.tightBoundingRect(character)
-        dx = -br.x() + 1
-        dy = -br.y() + 1
-        br.translate(dx, dy)
-        pix = QtGui.QPixmap(br.width() + 2, br.height() + 2)
-        painter = QtGui.QPainter(pix)
-        painter.setPen(QtCore.Qt.NoPen)
-        painter.setBrush(scene.palette().base())
-        painter.drawRect(0, 0, br.width() + 2, br.height() + 2)
-        painter.setBrush(scene.palette().text())
-        painter.setPen(QtCore.Qt.SolidLine)
-        painter.setFont(font)
-        painter.drawText(dx, dy, character)
-        painter.end()
-        _CHAR_PIXMAPS[key] = pix
-    return _CHAR_PIXMAPS[key]
-
 #pylint: disable-msg=R0921
 class QDBGridItem(QtGui.QGraphicsItem):
     def __init__(self, qScore, parent):
@@ -62,8 +40,6 @@ class QDBGridItem(QtGui.QGraphicsItem):
 
     def paint(self, painter, dummyOption, dummyWidget = None):
         painter.setPen(QtCore.Qt.NoPen)
-        painter.setBrush(self.scene().palette().base())
-        painter.drawRect(self._rect)
         if len(self._text) > 0:
             painter.setPen(QtCore.Qt.SolidLine)
             if self._text == DBConstants.EMPTY_NOTE:
@@ -74,10 +50,12 @@ class QDBGridItem(QtGui.QGraphicsItem):
                 font = self._props.noteFont
                 if font is None:
                     font = painter.font()
-                pix = _stringToPixMap(self._text, font, self.scene())
-                left = (self.cellWidth() - pix.width() + 2) / 2
-                top = (self.cellHeight() - pix.height() + 2) / 2
-                painter.drawPixmap(left, top, pix)
+                br = QtGui.QFontMetrics(font).tightBoundingRect(self._text)
+                w = br.width()
+                h = br.height()
+                textLocation = QtCore.QPointF((self.cellWidth() - w + 2) / 2,
+                                              (self.cellHeight() + h) / 2)
+                painter.drawText(textLocation, self._text)
         if self._highlighted:
             painter.setPen(QtCore.Qt.SolidLine)
             painter.setPen(self.scene().palette().highlight().color())

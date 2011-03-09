@@ -25,29 +25,6 @@ import DBIcons
 
 import copy
 
-_CHAR_PIXMAPS = {}
-def _stringToPixMap(character, font, scene):
-    key = (character, font.key())
-    if key not in _CHAR_PIXMAPS:
-        fm = QtGui.QFontMetrics(font)
-        br = fm.tightBoundingRect(character)
-        dx = -br.x() + 1
-        dy = -br.y() + 1
-        br.translate(dx, dy)
-        pix = QtGui.QPixmap(br.width() + 2, br.height() + 2)
-        painter = QtGui.QPainter(pix)
-        painter.setPen(QtCore.Qt.NoPen)
-        painter.setBrush(scene.palette().base())
-        painter.drawRect(0, 0, br.width() + 2, br.height() + 2)
-        painter.setBrush(scene.palette().text())
-        painter.setPen(QtCore.Qt.SolidLine)
-        painter.setFont(font)
-        painter.drawText(dx, dy, character)
-        painter.end()
-        _CHAR_PIXMAPS[key] = pix
-    return _CHAR_PIXMAPS[key]
-
-
 class QMeasure(QtGui.QGraphicsItem):
     '''
     classdocs
@@ -97,9 +74,6 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def paint(self, painter, dummyOption, dummyWidget = None):
         painter.save()
-        painter.setPen(QtCore.Qt.NoPen)
-        painter.setBrush(self.scene().palette().base())
-        painter.drawRect(self._rect)
         painter.setPen(QtCore.Qt.SolidLine)
         font = self._props.noteFont
         if font is None:
@@ -108,18 +82,19 @@ class QMeasure(QtGui.QGraphicsItem):
                    for noteTime in range(0, len(self._measure))]
         for drumIndex in range(0, self._qScore.kitSize):
             baseline = (self._qScore.kitSize - drumIndex) * self._props.ySpacing
-            lineHeight = baseline + (self._props.ySpacing / 2.0)
+            lineHeight = baseline + (self._props.ySpacing / 2.0) - 1
             for noteTime, x in enumerate(xValues):
                 text = self._measure.noteAt(noteTime, drumIndex)
                 if text == DBConstants.EMPTY_NOTE:
                     painter.drawLine(x + 1, lineHeight,
                                      x + self._props.xSpacing - 1, lineHeight)
                 else:
-                    pix = _stringToPixMap(text, font, self.scene())
-                    left = x + (self._props.xSpacing - pix.width() + 2) / 2
-                    top = baseline + (self._props.ySpacing
-                                      - pix.height() + 2) / 2
-                    painter.drawPixmap(left, top, pix)
+                    br = QtGui.QFontMetrics(font).tightBoundingRect(text)
+                    w = br.width()
+                    h = br.height()
+                    textLocation = QtCore.QPointF(x + (self._props.xSpacing - w) / 2,
+                                                  baseline + (self._props.ySpacing + h) / 2)
+                    painter.drawText(textLocation, text)
                 if self._highlight == (noteTime, drumIndex):
                     painter.setPen(self.scene().palette().highlight().color())
                     painter.setBrush(QtCore.Qt.NoBrush)
@@ -130,16 +105,19 @@ class QMeasure(QtGui.QGraphicsItem):
         baseline = (self._qScore.kitSize + 1) * self._props.ySpacing
         for noteTime, count in enumerate(self._measure.count()):
             x = xValues[noteTime]
-            pix = _stringToPixMap(count, font, self.scene())
-            left = x + (self._props.xSpacing - pix.width() + 2) / 2
-            top = baseline + (self._props.ySpacing - pix.height() + 2) / 2
-            painter.drawPixmap(left, top, pix)
+            br = QtGui.QFontMetrics(font).tightBoundingRect(count)
+            w = br.width()
+            h = br.height()
+            textLocation = QtCore.QPointF(x + (self._props.xSpacing - w) / 2,
+                                          baseline + (self._props.ySpacing + h) / 2)
+            painter.drawText(textLocation, count)
             if self._highlight and noteTime == self._highlight[0]:
                 painter.setPen(self.scene().palette().highlight().color())
                 painter.setBrush(QtCore.Qt.NoBrush)
                 painter.drawRect(x, baseline,
                                  self._props.xSpacing - 1,
                                  self._props.ySpacing - 1)
+                painter.setPen(self.scene().palette().text().color())
         if self._measure.isRepeatEnd() and self._measure.repeatCount > 2:
             painter.setPen(self.scene().palette().text().color())
             repeatText = '%dx' % self._measure.repeatCount
@@ -223,7 +201,7 @@ class QMeasure(QtGui.QGraphicsItem):
                 < (1 + self._qScore.kitSize))
 
     def _isOverCount(self, point):
-        return (point.y() / self._props.ySpacing) >= self._qScore.kitSize
+        return (point.y() / self._props.ySpacing) > self._qScore.kitSize + 1
 
     def _isOverRepeatCount(self, point):
         return (self._repeatCountRect is not None
