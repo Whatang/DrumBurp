@@ -91,6 +91,7 @@
     <addaction name="separator"/>
     <addaction name="actionPrint"/>
     <addaction name="actionExportASCII"/>
+    <addaction name="actionExportPDF"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -118,6 +119,8 @@
      </property>
      <addaction name="actionFileToolbarIsVisible"/>
      <addaction name="actionDisplayToolBarIsVisible"/>
+     <addaction name="actionExportToolBarIsVisible"/>
+     <addaction name="actionHelpToolBarIsVisible"/>
     </widget>
     <addaction name="actionFitInWindow"/>
     <addaction name="menuShow"/>
@@ -130,9 +133,17 @@
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionWhatsThis"/>
+    <addaction name="actionAbout_DrumBurp"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="fileToolBar">
@@ -140,7 +151,7 @@
     <enum>Qt::DefaultContextMenu</enum>
    </property>
    <property name="windowTitle">
-    <string>File Tool Bar</string>
+    <string>File</string>
    </property>
    <property name="movable">
     <bool>true</bool>
@@ -164,9 +175,6 @@
    <addaction name="actionLoad"/>
    <addaction name="actionSave"/>
    <addaction name="actionSaveAs"/>
-   <addaction name="actionPrint"/>
-   <addaction name="actionExportASCII"/>
-   <addaction name="actionWhatsThis"/>
   </widget>
   <widget class="QDockWidget" name="noteHeadDock">
    <property name="toolTip">
@@ -929,7 +937,7 @@
   </widget>
   <widget class="QToolBar" name="displayToolBar">
    <property name="windowTitle">
-    <string>Display Tool Bar</string>
+    <string>Display</string>
    </property>
    <property name="movable">
     <bool>true</bool>
@@ -944,6 +952,32 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionFitInWindow"/>
+  </widget>
+  <widget class="QToolBar" name="exportToolBar">
+   <property name="windowTitle">
+    <string>Print &amp;&amp; Export</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionPrint"/>
+   <addaction name="actionExportASCII"/>
+   <addaction name="actionExportPDF"/>
+  </widget>
+  <widget class="QToolBar" name="helpToolBar">
+   <property name="windowTitle">
+    <string>Help</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionWhatsThis"/>
   </widget>
   <action name="actionQuit">
    <property name="icon">
@@ -978,7 +1012,7 @@
     <string>Create a new blank score</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+O</string>
+    <string>Ctrl+N</string>
    </property>
   </action>
   <action name="actionLoad">
@@ -1183,6 +1217,48 @@ Writes this Score as a plain .txt file.</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Y</string>
+   </property>
+  </action>
+  <action name="actionExportPDF">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/pdf.png</normaloff>:/Icons/Icons/pdf.png</iconset>
+   </property>
+   <property name="text">
+    <string>Export PDF</string>
+   </property>
+   <property name="toolTip">
+    <string>Export PDF</string>
+   </property>
+   <property name="statusTip">
+    <string>Export this score to a PDF file</string>
+   </property>
+  </action>
+  <action name="actionAbout_DrumBurp">
+   <property name="text">
+    <string>About DrumBurp</string>
+   </property>
+  </action>
+  <action name="actionExportToolBarIsVisible">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Print &amp;&amp; Export</string>
+   </property>
+   <property name="toolTip">
+    <string>Change visibility of Print &amp; Export Tool Bar</string>
+   </property>
+  </action>
+  <action name="actionHelpToolBarIsVisible">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Help</string>
+   </property>
+   <property name="toolTip">
+    <string>Change the visibility of the Help Tool Bar</string>
    </property>
   </action>
  </widget>
@@ -1783,6 +1859,70 @@ Writes this Score as a plain .txt file.</string>
     <hint type="destinationlabel">
      <x>349</x>
      <y>528</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionExportToolBarIsVisible</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>exportToolBar</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>505</x>
+     <y>41</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>exportToolBar</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionExportToolBarIsVisible</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>505</x>
+     <y>41</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionHelpToolBarIsVisible</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>helpToolBar</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>714</x>
+     <y>41</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>helpToolBar</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionHelpToolBarIsVisible</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>714</x>
+     <y>41</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
     </hint>
    </hints>
   </connection>

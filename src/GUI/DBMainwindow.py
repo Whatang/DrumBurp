@@ -8,7 +8,8 @@ Created on 31 Jul 2010
 from ui_drumburp import Ui_DrumBurpWindow
 from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QFileDialog, QMessageBox,
-                         QPrintPreviewDialog, QWhatsThis)
+                         QPrintPreviewDialog, QWhatsThis,
+                         QPrinter)
 from PyQt4.QtCore import QTimer, pyqtSignature, QSettings, QVariant
 from QScore import QScore
 from QDisplayProperties import QDisplayProperties
@@ -32,6 +33,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         '''
         super(DrumBurp, self).__init__(parent)
         self._state = None
+        self._printer = QPrinter()
         self.setupUi(self)
         DBIcons.initialiseIcons()
         settings = QSettings()
@@ -294,7 +296,22 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionPrint_triggered(self):
-        dialog = QPrintPreviewDialog(self)
+        self._printer.setPaperSize(QPrinter.Letter)
+        dialog = QPrintPreviewDialog(self._printer, parent = self)
+        dialog.paintRequested.connect(self.scoreScene.printScore)
+        dialog.exec_()
+
+    @pyqtSignature("")
+    def on_actionExportPDF_triggered(self):
+        printer = QPrinter()
+        printer.setPaperSize(QPrinter.Letter)
+        if self.filename:
+            outfileName = list(os.path.splitext(self.filename)[:-1])
+            outfileName = os.extsep.join(outfileName + ["pdf"])
+        else:
+            outfileName = "Untitled.pdf"
+        printer.setOutputFileName(outfileName)
+        dialog = QPrintPreviewDialog(printer, parent = self)
         dialog.paintRequested.connect(self.scoreScene.printScore)
         dialog.exec_()
 

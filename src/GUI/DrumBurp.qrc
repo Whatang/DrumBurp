@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="Icons">
+    <file>Icons/pdf.png</file>
     <file>Icons/view-refresh.png</file>
     <file>Icons/drumburp.png</file>
     <file>Icons/audio-x-generic.png</file>
