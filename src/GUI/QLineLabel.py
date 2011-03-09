@@ -7,7 +7,6 @@ Created on 19 Jan 2011
 from QDBGridItem import QDBGridItem
 from QEditKitDialog import QEditKitDialog
 from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QFontMetrics
 
 class QLineLabel(QDBGridItem):
     def __init__(self, drum, qScore, parent):

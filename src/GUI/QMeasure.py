@@ -93,8 +93,8 @@ class QMeasure(QtGui.QGraphicsItem):
                     br = QtGui.QFontMetrics(font).tightBoundingRect(text)
                     w = br.width()
                     h = br.height()
-                    textLocation = QtCore.QPointF(x + (self._props.xSpacing - w) / 2,
-                                                  baseline + (self._props.ySpacing + h) / 2)
+                    textLocation = QtCore.QPointF(x + (self._props.xSpacing - w + 2) / 2,
+                                                  baseline - (h + br.y()) + (self._props.ySpacing + h) / 2)
                     painter.drawText(textLocation, text)
                 if self._highlight == (noteTime, drumIndex):
                     painter.setPen(self.scene().palette().highlight().color())
@@ -110,7 +110,7 @@ class QMeasure(QtGui.QGraphicsItem):
             w = br.width()
             h = br.height()
             textLocation = QtCore.QPointF(x + (self._props.xSpacing - w) / 2,
-                                          baseline + (self._props.ySpacing + h) / 2)
+                                          baseline - (h + br.y()) + (self._props.ySpacing + h) / 2)
             painter.drawText(textLocation, count)
             if self._highlight and noteTime == self._highlight[0]:
                 painter.setPen(self.scene().palette().highlight().color())

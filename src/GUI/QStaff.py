@@ -109,6 +109,8 @@ class QStaff(QtGui.QGraphicsItemGroup):
 
     def xSpacingChanged(self):
         xOffset = self._lineLabels[0].cellWidth()
+        for label in self._lineLabels:
+            label.xSpacingChanged()
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
             qMeasureLine.setPos(xOffset, self._props.ySpacing)
