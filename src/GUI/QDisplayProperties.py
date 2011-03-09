@@ -152,7 +152,6 @@ class QDisplayProperties(QObject):
         return self._sectionFontSize
     def _setsectionFontSize(self, value):
         if self._sectionFontSize != value:
-            print value
             self._sectionFontSize = value
             self.sectionFont.setPointSize(value)
             self.sectionFontSizeChanged.emit()
