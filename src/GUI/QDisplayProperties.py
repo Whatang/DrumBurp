@@ -58,7 +58,7 @@ class QDisplayProperties(QObject):
     MAX_LINE_SPACE = 80
     LINE_SPACE_RANGE = MAX_LINE_SPACE - MIN_LINE_SPACE
 
-    LINELABELWIDTH = 30
+#    LINELABELWIDTH = 30
 
     def __init__(self, settings = None, qScore = Null()):
         super(QDisplayProperties, self).__init__()

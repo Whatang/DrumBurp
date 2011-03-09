@@ -23,14 +23,6 @@ class ScoreView(QtGui.QGraphicsView):
         self.centerOn(0, 0)
 
     @QtCore.pyqtSlot(int)
-    def horizontalSpacingChanged(self, value):
-        self._props.xSpacing = value - 101
-
-    @QtCore.pyqtSlot(int)
-    def verticalSpacingChanged(self, value):
-        self._props.ySpacing = value - 101
-
-    @QtCore.pyqtSlot(int)
     def systemSpacingChanged(self, value):
         self._props.lineSpacing = value - 101
 
@@ -76,6 +68,13 @@ class ScoreView(QtGui.QGraphicsView):
     @QtCore.pyqtSlot(QtGui.QFont)
     def setFont(self, font):
         self._props.noteFont = font
+
+    @QtCore.pyqtSlot(int)
+    def setNoteFontSize(self, size):
+        self._props.noteFont.setPointSize(size)
+        br = QtGui.QFontMetrics(self._props.noteFont).tightBoundingRect("X")
+        self._props.xSpacing = br.width() + 2
+        self._props.ySpacing = br.height() + 2
 
     @QtCore.pyqtSlot(QtGui.QFont)
     def setSectionFont(self, font):

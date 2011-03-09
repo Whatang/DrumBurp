@@ -78,6 +78,7 @@ class QMeasure(QtGui.QGraphicsItem):
         font = self._props.noteFont
         if font is None:
             font = painter.font()
+        painter.setFont(font)
         xValues = [noteTime * self._props.xSpacing
                    for noteTime in range(0, len(self._measure))]
         for drumIndex in range(0, self._qScore.kitSize):

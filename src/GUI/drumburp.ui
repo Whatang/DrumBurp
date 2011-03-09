@@ -361,94 +361,6 @@
    <widget class="QWidget" name="dockWidgetContents_2">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QLabel" name="spacingLabel">
-       <property name="text">
-        <string>Horizontal Spacing</string>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
-       </property>
-       <property name="buddy">
-        <cstring>spaceSlider</cstring>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSlider" name="spaceSlider">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>Note width</string>
-       </property>
-       <property name="statusTip">
-        <string>The width of each note in the Score</string>
-       </property>
-       <property name="maximum">
-        <number>100</number>
-       </property>
-       <property name="value">
-        <number>0</number>
-       </property>
-       <property name="tracking">
-        <bool>false</bool>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="tickPosition">
-        <enum>QSlider::TicksBelow</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="toolTip">
-        <string/>
-       </property>
-       <property name="statusTip">
-        <string/>
-       </property>
-       <property name="text">
-        <string>Vertical Spacing</string>
-       </property>
-       <property name="buddy">
-        <cstring>verticalSlider</cstring>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSlider" name="verticalSlider">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>Note height</string>
-       </property>
-       <property name="statusTip">
-        <string>The height of each note in the Score</string>
-       </property>
-       <property name="maximum">
-        <number>100</number>
-       </property>
-       <property name="tracking">
-        <bool>false</bool>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="tickPosition">
-        <enum>QSlider::TicksBelow</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QLabel" name="label_2">
        <property name="toolTip">
         <string/>
@@ -548,17 +460,17 @@
         </widget>
        </item>
        <item>
-        <spacer name="horizontalSpacer_5">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+        <widget class="QSpinBox" name="noteSizeSpinBox">
+         <property name="minimum">
+          <number>6</number>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
+         <property name="maximum">
+          <number>30</number>
          </property>
-        </spacer>
+         <property name="value">
+          <number>10</number>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -1281,8 +1193,6 @@ Writes this Score as a plain .txt file.</string>
   <tabstop>bpmSpinBox</tabstop>
   <tabstop>widthSpinBox</tabstop>
   <tabstop>fitWindowButton</tabstop>
-  <tabstop>spaceSlider</tabstop>
-  <tabstop>verticalSlider</tabstop>
   <tabstop>lineSpaceSlider</tabstop>
   <tabstop>fontComboBox</tabstop>
   <tabstop>beatsSpinBox</tabstop>
@@ -1415,38 +1325,6 @@ Writes this Score as a plain .txt file.</string>
    </hints>
   </connection>
   <connection>
-   <sender>spaceSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>scoreView</receiver>
-   <slot>horizontalSpacingChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>116</x>
-     <y>366</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>378</x>
-     <y>451</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>verticalSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>scoreView</receiver>
-   <slot>verticalSpacingChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>131</x>
-     <y>415</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>449</x>
-     <y>499</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>lineSpaceSlider</sender>
    <signal>valueChanged(int)</signal>
    <receiver>scoreView</receiver>
@@ -1454,7 +1332,7 @@ Writes this Score as a plain .txt file.</string>
    <hints>
     <hint type="sourcelabel">
      <x>121</x>
-     <y>464</y>
+     <y>413</y>
     </hint>
     <hint type="destinationlabel">
      <x>431</x>
@@ -1469,8 +1347,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setFont(QFont)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>166</x>
-     <y>500</y>
+     <x>167</x>
+     <y>459</y>
     </hint>
     <hint type="destinationlabel">
      <x>454</x>
@@ -1585,7 +1463,7 @@ Writes this Score as a plain .txt file.</string>
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>206</x>
+     <x>167</x>
      <y>62</y>
     </hint>
    </hints>
@@ -1597,7 +1475,7 @@ Writes this Score as a plain .txt file.</string>
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>206</x>
+     <x>167</x>
      <y>62</y>
     </hint>
     <hint type="destinationlabel">
@@ -1645,8 +1523,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>523</x>
-     <y>32</y>
+     <x>210</x>
+     <y>53</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -1665,8 +1543,8 @@ Writes this Score as a plain .txt file.</string>
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>523</x>
-     <y>32</y>
+     <x>210</x>
+     <y>53</y>
     </hint>
    </hints>
   </connection>
@@ -1678,7 +1556,7 @@ Writes this Score as a plain .txt file.</string>
    <hints>
     <hint type="sourcelabel">
      <x>174</x>
-     <y>604</y>
+     <y>553</y>
     </hint>
     <hint type="destinationlabel">
      <x>760</x>
@@ -1837,8 +1715,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setSectionFont(QFont)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>118</x>
-     <y>544</y>
+     <x>119</x>
+     <y>506</y>
     </hint>
     <hint type="destinationlabel">
      <x>320</x>
@@ -1853,8 +1731,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setSectionFontSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>223</x>
-     <y>553</y>
+     <x>244</x>
+     <y>506</y>
     </hint>
     <hint type="destinationlabel">
      <x>349</x>
@@ -1873,8 +1751,8 @@ Writes this Score as a plain .txt file.</string>
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>505</x>
-     <y>41</y>
+     <x>315</x>
+     <y>62</y>
     </hint>
    </hints>
   </connection>
@@ -1885,8 +1763,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>505</x>
-     <y>41</y>
+     <x>315</x>
+     <y>62</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -1923,6 +1801,22 @@ Writes this Score as a plain .txt file.</string>
     <hint type="destinationlabel">
      <x>-1</x>
      <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>noteSizeSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setNoteFontSize(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>227</x>
+     <y>451</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>349</x>
+     <y>447</y>
     </hint>
    </hints>
   </connection>

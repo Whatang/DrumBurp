@@ -39,6 +39,7 @@ class QDBGridItem(QtGui.QGraphicsItem):
         return self._rect
 
     def paint(self, painter, dummyOption, dummyWidget = None):
+        painter.save()
         painter.setPen(QtCore.Qt.NoPen)
         if len(self._text) > 0:
             painter.setPen(QtCore.Qt.SolidLine)
@@ -50,6 +51,7 @@ class QDBGridItem(QtGui.QGraphicsItem):
                 font = self._props.noteFont
                 if font is None:
                     font = painter.font()
+                painter.setFont(font)
                 br = QtGui.QFontMetrics(font).tightBoundingRect(self._text)
                 w = br.width()
                 h = br.height()
@@ -61,6 +63,7 @@ class QDBGridItem(QtGui.QGraphicsItem):
             painter.setPen(self.scene().palette().highlight().color())
             painter.setBrush(QtCore.Qt.NoBrush)
             painter.drawRect(0, 0, self.cellWidth() - 1, self.cellHeight())
+        painter.restore()
 
     def cellWidth(self):
         raise NotImplementedError()

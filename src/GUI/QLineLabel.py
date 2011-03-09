@@ -7,6 +7,7 @@ Created on 19 Jan 2011
 from QDBGridItem import QDBGridItem
 from QEditKitDialog import QEditKitDialog
 from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QFontMetrics
 
 class QLineLabel(QDBGridItem):
     def __init__(self, drum, qScore, parent):
@@ -19,7 +20,7 @@ class QLineLabel(QDBGridItem):
         return self._props.ySpacing
 
     def cellWidth(self):
-        return self._props.LINELABELWIDTH
+        return 2 * self._props.xSpacing
 
     def mouseDoubleClickEvent(self, event_):
         editDialog = QEditKitDialog(self.scene().score.drumKit,
