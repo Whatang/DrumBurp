@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>668</height>
+    <height>769</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -756,6 +756,74 @@
       </widget>
      </item>
      <item>
+      <widget class="QGroupBox" name="groupBox_6">
+       <property name="title">
+        <string>Song Properties Font</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QFontComboBox" name="metadataFontCombo">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>60</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>187</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="statusTip">
+           <string>The font used to display section titles in the Score</string>
+          </property>
+          <property name="editable">
+           <bool>false</bool>
+          </property>
+          <property name="maxVisibleItems">
+           <number>20</number>
+          </property>
+          <property name="fontFilters">
+           <set>QFontComboBox::ScalableFonts</set>
+          </property>
+          <property name="currentFont">
+           <font>
+            <family>BatangChe</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="metadataFontSizeSpinbox">
+          <property name="statusTip">
+           <string>Size of section titles.</string>
+          </property>
+          <property name="minimum">
+           <number>8</number>
+          </property>
+          <property name="maximum">
+           <number>48</number>
+          </property>
+          <property name="value">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
       <widget class="QGroupBox" name="groupBox_3">
        <property name="title">
         <string>System Spacing</string>
@@ -845,11 +913,6 @@
          </widget>
         </item>
        </layout>
-       <zorder>label_4</zorder>
-       <zorder>label_4</zorder>
-       <zorder>beatsSpinBox</zorder>
-       <zorder>label_5</zorder>
-       <zorder>beatCountComboBox</zorder>
       </widget>
      </item>
      <item>
@@ -1380,7 +1443,7 @@ Writes this Score as a plain .txt file.</string>
    <hints>
     <hint type="sourcelabel">
      <x>75</x>
-     <y>204</y>
+     <y>201</y>
     </hint>
     <hint type="destinationlabel">
      <x>440</x>
@@ -1396,7 +1459,7 @@ Writes this Score as a plain .txt file.</string>
    <hints>
     <hint type="sourcelabel">
      <x>48</x>
-     <y>227</y>
+     <y>224</y>
     </hint>
     <hint type="destinationlabel">
      <x>380</x>
@@ -1411,8 +1474,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>164</x>
-     <y>227</y>
+     <x>91</x>
+     <y>247</y>
     </hint>
     <hint type="destinationlabel">
      <x>371</x>
@@ -1427,8 +1490,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>56</x>
-     <y>250</y>
+     <x>115</x>
+     <y>224</y>
     </hint>
     <hint type="destinationlabel">
      <x>373</x>
@@ -1443,8 +1506,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>164</x>
-     <y>250</y>
+     <x>180</x>
+     <y>247</y>
     </hint>
     <hint type="destinationlabel">
      <x>369</x>
@@ -1459,8 +1522,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>75</x>
-     <y>273</y>
+     <x>134</x>
+     <y>270</y>
     </hint>
     <hint type="destinationlabel">
      <x>365</x>
@@ -1475,8 +1538,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>245</x>
-     <y>227</y>
+     <x>269</x>
+     <y>224</y>
     </hint>
     <hint type="destinationlabel">
      <x>462</x>
@@ -1603,8 +1666,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>245</x>
-     <y>250</y>
+     <x>269</x>
+     <y>247</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
@@ -1619,12 +1682,12 @@ Writes this Score as a plain .txt file.</string>
    <slot>setNoteHead(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>245</x>
-     <y>273</y>
+     <x>91</x>
+     <y>270</y>
     </hint>
     <hint type="destinationlabel">
-     <x>268</x>
-     <y>240</y>
+     <x>560</x>
+     <y>403</y>
     </hint>
    </hints>
   </connection>
@@ -1811,8 +1874,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setDefaultMeasureWidth(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>174</x>
-     <y>553</y>
+     <x>259</x>
+     <y>603</y>
     </hint>
     <hint type="destinationlabel">
      <x>760</x>
@@ -1827,8 +1890,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>740</x>
-     <y>143</y>
+     <x>247</x>
+     <y>723</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -1843,12 +1906,12 @@ Writes this Score as a plain .txt file.</string>
    <slot>setWidth(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>646</x>
-     <y>141</y>
+     <x>113</x>
+     <y>706</y>
     </hint>
     <hint type="destinationlabel">
-     <x>283</x>
-     <y>525</y>
+     <x>575</x>
+     <y>688</y>
     </hint>
    </hints>
   </connection>
@@ -1859,8 +1922,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>systemSpacingChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>121</x>
-     <y>413</y>
+     <x>131</x>
+     <y>544</y>
     </hint>
     <hint type="destinationlabel">
      <x>431</x>
@@ -1907,8 +1970,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setFont(QFont)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>167</x>
-     <y>459</y>
+     <x>177</x>
+     <y>363</y>
     </hint>
     <hint type="destinationlabel">
      <x>454</x>
@@ -1923,8 +1986,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setNoteFontSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>227</x>
-     <y>451</y>
+     <x>253</x>
+     <y>363</y>
     </hint>
     <hint type="destinationlabel">
      <x>349</x>
@@ -1939,8 +2002,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setSectionFontSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>244</x>
-     <y>506</y>
+     <x>253</x>
+     <y>422</y>
     </hint>
     <hint type="destinationlabel">
      <x>349</x>
@@ -1955,8 +2018,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setSectionFont(QFont)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>506</y>
+     <x>129</x>
+     <y>422</y>
     </hint>
     <hint type="destinationlabel">
      <x>320</x>
@@ -1975,8 +2038,8 @@ Writes this Score as a plain .txt file.</string>
      <y>188</y>
     </hint>
     <hint type="destinationlabel">
-     <x>642</x>
-     <y>130</y>
+     <x>113</x>
+     <y>706</y>
     </hint>
    </hints>
   </connection>
@@ -1987,12 +2050,44 @@ Writes this Score as a plain .txt file.</string>
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>167</x>
-     <y>622</y>
+     <x>247</x>
+     <y>693</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
      <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>metadataFontCombo</sender>
+   <signal>currentFontChanged(QFont)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setMetadataFont(QFont)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>85</x>
+     <y>467</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>351</x>
+     <y>427</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>metadataFontSizeSpinbox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setMetadataFontSize(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>232</x>
+     <y>469</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>323</x>
+     <y>472</y>
     </hint>
    </hints>
   </connection>

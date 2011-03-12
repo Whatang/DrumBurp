@@ -70,6 +70,8 @@ class QDisplayProperties(QObject):
         self._noteFont = None
         self._sectionFont = None
         self._sectionFontSize = 20
+        self._metadataFont = None
+        self._metadataFontSize = 20
         self._head = None
         self._width = 80
         self.beatsPerMeasure = 4
@@ -81,6 +83,8 @@ class QDisplayProperties(QObject):
     fontChanged = pyqtSignal()
     sectionFontChanged = pyqtSignal()
     sectionFontSizeChanged = pyqtSignal()
+    metadataFontChanged = pyqtSignal()
+    metadataFontSizeChanged = pyqtSignal()
 
     def connectScore(self, score):
         self.xSpacingChanged.connect(score.xSpacingChanged)
@@ -88,7 +92,9 @@ class QDisplayProperties(QObject):
         self.lineSpacingChanged.connect(score.lineSpacingChanged)
         self.fontChanged.connect(score.update)
         self.sectionFontChanged.connect(score.sectionFontChanged)
-        self.sectionFontSizeChanged.connect(score.sectionFontSizeChanged)
+        self.sectionFontSizeChanged.connect(score.sectionFontChanged)
+        self.metadataFontChanged.connect(score.metadataFontChanged)
+        self.metadataFontSizeChanged.connect(score.metadataFontChanged)
 
     def _getxSpacing(self):
         return self._xSpacing
@@ -166,6 +172,25 @@ class QDisplayProperties(QObject):
             self._sectionFont = value
             self.sectionFontChanged.emit()
     sectionFont = property(fget = _getsectionFont, fset = _setsectionFont)
+
+    def _getmetadataFontSize(self):
+        return self._metadataFontSize
+    def _setmetadataFontSize(self, value):
+        if self._metadataFontSize != value:
+            self._metadataFontSize = value
+            self.metadataFont.setPointSize(value)
+            self.metadataFontSizeChanged.emit()
+    metadataFontSize = property(fget = _getmetadataFontSize, fset = _setmetadataFontSize)
+
+    def _getmetadataFont(self):
+        return self._metadataFont
+    def _setmetadataFont(self, value):
+        if self._metadataFont != value:
+            value.setBold(True)
+            value.setPointSize(self._metadataFontSize)
+            self._metadataFont = value
+            self.metadataFontChanged.emit()
+    metadataFont = property(fget = _getmetadataFont, fset = _setmetadataFont)
 
     def _gethead(self):
         return self._head

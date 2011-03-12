@@ -10,7 +10,7 @@ from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QFileDialog, QMessageBox,
                          QPrintPreviewDialog, QWhatsThis,
                          QPrinter)
-from PyQt4.QtCore import QTimer, pyqtSignature, QSettings, QVariant
+from PyQt4.QtCore import pyqtSignature, QSettings, QVariant
 from QScore import QScore
 from QDisplayProperties import QDisplayProperties
 from QNewScoreDialog import QNewScoreDialog
@@ -49,9 +49,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.fontComboBox.setWritingSystem(QFontDatabase.Latin)
         self.sectionFontCombo.setWritingSystem(QFontDatabase.Latin)
         self.sectionFontSizeSpinbox.setValue(self.songProperties.sectionFontSize)
+        self.sectionFontCombo.setWritingSystem(QFontDatabase.Latin)
+        self.sectionFontSizeSpinbox.setValue(self.songProperties.metadataFontSize)
         self.lineSpaceSlider.setValue(10)
         self.scoreView.startUp()
-
         self.beatsSpinBox.setValue(self.songProperties.beatsPerMeasure)
         DBUtility.populateCounterCombo(self.beatCountComboBox,
                                        self.songProperties.beatCounter)
@@ -62,6 +63,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.sectionFontCombo.setCurrentFont(font)
         self.sectionFontSizeSpinbox.setValue(19)
         self.sectionFontSizeSpinbox.setValue(20)
+        self.metadataFontCombo.setCurrentFont(font)
+        self.metadataFontSizeSpinbox.setValue(19)
+        self.metadataFontSizeSpinbox.setValue(20)
         self.scoreScene.dirtySignal.connect(self.setWindowModified)
         self.actionUndo.setEnabled(False)
         self.actionRedo.setEnabled(False)

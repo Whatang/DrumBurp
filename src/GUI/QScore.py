@@ -8,6 +8,7 @@ Created on 4 Jan 2011
 from PyQt4 import QtGui, QtCore
 from QStaff import QStaff
 from QSection import QSection
+from QMetaData import QMetaData
 from Data.Score import ScoreFactory
 from DBCommands import MetaDataCommand, ScoreWidthCommand, PasteMeasure
 import functools
@@ -57,6 +58,8 @@ class QScore(QtGui.QGraphicsScene):
         self._undoStack.undoTextChanged.connect(self.undoTextChanged)
         self._undoStack.canRedoChanged.connect(self.canRedoChanged)
         self._undoStack.redoTextChanged.connect(self.redoTextChanged)
+        self._metaData = QMetaData(self)
+        self._metaData.setPos(self._properties.xMargins, self._properties.yMargins)
         if parent.filename is not None:
             if not self.loadScore(parent.filename):
                 parent.filename = None
@@ -202,7 +205,7 @@ class QScore(QtGui.QGraphicsScene):
         xMargins = self._properties.xMargins
         yMargins = self._properties.yMargins
         lineSpacing = self._properties.lineSpacing
-        yOffset = yMargins
+        yOffset = self._properties.yMargins + self._metaData.boundingRect().height()
         newSection = True
         sectionIndex = 0
         maxWidth = 0
@@ -237,7 +240,7 @@ class QScore(QtGui.QGraphicsScene):
         xMargins = self._properties.xMargins
         yMargins = self._properties.yMargins
         lineSpacing = self._properties.lineSpacing
-        yOffset = yMargins
+        yOffset = self._properties.yMargins + self._metaData.boundingRect().height()
         newSection = True
         sectionIndex = 0
         for qStaff in self:
@@ -248,7 +251,6 @@ class QScore(QtGui.QGraphicsScene):
                     sectionIndex += 1
                     qSection.setPos(xMargins, yOffset)
                     yOffset += qSection.boundingRect().height()
-#                    yOffset += lineSpacing
             newSection = qStaff.isSectionEnd()
             qStaff.setPos(xMargins, yOffset)
             qStaff.ySpacingChanged()
@@ -261,7 +263,7 @@ class QScore(QtGui.QGraphicsScene):
         xMargins = self._properties.xMargins
         yMargins = self._properties.yMargins
         lineSpacing = self._properties.lineSpacing
-        yOffset = yMargins
+        yOffset = self._properties.yMargins + self._metaData.boundingRect().height()
         sectionIndex = 0
         newSection = True
         for qStaff in self:
@@ -272,7 +274,6 @@ class QScore(QtGui.QGraphicsScene):
                     sectionIndex += 1
                     qSection.setPos(xMargins, yOffset)
                     yOffset += qSection.boundingRect().height()
-#                    yOffset += lineSpacing
             newSection = qStaff.isSectionEnd()
             qStaff.setPos(xMargins, yOffset)
             yOffset += qStaff.height() + lineSpacing
@@ -281,13 +282,14 @@ class QScore(QtGui.QGraphicsScene):
                           yOffset - lineSpacing + yMargins)
 
     def sectionFontChanged(self):
+        self._metaData.fontChanged()
         for qsection in self._qSections:
             qsection.setFont(self._properties.sectionFont)
-
-    def sectionFontSizeChanged(self):
-        self.sectionFontChanged()
         self.lineSpacingChanged()
 
+    def metadataFontChanged(self):
+        self._metaData.fontChanged()
+        self.lineSpacingChanged()
 
     def dataChanged(self, notePosition):
         staff = self._qStaffs[notePosition.staffIndex]

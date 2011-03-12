@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Thu Mar 10 23:43:26 2011
+# Created: Sat Mar 12 17:33:29 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_DrumBurpWindow(object):
     def setupUi(self, DrumBurpWindow):
         DrumBurpWindow.setObjectName(_fromUtf8("DrumBurpWindow"))
-        DrumBurpWindow.resize(800, 668)
+        DrumBurpWindow.resize(800, 769)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/drumburp.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         DrumBurpWindow.setWindowIcon(icon)
@@ -252,6 +252,35 @@ class Ui_DrumBurpWindow(object):
         spacerItem3 = QtGui.QSpacerItem(0, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_5.addItem(spacerItem3)
         self.verticalLayout.addWidget(self.groupBox_5)
+        self.groupBox_6 = QtGui.QGroupBox(self.dockWidgetContents_2)
+        self.groupBox_6.setObjectName(_fromUtf8("groupBox_6"))
+        self.horizontalLayout_4 = QtGui.QHBoxLayout(self.groupBox_6)
+        self.horizontalLayout_4.setObjectName(_fromUtf8("horizontalLayout_4"))
+        self.metadataFontCombo = QtGui.QFontComboBox(self.groupBox_6)
+        self.metadataFontCombo.setEnabled(True)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.metadataFontCombo.sizePolicy().hasHeightForWidth())
+        self.metadataFontCombo.setSizePolicy(sizePolicy)
+        self.metadataFontCombo.setMinimumSize(QtCore.QSize(60, 20))
+        self.metadataFontCombo.setMaximumSize(QtCore.QSize(187, 20))
+        self.metadataFontCombo.setEditable(False)
+        self.metadataFontCombo.setMaxVisibleItems(20)
+        self.metadataFontCombo.setFontFilters(QtGui.QFontComboBox.ScalableFonts)
+        font = QtGui.QFont()
+        font.setFamily(_fromUtf8("BatangChe"))
+        font.setPointSize(10)
+        self.metadataFontCombo.setCurrentFont(font)
+        self.metadataFontCombo.setObjectName(_fromUtf8("metadataFontCombo"))
+        self.horizontalLayout_4.addWidget(self.metadataFontCombo)
+        self.metadataFontSizeSpinbox = QtGui.QSpinBox(self.groupBox_6)
+        self.metadataFontSizeSpinbox.setMinimum(8)
+        self.metadataFontSizeSpinbox.setMaximum(48)
+        self.metadataFontSizeSpinbox.setProperty(_fromUtf8("value"), 20)
+        self.metadataFontSizeSpinbox.setObjectName(_fromUtf8("metadataFontSizeSpinbox"))
+        self.horizontalLayout_4.addWidget(self.metadataFontSizeSpinbox)
+        self.verticalLayout.addWidget(self.groupBox_6)
         self.groupBox_3 = QtGui.QGroupBox(self.dockWidgetContents_2)
         self.groupBox_3.setObjectName(_fromUtf8("groupBox_3"))
         self.horizontalLayout_2 = QtGui.QHBoxLayout(self.groupBox_3)
@@ -545,6 +574,8 @@ class Ui_DrumBurpWindow(object):
         QtCore.QObject.connect(self.sectionFontCombo, QtCore.SIGNAL(_fromUtf8("currentFontChanged(QFont)")), self.scoreView.setSectionFont)
         QtCore.QObject.connect(self.scoreView, QtCore.SIGNAL(_fromUtf8("widthChanged(int)")), self.widthSpinBox.setValue)
         QtCore.QObject.connect(self.fitPageButton, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.actionFitPage.trigger)
+        QtCore.QObject.connect(self.metadataFontCombo, QtCore.SIGNAL(_fromUtf8("currentFontChanged(QFont)")), self.scoreView.setMetadataFont)
+        QtCore.QObject.connect(self.metadataFontSizeSpinbox, QtCore.SIGNAL(_fromUtf8("valueChanged(int)")), self.scoreView.setMetadataFontSize)
         QtCore.QMetaObject.connectSlotsByName(DrumBurpWindow)
         DrumBurpWindow.setTabOrder(self.songNameEdit, self.artistNameEdit)
         DrumBurpWindow.setTabOrder(self.artistNameEdit, self.tabberEdit)
@@ -632,6 +663,9 @@ class Ui_DrumBurpWindow(object):
         self.groupBox_5.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "Section Title Font", None, QtGui.QApplication.UnicodeUTF8))
         self.sectionFontCombo.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "The font used to display section titles in the Score", None, QtGui.QApplication.UnicodeUTF8))
         self.sectionFontSizeSpinbox.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Size of section titles.", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox_6.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "Song Properties Font", None, QtGui.QApplication.UnicodeUTF8))
+        self.metadataFontCombo.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "The font used to display section titles in the Score", None, QtGui.QApplication.UnicodeUTF8))
+        self.metadataFontSizeSpinbox.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Size of section titles.", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_3.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "System Spacing", None, QtGui.QApplication.UnicodeUTF8))
         self.lineSpaceSlider.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Inter-system distance", None, QtGui.QApplication.UnicodeUTF8))
         self.lineSpaceSlider.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "The distance between each system in the Score", None, QtGui.QApplication.UnicodeUTF8))
