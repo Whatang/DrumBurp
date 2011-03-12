@@ -115,7 +115,7 @@
     </widget>
     <widget class="QMenu" name="menuShowToolBars">
      <property name="title">
-      <string>Show Tool Bars...</string>
+      <string>Tool Bars...</string>
      </property>
      <addaction name="actionFileToolbarIsVisible"/>
      <addaction name="actionDisplayToolBarIsVisible"/>
@@ -123,6 +123,13 @@
      <addaction name="actionHelpToolBarIsVisible"/>
     </widget>
     <addaction name="actionFitInWindow"/>
+    <addaction name="actionFitPage"/>
+    <addaction name="separator"/>
+    <addaction name="actionShowScoreInfo"/>
+    <addaction name="actionShowDrumKey"/>
+    <addaction name="actionShowEmptyLines"/>
+    <addaction name="actionShowBeatCount"/>
+    <addaction name="separator"/>
     <addaction name="menuShow"/>
     <addaction name="menuShowToolBars"/>
    </widget>
@@ -138,7 +145,7 @@
      <string>Help</string>
     </property>
     <addaction name="actionWhatsThis"/>
-    <addaction name="actionAbout_DrumBurp"/>
+    <addaction name="actionAboutDrumBurp"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -177,6 +184,12 @@
    <addaction name="actionSaveAs"/>
   </widget>
   <widget class="QDockWidget" name="noteHeadDock">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <property name="toolTip">
     <string>Select the note head</string>
    </property>
@@ -226,22 +239,6 @@
        </property>
       </spacer>
      </item>
-     <item row="3" column="1">
-      <widget class="RadioButtonTeller" name="bigXNoteHeadButton">
-       <property name="toolTip">
-        <string>X note head</string>
-       </property>
-       <property name="statusTip">
-        <string>Use &quot;X&quot; as the note head</string>
-       </property>
-       <property name="text">
-        <string>X</string>
-       </property>
-       <property name="buttonValue" stdset="0">
-        <string>X</string>
-       </property>
-      </widget>
-     </item>
      <item row="3" column="0">
       <widget class="RadioButtonTeller" name="xNoteHeadButton">
        <property name="toolTip">
@@ -274,22 +271,6 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
-      <widget class="RadioButtonTeller" name="oNoteHeadButton">
-       <property name="toolTip">
-        <string>o note head</string>
-       </property>
-       <property name="statusTip">
-        <string>Use &quot;o&quot; as the note head</string>
-       </property>
-       <property name="text">
-        <string>o</string>
-       </property>
-       <property name="buttonValue" stdset="0">
-        <string>o</string>
-       </property>
-      </widget>
-     </item>
      <item row="3" column="2">
       <widget class="RadioButtonTeller" name="gNoteHeadButton">
        <property name="toolTip">
@@ -313,7 +294,39 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
+     <item row="5" column="0">
+      <widget class="RadioButtonTeller" name="bigXNoteHeadButton">
+       <property name="toolTip">
+        <string>X note head</string>
+       </property>
+       <property name="statusTip">
+        <string>Use &quot;X&quot; as the note head</string>
+       </property>
+       <property name="text">
+        <string>X</string>
+       </property>
+       <property name="buttonValue" stdset="0">
+        <string>X</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="RadioButtonTeller" name="oNoteHeadButton">
+       <property name="toolTip">
+        <string>o note head</string>
+       </property>
+       <property name="statusTip">
+        <string>Use &quot;o&quot; as the note head</string>
+       </property>
+       <property name="text">
+        <string>o</string>
+       </property>
+       <property name="buttonValue" stdset="0">
+        <string>o</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
       <widget class="RadioButtonTeller" name="plusNoteHeadButton">
        <property name="toolTip">
         <string>+ note head</string>
@@ -329,7 +342,7 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="2">
+     <item row="6" column="0">
       <widget class="RadioButtonTeller" name="dragNoteTeller">
        <property name="text">
         <string>d</string>
@@ -339,310 +352,74 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="diplayOptionsDock">
-   <property name="toolTip">
-    <string>Display Options</string>
+  <widget class="QToolBar" name="displayToolBar">
+   <property name="windowTitle">
+    <string>Display</string>
    </property>
-   <property name="statusTip">
-    <string>Options affecting how the Score is displayed</string>
-   </property>
-   <property name="features">
-    <set>QDockWidget::AllDockWidgetFeatures</set>
+   <property name="movable">
+    <bool>true</bool>
    </property>
    <property name="allowedAreas">
-    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+    <set>Qt::TopToolBarArea</set>
    </property>
-   <property name="windowTitle">
-    <string>Display Options</string>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
    </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2">
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QLabel" name="label_2">
-       <property name="toolTip">
-        <string/>
-       </property>
-       <property name="statusTip">
-        <string/>
-       </property>
-       <property name="text">
-        <string>System Spacing</string>
-       </property>
-       <property name="buddy">
-        <cstring>lineSpaceSlider</cstring>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSlider" name="lineSpaceSlider">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>Inter-system distance</string>
-       </property>
-       <property name="statusTip">
-        <string>The distance between each system in the Score</string>
-       </property>
-       <property name="maximum">
-        <number>100</number>
-       </property>
-       <property name="tracking">
-        <bool>false</bool>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="tickPosition">
-        <enum>QSlider::TicksBelow</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="widthLabel">
-       <property name="text">
-        <string>Note font</string>
-       </property>
-       <property name="buddy">
-        <cstring>fontComboBox</cstring>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_5">
-       <item>
-        <widget class="QFontComboBox" name="fontComboBox">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>100</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>187</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="statusTip">
-          <string>The font used to display notes in the Score</string>
-         </property>
-         <property name="editable">
-          <bool>false</bool>
-         </property>
-         <property name="maxVisibleItems">
-          <number>20</number>
-         </property>
-         <property name="fontFilters">
-          <set>QFontComboBox::ScalableFonts</set>
-         </property>
-         <property name="currentFont">
-          <font>
-           <family>BatangChe</family>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="noteSizeSpinBox">
-         <property name="minimum">
-          <number>6</number>
-         </property>
-         <property name="maximum">
-          <number>30</number>
-         </property>
-         <property name="value">
-          <number>10</number>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_7">
-       <property name="text">
-        <string>Section Title font</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
-       <item>
-        <widget class="QFontComboBox" name="sectionFontCombo">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>100</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>187</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="statusTip">
-          <string>The font used to display notes in the Score</string>
-         </property>
-         <property name="editable">
-          <bool>false</bool>
-         </property>
-         <property name="maxVisibleItems">
-          <number>20</number>
-         </property>
-         <property name="fontFilters">
-          <set>QFontComboBox::ScalableFonts</set>
-         </property>
-         <property name="currentFont">
-          <font>
-           <family>BatangChe</family>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="sectionFontSizeSpinbox">
-         <property name="minimum">
-          <number>8</number>
-         </property>
-         <property name="maximum">
-          <number>48</number>
-         </property>
-         <property name="value">
-          <number>20</number>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_6">
-       <property name="text">
-        <string>Default Measure Options:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>Beats per measure</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="beatsSpinBox">
-         <property name="toolTip">
-          <string>Default Measure Width</string>
-         </property>
-         <property name="statusTip">
-          <string>The number of ticks in default measures added to the Score</string>
-         </property>
-         <property name="suffix">
-          <string> beats</string>
-         </property>
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>256</number>
-         </property>
-         <property name="value">
-          <number>4</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QLabel" name="label_5">
-         <property name="text">
-          <string>Beat count</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="beatCountComboBox">
-         <property name="maxCount">
-          <number>20</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <spacer name="verticalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </widget>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionFitInWindow"/>
+   <addaction name="actionFitPage"/>
+   <addaction name="separator"/>
+   <addaction name="actionShowScoreInfo"/>
+   <addaction name="actionShowDrumKey"/>
+   <addaction name="actionShowEmptyLines"/>
+   <addaction name="actionShowBeatCount"/>
+  </widget>
+  <widget class="QToolBar" name="exportToolBar">
+   <property name="windowTitle">
+    <string>Print &amp;&amp; Export</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionPrint"/>
+   <addaction name="actionExportASCII"/>
+   <addaction name="actionExportPDF"/>
+  </widget>
+  <widget class="QToolBar" name="helpToolBar">
+   <property name="windowTitle">
+    <string>Help</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionWhatsThis"/>
+   <addaction name="actionAboutDrumBurp"/>
   </widget>
   <widget class="QDockWidget" name="songPropertiesDock">
    <property name="toolTip">
@@ -650,6 +427,9 @@
    </property>
    <property name="statusTip">
     <string>Information about the Score</string>
+   </property>
+   <property name="floating">
+    <bool>false</bool>
    </property>
    <property name="features">
     <set>QDockWidget::AllDockWidgetFeatures</set>
@@ -684,122 +464,6 @@
         <string>Song name</string>
        </property>
       </widget>
-     </item>
-     <item row="3" column="2">
-      <widget class="QLabel" name="bpmLabel">
-       <property name="text">
-        <string>&amp;BPM</string>
-       </property>
-       <property name="buddy">
-        <cstring>bpmSpinBox</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="3">
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QSpinBox" name="bpmSpinBox">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="toolTip">
-          <string>BPM</string>
-         </property>
-         <property name="statusTip">
-          <string>Beats per minute</string>
-         </property>
-         <property name="frame">
-          <bool>true</bool>
-         </property>
-         <property name="suffix">
-          <string> bpm</string>
-         </property>
-         <property name="maximum">
-          <number>300</number>
-         </property>
-         <property name="value">
-          <number>120</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Columns:</string>
-         </property>
-         <property name="buddy">
-          <cstring>widthSpinBox</cstring>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="widthSpinBox">
-         <property name="toolTip">
-          <string>Score width</string>
-         </property>
-         <property name="statusTip">
-          <string>The number of columns to display the Score on</string>
-         </property>
-         <property name="minimum">
-          <number>10</number>
-         </property>
-         <property name="maximum">
-          <number>1000</number>
-         </property>
-         <property name="value">
-          <number>80</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="fitWindowButton">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="toolTip">
-          <string>Fit Score In Window</string>
-         </property>
-         <property name="statusTip">
-          <string>Attempt to make the score as wide as possible within the current window.</string>
-         </property>
-         <property name="text">
-          <string>Fit Window</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_4">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
      </item>
      <item row="3" column="1">
       <widget class="QLineEdit" name="tabberEdit">
@@ -844,52 +508,473 @@
        </property>
       </widget>
      </item>
+     <item row="3" column="2">
+      <widget class="QLabel" name="bpmLabel">
+       <property name="text">
+        <string>&amp;BPM</string>
+       </property>
+       <property name="buddy">
+        <cstring>bpmSpinBox</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="3">
+      <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <item>
+        <widget class="QSpinBox" name="bpmSpinBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>BPM</string>
+         </property>
+         <property name="statusTip">
+          <string>Beats per minute</string>
+         </property>
+         <property name="frame">
+          <bool>true</bool>
+         </property>
+         <property name="suffix">
+          <string> bpm</string>
+         </property>
+         <property name="maximum">
+          <number>300</number>
+         </property>
+         <property name="value">
+          <number>120</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
     </layout>
    </widget>
   </widget>
-  <widget class="QToolBar" name="displayToolBar">
-   <property name="windowTitle">
-    <string>Display</string>
+  <widget class="QDockWidget" name="diplayOptionsDock">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
    </property>
-   <property name="movable">
-    <bool>true</bool>
+   <property name="toolTip">
+    <string>Display Options</string>
+   </property>
+   <property name="statusTip">
+    <string>Options affecting how the Score is displayed</string>
+   </property>
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::TopToolBarArea</set>
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionFitInWindow"/>
-  </widget>
-  <widget class="QToolBar" name="exportToolBar">
    <property name="windowTitle">
-    <string>Print &amp;&amp; Export</string>
+    <string>Display Options</string>
    </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
    </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionPrint"/>
-   <addaction name="actionExportASCII"/>
-   <addaction name="actionExportPDF"/>
-  </widget>
-  <widget class="QToolBar" name="helpToolBar">
-   <property name="windowTitle">
-    <string>Help</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionWhatsThis"/>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QGroupBox" name="groupBox_4">
+       <property name="title">
+        <string>Note Font</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QFontComboBox" name="fontComboBox">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>60</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>187</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="statusTip">
+           <string>The font used to display notes in the Score</string>
+          </property>
+          <property name="editable">
+           <bool>false</bool>
+          </property>
+          <property name="maxVisibleItems">
+           <number>20</number>
+          </property>
+          <property name="fontFilters">
+           <set>QFontComboBox::ScalableFonts</set>
+          </property>
+          <property name="currentFont">
+           <font>
+            <family>BatangChe</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="noteSizeSpinBox">
+          <property name="statusTip">
+           <string>Size of notes.</string>
+          </property>
+          <property name="minimum">
+           <number>6</number>
+          </property>
+          <property name="maximum">
+           <number>30</number>
+          </property>
+          <property name="value">
+           <number>10</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_5">
+       <property name="title">
+        <string>Section Title Font</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QFontComboBox" name="sectionFontCombo">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>60</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>187</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="statusTip">
+           <string>The font used to display section titles in the Score</string>
+          </property>
+          <property name="editable">
+           <bool>false</bool>
+          </property>
+          <property name="maxVisibleItems">
+           <number>20</number>
+          </property>
+          <property name="fontFilters">
+           <set>QFontComboBox::ScalableFonts</set>
+          </property>
+          <property name="currentFont">
+           <font>
+            <family>BatangChe</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="sectionFontSizeSpinbox">
+          <property name="statusTip">
+           <string>Size of section titles.</string>
+          </property>
+          <property name="minimum">
+           <number>8</number>
+          </property>
+          <property name="maximum">
+           <number>48</number>
+          </property>
+          <property name="value">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_3">
+       <property name="title">
+        <string>System Spacing</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QSlider" name="lineSpaceSlider">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>Inter-system distance</string>
+          </property>
+          <property name="statusTip">
+           <string>The distance between each system in the Score</string>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="tracking">
+           <bool>false</bool>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="tickPosition">
+           <enum>QSlider::TicksBelow</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
+        <string>Default Measure Options</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Beats per measure</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QSpinBox" name="beatsSpinBox">
+          <property name="toolTip">
+           <string>Default Measure Width</string>
+          </property>
+          <property name="statusTip">
+           <string>The number of ticks in default measures added to the Score</string>
+          </property>
+          <property name="suffix">
+           <string> beats</string>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>256</number>
+          </property>
+          <property name="value">
+           <number>4</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Beat count</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="beatCountComboBox">
+          <property name="maxCount">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+       <zorder>label_4</zorder>
+       <zorder>label_4</zorder>
+       <zorder>beatsSpinBox</zorder>
+       <zorder>label_5</zorder>
+       <zorder>beatCountComboBox</zorder>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_2">
+       <property name="title">
+        <string>Score Width</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Columns:</string>
+          </property>
+          <property name="buddy">
+           <cstring>widthSpinBox</cstring>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="widthSpinBox">
+          <property name="toolTip">
+           <string>Score width</string>
+          </property>
+          <property name="statusTip">
+           <string>The number of columns to display the Score on</string>
+          </property>
+          <property name="minimum">
+           <number>10</number>
+          </property>
+          <property name="maximum">
+           <number>1000</number>
+          </property>
+          <property name="value">
+           <number>80</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QPushButton" name="fitPageButton">
+            <property name="toolTip">
+             <string>Fit Score to Page</string>
+            </property>
+            <property name="statusTip">
+             <string>Attempt to make the score as wide as possible within a standard page</string>
+            </property>
+            <property name="text">
+             <string>Fit Page</string>
+            </property>
+            <property name="icon">
+             <iconset resource="DrumBurp.qrc">
+              <normaloff>:/Icons/Icons/fit-page</normaloff>:/Icons/Icons/fit-page</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="fitWindowButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Fit Score In Window</string>
+            </property>
+            <property name="statusTip">
+             <string>Attempt to make the score as wide as possible within the current window.</string>
+            </property>
+            <property name="text">
+             <string>Fit Window</string>
+            </property>
+            <property name="icon">
+             <iconset resource="DrumBurp.qrc">
+              <normaloff>:/Icons/Icons/video-display.png</normaloff>:/Icons/Icons/video-display.png</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="actionQuit">
    <property name="icon">
@@ -1051,7 +1136,7 @@ Writes this Score as a plain .txt file.</string>
   <action name="actionFitInWindow">
    <property name="icon">
     <iconset resource="DrumBurp.qrc">
-     <normaloff>:/Icons/Icons/format-justify-fill.png</normaloff>:/Icons/Icons/format-justify-fill.png</iconset>
+     <normaloff>:/Icons/Icons/video-display.png</normaloff>:/Icons/Icons/video-display.png</iconset>
    </property>
    <property name="text">
     <string>Fit Window</string>
@@ -1110,6 +1195,10 @@ Writes this Score as a plain .txt file.</string>
    </property>
   </action>
   <action name="actionUndo">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/edit-undo.png</normaloff>:/Icons/Icons/edit-undo.png</iconset>
+   </property>
    <property name="text">
     <string>Undo</string>
    </property>
@@ -1121,6 +1210,10 @@ Writes this Score as a plain .txt file.</string>
    </property>
   </action>
   <action name="actionRedo">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/edit-redo.png</normaloff>:/Icons/Icons/edit-redo.png</iconset>
+   </property>
    <property name="text">
     <string>Redo</string>
    </property>
@@ -1146,7 +1239,11 @@ Writes this Score as a plain .txt file.</string>
     <string>Export this score to a PDF file</string>
    </property>
   </action>
-  <action name="actionAbout_DrumBurp">
+  <action name="actionAboutDrumBurp">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/drumburp.png</normaloff>:/Icons/Icons/drumburp.png</iconset>
+   </property>
    <property name="text">
     <string>About DrumBurp</string>
    </property>
@@ -1173,6 +1270,78 @@ Writes this Score as a plain .txt file.</string>
     <string>Change the visibility of the Help Tool Bar</string>
    </property>
   </action>
+  <action name="actionShowEmptyLines">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/format-justify-fill.png</normaloff>:/Icons/Icons/format-justify-fill.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Empty Lines</string>
+   </property>
+   <property name="statusTip">
+    <string>Show or hide empty lines in the score.</string>
+   </property>
+  </action>
+  <action name="actionShowDrumKey">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/1299815323_HAL-9000 Brain Room Key.png</normaloff>:/Icons/Icons/1299815323_HAL-9000 Brain Room Key.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Drum Key</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Drum Key</string>
+   </property>
+  </action>
+  <action name="actionShowScoreInfo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/applications-multimedia.png</normaloff>:/Icons/Icons/applications-multimedia.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Score Info</string>
+   </property>
+  </action>
+  <action name="actionShowBeatCount">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/1299814882_Black_Numbered-List.png</normaloff>:/Icons/Icons/1299814882_Black_Numbered-List.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Beat Count</string>
+   </property>
+  </action>
+  <action name="actionFitPage">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/fit-page</normaloff>:/Icons/Icons/fit-page</iconset>
+   </property>
+   <property name="text">
+    <string>Fit Page...</string>
+   </property>
+   <property name="toolTip">
+    <string>Fit Score to Page</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -1190,22 +1359,13 @@ Writes this Score as a plain .txt file.</string>
   <tabstop>songNameEdit</tabstop>
   <tabstop>artistNameEdit</tabstop>
   <tabstop>tabberEdit</tabstop>
-  <tabstop>bpmSpinBox</tabstop>
   <tabstop>widthSpinBox</tabstop>
   <tabstop>fitWindowButton</tabstop>
-  <tabstop>lineSpaceSlider</tabstop>
-  <tabstop>fontComboBox</tabstop>
-  <tabstop>beatsSpinBox</tabstop>
-  <tabstop>beatCountComboBox</tabstop>
   <tabstop>defaultNoteHeadButton</tabstop>
   <tabstop>xNoteHeadButton</tabstop>
-  <tabstop>bigXNoteHeadButton</tabstop>
   <tabstop>gNoteHeadButton</tabstop>
-  <tabstop>oNoteHeadButton</tabstop>
   <tabstop>bigONoteHeadButton</tabstop>
   <tabstop>flamNoteTeller</tabstop>
-  <tabstop>plusNoteHeadButton</tabstop>
-  <tabstop>dragNoteTeller</tabstop>
   <tabstop>scoreView</tabstop>
  </tabstops>
  <resources>
@@ -1325,54 +1485,6 @@ Writes this Score as a plain .txt file.</string>
    </hints>
   </connection>
   <connection>
-   <sender>lineSpaceSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>scoreView</receiver>
-   <slot>systemSpacingChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>121</x>
-     <y>413</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>431</x>
-     <y>547</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fontComboBox</sender>
-   <signal>currentFontChanged(QFont)</signal>
-   <receiver>scoreView</receiver>
-   <slot>setFont(QFont)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>167</x>
-     <y>459</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>454</x>
-     <y>570</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionDisplayOptionsIsVisible</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>diplayOptionsDock</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>112</x>
-     <y>430</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionNoteHeadSelectorIsVisble</sender>
    <signal>toggled(bool)</signal>
    <receiver>noteHeadDock</receiver>
@@ -1389,38 +1501,6 @@ Writes this Score as a plain .txt file.</string>
    </hints>
   </connection>
   <connection>
-   <sender>actionSongPropertiesIsVisible</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>songPropertiesDock</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>399</x>
-     <y>86</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>songPropertiesDock</sender>
-   <signal>visibilityChanged(bool)</signal>
-   <receiver>actionSongPropertiesIsVisible</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>399</x>
-     <y>86</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>noteHeadDock</sender>
    <signal>visibilityChanged(bool)</signal>
    <receiver>actionNoteHeadSelectorIsVisble</receiver>
@@ -1429,22 +1509,6 @@ Writes this Score as a plain .txt file.</string>
     <hint type="sourcelabel">
      <x>112</x>
      <y>233</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>diplayOptionsDock</sender>
-   <signal>visibilityChanged(bool)</signal>
-   <receiver>actionDisplayOptionsIsVisible</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>112</x>
-     <y>467</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -1485,38 +1549,6 @@ Writes this Score as a plain .txt file.</string>
    </hints>
   </connection>
   <connection>
-   <sender>widthSpinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>scoreView</receiver>
-   <slot>setWidth(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>646</x>
-     <y>141</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>283</x>
-     <y>525</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fitWindowButton</sender>
-   <signal>clicked()</signal>
-   <receiver>actionFitInWindow</receiver>
-   <slot>trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>740</x>
-     <y>143</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>displayToolBar</sender>
    <signal>visibilityChanged(bool)</signal>
    <receiver>actionDisplayToolBarIsVisible</receiver>
@@ -1545,22 +1577,6 @@ Writes this Score as a plain .txt file.</string>
     <hint type="destinationlabel">
      <x>210</x>
      <y>53</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>beatsSpinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>scoreView</receiver>
-   <slot>setDefaultMeasureWidth(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>174</x>
-     <y>553</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>760</x>
-     <y>194</y>
     </hint>
    </hints>
   </connection>
@@ -1613,50 +1629,98 @@ Writes this Score as a plain .txt file.</string>
    </hints>
   </connection>
   <connection>
-   <sender>scoreView</sender>
-   <signal>widthChanged(int)</signal>
-   <receiver>widthSpinBox</receiver>
-   <slot>setValue(int)</slot>
+   <sender>actionExportToolBarIsVisible</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>exportToolBar</receiver>
+   <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>638</x>
-     <y>188</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>642</x>
-     <y>130</y>
+     <x>509</x>
+     <y>62</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>bpmSpinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>scoreView</receiver>
-   <slot>setBPM(int)</slot>
+   <sender>exportToolBar</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionExportToolBarIsVisible</receiver>
+   <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>457</x>
-     <y>133</y>
+     <x>509</x>
+     <y>62</y>
     </hint>
     <hint type="destinationlabel">
-     <x>459</x>
-     <y>175</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>scoreView</sender>
-   <signal>bpmChanged(int)</signal>
-   <receiver>bpmSpinBox</receiver>
-   <slot>setValue(int)</slot>
+   <sender>actionHelpToolBarIsVisible</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>helpToolBar</receiver>
+   <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>495</x>
-     <y>178</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>499</x>
-     <y>135</y>
+     <x>714</x>
+     <y>41</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>helpToolBar</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionHelpToolBarIsVisible</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>714</x>
+     <y>41</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSongPropertiesIsVisible</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>songPropertiesDock</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>86</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>songPropertiesDock</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionSongPropertiesIsVisible</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>399</x>
+     <y>86</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
     </hint>
    </hints>
   </connection>
@@ -1709,18 +1773,162 @@ Writes this Score as a plain .txt file.</string>
    </hints>
   </connection>
   <connection>
-   <sender>sectionFontCombo</sender>
-   <signal>currentFontChanged(QFont)</signal>
+   <sender>bpmSpinBox</sender>
+   <signal>valueChanged(int)</signal>
    <receiver>scoreView</receiver>
-   <slot>setSectionFont(QFont)</slot>
+   <slot>setBPM(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>506</y>
+     <x>457</x>
+     <y>133</y>
     </hint>
     <hint type="destinationlabel">
-     <x>320</x>
-     <y>600</y>
+     <x>459</x>
+     <y>175</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scoreView</sender>
+   <signal>bpmChanged(int)</signal>
+   <receiver>bpmSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>495</x>
+     <y>178</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>499</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>beatsSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setDefaultMeasureWidth(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>174</x>
+     <y>553</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>760</x>
+     <y>194</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fitWindowButton</sender>
+   <signal>clicked()</signal>
+   <receiver>actionFitInWindow</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>740</x>
+     <y>143</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>widthSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setWidth(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>646</x>
+     <y>141</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>283</x>
+     <y>525</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lineSpaceSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scoreView</receiver>
+   <slot>systemSpacingChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>121</x>
+     <y>413</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>431</x>
+     <y>547</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>diplayOptionsDock</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionDisplayOptionsIsVisible</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>112</x>
+     <y>467</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDisplayOptionsIsVisible</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>diplayOptionsDock</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>112</x>
+     <y>430</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fontComboBox</sender>
+   <signal>currentFontChanged(QFont)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setFont(QFont)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>167</x>
+     <y>459</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>454</x>
+     <y>570</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>noteSizeSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setNoteFontSize(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>227</x>
+     <y>451</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>349</x>
+     <y>447</y>
     </hint>
    </hints>
   </connection>
@@ -1741,82 +1949,50 @@ Writes this Score as a plain .txt file.</string>
    </hints>
   </connection>
   <connection>
-   <sender>actionExportToolBarIsVisible</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>exportToolBar</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>315</x>
-     <y>62</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>exportToolBar</sender>
-   <signal>visibilityChanged(bool)</signal>
-   <receiver>actionExportToolBarIsVisible</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>315</x>
-     <y>62</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionHelpToolBarIsVisible</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>helpToolBar</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>714</x>
-     <y>41</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>helpToolBar</sender>
-   <signal>visibilityChanged(bool)</signal>
-   <receiver>actionHelpToolBarIsVisible</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>714</x>
-     <y>41</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>noteSizeSpinBox</sender>
-   <signal>valueChanged(int)</signal>
+   <sender>sectionFontCombo</sender>
+   <signal>currentFontChanged(QFont)</signal>
    <receiver>scoreView</receiver>
-   <slot>setNoteFontSize(int)</slot>
+   <slot>setSectionFont(QFont)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>227</x>
-     <y>451</y>
+     <x>119</x>
+     <y>506</y>
     </hint>
     <hint type="destinationlabel">
-     <x>349</x>
-     <y>447</y>
+     <x>320</x>
+     <y>600</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scoreView</sender>
+   <signal>widthChanged(int)</signal>
+   <receiver>widthSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>638</x>
+     <y>188</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>642</x>
+     <y>130</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fitPageButton</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>actionFitPage</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>167</x>
+     <y>622</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
     </hint>
    </hints>
   </connection>

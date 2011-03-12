@@ -183,7 +183,7 @@ class QDisplayProperties(QObject):
                  / self.LINE_SPACE_RANGE * 100))
 
     def maxColumns(self, widthInPixels):
-        widthInPixels -= (2 * self.xMargins + self.LINELABELWIDTH)
+        widthInPixels -= 2 * (self.xMargins + self.xSpacing)
         return int(widthInPixels / self.xSpacing)
 
     @staticmethod

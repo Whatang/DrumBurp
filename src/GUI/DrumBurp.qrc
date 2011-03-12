@@ -1,5 +1,10 @@
 <RCC>
   <qresource prefix="Icons">
+    <file>Icons/fit-page</file>
+    <file>Icons/1299814882_Black_Numbered-List.png</file>
+    <file>Icons/applications-multimedia.png</file>
+    <file>Icons/video-display.png</file>
+    <file>Icons/1299815323_HAL-9000 Brain Room Key.png</file>
     <file>Icons/pdf.png</file>
     <file>Icons/view-refresh.png</file>
     <file>Icons/drumburp.png</file>

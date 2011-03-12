@@ -69,7 +69,6 @@ class QMeasure(QtGui.QGraphicsItem):
         if self._measure != measure:
             self._measure = measure
             self._setDimensions()
-#            self.setAlternate()
             self.update()
 
     def paint(self, painter, dummyOption, dummyWidget = None):

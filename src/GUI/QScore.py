@@ -198,7 +198,7 @@ class QScore(QtGui.QGraphicsScene):
         qSection = self._qSections[index]
         qSection.setTitle(title)
 
-    def _placeStaffs(self):
+    def _placeStaffs(self, staffCall = QStaff.placeMeasures):
         xMargins = self._properties.xMargins
         yMargins = self._properties.yMargins
         lineSpacing = self._properties.lineSpacing
@@ -214,10 +214,10 @@ class QScore(QtGui.QGraphicsScene):
                     sectionIndex += 1
                     qSection.setPos(xMargins, yOffset)
                     yOffset += qSection.boundingRect().height()
-#                    yOffset += lineSpacing
             newSection = qStaff.isSectionEnd()
             qStaff.setPos(xMargins, yOffset)
-            qStaff.placeMeasures()
+            if staffCall is not None:
+                staffCall(qStaff)
             yOffset += qStaff.height() + lineSpacing
             maxWidth = max(maxWidth, qStaff.width())
             newSection = qStaff.isSectionEnd()

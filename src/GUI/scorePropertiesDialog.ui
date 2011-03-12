@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>482</width>
+    <height>145</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Title</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="lineEdit"/>
+   </item>
+   <item row="0" column="2">
+    <widget class="QCheckBox" name="checkBox">
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Artist</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="lineEdit_2"/>
+   </item>
+   <item row="1" column="2">
+    <widget class="QCheckBox" name="checkBox_2">
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Tabbed by</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="lineEdit_3"/>
+   </item>
+   <item row="2" column="2">
+    <widget class="QCheckBox" name="checkBox_3">
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>BPM</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QSpinBox" name="bpmSpinBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string>BPM</string>
+     </property>
+     <property name="statusTip">
+      <string>Beats per minute</string>
+     </property>
+     <property name="frame">
+      <bool>true</bool>
+     </property>
+     <property name="suffix">
+      <string> bpm</string>
+     </property>
+     <property name="maximum">
+      <number>300</number>
+     </property>
+     <property name="value">
+      <number>120</number>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2">
+    <widget class="QCheckBox" name="checkBox_4">
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="3">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>Dialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>227</x>
+     <y>127</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>144</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>Dialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>295</x>
+     <y>133</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>144</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>lineEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>466</x>
+     <y>17</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>421</x>
+     <y>18</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_2</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>lineEdit_2</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>465</x>
+     <y>49</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>422</x>
+     <y>44</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_3</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>lineEdit_3</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>463</x>
+     <y>67</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>435</x>
+     <y>69</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_4</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>bpmSpinBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>464</x>
+     <y>97</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>114</x>
+     <y>97</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
