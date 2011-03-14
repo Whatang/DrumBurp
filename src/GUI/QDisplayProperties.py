@@ -181,6 +181,7 @@ class QDisplayProperties(QObject):
     def _setsectionFont(self, value):
         if self._sectionFont != value:
             value.setBold(True)
+            value.setItalic(True)
             value.setPointSize(self._sectionFontSize)
             self._sectionFont = value
             self.sectionFontChanged.emit()

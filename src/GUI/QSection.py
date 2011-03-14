@@ -25,6 +25,7 @@ class QSection(QGraphicsTextItem):
         if font is None:
             font = self.font()
         font.setBold(True)
+        font.setItalic(True)
         font.setPointSize(qScore.displayProperties.sectionFontSize)
         self.setFont(font)
         self.setTextInteractionFlags(Qt.TextEditable | Qt.TextSelectableByMouse)
