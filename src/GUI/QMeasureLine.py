@@ -17,7 +17,8 @@ class QMeasureLine(QtGui.QGraphicsItem):
     '''
 
 
-    def __init__(self, qScore, lastMeasure, nextMeasure, parent = None):
+    def __init__(self, qScore, lastMeasure, nextMeasure, index,
+                 staffIndex, parent = None):
         '''
         Constructor
         '''
@@ -31,11 +32,9 @@ class QMeasureLine(QtGui.QGraphicsItem):
         self._nextMeasure = nextMeasure
         self._painter = None
         self._setPainter()
-        self.setDimensions()
-        self._index = None
-
-    def setIndex(self, index):
         self._index = index
+        self._staffIndex = staffIndex
+        self.setDimensions()
 
     def boundingRect(self):
         return self._rect
@@ -47,7 +46,10 @@ class QMeasureLine(QtGui.QGraphicsItem):
         self._painter(self, painter, dummyOption, dummyWidget = None)
 
     def _setHeight(self):
-        self._height = self._props.ySpacing * self._qScore.kitSize
+        if self._props.emptyLinesVisible:
+            self._height = self._props.ySpacing * self._qScore.kitSize
+        else:
+            self._height = self._props.ySpacing * self._qScore.score.numVisibleLines(self._staffIndex)
 
     def setDimensions(self):
         self.prepareGeometryChange()

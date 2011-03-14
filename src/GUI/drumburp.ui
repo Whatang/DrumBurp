@@ -1370,6 +1370,9 @@ Writes this Score as a plain .txt file.</string>
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="DrumBurp.qrc">
      <normaloff>:/Icons/Icons/applications-multimedia.png</normaloff>:/Icons/Icons/applications-multimedia.png</iconset>
@@ -2088,6 +2091,102 @@ Writes this Score as a plain .txt file.</string>
     <hint type="destinationlabel">
      <x>323</x>
      <y>472</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowScoreInfo</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setMetadataVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>541</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowDrumKey</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setKitDataVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>541</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowEmptyLines</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setEmptyLinesVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>541</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowBeatCount</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setBeatCountVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>541</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowScoreInfo</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>metadataFontCombo</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>114</x>
+     <y>471</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowScoreInfo</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>metadataFontSizeSpinbox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>236</x>
+     <y>471</y>
     </hint>
    </hints>
   </connection>

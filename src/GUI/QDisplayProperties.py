@@ -70,8 +70,12 @@ class QDisplayProperties(QObject):
         self._noteFont = None
         self._sectionFont = None
         self._sectionFontSize = 20
+        self._metadataVisible = True
         self._metadataFont = None
         self._metadataFontSize = 20
+        self._kitDataVisible = False
+        self._beatCountVisible = True
+        self._emptyLinesVisible = True
         self._head = None
         self._width = 80
         self.beatsPerMeasure = 4
@@ -83,8 +87,12 @@ class QDisplayProperties(QObject):
     fontChanged = pyqtSignal()
     sectionFontChanged = pyqtSignal()
     sectionFontSizeChanged = pyqtSignal()
+    metadataVisibilityChanged = pyqtSignal()
     metadataFontChanged = pyqtSignal()
     metadataFontSizeChanged = pyqtSignal()
+    kitDataVisibleChanged = pyqtSignal()
+    beatCountVisibleChanged = pyqtSignal()
+    emptyLinesVisibleChanged = pyqtSignal()
 
     def connectScore(self, score):
         self.xSpacingChanged.connect(score.xSpacingChanged)
@@ -95,6 +103,10 @@ class QDisplayProperties(QObject):
         self.sectionFontSizeChanged.connect(score.sectionFontChanged)
         self.metadataFontChanged.connect(score.metadataFontChanged)
         self.metadataFontSizeChanged.connect(score.metadataFontChanged)
+        self.metadataVisibilityChanged.connect(score.metadataVisibilityChanged)
+        self.kitDataVisibleChanged.connect(score.kitDataVisibleChanged)
+        self.beatCountVisibleChanged.connect(score.reBuild)
+        self.emptyLinesVisibleChanged.connect(score.reBuild)
 
     def _getxSpacing(self):
         return self._xSpacing
@@ -199,13 +211,38 @@ class QDisplayProperties(QObject):
             self._head = value
     head = property(fget = _gethead, fset = _sethead)
 
-    def proportionalSpacing(self):
-        return ((float(self.xSpacing - self.MIN_NOTE_WIDTH)
-                 / self.NOTE_WIDTH_RANGE * 100),
-                (float(self.ySpacing - self.MIN_NOTE_HEIGHT)
-                 / self.NOTE_HEIGHT_RANGE * 100),
-                (float(self.lineSpacing - self.MIN_LINE_SPACE)
-                 / self.LINE_SPACE_RANGE * 100))
+    def _getmetadataVisible(self):
+        return self._metadataVisible
+    def _setmetadataVisible(self, value):
+        if self._metadataVisible != value:
+            self._metadataVisible = value
+            self.metadataVisibilityChanged.emit()
+    metadataVisible = property(fget = _getmetadataVisible,
+                               fset = _setmetadataVisible)
+
+    def _getkitDataVisible(self):
+        return self._kitDataVisible
+    def _setkitDataVisible(self, value):
+        if self._kitDataVisible != value:
+            self._kitDataVisible = value
+            self.kitDataVisibleChanged.emit()
+    kitDataVisible = property(fget = _getkitDataVisible, fset = _setkitDataVisible)
+
+    def _getbeatCountVisible(self):
+        return self._beatCountVisible
+    def _setbeatCountVisible(self, value):
+        if self._beatCountVisible != value:
+            self._beatCountVisible = value
+            self.beatCountVisibleChanged.emit()
+    beatCountVisible = property(fget = _getbeatCountVisible, fset = _setbeatCountVisible)
+
+    def _getemptyLinesVisible(self):
+        return self._emptyLinesVisible
+    def _setemptyLinesVisible(self, value):
+        if self._emptyLinesVisible != value:
+            self._emptyLinesVisible = value
+            self.emptyLinesVisibleChanged.emit()
+    emptyLinesVisible = property(fget = _getemptyLinesVisible, fset = _setemptyLinesVisible)
 
     def maxColumns(self, widthInPixels):
         widthInPixels -= 2 * (self.xMargins + self.xSpacing)

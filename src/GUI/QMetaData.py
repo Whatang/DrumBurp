@@ -5,68 +5,32 @@ Created on 12 Mar 2011
 
 '''
 
-from PyQt4.QtGui import QGraphicsItem, QFontMetrics
-from PyQt4.QtCore import QPoint, QRectF, QPointF, Qt
+from QMetaDataDialog import QMetadataDialog
+from QGraphicsListData import QGraphicsListData
 
-class QMetaData(QGraphicsItem):
+class QMetaData(QGraphicsListData):
     '''
     classdocs
     '''
 
-
-    def __init__(self, qScore, parent = None):
-        '''
-        Constructor
-        '''
-        super(QMetaData, self).__init__(parent = parent, scene = qScore)
-        self._qScore = qScore
-        self._props = qScore.displayProperties
-        self._rect = QRectF(0, 0, 0, 0)
-        self._setRect()
-        self.setCursor(Qt.PointingHandCursor)
-
     def _iterData(self):
-        yield "Title: " + self._qScore.title
-        yield "Artist: " + self._qScore.artist
-        yield "Tabbed by: " + self._qScore.creator
-        yield "BPM: " + str(self._qScore.bpm)
+        yield self._qScore.title + ", by " + self._qScore.artist + " (%d bpm)" % self._qScore.bpm
+        yield "Tabbed by " + self._qScore.creator
 
-    @staticmethod
-    def _dataLen():
-        return 4
+    def _dataLen(self):
+        return 2
 
-    def _setRect(self):
-        font = self._props.metadataFont
-        if font is None:
-            return
-        fm = QFontMetrics(font)
-        lineHeight = fm.height()
-        height = lineHeight * self._dataLen() * 1.1
-        width = max(fm.width(data) for data in self._iterData()) + 10
-        if height != self._rect.height() or width != self._rect.width():
-            self.prepareGeometryChange()
-            self._rect.setBottomRight(QPointF(width, height))
+    def font(self):
+        return self._props.metadataFont
 
-    def boundingRect(self):
-        return self._rect
-
-    def paint(self, painter, dummyOption, dummyWidget = None):
-        painter.save()
-        try:
-            font = self._props.metadataFont
-            if font is None:
-                font = painter.font()
-            painter.setFont(font)
-            fm = QFontMetrics(font)
-            lineHeight = fm.height()
-            for index, data in enumerate(self._iterData()):
-                painter.drawText(QPoint(5, (index + 1) * lineHeight), data)
-        finally:
-            painter.restore()
-
-    def fontChanged(self):
-        self._setRect()
-        self.update()
-
-    def doubleClickEvent(self, event_):
-        pass
+    def mouseDoubleClickEvent(self, event_):
+        dialog = QMetadataDialog(self._qScore)
+        if dialog.exec_():
+            changed = any((getattr(self._qScore, attribute) != value
+                          for (attribute, value) in dialog.getValues().iteritems()))
+            if not changed:
+                return
+            self._qScore.beginMacro("Set Score Information")
+            for attribute, value in dialog.getValues().iteritems():
+                setattr(self._qScore, attribute, value)
+            self._qScore.endMacro()

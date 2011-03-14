@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <class>ScoreDialog</class>
+ <widget class="QDialog" name="ScoreDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -22,20 +22,7 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QLineEdit" name="lineEdit"/>
-   </item>
-   <item row="0" column="2">
-    <widget class="QCheckBox" name="checkBox">
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-    </widget>
+    <widget class="QLineEdit" name="titleEdit"/>
    </item>
    <item row="1" column="0">
     <widget class="QLabel" name="label_2">
@@ -45,7 +32,7 @@
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QLineEdit" name="lineEdit_2"/>
+    <widget class="QLineEdit" name="artistEdit"/>
    </item>
    <item row="1" column="2">
     <widget class="QCheckBox" name="checkBox_2">
@@ -68,7 +55,7 @@
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QLineEdit" name="lineEdit_3"/>
+    <widget class="QLineEdit" name="creatorEdit"/>
    </item>
    <item row="2" column="2">
     <widget class="QCheckBox" name="checkBox_3">
@@ -148,7 +135,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>Dialog</receiver>
+   <receiver>ScoreDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -164,7 +151,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>Dialog</receiver>
+   <receiver>ScoreDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -178,25 +165,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>checkBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>lineEdit</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>466</x>
-     <y>17</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>421</x>
-     <y>18</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>checkBox_2</sender>
    <signal>toggled(bool)</signal>
-   <receiver>lineEdit_2</receiver>
+   <receiver>artistEdit</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -212,7 +183,7 @@
   <connection>
    <sender>checkBox_3</sender>
    <signal>toggled(bool)</signal>
-   <receiver>lineEdit_3</receiver>
+   <receiver>creatorEdit</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">

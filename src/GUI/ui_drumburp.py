@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sat Mar 12 17:33:29 2011
+# Created: Sun Mar 13 18:17:07 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -462,6 +462,7 @@ class Ui_DrumBurpWindow(object):
         self.actionShowDrumKey.setObjectName(_fromUtf8("actionShowDrumKey"))
         self.actionShowScoreInfo = QtGui.QAction(DrumBurpWindow)
         self.actionShowScoreInfo.setCheckable(True)
+        self.actionShowScoreInfo.setChecked(True)
         icon17 = QtGui.QIcon()
         icon17.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/applications-multimedia.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionShowScoreInfo.setIcon(icon17)
@@ -576,6 +577,12 @@ class Ui_DrumBurpWindow(object):
         QtCore.QObject.connect(self.fitPageButton, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.actionFitPage.trigger)
         QtCore.QObject.connect(self.metadataFontCombo, QtCore.SIGNAL(_fromUtf8("currentFontChanged(QFont)")), self.scoreView.setMetadataFont)
         QtCore.QObject.connect(self.metadataFontSizeSpinbox, QtCore.SIGNAL(_fromUtf8("valueChanged(int)")), self.scoreView.setMetadataFontSize)
+        QtCore.QObject.connect(self.actionShowScoreInfo, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.scoreView.setMetadataVisible)
+        QtCore.QObject.connect(self.actionShowDrumKey, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.scoreView.setKitDataVisible)
+        QtCore.QObject.connect(self.actionShowEmptyLines, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.scoreView.setEmptyLinesVisible)
+        QtCore.QObject.connect(self.actionShowBeatCount, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.scoreView.setBeatCountVisible)
+        QtCore.QObject.connect(self.actionShowScoreInfo, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.metadataFontCombo.setEnabled)
+        QtCore.QObject.connect(self.actionShowScoreInfo, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.metadataFontSizeSpinbox.setEnabled)
         QtCore.QMetaObject.connectSlotsByName(DrumBurpWindow)
         DrumBurpWindow.setTabOrder(self.songNameEdit, self.artistNameEdit)
         DrumBurpWindow.setTabOrder(self.artistNameEdit, self.tabberEdit)

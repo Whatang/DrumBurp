@@ -20,6 +20,7 @@ class ScoreView(QtGui.QGraphicsView):
     def setScene(self, scene):
         super(ScoreView, self).setScene(scene)
         self._props = scene.displayProperties
+        scene.metadataChanged.connect(self.setMetadata)
         self.centerOn(0, 0)
 
     @QtCore.pyqtSlot(int)
@@ -65,6 +66,10 @@ class ScoreView(QtGui.QGraphicsView):
         self.creatorChanged.emit(creator)
     creatorChanged = QtCore.pyqtSignal(QtCore.QString)
 
+    def setMetadata(self, name, value):
+        signal = getattr(self, str(name) + "Changed")
+        signal.emit(value)
+
     @QtCore.pyqtSlot(QtGui.QFont)
     def setFont(self, font):
         self._props.noteFont = font
@@ -96,6 +101,23 @@ class ScoreView(QtGui.QGraphicsView):
     @QtCore.pyqtSlot(int)
     def setDefaultMeasureWidth(self, width):
         self._props.beatsPerMeasure = width
+
+
+    @QtCore.pyqtSlot(bool)
+    def setMetadataVisible(self, onOff):
+        self._props.metadataVisible = onOff
+
+    @QtCore.pyqtSlot(bool)
+    def setBeatCountVisible(self, onOff):
+        self._props.beatCountVisible = onOff
+
+    @QtCore.pyqtSlot(bool)
+    def setEmptyLinesVisible(self, onOff):
+        self._props.emptyLinesVisible = onOff
+
+    @QtCore.pyqtSlot(bool)
+    def setKitDataVisible(self, onOff):
+        self._props.kitDataVisible = onOff
 
     def startUp(self):
         self.scene().startUp()

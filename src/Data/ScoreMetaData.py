@@ -22,6 +22,11 @@ class ScoreMetaData(object):
         self.creator = ""
         self.width = 80
 
+    def makeEmpty(self):
+        self.title = "Untitled"
+        self.artist = "Unknown"
+        self.creator = "Nobody"
+
     def load(self, scoreIterator):
         for lineType, lineData in scoreIterator:
             if lineData is None:

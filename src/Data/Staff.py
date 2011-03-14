@@ -173,6 +173,9 @@ class Staff(object):
             raise BadTimeError(position)
         self[position.measureIndex].toggleNote(position, head)
 
+    def lineIsVisible(self, index):
+        return any(measure.lineIsVisible(index) for measure in self)
+
     def _getDrumLine(self, drum, position, drumIndex):
         position.drumIndex = drumIndex
         lastBar = None

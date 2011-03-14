@@ -491,6 +491,27 @@ class Score(object):
             measure.changeKit(changes)
         self.drumKit = newKit
 
+    def numVisibleLines(self, index):
+        staff = self.getStaff(index)
+        return sum(drum.locked or staff.lineIsVisible(index)
+                   for index, drum in enumerate(self.drumKit))
+
+    def nthVisibleLineIndex(self, staffIndex, lineIndex):
+        count = -1
+        staff = self.getStaff(staffIndex)
+        for lineNum, drum in enumerate(self.drumKit):
+            if drum.locked or staff.lineIsVisible(lineNum):
+                count += 1
+                if count == lineIndex:
+                    return lineNum
+        raise BadTimeError(staffIndex)
+
+    def iterVisibleLines(self, staffIndex):
+        staff = self.getStaff(staffIndex)
+        for lineNum, drum in enumerate(self.drumKit):
+            if drum.locked or staff.lineIsVisible(lineNum):
+                yield drum
+
     def write(self, handle):
         self.scoreData.save(handle)
         self.drumKit.write(handle)
@@ -607,6 +628,7 @@ class ScoreFactory(object):
         score.drumKit.loadDefaultKit()
         for dummy in range(0, numMeasures):
             score.addEmptyMeasure(measureWidth, counter = counter)
+        score.scoreData.makeEmpty()
         return score
 
     @classmethod

@@ -66,23 +66,21 @@ class ToggleNote(NoteCommand):
         self._score.toggleNote(self._np, self._head)
 
 class MetaDataCommand(_COMMAND_CLASS):
-    def __init__(self, qScore, varName, setName, value):
+    def __init__(self, qScore, varName, signal, value):
         super(MetaDataCommand, self).__init__(qScore, None,
                                               "Edit metadata")
         self._oldValue = getattr(self._score.scoreData, varName)
         self._varname = varName
-        self._setName = setName
+        self._signal = signal
         self._value = value
 
     def _redo(self):
         setattr(self._score.scoreData, self._varname, self._value)
-        for view in self._qScore.views():
-            getattr(view, self._setName)(self._value)
+        self._signal.emit(self._varname, self._value)
 
     def _undo(self):
         setattr(self._score.scoreData, self._varname, self._oldValue)
-        for view in self._qScore.views():
-            getattr(view, self._setName)(self._oldValue)
+        self._signal.emit(self._varname, self._oldValue)
 
 class ScoreWidthCommand(_COMMAND_CLASS):
     def __init__(self, qScore, value):

@@ -36,6 +36,19 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self._setStaff(staff)
         self.setHandlesChildEvents(False)
 
+    def numLines(self):
+        if self._props.emptyLinesVisible:
+            return self._qScore.kitSize
+        else:
+            return self._qScore.score.numVisibleLines(self._index)
+
+    def lineIndex(self, index):
+        if self._props.emptyLinesVisible:
+            return index
+        else:
+            return self._qScore.score.nthVisibleLineIndex(self._index,
+                                                          index)
+
     def width(self):
         return self._width
 
@@ -57,7 +70,10 @@ class QStaff(QtGui.QGraphicsItemGroup):
 
     def _build(self):
         self._clear()
-        for drum in self._qScore.score.drumKit:
+        iterable = self._qScore.score.drumKit
+        if not self._props.emptyLinesVisible:
+            iterable = self._qScore.score.iterVisibleLines(self._index)
+        for drum in iterable:
             self._addLineLabel(drum)
         lastMeasure = None
         for measure in self._staff:
@@ -82,15 +98,17 @@ class QStaff(QtGui.QGraphicsItemGroup):
 
     def _addMeasureLine(self, lastMeasure, nextMeasure):
         qMeasureLine = QMeasureLine(self.scene(),
-                                    lastMeasure, nextMeasure, parent = self)
-        qMeasureLine.setIndex(len(self._measureLines))
+                                    lastMeasure, nextMeasure,
+                                    len(self._measureLines),
+                                    self._index,
+                                    parent = self)
         self._measureLines.append(qMeasureLine)
         self.addToGroup(qMeasureLine)
 
     def placeMeasures(self):
         lineOffsets = self._qScore.lineOffsets
         xOffset = 0
-        for yOffset, label in zip(lineOffsets, self._lineLabels):
+        for yOffset, label in zip(lineOffsets[-len(self._lineLabels):], self._lineLabels):
             label.setPos(xOffset, yOffset)
         xOffset += self._lineLabels[0].cellWidth()
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
@@ -157,7 +175,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
             self._build()
 
     def _makeNotePosition(self):
-        np = NotePosition(measureIndex = self._index)
+        np = NotePosition(staffIndex = self._index)
         return np
 
     def augmentNotePosition(self, np):

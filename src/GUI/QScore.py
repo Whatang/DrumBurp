@@ -9,6 +9,7 @@ from PyQt4 import QtGui, QtCore
 from QStaff import QStaff
 from QSection import QSection
 from QMetaData import QMetaData
+from QKitData import QKitData
 from Data.Score import ScoreFactory
 from DBCommands import MetaDataCommand, ScoreWidthCommand, PasteMeasure
 import functools
@@ -30,7 +31,7 @@ def _metaDataProperty(varname, setName = None):
         return getattr(self.score.scoreData, varname)
     def _setData(self, value):
         if getattr(self, varname) != value:
-            command = MetaDataCommand(self, varname, setName, value)
+            command = MetaDataCommand(self, varname, self.metadataChanged, value)
             self.addCommand(command)
     return property(fget = _getData, fset = _setData)
 
@@ -59,7 +60,13 @@ class QScore(QtGui.QGraphicsScene):
         self._undoStack.canRedoChanged.connect(self.canRedoChanged)
         self._undoStack.redoTextChanged.connect(self.redoTextChanged)
         self._metaData = QMetaData(self)
-        self._metaData.setPos(self._properties.xMargins, self._properties.yMargins)
+        self._metaData.setPos(self._properties.xMargins,
+                              self._properties.yMargins)
+        self._metaData.setVisible(self._properties.metadataVisible)
+        self.metadataChanged.connect(lambda n_, v_: self.reBuild())
+        self._kitData = QKitData(self)
+        self._kitData.setPos(self._properties.xMargins, 0)
+        self._kitData.setVisible(self._properties.kitDataVisible)
         if parent.filename is not None:
             if not self.loadScore(parent.filename):
                 parent.filename = None
@@ -72,6 +79,7 @@ class QScore(QtGui.QGraphicsScene):
     canRedoChanged = QtCore.pyqtSignal(bool)
     undoTextChanged = QtCore.pyqtSignal(str)
     redoTextChanged = QtCore.pyqtSignal(str)
+    metadataChanged = QtCore.pyqtSignal(str, object)
 
     def addCommand(self, command):
         self._undoStack.push(command)
@@ -83,6 +91,12 @@ class QScore(QtGui.QGraphicsScene):
             self.addCommand(command(self, *args))
         self._undoStack.endMacro()
 
+    def beginMacro(self, name):
+        self._undoStack.beginMacro(name)
+
+    def endMacro(self):
+        self._undoStack.endMacro()
+
     def undo(self):
         self._undoStack.undo()
         self.dirty = not self._undoStack.isClean()
@@ -92,12 +106,11 @@ class QScore(QtGui.QGraphicsScene):
         self.dirty = not self._undoStack.isClean()
 
     def startUp(self):
-        for view in self.views():
-            view.setWidth(self.scoreWidth)
-            view.setArtist(self.artist)
-            view.setTitle(self.title)
-            view.setCreator(self.creator)
-            view.setBPM(self.bpm)
+        self.metadataChanged.emit("width", self.scoreWidth)
+        self.metadataChanged.emit("artist", self.artist)
+        self.metadataChanged.emit("title", self.title)
+        self.metadataChanged.emit("creator", self.creator)
+        self.metadataChanged.emit("bpm", self.bpm)
 
     def _getscoreWidth(self):
         if self._score is not None:
@@ -205,7 +218,12 @@ class QScore(QtGui.QGraphicsScene):
         xMargins = self._properties.xMargins
         yMargins = self._properties.yMargins
         lineSpacing = self._properties.lineSpacing
-        yOffset = self._properties.yMargins + self._metaData.boundingRect().height()
+        yOffset = self._properties.yMargins
+        if self._properties.metadataVisible:
+            yOffset += self._metaData.boundingRect().height()
+        if self._properties.kitDataVisible:
+            self._kitData.setY(yOffset)
+            yOffset += self._kitData.boundingRect().height()
         newSection = True
         sectionIndex = 0
         maxWidth = 0
@@ -229,57 +247,60 @@ class QScore(QtGui.QGraphicsScene):
                           yOffset - lineSpacing + yMargins)
 
     def xSpacingChanged(self):
-        for qStaff in self:
-            qStaff.xSpacingChanged()
-        maxWidth = max(qStaff.width() for qStaff in self)
-        self.setSceneRect(0, 0,
-                          maxWidth + 2 * self._properties.xMargins,
-                          self.height())
+        self._placeStaffs(QStaff.xSpacingChanged)
+#        for qStaff in self:
+#            qStaff.xSpacingChanged()
+#        maxWidth = max(qStaff.width() for qStaff in self)
+#        self.setSceneRect(0, 0,
+#                          maxWidth + 2 * self._properties.xMargins,
+#                          self.height())
 
     def ySpacingChanged(self):
-        xMargins = self._properties.xMargins
-        yMargins = self._properties.yMargins
-        lineSpacing = self._properties.lineSpacing
-        yOffset = self._properties.yMargins + self._metaData.boundingRect().height()
-        newSection = True
-        sectionIndex = 0
-        for qStaff in self:
-            if newSection:
-                newSection = False
-                if sectionIndex < len(self._qSections):
-                    qSection = self._qSections[sectionIndex]
-                    sectionIndex += 1
-                    qSection.setPos(xMargins, yOffset)
-                    yOffset += qSection.boundingRect().height()
-            newSection = qStaff.isSectionEnd()
-            qStaff.setPos(xMargins, yOffset)
-            qStaff.ySpacingChanged()
-            yOffset += qStaff.height() + lineSpacing
-        self.setSceneRect(0, 0,
-                          self.width(),
-                          yOffset - lineSpacing + yMargins)
+        self._placeStaffs(QStaff.ySpacingChanged)
+#        xMargins = self._properties.xMargins
+#        yMargins = self._properties.yMargins
+#        lineSpacing = self._properties.lineSpacing
+#        yOffset = self._properties.yMargins + self._metaData.boundingRect().height()
+#        newSection = True
+#        sectionIndex = 0
+#        for qStaff in self:
+#            if newSection:
+#                newSection = False
+#                if sectionIndex < len(self._qSections):
+#                    qSection = self._qSections[sectionIndex]
+#                    sectionIndex += 1
+#                    qSection.setPos(xMargins, yOffset)
+#                    yOffset += qSection.boundingRect().height()
+#            newSection = qStaff.isSectionEnd()
+#            qStaff.setPos(xMargins, yOffset)
+#            qStaff.ySpacingChanged()
+#            yOffset += qStaff.height() + lineSpacing
+#        self.setSceneRect(0, 0,
+#                          self.width(),
+#                          yOffset - lineSpacing + yMargins)
 
     def lineSpacingChanged(self):
-        xMargins = self._properties.xMargins
-        yMargins = self._properties.yMargins
-        lineSpacing = self._properties.lineSpacing
-        yOffset = self._properties.yMargins + self._metaData.boundingRect().height()
-        sectionIndex = 0
-        newSection = True
-        for qStaff in self:
-            if newSection:
-                newSection = False
-                if sectionIndex < len(self._qSections):
-                    qSection = self._qSections[sectionIndex]
-                    sectionIndex += 1
-                    qSection.setPos(xMargins, yOffset)
-                    yOffset += qSection.boundingRect().height()
-            newSection = qStaff.isSectionEnd()
-            qStaff.setPos(xMargins, yOffset)
-            yOffset += qStaff.height() + lineSpacing
-        self.setSceneRect(0, 0,
-                          self.width(),
-                          yOffset - lineSpacing + yMargins)
+        self._placeStaffs(None)
+#        xMargins = self._properties.xMargins
+#        yMargins = self._properties.yMargins
+#        lineSpacing = self._properties.lineSpacing
+#        yOffset = self._properties.yMargins + self._metaData.boundingRect().height()
+#        sectionIndex = 0
+#        newSection = True
+#        for qStaff in self:
+#            if newSection:
+#                newSection = False
+#                if sectionIndex < len(self._qSections):
+#                    qSection = self._qSections[sectionIndex]
+#                    sectionIndex += 1
+#                    qSection.setPos(xMargins, yOffset)
+#                    yOffset += qSection.boundingRect().height()
+#            newSection = qStaff.isSectionEnd()
+#            qStaff.setPos(xMargins, yOffset)
+#            yOffset += qStaff.height() + lineSpacing
+#        self.setSceneRect(0, 0,
+#                          self.width(),
+#                          yOffset - lineSpacing + yMargins)
 
     def sectionFontChanged(self):
         self._metaData.fontChanged()
@@ -287,9 +308,17 @@ class QScore(QtGui.QGraphicsScene):
             qsection.setFont(self._properties.sectionFont)
         self.lineSpacingChanged()
 
+    def metadataVisibilityChanged(self):
+        self._metaData.setVisible(self._properties.metadataVisible)
+        self.reBuild()
+
     def metadataFontChanged(self):
         self._metaData.fontChanged()
         self.lineSpacingChanged()
+
+    def kitDataVisibleChanged(self):
+        self._kitData.setVisible(self._properties.kitDataVisible)
+        self.reBuild()
 
     def dataChanged(self, notePosition):
         staff = self._qStaffs[notePosition.staffIndex]

@@ -226,6 +226,9 @@ class Measure(object):
                     continue
                 self._notes[noteTime][changes[drumIndex]] = head
 
+    def lineIsVisible(self, index):
+        return len(self._notes) > 0 and any(index in noteTime for noteTime in self._notes.values())
+
     def write(self, handle):
         print >> handle, "START_BAR %d" % len(self)
         if self.counter is not None:
