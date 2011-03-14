@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\scorePropertiesDialog.ui'
 #
-# Created: Sat Mar 12 17:47:02 2011
+# Created: Sun Mar 13 21:31:51 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -32,24 +32,12 @@ class Ui_ScoreDialog(object):
         self.artistEdit = QtGui.QLineEdit(ScoreDialog)
         self.artistEdit.setObjectName(_fromUtf8("artistEdit"))
         self.gridLayout.addWidget(self.artistEdit, 1, 1, 1, 1)
-        self.checkBox_2 = QtGui.QCheckBox(ScoreDialog)
-        self.checkBox_2.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.checkBox_2.setText(_fromUtf8(""))
-        self.checkBox_2.setChecked(True)
-        self.checkBox_2.setObjectName(_fromUtf8("checkBox_2"))
-        self.gridLayout.addWidget(self.checkBox_2, 1, 2, 1, 1)
         self.label_3 = QtGui.QLabel(ScoreDialog)
         self.label_3.setObjectName(_fromUtf8("label_3"))
         self.gridLayout.addWidget(self.label_3, 2, 0, 1, 1)
         self.creatorEdit = QtGui.QLineEdit(ScoreDialog)
         self.creatorEdit.setObjectName(_fromUtf8("creatorEdit"))
         self.gridLayout.addWidget(self.creatorEdit, 2, 1, 1, 1)
-        self.checkBox_3 = QtGui.QCheckBox(ScoreDialog)
-        self.checkBox_3.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.checkBox_3.setText(_fromUtf8(""))
-        self.checkBox_3.setChecked(True)
-        self.checkBox_3.setObjectName(_fromUtf8("checkBox_3"))
-        self.gridLayout.addWidget(self.checkBox_3, 2, 2, 1, 1)
         self.label_4 = QtGui.QLabel(ScoreDialog)
         self.label_4.setObjectName(_fromUtf8("label_4"))
         self.gridLayout.addWidget(self.label_4, 3, 0, 1, 1)
@@ -64,12 +52,6 @@ class Ui_ScoreDialog(object):
         self.bpmSpinBox.setProperty(_fromUtf8("value"), 120)
         self.bpmSpinBox.setObjectName(_fromUtf8("bpmSpinBox"))
         self.gridLayout.addWidget(self.bpmSpinBox, 3, 1, 1, 1)
-        self.checkBox_4 = QtGui.QCheckBox(ScoreDialog)
-        self.checkBox_4.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.checkBox_4.setText(_fromUtf8(""))
-        self.checkBox_4.setChecked(True)
-        self.checkBox_4.setObjectName(_fromUtf8("checkBox_4"))
-        self.gridLayout.addWidget(self.checkBox_4, 3, 2, 1, 1)
         self.buttonBox = QtGui.QDialogButtonBox(ScoreDialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
@@ -79,9 +61,6 @@ class Ui_ScoreDialog(object):
         self.retranslateUi(ScoreDialog)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), ScoreDialog.accept)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), ScoreDialog.reject)
-        QtCore.QObject.connect(self.checkBox_2, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.artistEdit.setEnabled)
-        QtCore.QObject.connect(self.checkBox_3, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.creatorEdit.setEnabled)
-        QtCore.QObject.connect(self.checkBox_4, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.bpmSpinBox.setEnabled)
         QtCore.QMetaObject.connectSlotsByName(ScoreDialog)
 
     def retranslateUi(self, ScoreDialog):
