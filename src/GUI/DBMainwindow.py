@@ -33,6 +33,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         '''
         super(DrumBurp, self).__init__(parent)
         self._state = None
+        self._settings = None
         self._printer = QPrinter()
         self.setupUi(self)
         DBIcons.initialiseIcons()
@@ -270,14 +271,16 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         fname = self.filename if self.filename is not None else ""
         if os.path.splitext(fname)[-1] == '.brp':
             fname = os.path.splitext(fname)[0] + '.txt'
-        asciiDialog = QAsciiExportDialog(fname, self)
+        self._settings = self.songProperties.generateAsciiSettings(self._settings)
+        asciiDialog = QAsciiExportDialog(fname, self,
+                                         settings = self._settings)
         if not asciiDialog.exec_():
             return
         fname = asciiDialog.getFilename()
-        options = asciiDialog.getOptions()
+        self._settings = asciiDialog.getOptions()
         try:
             with open(fname, 'w') as txtHandle:
-                self.scoreScene.score.exportASCII(txtHandle, options)
+                self.scoreScene.score.exportASCII(txtHandle, self._settings)
         except StandardError:
             QMessageBox.warning(self.parent(), "Export failed!",
                                 "Could not export to " + fname)

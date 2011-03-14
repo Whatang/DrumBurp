@@ -5,6 +5,7 @@ Created on 8 Jan 2011
 '''
 
 from Data.TimeCounter import getCounters, counterMaker, TimeCounter
+from Data.ASCIISettings import ASCIISettings
 from PyQt4.QtCore import QObject, pyqtSignal
 
 class Null(object):
@@ -267,3 +268,12 @@ class QDisplayProperties(QObject):
         if self._beatCounter != value:
             self._beatCounter = value
     beatCounter = property(fget = _getbeatCounter, fset = _setbeatCounter)
+
+    def generateAsciiSettings(self, settings = None):
+        if settings is None:
+            settings = ASCIISettings()
+        settings.metadata = self.metadataVisible
+        settings.kitKey = self.kitDataVisible
+        settings.printCount = self.beatCountVisible
+        settings.omitEmpty = not self.emptyLinesVisible
+        return settings

@@ -23,6 +23,7 @@ class QAsciiExportDialog(QDialog, Ui_asciiDialog):
         self.setupUi(self)
         if settings is None:
             settings = ASCIISettings()
+        self._filename = None
         self._setInitialState(filename, settings)
 
     def _setInitialState(self, filename, settings):
@@ -30,6 +31,8 @@ class QAsciiExportDialog(QDialog, Ui_asciiDialog):
         self.filenameLabel.setText(self._filename
                                    if self._filename is not None
                                    else "")
+        for checkName in settings.checkNames():
+            getattr(self, checkName + "Check").setChecked(getattr(settings, checkName))
 
     @pyqtSignature("")
     def on_filenameButton_clicked(self):
