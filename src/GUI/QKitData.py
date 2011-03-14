@@ -5,6 +5,7 @@ Created on 13 Mar 2011
 '''
 
 from QGraphicsListData import QGraphicsListData
+from QEditKitDialog import QEditKitDialog
 
 class QKitData(QGraphicsListData):
     '''
@@ -21,3 +22,12 @@ class QKitData(QGraphicsListData):
 
     def _dataLen(self):
         return self._qScore.kitSize
+
+    def mouseDoubleClickEvent(self, event):
+        editDialog = QEditKitDialog(self.scene().score.drumKit,
+                                    self.scene().parent())
+        if editDialog.exec_():
+            newKit, changes = editDialog.getNewKit()
+            self.scene().score.changeKit(newKit, changes)
+            self.scene().reBuild()
+            self.scene().dirty = True
