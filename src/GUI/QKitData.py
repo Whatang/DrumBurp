@@ -23,7 +23,7 @@ class QKitData(QGraphicsListData):
     def _dataLen(self):
         return self._qScore.kitSize
 
-    def mouseDoubleClickEvent(self, event):
+    def mouseDoubleClickEvent(self, event_):
         editDialog = QEditKitDialog(self.scene().score.drumKit,
                                     self.scene().parent())
         if editDialog.exec_():
