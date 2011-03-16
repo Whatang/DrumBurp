@@ -8,39 +8,6 @@ from Data.TimeCounter import getCounters, counterMaker, TimeCounter
 from Data.ASCIISettings import ASCIISettings
 from PyQt4.QtCore import QObject, pyqtSignal
 
-class Null(object):
-    def __init__(self, *args, **kwargs):
-        "Ignore parameters."
-        return None
-
-    # object calling
-
-    def __call__(self, *args, **kwargs):
-        "Ignore method calls."
-        return self
-
-    # attribute handling
-
-    def __getattr__(self, mname):
-        "Ignore attribute requests."
-        return self
-
-    def __setattr__(self, name, value):
-        "Ignore attribute setting."
-        return self
-
-    def __delattr__(self, name):
-        "Ignore deleting attributes."
-        return self
-
-    def __repr__(self):
-        "Return a string representation."
-        return "<Null>"
-
-    def __str__(self):
-        "Convert to a string and return it."
-        return "Null"
-
 #pylint: disable-msg=R0902
 
 class QDisplayProperties(QObject):
@@ -61,7 +28,7 @@ class QDisplayProperties(QObject):
 
 #    LINELABELWIDTH = 30
 
-    def __init__(self, settings = None, qScore = Null()):
+    def __init__(self):
         super(QDisplayProperties, self).__init__()
         self._xMargins = 20
         self._yMargins = 30
@@ -174,7 +141,8 @@ class QDisplayProperties(QObject):
             self._sectionFontSize = value
             self.sectionFont.setPointSize(value)
             self.sectionFontSizeChanged.emit()
-    sectionFontSize = property(fget = _getsectionFontSize, fset = _setsectionFontSize)
+    sectionFontSize = property(fget = _getsectionFontSize,
+                               fset = _setsectionFontSize)
 
     def _getsectionFont(self):
         return self._sectionFont
@@ -194,7 +162,8 @@ class QDisplayProperties(QObject):
             self._metadataFontSize = value
             self.metadataFont.setPointSize(value)
             self.metadataFontSizeChanged.emit()
-    metadataFontSize = property(fget = _getmetadataFontSize, fset = _setmetadataFontSize)
+    metadataFontSize = property(fget = _getmetadataFontSize,
+                                fset = _setmetadataFontSize)
 
     def _getmetadataFont(self):
         return self._metadataFont
@@ -228,7 +197,8 @@ class QDisplayProperties(QObject):
         if self._kitDataVisible != value:
             self._kitDataVisible = value
             self.kitDataVisibleChanged.emit()
-    kitDataVisible = property(fget = _getkitDataVisible, fset = _setkitDataVisible)
+    kitDataVisible = property(fget = _getkitDataVisible,
+                              fset = _setkitDataVisible)
 
     def _getbeatCountVisible(self):
         return self._beatCountVisible
@@ -236,7 +206,8 @@ class QDisplayProperties(QObject):
         if self._beatCountVisible != value:
             self._beatCountVisible = value
             self.beatCountVisibleChanged.emit()
-    beatCountVisible = property(fget = _getbeatCountVisible, fset = _setbeatCountVisible)
+    beatCountVisible = property(fget = _getbeatCountVisible,
+                                fset = _setbeatCountVisible)
 
     def _getemptyLinesVisible(self):
         return self._emptyLinesVisible
@@ -244,7 +215,8 @@ class QDisplayProperties(QObject):
         if self._emptyLinesVisible != value:
             self._emptyLinesVisible = value
             self.emptyLinesVisibleChanged.emit()
-    emptyLinesVisible = property(fget = _getemptyLinesVisible, fset = _setemptyLinesVisible)
+    emptyLinesVisible = property(fget = _getemptyLinesVisible,
+                                 fset = _setemptyLinesVisible)
 
     def maxColumns(self, widthInPixels):
         widthInPixels -= 2 * (self.xMargins + self.xSpacing)
