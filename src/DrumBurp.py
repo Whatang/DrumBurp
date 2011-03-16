@@ -19,7 +19,7 @@ def main():
     app.setOrganizationName("Whatang Software")
     app.setOrganizationDomain("whatang.org")
     app.setApplicationName(GUI.DBMainwindow.APPNAME)
-    mainWindow = GUI.DBMainwindow.DrumBurp()
+    mainWindow = GUI.DBMainwindow.DrumBurp(fakeStartup = '--virgin' in sys.argv)
     mainWindow.show()
     app.setWindowIcon(GUI.DBIcons.getIcon("drumburp"))
     app.exec_()

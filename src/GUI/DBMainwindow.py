@@ -22,22 +22,32 @@ import os
 
 APPNAME = "DrumBurp"
 #pylint:disable-msg=R0904
+
+class FakeQSettings(object):
+    def value(self, key_):
+        return QVariant()
+
+    def setValue(self, key_, value_):
+        return
+
+
 class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     '''
     classdocs
     '''
 
-    def __init__(self, parent = None):
+    def __init__(self, parent = None, fakeStartup = False):
         '''
         Constructor
         '''
+        self._fakeStartup = fakeStartup
         super(DrumBurp, self).__init__(parent)
         self._state = None
         self._asciiSettings = None
         self._printer = QPrinter()
         self.setupUi(self)
         DBIcons.initialiseIcons()
-        settings = QSettings()
+        settings = self._makeQSettings()
         self.recentFiles = [unicode(fname) for fname in
                             settings.value("RecentFiles").toStringList()]
         self.filename = (None
@@ -49,9 +59,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreView.setScene(self.scoreScene)
         self.fontComboBox.setWritingSystem(QFontDatabase.Latin)
         self.sectionFontCombo.setWritingSystem(QFontDatabase.Latin)
-        self.sectionFontSizeSpinbox.setValue(self.songProperties.sectionFontSize)
+        self.sectionFontSizeSpinbox.setValue(self.songProperties.
+                                             sectionFontSize)
         self.sectionFontCombo.setWritingSystem(QFontDatabase.Latin)
-        self.sectionFontSizeSpinbox.setValue(self.songProperties.metadataFontSize)
+        self.sectionFontSizeSpinbox.setValue(self.songProperties.
+                                             metadataFontSize)
         self.lineSpaceSlider.setValue(10)
         self.scoreView.startUp()
         self.beatsSpinBox.setValue(self.songProperties.beatsPerMeasure)
@@ -81,6 +93,12 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.updateStatus("Welcome to %s" % APPNAME)
         self.restoreGeometry(settings.value("Geometry").toByteArray())
         self.restoreState(settings.value("MainWindow/State").toByteArray())
+
+    def _makeQSettings(self):
+        if self._fakeStartup:
+            return FakeQSettings()
+        else:
+            return QSettings()
 
     def updateStatus(self, message):
         self.statusBar().showMessage(message, 5000)
@@ -117,7 +135,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     def closeEvent(self, event):
         if self.okToContinue():
-            settings = QSettings()
+            settings = self._makeQSettings()
             settings.setValue("RecentFiles",
                               QVariant(self.recentFiles))
             settings.setValue("Geometry",
