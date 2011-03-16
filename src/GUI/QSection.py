@@ -21,7 +21,6 @@ class QSection(QGraphicsTextItem):
         '''
         super(QSection, self).__init__(parent = parent, scene = qScore)
         font = qScore.displayProperties.sectionFont
-#        font = self.font()
         if font is None:
             font = self.font()
         font.setBold(True)
