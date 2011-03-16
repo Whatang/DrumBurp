@@ -9,7 +9,7 @@ from ui_drumburp import Ui_DrumBurpWindow
 from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QFileDialog, QMessageBox,
                          QPrintPreviewDialog, QWhatsThis,
-                         QPrinter)
+                         QPrinter, QDesktopServices)
 from PyQt4.QtCore import pyqtSignature, QSettings, QVariant
 from QScore import QScore
 from QDisplayProperties import QDisplayProperties
@@ -161,7 +161,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if len(self.recentFiles) > 0:
             directory = os.path.dirname(self.recentFiles[-1])
         else:
-            directory = ""
+            directory = QDesktopServices.storageLocation(QDesktopServices.HomeLocation)
         fname = QFileDialog.getOpenFileName(parent = self,
                                             caption = caption,
                                             directory = directory,
@@ -182,10 +182,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 suggestion = "Untitled"
             suggestion = os.extsep.join([suggestion, "brp"])
             if len(self.recentFiles) > 0:
-                directory = os.path.join(os.path.dirname(self.recentFiles[-1]),
-                                         suggestion)
+                directory = os.path.dirname(self.recentFiles[-1])
             else:
-                directory = suggestion
+                directory = str(QDesktopServices.storageLocation(QDesktopServices.HomeLocation))
+            directory = os.path.join(directory,
+                                     suggestion)
         if os.path.splitext(directory)[-1] == os.extsep + 'brp':
             directory = os.path.splitext(directory)[0]
         caption = "Choose a DrumBurp file to save"
@@ -286,7 +287,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionExportASCII_triggered(self):
-        fname = self.filename if self.filename is not None else ""
+        fname = self.filename
+        if self.filename is None:
+            fname = QDesktopServices.storageLocation(QDesktopServices.HomeLocation)
+            fname = os.path.join(str(fname), 'Untitled.txt')
         if os.path.splitext(fname)[-1] == '.brp':
             fname = os.path.splitext(fname)[0] + '.txt'
         self._asciiSettings = self.songProperties.generateAsciiSettings(self._asciiSettings)
