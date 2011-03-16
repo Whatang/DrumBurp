@@ -44,7 +44,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                          if len(self.recentFiles) == 0
                          else self.recentFiles[0])
         self.updateRecentFiles()
-        self.songProperties = QDisplayProperties(settings)
+        self.songProperties = QDisplayProperties()
         self.scoreScene = QScore(self)
         self.scoreView.setScene(self.scoreScene)
         self.fontComboBox.setWritingSystem(QFontDatabase.Latin)
