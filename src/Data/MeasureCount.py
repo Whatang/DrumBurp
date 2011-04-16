@@ -9,7 +9,7 @@ import itertools
 
 _COUNTERS = {}
 
-class TimeCounter(object):
+class MeasureCount(object):
     '''
     classdocs
     '''
@@ -46,11 +46,11 @@ class TimeCounter(object):
         for dummyIndex, count in zip(range(0, numTicks), self.count()):
             yield count
 
-_QUARTERS = TimeCounter(".", "Quarter Notes")
-_EIGHTHS = TimeCounter(".+", "Eighth Notes")
-_SIXTEENTHS = TimeCounter(".e+a", "Sixteenth Notes")
-_TRIPLETS = TimeCounter(".+a", "Triplets")
-_SIXTEEN_TRIPLETS = TimeCounter(".ea+ea", "Sixteenth Triplets")
+_QUARTERS = MeasureCount(".", "Quarter Notes")
+_EIGHTHS = MeasureCount(".+", "Eighth Notes")
+_SIXTEENTHS = MeasureCount(".e+a", "Sixteenth Notes")
+_TRIPLETS = MeasureCount(".+a", "Triplets")
+_SIXTEEN_TRIPLETS = MeasureCount(".ea+ea", "Sixteenth Triplets")
 
 def counterMaker(ticksPerBeat):
     return _COUNTERS[ticksPerBeat]

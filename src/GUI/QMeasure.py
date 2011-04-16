@@ -8,7 +8,7 @@ Created on 5 Jan 2011
 from PyQt4 import QtGui, QtCore
 
 from Data.NotePosition import NotePosition
-from Data.TimeCounter import counterMaker
+from Data.MeasureCount import counterMaker
 from Data import DBConstants
 
 from DBCommands import (ToggleNote,

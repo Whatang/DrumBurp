@@ -9,7 +9,7 @@ from collections import defaultdict
 from DBConstants import EMPTY_NOTE, BARLINE, BAR_TYPES
 from DBErrors import BadTimeError
 from NotePosition import NotePosition
-import TimeCounter
+from Data import MeasureCount
 import copy
 
 def _makeNoteDict():
@@ -285,7 +285,7 @@ class Measure(object):
                 break
             elif lineType == "BEATLENGTH":
                 lineData = int(lineData)
-                self.counter = TimeCounter.counterMaker(lineData)
+                self.counter = MeasureCount.counterMaker(lineData)
             elif lineType == "REPEAT_COUNT":
                 self.repeatCount = int(lineData)
             elif lineType == "ALTERNATE":

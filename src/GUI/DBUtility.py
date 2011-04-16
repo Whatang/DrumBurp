@@ -4,13 +4,13 @@ Created on 19 Jan 2011
 @author: Mike Thomas
 '''
 
-from Data import TimeCounter
+from Data import MeasureCount
 from PyQt4.QtCore import QVariant
 
 def populateCounterCombo(combo, chosenCounter):
     setCounter = False
     combo.clear()
-    for index, (beatTicks, counter) in enumerate(TimeCounter.getCounters()):
+    for index, (beatTicks, counter) in enumerate(MeasureCount.getCounters()):
         combo.addItem(counter.description(),
                       userData = QVariant(beatTicks))
         if counter == chosenCounter:

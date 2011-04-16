@@ -10,7 +10,7 @@ from PyQt4 import QtGui
 from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 import DBIcons
 from Data import DBConstants
-from Data.TimeCounter import counterMaker
+from Data.MeasureCount import counterMaker
 from DBCommands import (RepeatNoteCommand, InsertMeasuresCommand,
                         InsertSectionCommand, DeleteMeasureCommand,
                         SetAlternateCommand)

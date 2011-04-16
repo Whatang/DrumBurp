@@ -4,7 +4,7 @@ Created on 8 Jan 2011
 @author: Mike Thomas
 '''
 
-from Data.TimeCounter import getCounters, counterMaker, TimeCounter
+from Data.MeasureCount import getCounters, counterMaker, MeasureCount
 from Data.ASCIISettings import ASCIISettings
 from PyQt4.QtCore import QObject, pyqtSignal
 
@@ -237,7 +237,7 @@ class QDisplayProperties(QObject):
     def _setbeatCounter(self, value):
         if isinstance(value, int):
             value = counterMaker(value)
-        assert(isinstance(value, TimeCounter))
+        assert(isinstance(value, MeasureCount))
         if self._beatCounter != value:
             self._beatCounter = value
     beatCounter = property(fget = _getbeatCounter, fset = _setbeatCounter)

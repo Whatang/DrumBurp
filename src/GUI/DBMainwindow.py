@@ -16,7 +16,7 @@ from QDisplayProperties import QDisplayProperties
 from QNewScoreDialog import QNewScoreDialog
 from QAsciiExportDialog import QAsciiExportDialog
 import DBUtility
-from Data.TimeCounter import counterMaker
+from Data.MeasureCount import counterMaker
 import DBIcons
 import os
 
