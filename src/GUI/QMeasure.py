@@ -6,24 +6,21 @@ Created on 5 Jan 2011
 '''
 
 from PyQt4 import QtGui, QtCore
+
 from Data.NotePosition import NotePosition
-from QInsertMeasuresDialog import QInsertMeasuresDialog
-from QEditMeasureDialog import QEditMeasureDialog
-from QRepeatDialog import QRepeatDialog
 from Data.TimeCounter import counterMaker
 from Data import DBConstants
-from DBCommands import (ToggleNote, RepeatNoteCommand,
-                        InsertMeasuresCommand, SetRepeatCountCommand,
+
+from DBCommands import (ToggleNote,
+                        SetRepeatCountCommand,
                         EditMeasurePropertiesCommand,
-                        DeleteMeasureCommand,
-                        InsertSectionCommand,
                         SetAlternateCommand)
+from QEditMeasureDialog import QEditMeasureDialog
 from QRepeatCountDialog import QRepeatCountDialog
 from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
+from QMeasureContextMenu import QMeasureContextMenu
 from QAlternateDialog import QAlternateDialog
-import DBIcons
 
-import copy
 
 class QMeasure(QtGui.QGraphicsItem):
     '''
@@ -191,19 +188,6 @@ class QMeasure(QtGui.QGraphicsItem):
                                             repDialog.getValue())
             self._qScore.addCommand(command)
 
-    def setAlternate(self):
-        altDialog = QAlternateDialog(self._measure.alternateText,
-                                     self._qScore.parent())
-        if (altDialog.exec_()
-            and self._measure.alternateText != altDialog.getValue()):
-            command = SetAlternateCommand(self._qScore, self._measurePosition(),
-                                          altDialog.getValue())
-            self._qScore.addCommand(command)
-
-    def _deleteAlternate(self):
-        command = SetAlternateCommand(self._qScore, self._measurePosition(),
-                                      None)
-        self._qScore.addCommand(command)
 
     def _isOverNotes(self, point):
         return (1 <= (point.y() / self._props.ySpacing)
@@ -272,16 +256,6 @@ class QMeasure(QtGui.QGraphicsItem):
         command = ToggleNote(self._qScore, notePosition, head)
         self._qScore.addCommand(command)
 
-    def repeatNote(self, noteTime, drumIndex):
-        np = self._makeNotePosition(noteTime, drumIndex)
-        head = self._measure.noteAt(noteTime, drumIndex)
-        repeatDialog = QRepeatDialog(self._qScore.parent())
-        if repeatDialog.exec_():
-            nRepeats, repInterval = repeatDialog.getValues()
-            command = RepeatNoteCommand(self._qScore, np, nRepeats,
-                                        repInterval, head)
-            self._qScore.addCommand(command)
-
     def mousePressEvent(self, event):
         point = self.mapFromScene(event.scenePos())
         if self._isOverNotes(point):
@@ -291,7 +265,6 @@ class QMeasure(QtGui.QGraphicsItem):
             event.ignore()
 
     def _notePressEvent(self, event, noteTime, drumIndex):
-        score = self._qScore.score
         menu = None
         if event.button() == QtCore.Qt.MiddleButton:
             event.ignore()
@@ -302,57 +275,12 @@ class QMeasure(QtGui.QGraphicsItem):
                 menu.addAction(noteHead, noteAction)
         elif event.button() == QtCore.Qt.RightButton:
             event.ignore()
-            menu = QMenuIgnoreCancelClick(self._qScore)
-            actionText = "Repeat note"
-            repNote = lambda:self.repeatNote(noteTime, drumIndex)
-            repeatNoteAction = menu.addAction(DBIcons.getIcon("repeat"),
-                                              actionText, repNote)
-            if (self._measure.noteAt(noteTime, drumIndex)
-                == DBConstants.EMPTY_NOTE):
-                repeatNoteAction.setEnabled(False)
-            menu.addSeparator()
-            menu.addAction(DBIcons.getIcon("copy"),
-                           "Copy Measure",
-                           self.copyMeasure)
-            pasteAction = menu.addAction(DBIcons.getIcon("paste"),
-                                         "Paste Measure",
-                                         self.pasteMeasure)
-            if self._qScore.measureClipboard is None:
-                pasteAction.setEnabled(False)
-            menu.addSeparator()
-            actionText = "Insert Default Measure"
-            menu.addAction(actionText,
-                           self.insertMeasureBefore)
-            insertMenu = menu.addMenu("Insert...")
-            insertMenu.addAction("Default Measure After",
-                                 self.insertMeasureAfter)
-            insertMenu.addAction("Other Measures", self.insertOtherMeasures)
-            sectionCopyMenu = insertMenu.addMenu("Section Copy")
-            sectionCopyMenu.setEnabled(score.numSections() > 0)
-            for si, sectionTitle in enumerate(score.iterSections()):
-                copyIt = lambda i = si: self._copySection(i)
-                sectionCopyMenu.addAction(sectionTitle, copyIt)
-            menu.addSeparator()
-            deleteAction = menu.addAction(DBIcons.getIcon("delete"),
-                                          "Delete Measure",
-                                          self.deleteMeasure)
-            deleteAction.setEnabled(score.numMeasures() > 1)
-            deleteMenu = menu.addMenu("Delete...")
-            deleteStaffAction = deleteMenu.addAction("Staff", self.deleteStaff)
-            deleteStaffAction.setEnabled(score.numStaffs() > 1)
-            deleteSectionAction = deleteMenu.addAction("Section",
-                                                       self.deleteSection)
-            deleteSectionAction.setEnabled(score.numSections() > 1)
-            deleteEmptyAction = deleteMenu.addAction("Empty Trailing Measures",
-                                                     self.deleteEmptyMeasures)
-            deleteEmptyAction.setEnabled(score.numMeasures() > 1)
-            menu.addSeparator()
-            if self._measure.alternateText is not None:
-                menu.addAction("Delete Alternate Ending",
-                               self._deleteAlternate)
-            else:
-                menu.addAction("Add Alternate Ending",
-                               self.setAlternate)
+            menu = QMeasureContextMenu(self._qScore, self,
+                                       self._makeNotePosition(noteTime,
+                                                              drumIndex),
+                                       self._measure.noteAt(noteTime,
+                                                            drumIndex),
+                                       self._measure.alternateText)
         else:
             self._startClick = (noteTime, drumIndex)
         if menu is not None:
@@ -377,7 +305,7 @@ class QMeasure(QtGui.QGraphicsItem):
         elif self._isOverRepeatCount(point):
             self.changeRepeatCount()
         elif self._isOverAlternate(point):
-            self.setAlternate()
+            self._setAlternate()
         else:
             event.ignore()
 
@@ -390,140 +318,6 @@ class QMeasure(QtGui.QGraphicsItem):
     def _measurePosition(self):
         np = NotePosition(measureIndex = self._index)
         return self.parentItem().augmentNotePosition(np)
-
-    def deleteStaff(self):
-        score = self._qScore.score
-        if score.numStaffs() == 1:
-            QtGui.QMessageBox.warning(self.parent(),
-                                      "Invalid delete",
-                                      "Cannot delete last staff.")
-            return
-        msg = "Really delete this staff?"
-        yesNo = QtGui.QMessageBox.question(self._qScore.parent(),
-                                           "Delete Staff?",
-                                           msg,
-                                           QtGui.QMessageBox.Ok,
-                                           QtGui.QMessageBox.Cancel)
-        if yesNo == QtGui.QMessageBox.Ok:
-            np = self._measurePosition()
-            np.measureIndex = None
-            staff = score.getItemAtPosition(np)
-            arguments = []
-            np.measureIndex = staff.numMeasures() - 1
-            while np.measureIndex >= 0:
-                arguments.append((copy.copy(np),))
-                np.measureIndex -= 1
-            self._qScore.addRepeatedCommand("Delete Staff",
-                                            DeleteMeasureCommand, arguments)
-
-    def deleteSection(self):
-        score = self._qScore.score
-        if score.numSections() <= 1:
-            QtGui.QMessageBox.warning(self.parent(),
-                                      "Invalid delete",
-                                      "Cannot delete last staff.")
-            return
-        msg = "Really delete this section?"
-        yesNo = QtGui.QMessageBox.question(self._qScore.parent(),
-                                           "Delete Staff?",
-                                           msg,
-                                           QtGui.QMessageBox.Ok,
-                                           QtGui.QMessageBox.Cancel)
-        if yesNo == QtGui.QMessageBox.Ok:
-            np = self._measurePosition()
-            startIndex = score.getSectionStartStaffIndex(np)
-            sectionIndex = score.getSectionIndex(np)
-            sectionName = score.getSectionTitle(sectionIndex)
-            np.staffIndex = startIndex
-            while (np.staffIndex < score.numStaffs()
-                   and not score.getStaff(np.staffIndex).isSectionEnd()):
-                np.staffIndex += 1
-            arguments = []
-            for np.staffIndex in range(np.staffIndex, startIndex - 1, -1):
-                staff = score.getStaff(np.staffIndex)
-                for np.measureIndex in range(staff.numMeasures() - 1, -1, -1):
-                    arguments.append((copy.copy(np),))
-                np.staffIndex -= 1
-            self._qScore.addRepeatedCommand("Delete Section: " + sectionName,
-                                            DeleteMeasureCommand, arguments)
-
-    def deleteEmptyMeasures(self):
-        score = self._qScore.score
-        if score.numMeasures() == 1:
-            QtGui.QMessageBox.warning(self.parent(),
-                                      "Invalid delete",
-                                      "Cannot delete last measure.")
-            return
-        msg = "This will delete all empty trailing measures.\nContinue?"
-        yesNo = QtGui.QMessageBox.question(self._qScore.parent(),
-                                           "Delete Empty Measures",
-                                           msg,
-                                           QtGui.QMessageBox.Ok,
-                                           QtGui.QMessageBox.Cancel)
-        if yesNo == QtGui.QMessageBox.Ok:
-            positions = score.trailingEmptyMeasures()
-            if len(positions) == 0:
-                return
-            arguments = [(np,) for np in positions]
-            self._qScore.addRepeatedCommand("Delete Empty Measures",
-                                            DeleteMeasureCommand, arguments)
-
-
-    def _insertMeasure(self, np):
-        counter = self._props.beatCounter
-        command = InsertMeasuresCommand(self._qScore, np, 1,
-                                        self._props.beatsPerMeasure *
-                                        counter.beatLength,
-                                        counter)
-        self._qScore.addCommand(command)
-
-    def insertMeasureBefore(self):
-        self._insertMeasure(self._measurePosition())
-
-    def insertMeasureAfter(self):
-        np = self._measurePosition()
-        np.measureIndex += 1
-        self._insertMeasure(np)
-
-    def insertOtherMeasures(self):
-        np = self._measurePosition()
-        beats = self._props.beatsPerMeasure
-        counter = self._props.beatCounter
-        insertDialog = QInsertMeasuresDialog(self._qScore.parent(),
-                                             beats,
-                                             counter)
-        if insertDialog.exec_():
-            nMeasures, beats, counter, insertBefore = insertDialog.getValues()
-            counter = counterMaker(counter)
-            measureWidth = beats * counter.beatLength
-            if not insertBefore:
-                np.measureIndex += 1
-            command = InsertMeasuresCommand(self._qScore, np, nMeasures,
-                                            measureWidth, counter)
-            self._qScore.addCommand(command)
-
-    def deleteMeasure(self):
-        score = self._qScore.score
-        if score.numMeasures() == 1:
-            QtGui.QMessageBox.warning(self.parent(),
-                                      "Invalid delete",
-                                      "Cannot delete last measure.")
-            return
-        yesNo = QtGui.QMessageBox.question(self._qScore.parent(),
-                                           "Delete Measure",
-                                           "Really delete this measure?",
-                                           QtGui.QMessageBox.Ok,
-                                           QtGui.QMessageBox.Cancel)
-        if yesNo == QtGui.QMessageBox.Ok:
-            command = DeleteMeasureCommand(self._qScore,
-                                           self._measurePosition())
-            self._qScore.addCommand(command)
-
-    def copyMeasure(self):
-        self._qScore.copyMeasure(self._measurePosition())
-
-    def pasteMeasure(self):
-        self._qScore.pasteMeasure(self._measurePosition())
 
     def editMeasureProperties(self):
         numTicks = len(self._measure)
@@ -547,7 +341,11 @@ class QMeasure(QtGui.QGraphicsItem):
                                                        newCounter)
                 self._qScore.addCommand(command)
 
-    def _copySection(self, sectionIndex):
-        np = self._measurePosition()
-        command = InsertSectionCommand(self._qScore, np, sectionIndex)
-        self._qScore.addCommand(command)
+    def setAlternate(self):
+        altDialog = QAlternateDialog(self._measure.alternateText,
+                                     self._qScore.parent())
+        if (altDialog.exec_()
+            and self._measure.alternateText != altDialog.getValue()):
+            command = SetAlternateCommand(self._qScore, self._measurePosition(),
+                                          altDialog.getValue())
+            self._qScore.addCommand(command)
