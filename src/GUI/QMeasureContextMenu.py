@@ -104,8 +104,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
             self._qScore.addCommand(command)
 
     def _insertDefaultMeasure(self, np):
-        counter = self._props.beatCounter
-        mc = makeSimpleCount(counter, self._props.beatsPerMeasure)
+        mc = self._props.defaultCounter
         command = InsertMeasuresCommand(self._qScore, np, 1,
                                         mc)
         self._qScore.addCommand(command)
@@ -120,10 +119,8 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
 
     def _insertOtherMeasures(self):
         np = copy.copy(self._np)
-        beats = self._props.beatsPerMeasure
-        counter = self._props.beatCounter
+        counter = self._props.defaultCounter
         insertDialog = QInsertMeasuresDialog(self._qScore.parent(),
-                                             beats,
                                              counter,
                                              self._props.counterRegistry)
         if insertDialog.exec_():

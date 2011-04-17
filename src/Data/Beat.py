@@ -19,7 +19,7 @@ class Beat(object):
         '''
         Constructor
         '''
-        self._counter = counter
+        self.counter = counter
         if numTicks is None:
             numTicks = self.ticksPerBeat
         self._numTicks = numTicks
@@ -27,8 +27,11 @@ class Beat(object):
 
     def __iter__(self):
         for unusedTickNum, count in itertools.izip(self.iterTicks(),
-                                                   self._counter):
+                                                   self.counter):
             yield count
+
+    def __str__(self):
+        return str(self.counter)
 
     def iterTicks(self):
         return iter(range(0, self.numTicks))
@@ -38,7 +41,7 @@ class Beat(object):
 
     @property
     def ticksPerBeat(self):
-        return len(self._counter)
+        return len(self.counter)
 
     @property
     def numTicks(self):
@@ -49,7 +52,7 @@ class Beat(object):
         indenter.increase()
         if self.numTicks != self.ticksPerBeat:
             print >> handle, indenter("NUM_TICKS", self.numTicks)
-        self._counter.write(handle, indenter)
+        self.counter.write(handle, indenter)
         indenter.decrease()
         print >> handle, indenter("BEAT_END")
 

@@ -6,6 +6,7 @@ Created on 8 Jan 2011
 
 from Data.Counter import CounterRegistry
 from Data.ASCIISettings import ASCIISettings
+import Data.MeasureCount
 from PyQt4.QtCore import QObject, pyqtSignal
 
 #pylint: disable-msg=R0902
@@ -46,9 +47,8 @@ class QDisplayProperties(QObject):
         self._emptyLinesVisible = True
         self._head = None
         self._width = 80
-        self.beatsPerMeasure = 4
         self._counterRegistry = CounterRegistry()
-        self._beatCounter = self._counterRegistry[0]
+        self.defaultCounter = Data.MeasureCount.makeSimpleCount(self._counterRegistry[0], 4)
 
     xSpacingChanged = pyqtSignal()
     ySpacingChanged = pyqtSignal()
@@ -229,18 +229,6 @@ class QDisplayProperties(QObject):
 
     def save(self, settings):
         pass
-
-    def measureBeatsChanged(self, beats):
-        self.beatsPerMeasure = beats
-
-    def _getbeatCounter(self):
-        return self._beatCounter
-    def _setbeatCounter(self, value):
-        if isinstance(value, str):
-            value = self._counterRegistry.getCounterByName(value)
-        if self._beatCounter != value:
-            self._beatCounter = value
-    beatCounter = property(fget = _getbeatCounter, fset = _setbeatCounter)
 
     @property
     def counterRegistry(self):

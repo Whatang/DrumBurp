@@ -89,11 +89,6 @@ class ScoreView(QtGui.QGraphicsView):
     def setMetadataFontSize(self, size):
         self._props.metadataFontSize = size
 
-    @QtCore.pyqtSlot(int)
-    def setDefaultMeasureWidth(self, width):
-        self._props.beatsPerMeasure = width
-
-
     @QtCore.pyqtSlot(bool)
     def setMetadataVisible(self, onOff):
         self._props.metadataVisible = onOff

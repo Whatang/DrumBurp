@@ -17,7 +17,7 @@ from QNewScoreDialog import QNewScoreDialog
 from QAsciiExportDialog import QAsciiExportDialog
 from DBInfoDialog import DBInfoDialog
 from DBStartupDialog import DBStartupDialog
-import DBUtility
+import Data.MeasureCount
 import DBIcons
 import os
 
@@ -67,10 +67,6 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                                              metadataFontSize)
         self.lineSpaceSlider.setValue(10)
         self.scoreView.startUp()
-        self.beatsSpinBox.setValue(self.songProperties.beatsPerMeasure)
-        DBUtility.populateCounterCombo(self.beatCountComboBox,
-                                       self.songProperties.beatCounter,
-                                       self.songProperties.counterRegistry)
         font = self.scoreScene.font()
         self.fontComboBox.setCurrentFont(font)
         self.noteSizeSpinBox.setValue(9)
@@ -90,8 +86,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreScene.canRedoChanged.connect(self.actionRedo.setEnabled)
         changeRedoText = lambda txt:self.actionRedo.setText("Redo " + txt)
         self.scoreScene.redoTextChanged.connect(changeRedoText)
-        beatsChanged = self.songProperties.measureBeatsChanged
-        self.beatsSpinBox.valueChanged.connect(beatsChanged)
+        self.defaultMeasureTabs.beatChanged.connect(self._beatChanged)
+        self.defaultMeasureTabs.setup(None,
+                                      self.songProperties.counterRegistry,
+                                      Data.MeasureCount)
         dlg = DBStartupDialog()
         dlg.exec_()
         self.updateStatus("Welcome to %s" % APPNAME)
@@ -227,11 +225,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     @pyqtSignature("")
     def on_actionNew_triggered(self):
         if self.okToContinue():
-            beats = self.songProperties.beatsPerMeasure
-            counter = self.songProperties.beatCounter
+            counter = self.songProperties.defaultCounter
             registry = self.songProperties.counterRegistry
             dialog = QNewScoreDialog(self.parent(),
-                                     beats,
                                      counter,
                                      registry)
             if dialog.exec_():
@@ -240,9 +236,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                                          counter = counter)
                 self.filename = None
                 self.updateRecentFiles()
-                self.beatsSpinBox.setValue(counter.numBeats())
-                DBUtility.populateCounterCombo(self.beatCountComboBox,
-                                               counter, registry)
+                self.defaultMeasureTabs.setBeat(counter)
                 self.updateStatus("Created a new blank score")
 
     def addToRecentFiles(self):
@@ -269,13 +263,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 action.setIcon(DBIcons.getIcon("score"))
                 action.triggered.connect(openRecentFile)
 
-    @pyqtSignature("int")
-    def on_beatCountComboBox_currentIndexChanged(self, index):
-        if index == -1:
-            return
-        counter = self.beatCountComboBox.currentIndex()
-        counter = self.songProperties.counterRegistry[counter]
-        self.songProperties.beatCounter = counter
+    def _beatChanged(self):
+        counter = self.defaultMeasureTabs.getCounter()
+        if counter != self.songProperties.defaultCounter:
+            self.songProperties.defaultCounter = counter
 
     def hideEvent(self, event):
         self._state = self.saveState()

@@ -252,7 +252,7 @@
   </widget>
   <widget class="QDockWidget" name="diplayOptionsDock">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -289,7 +289,7 @@
            <bool>true</bool>
           </property>
           <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -304,6 +304,12 @@
            <size>
             <width>187</width>
             <height>20</height>
+           </size>
+          </property>
+          <property name="baseSize">
+           <size>
+            <width>100</width>
+            <height>0</height>
            </size>
           </property>
           <property name="statusTip">
@@ -370,7 +376,7 @@
            <bool>true</bool>
           </property>
           <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -385,6 +391,12 @@
            <size>
             <width>187</width>
             <height>20</height>
+           </size>
+          </property>
+          <property name="baseSize">
+           <size>
+            <width>100</width>
+            <height>0</height>
            </size>
           </property>
           <property name="statusTip">
@@ -451,7 +463,7 @@
            <bool>true</bool>
           </property>
           <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -466,6 +478,12 @@
            <size>
             <width>187</width>
             <height>20</height>
+           </size>
+          </property>
+          <property name="baseSize">
+           <size>
+            <width>100</width>
+            <height>0</height>
            </size>
           </property>
           <property name="statusTip">
@@ -504,11 +522,42 @@
           </property>
          </widget>
         </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
        </layout>
       </widget>
      </item>
      <item>
       <widget class="QGroupBox" name="groupBox_3">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>300</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>100</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="title">
         <string>System Spacing</string>
        </property>
@@ -545,58 +594,26 @@
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="groupBox">
-       <property name="title">
+      <widget class="QLabel" name="label">
+       <property name="text">
         <string>Default Measure Options</string>
        </property>
-       <layout class="QGridLayout" name="gridLayout_4">
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>Beats per measure</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QSpinBox" name="beatsSpinBox">
-          <property name="toolTip">
-           <string>Default Measure Width</string>
-          </property>
-          <property name="statusTip">
-           <string>The number of ticks in default measures added to the Score</string>
-          </property>
-          <property name="suffix">
-           <string> beats</string>
-          </property>
-          <property name="minimum">
-           <number>1</number>
-          </property>
-          <property name="maximum">
-           <number>256</number>
-          </property>
-          <property name="value">
-           <number>4</number>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>Beat count</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QComboBox" name="beatCountComboBox">
-          <property name="maxCount">
-           <number>20</number>
-          </property>
-         </widget>
-        </item>
-       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="measureTabs" name="defaultMeasureTabs">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>200</width>
+         <height>0</height>
+        </size>
+       </property>
       </widget>
      </item>
      <item>
@@ -617,6 +634,12 @@
         </item>
         <item>
          <widget class="QSpinBox" name="widthSpinBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="toolTip">
            <string>Score width</string>
           </property>
@@ -641,7 +664,7 @@
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>40</width>
+            <width>10</width>
             <height>20</height>
            </size>
           </property>
@@ -651,6 +674,12 @@
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
            <widget class="QPushButton" name="fitPageButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="toolTip">
              <string>Fit Score to Page</string>
             </property>
@@ -698,7 +727,7 @@
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>0</width>
+            <width>10</width>
             <height>20</height>
            </size>
           </property>
@@ -1067,6 +1096,12 @@ Writes this Score as a plain .txt file.</string>
  </widget>
  <customwidgets>
   <customwidget>
+   <class>measureTabs</class>
+   <extends>QWidget</extends>
+   <header>Widgets.measureTabs_plugin</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>ScoreView</class>
    <extends>QGraphicsView</extends>
    <header>Widgets.ScoreView_plugin</header>
@@ -1080,8 +1115,6 @@ Writes this Score as a plain .txt file.</string>
   <tabstop>metadataFontCombo</tabstop>
   <tabstop>metadataFontSizeSpinbox</tabstop>
   <tabstop>lineSpaceSlider</tabstop>
-  <tabstop>beatsSpinBox</tabstop>
-  <tabstop>beatCountComboBox</tabstop>
   <tabstop>widthSpinBox</tabstop>
   <tabstop>fitPageButton</tabstop>
   <tabstop>fitWindowButton</tabstop>
@@ -1232,22 +1265,6 @@ Writes this Score as a plain .txt file.</string>
     <hint type="destinationlabel">
      <x>-1</x>
      <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>beatsSpinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>scoreView</receiver>
-   <slot>setDefaultMeasureWidth(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>259</x>
-     <y>603</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>760</x>
-     <y>194</y>
     </hint>
    </hints>
   </connection>

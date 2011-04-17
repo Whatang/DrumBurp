@@ -10,7 +10,6 @@ from ScoreView import ScoreView
 
 class ScoreViewPlugin(QPyDesignerCustomWidgetPlugin):
     def __init__(self, parent = None):
-
         super(ScoreViewPlugin, self).__init__(parent)
         self.initialized = False
 

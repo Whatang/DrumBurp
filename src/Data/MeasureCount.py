@@ -21,8 +21,15 @@ class MeasureCount(object):
                 else:
                     yield count
 
+    def isSimpleCount(self):
+        firstBeat = "".join(self.beats[0])
+        return all("".join(beat) == firstBeat for beat in self.beats)
+
     def __len__(self):
         return sum(beat.numTicks for beat in self.beats)
+
+    def __getitem__(self, index):
+        return self.beats[index]
 
     def countString(self):
         return "".join(self.count())
@@ -40,8 +47,7 @@ class MeasureCount(object):
     def write(self, handle, indenter):
         print >> handle, indenter("COUNT_INFO_START")
         indenter.increase()
-        firstBeat = "".join(self.beats[0])
-        if all("".join(beat) == firstBeat for beat in self.beats):
+        if self.isSimpleCount():
             # All beats are the same
             print >> handle, indenter("REPEAT_BEATS %d" % len(self.beats))
             self.beats[0].write(handle, indenter)

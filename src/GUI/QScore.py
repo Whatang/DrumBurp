@@ -378,8 +378,7 @@ class QScore(QtGui.QGraphicsScene):
     def newScore(self, numMeasures = 16,
                  counter = None):
         if counter is None:
-            counter = self._properties.beatCounter
-            counter = makeSimpleCount(counter, self._properties.beatsPerMeasure)
+            counter = self._properties.defaultCounter
         newScore = _SCORE_FACTORY(numMeasures = numMeasures,
                                   counter = counter)
         self._setScore(newScore)

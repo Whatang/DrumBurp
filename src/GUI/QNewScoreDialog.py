@@ -7,27 +7,21 @@ Created on 9 Jan 2011
 
 from ui_newScoreDialog import Ui_newScoreDialog
 from PyQt4.QtGui import QDialog
-from DBUtility import populateCounterCombo
-from Data.MeasureCount import makeSimpleCount
+import Data.MeasureCount
 
 class QNewScoreDialog(QDialog, Ui_newScoreDialog):
     '''
     classdocs
     '''
-    def __init__(self, parent = None, beats = 4,
+    def __init__(self, parent = None,
                  counter = None, registry = None):
         '''
         Constructor
         '''
         super(QNewScoreDialog, self).__init__(parent)
         self.setupUi(self)
-        self.beatsSpinBox.setValue(beats)
-        populateCounterCombo(self.beatCountComboBox, counter, registry)
-        self.registry = registry
+        self.measureTabs.setup(counter, registry, Data.MeasureCount)
 
     def getValues(self):
-        bc = self.beatCountComboBox
-        beatCount = self.registry[bc.currentIndex()]
-        mc = makeSimpleCount(beatCount, self.beatsSpinBox.value())
-        return (self.numMeasuresSpinBox.value(),
-                mc)
+        mc = self.measureTabs.getCounter()
+        return (self.numMeasuresSpinBox.value(), mc)

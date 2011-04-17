@@ -334,15 +334,11 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def editMeasureProperties(self):
         counter = self._measure.counter
-        numBeats = counter.numBeats()
-        defBeats = self._props.beatsPerMeasure
-        defCounter = self._props.beatCounter
-        editDialog = QEditMeasureDialog(self._qScore.parent(),
-                                        numBeats,
-                                        counter,
-                                        defBeats,
+        defCounter = self._props.defaultCounter
+        editDialog = QEditMeasureDialog(counter,
                                         defCounter,
-                                        self._props.counterRegistry)
+                                        self._props.counterRegistry,
+                                        self._qScore.parent())
         if editDialog.exec_():
             newCounter = editDialog.getValues()
             if (newCounter.countString() != counter.countString()):

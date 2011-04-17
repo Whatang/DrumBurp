@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\repeatDialog.ui'
 #
-# Created: Mon Jan 17 21:54:35 2011
+# Created: Sun Apr 17 16:05:25 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!

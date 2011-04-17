@@ -25,6 +25,9 @@ class Counter(object):
     def __len__(self):
         return len(self._counts)
 
+    def __str__(self):
+        return self._counts
+
     def write(self, handle, indenter):
         print >> handle, indenter("COUNT", "|" + self._counts + "|")
 
