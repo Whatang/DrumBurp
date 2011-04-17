@@ -26,7 +26,7 @@ class Counter(object):
         return len(self._counts)
 
     def write(self, handle, indenter):
-        print >> handle, indenter("COUNT", self._counts)
+        print >> handle, indenter("COUNT", "|" + self._counts + "|")
 
 _COUNTER_BEAT = Counter(BEAT_COUNT)
 _EIGHTH_COUNT = Counter(BEAT_COUNT + "+")

@@ -63,6 +63,8 @@ class Beat(object):
             elif lineType == "NUM_TICKS":
                 numTicks = int(lineData)
             elif lineType == "COUNT":
+                if lineData[0] == "|" and lineData[-1] == "|":
+                    lineData = lineData[1:-1]
                 lineData = BEAT_COUNT + lineData[1:]
                 counter = Counter(lineData)
             else:
