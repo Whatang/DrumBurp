@@ -15,6 +15,7 @@ from QScore import QScore
 from QDisplayProperties import QDisplayProperties
 from QNewScoreDialog import QNewScoreDialog
 from QAsciiExportDialog import QAsciiExportDialog
+from DBInfoDialog import DBInfoDialog
 import DBUtility
 import DBIcons
 import os
@@ -355,3 +356,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     @pyqtSignature("")
     def on_actionRedo_triggered(self):
         self.scoreScene.redo()
+
+    @pyqtSignature("")
+    def on_actionAboutDrumBurp_triggered(self):
+        dlg = DBInfoDialog()
+        dlg.exec_()
