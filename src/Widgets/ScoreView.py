@@ -27,15 +27,6 @@ class ScoreView(QtGui.QGraphicsView):
     def systemSpacingChanged(self, value):
         self._props.lineSpacing = value - 101
 
-    @QtCore.pyqtSlot(QtCore.QString)
-    def setNoteHead(self, noteHead):
-        noteHead = str(noteHead)
-        if noteHead == "":
-            noteHead = None
-        else:
-            noteHead = noteHead[0]
-        self._props.head = noteHead
-
     @QtCore.pyqtSlot(int)
     def setWidth(self, width):
         self.scene().scoreWidth = width
