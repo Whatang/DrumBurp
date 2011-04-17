@@ -11,6 +11,7 @@ from QSection import QSection
 from QMetaData import QMetaData
 from QKitData import QKitData
 from Data.Score import ScoreFactory
+from Data.MeasureCount import makeSimpleCount
 from DBCommands import MetaDataCommand, ScoreWidthCommand, PasteMeasure
 import functools
 _SCORE_FACTORY = ScoreFactory()
@@ -68,7 +69,7 @@ class QScore(QtGui.QGraphicsScene):
         self._kitData.setPos(self._properties.xMargins, 0)
         self._kitData.setVisible(self._properties.kitDataVisible)
         if parent.filename is not None:
-            if not self.loadScore(parent.filename):
+            if not self.loadScore(parent.filename, quiet = True):
                 parent.filename = None
                 self.newScore()
         else:
@@ -346,15 +347,18 @@ class QScore(QtGui.QGraphicsScene):
         qStaff = self._qStaffs[np.staffIndex]
         qStaff.changeRepeatCount(np)
 
-    def loadScore(self, filename):
+    def loadScore(self, filename, quiet = False):
         try:
             newScore = _SCORE_FACTORY(filename = filename)
         except IOError, exc:
-            msg = "Error loading DrumBurp file %s" % filename
-            QtGui.QMessageBox.warning(self.parent(),
-                                      "Score load error",
-                                      msg + "\n" + str(exc))
+            if not quiet:
+                msg = "Error loading DrumBurp file %s" % filename
+                QtGui.QMessageBox.warning(self.parent(),
+                                          "Score load error",
+                                          msg + "\n" + str(exc))
             return False
+        except StandardError, exc:
+            raise
         self._setScore(newScore)
         return True
 
@@ -362,7 +366,7 @@ class QScore(QtGui.QGraphicsScene):
         try:
             _SCORE_FACTORY.saveScore(self._score, filename)
         except StandardError, exc:
-            msg = "Error loading DrumBurp file: %s" % str(exc)
+            msg = "Error saving DrumBurp file: %s" % str(exc)
             QtGui.QMessageBox.warning(self.parent(),
                                       "Score save error",
                                       msg)
@@ -372,14 +376,11 @@ class QScore(QtGui.QGraphicsScene):
         return True
 
     def newScore(self, numMeasures = 16,
-                 measureWidth = None,
                  counter = None):
         if counter is None:
             counter = self._properties.beatCounter
-        if measureWidth is None:
-            measureWidth = self._properties.beatsPerMeasure * counter.beatLength
+            counter = makeSimpleCount(counter, self._properties.beatsPerMeasure)
         newScore = _SCORE_FACTORY(numMeasures = numMeasures,
-                                  measureWidth = measureWidth,
                                   counter = counter)
         self._setScore(newScore)
 

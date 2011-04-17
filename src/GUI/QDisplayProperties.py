@@ -4,7 +4,7 @@ Created on 8 Jan 2011
 @author: Mike Thomas
 '''
 
-from Data.MeasureCount import getCounters, counterMaker, MeasureCount
+from Data.Counter import CounterRegistry
 from Data.ASCIISettings import ASCIISettings
 from PyQt4.QtCore import QObject, pyqtSignal
 
@@ -47,7 +47,8 @@ class QDisplayProperties(QObject):
         self._head = None
         self._width = 80
         self.beatsPerMeasure = 4
-        self._beatCounter = getCounters()[0][1]
+        self._counterRegistry = CounterRegistry()
+        self._beatCounter = self._counterRegistry[0]
 
     xSpacingChanged = pyqtSignal()
     ySpacingChanged = pyqtSignal()
@@ -235,12 +236,15 @@ class QDisplayProperties(QObject):
     def _getbeatCounter(self):
         return self._beatCounter
     def _setbeatCounter(self, value):
-        if isinstance(value, int):
-            value = counterMaker(value)
-        assert(isinstance(value, MeasureCount))
+        if isinstance(value, str):
+            value = self._counterRegistry.getCounterByName(value)
         if self._beatCounter != value:
             self._beatCounter = value
     beatCounter = property(fget = _getbeatCounter, fset = _setbeatCounter)
+
+    @property
+    def counterRegistry(self):
+        return self._counterRegistry
 
     def generateAsciiSettings(self, settings = None):
         if settings is None:

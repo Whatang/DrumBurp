@@ -8,7 +8,6 @@ Created on 5 Jan 2011
 from PyQt4 import QtGui, QtCore
 
 from Data.NotePosition import NotePosition
-from Data.MeasureCount import counterMaker
 from Data import DBConstants
 
 from DBCommands import (ToggleNote,
@@ -334,24 +333,21 @@ class QMeasure(QtGui.QGraphicsItem):
         return self.parentItem().augmentNotePosition(np)
 
     def editMeasureProperties(self):
-        numTicks = len(self._measure)
         counter = self._measure.counter
+        numBeats = counter.numBeats()
         defBeats = self._props.beatsPerMeasure
         defCounter = self._props.beatCounter
         editDialog = QEditMeasureDialog(self._qScore.parent(),
-                                        numTicks,
+                                        numBeats,
                                         counter,
                                         defBeats,
-                                        defCounter)
+                                        defCounter,
+                                        self._props.counterRegistry)
         if editDialog.exec_():
-            beats, newCounter = editDialog.getValues()
-            newCounter = counterMaker(newCounter)
-            newTicks = newCounter.beatLength * beats
-            if (newCounter != counter
-                or newTicks != numTicks):
+            newCounter = editDialog.getValues()
+            if (newCounter.countString() != counter.countString()):
                 command = EditMeasurePropertiesCommand(self._qScore,
                                                        self._measurePosition(),
-                                                       beats,
                                                        newCounter)
                 self._qScore.addCommand(command)
 

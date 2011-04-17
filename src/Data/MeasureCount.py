@@ -5,57 +5,82 @@ Created on 18 Jan 2011
 
 '''
 
-import itertools
-
-_COUNTERS = {}
+from DBConstants import BEAT_COUNT
+from Beat import Beat
+from Counter import CounterRegistry
 
 class MeasureCount(object):
-    '''
-    classdocs
-    '''
-
-
-    def __init__(self, counts = None, name = None):
-        '''
-        Constructor
-        '''
-        self.name = name
-        if counts is None:
-            counts = ["."]
-        self._ticksPerBeat = 1
-        self._counts = list(counts)
-        self.beatLength = len(self._counts)
-        _COUNTERS[self.beatLength] = self
-
-    def description(self):
-        return "%s: %s" % (self.name, "".join(self.countTicks(4)))
+    def __init__(self):
+        self.beats = []
 
     def count(self):
-        for beat in itertools.count(1):
-            yield str(beat)
-            for count in self._counts[1:]:
-                yield count
+        for beatNum, beat in enumerate(self.beats):
+            for count in beat:
+                if count == BEAT_COUNT:
+                    yield str(beatNum + 1)
+                else:
+                    yield count
 
-    def countBeats(self, numBeats):
-        for beat in range(1, numBeats + 1):
-            yield str(beat)
-            for count in self._counts[1:]:
-                yield count
+    def __len__(self):
+        return sum(beat.numTicks for beat in self.beats)
 
-    def countTicks(self, numTicks):
-        for dummyIndex, count in zip(range(0, numTicks), self.count()):
-            yield count
+    def countString(self):
+        return "".join(self.count())
 
-_QUARTERS = MeasureCount(".", "Quarter Notes")
-_EIGHTHS = MeasureCount(".+", "Eighth Notes")
-_SIXTEENTHS = MeasureCount(".e+a", "Sixteenth Notes")
-_TRIPLETS = MeasureCount(".+a", "Triplets")
-_SIXTEEN_TRIPLETS = MeasureCount(".ea+ea", "Sixteenth Triplets")
+    def addSimpleBeats(self, counter, numBeats):
+        beat = Beat(counter)
+        self.addBeats(beat, numBeats)
 
-def counterMaker(ticksPerBeat):
-    return _COUNTERS[ticksPerBeat]
+    def addBeats(self, beat, numBeats):
+        self.beats.extend([beat] * numBeats)
 
-def getCounters():
-    beatLengths = _COUNTERS.keys()
-    beatLengths.sort()
-    return [(bl, _COUNTERS[bl]) for bl in beatLengths]
+    def numBeats(self):
+        return len(self.beats)
+
+    def write(self, handle, indenter):
+        print >> handle, indenter("COUNT_INFO_START")
+        indenter.increase()
+        firstBeat = "".join(self.beats[0])
+        if all("".join(beat) == firstBeat for beat in self.beats):
+            # All beats are the same
+            print >> handle, indenter("REPEAT_BEATS %d" % len(self.beats))
+            self.beats[0].write(handle, indenter)
+        else:
+            for beat in self.beats:
+                beat.write(handle, indenter)
+        indenter.decrease()
+        print >> handle, indenter("COUNT_INFO_END")
+
+    def read(self, scoreIterator):
+        repeat = False
+        for lineType, lineData in scoreIterator:
+            if lineType == "COUNT_INFO_END":
+                break
+            elif lineType == "REPEAT_BEATS":
+                repeat = int(lineData)
+            elif lineType == "BEAT_START":
+                beat = Beat.read(scoreIterator)
+                if repeat:
+                    self.beats.extend([beat] * repeat)
+                else:
+                    self.beats.append(beat)
+            else:
+                raise IOError("Unrecognised line type")
+
+def counterMaker(beatLength, numTicks = None):
+    # Create a MeasureCount from an 'old style' specification, where
+    # all we are given is the number of ticks in a beat.
+    if numTicks is None:
+        numTicks = beatLength
+    defaultRegistry = CounterRegistry()
+    counts = [count[1] for count in
+              defaultRegistry.countsByTicks(beatLength)]
+    count = counts[0]
+    mc = MeasureCount()
+    mc.addSimpleBeats(count, numTicks / beatLength)
+    return mc
+
+def makeSimpleCount(counter, numBeats):
+    mc = MeasureCount()
+    mc.addSimpleBeats(counter, numBeats)
+    return mc

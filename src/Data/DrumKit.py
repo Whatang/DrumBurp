@@ -58,14 +58,16 @@ class DrumKit(object):
             raise NoSuchDrumError(index)
         self._drums.pop(index)
 
-    def write(self, handle):
-        print >> handle, "KIT_START"
+    def write(self, handle, indenter):
+        print >> handle, indenter("KIT_START")
+        indenter.increase()
         for drum in self:
-            print >> handle, "DRUM %s,%s,%s,%s" % (drum.name,
+            print >> handle, indenter("DRUM %s,%s,%s,%s" % (drum.name,
                                                    drum.abbr,
                                                    drum.head,
-                                                   str(drum.locked))
-        print >> handle, "KIT_END"
+                                                   str(drum.locked)))
+        indenter.decrease()
+        print >> handle, indenter("KIT_END")
 
     def read(self, scoreIterator):
         for lineType, lineData in scoreIterator:

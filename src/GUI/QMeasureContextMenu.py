@@ -10,13 +10,12 @@ from PyQt4 import QtGui
 from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 import DBIcons
 from Data import DBConstants
-from Data.MeasureCount import counterMaker
+from Data.MeasureCount import makeSimpleCount
 from DBCommands import (RepeatNoteCommand, InsertMeasuresCommand,
                         InsertSectionCommand, DeleteMeasureCommand,
                         SetAlternateCommand)
 from QRepeatDialog import QRepeatDialog
 from QInsertMeasuresDialog import QInsertMeasuresDialog
-from QAlternateDialog import QAlternateDialog
 
 class QMeasureContextMenu(QMenuIgnoreCancelClick):
     '''
@@ -106,10 +105,9 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
 
     def _insertDefaultMeasure(self, np):
         counter = self._props.beatCounter
+        mc = makeSimpleCount(counter, self._props.beatsPerMeasure)
         command = InsertMeasuresCommand(self._qScore, np, 1,
-                                        self._props.beatsPerMeasure *
-                                        counter.beatLength,
-                                        counter)
+                                        mc)
         self._qScore.addCommand(command)
 
     def _insertMeasureBefore(self):
@@ -126,15 +124,14 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         counter = self._props.beatCounter
         insertDialog = QInsertMeasuresDialog(self._qScore.parent(),
                                              beats,
-                                             counter)
+                                             counter,
+                                             self._props.counterRegistry)
         if insertDialog.exec_():
-            nMeasures, beats, counter, insertBefore = insertDialog.getValues()
-            counter = counterMaker(counter)
-            measureWidth = beats * counter.beatLength
+            nMeasures, counter, insertBefore = insertDialog.getValues()
             if not insertBefore:
                 np.measureIndex += 1
             command = InsertMeasuresCommand(self._qScore, np, nMeasures,
-                                            measureWidth, counter)
+                                            counter)
             self._qScore.addCommand(command)
 
     def _copySection(self, sectionIndex):

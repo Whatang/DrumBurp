@@ -8,6 +8,8 @@ Created on 12 Dec 2010
 from DrumKit import DrumKit
 from Staff import Staff
 from Measure import Measure
+from Counter import CounterRegistry
+from MeasureCount import makeSimpleCount
 from DBErrors import BadTimeError, OverSizeMeasure
 from DBConstants import REPEAT_EXTENDER
 from NotePosition import NotePosition
@@ -271,12 +273,6 @@ class Score(object):
         position = self.getMeasurePosition(index)
         self.pasteMeasure(position, notes, copyMeasureDecorations)
 
-    def setMeasureBeatCount(self, position, beats, counter):
-        if not(0 <= position.staffIndex < self.numStaffs()):
-            raise BadTimeError()
-        staff = self.getStaff(position.staffIndex)
-        staff.setMeasureBeatCount(position, beats, counter)
-
     def numSections(self):
         return len(self._sections)
 
@@ -513,17 +509,18 @@ class Score(object):
                 yield drum
 
     def write(self, handle):
-        self.scoreData.save(handle)
-        self.drumKit.write(handle)
+        indenter = Indenter()
+        self.scoreData.save(handle, indenter)
+        self.drumKit.write(handle, indenter)
         for measure in self.iterMeasures():
-            measure.write(handle)
+            measure.write(handle, indenter)
         for title in self._sections:
-            print >> handle, "SECTION_TITLE", title
+            print >> handle, indenter("SECTION_TITLE", title)
 
     def read(self, handle):
         def scoreHandle():
             for line in handle:
-                line = line.rstrip()
+                line = line.strip()
                 fields = line.split(None, 1)
                 if len(fields) == 1:
                     fields.append(None)
@@ -546,7 +543,7 @@ class Score(object):
             elif lineType == "SECTION_TITLE":
                 self._sections.append(lineData)
             else:
-                raise IOError("Unrecognised line type.")
+                raise IOError("Unrecognised line type: " + lineType)
         # Format the score appropriately
         self.gridFormatScore(self.scoreData.width)
         # Make sure we've got the right number of section titles
@@ -566,7 +563,6 @@ class Score(object):
         scoreString.seek(0, 0)
         scoreString = "".join(scoreString)
         return hashlib.md5(str(scoreString)).digest()
-#        return scoreString
 
     def exportASCII(self, handle, settings):
         metadataString = self.scoreData.exportASCII()
@@ -614,20 +610,25 @@ class Score(object):
 
 class ScoreFactory(object):
     def __call__(self, filename = None,
-                 numMeasures = 32 , measureWidth = 16,
+                 numMeasures = 32,
                  counter = None):
         if filename is not None:
             score = self.loadScore(filename)
         else:
-            score = self.makeEmptyScore(numMeasures, measureWidth, counter)
+            score = self.makeEmptyScore(numMeasures, counter)
         return score
 
     @classmethod
-    def makeEmptyScore(cls, numMeasures, measureWidth, counter):
+    def makeEmptyScore(cls, numMeasures, counter):
         score = Score()
         score.drumKit.loadDefaultKit()
+        if counter is None:
+            registry = CounterRegistry()
+            counter = list(registry.countsByTicks(2))
+            counter = counter[0][1]
+            counter = makeSimpleCount(counter, 4)
         for dummy in range(0, numMeasures):
-            score.addEmptyMeasure(measureWidth, counter = counter)
+            score.addEmptyMeasure(len(counter), counter = counter)
         score.scoreData.makeEmpty()
         return score
 
@@ -642,3 +643,18 @@ class ScoreFactory(object):
     def saveScore(cls, score, filename):
         with open(filename, 'w') as handle:
             score.write(handle)
+
+class Indenter(object):
+    def __init__(self, indent = "  "):
+        self._indent = indent
+        self._level = 0
+    def increase(self):
+        self._level += 1
+    def decrease(self):
+        self._level -= 1
+        self._level = max(0, self._level)
+    def __call__(self, *args):
+        argString = " ".join(str(ar) for ar in args)
+        if self._level != 0:
+            argString = (self._indent * self._level) + argString
+        return argString

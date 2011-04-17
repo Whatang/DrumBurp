@@ -4,15 +4,11 @@ Created on 19 Jan 2011
 @author: Mike Thomas
 '''
 
-from Data import MeasureCount
-from PyQt4.QtCore import QVariant
-
-def populateCounterCombo(combo, chosenCounter):
+def populateCounterCombo(combo, chosenCounter, registry):
     setCounter = False
     combo.clear()
-    for index, (beatTicks, counter) in enumerate(MeasureCount.getCounters()):
-        combo.addItem(counter.description(),
-                      userData = QVariant(beatTicks))
+    for index, (name, counter) in enumerate(registry):
+        combo.addItem(name)
         if counter == chosenCounter:
             setCounter = True
             combo.setCurrentIndex(index)

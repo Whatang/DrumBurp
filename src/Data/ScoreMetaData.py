@@ -44,14 +44,17 @@ class ScoreMetaData(object):
             elif lineType == "END_SCORE_METADATA":
                 break
 
-    def save(self, handle):
-        print >> handle, "SCORE_METADATA"
-        print >> handle, "TITLE", self.title
-        print >> handle, "ARTIST", self.artist
-        print >> handle, "CREATOR", self.creator
-        print >> handle, "BPM", self.bpm
-        print >> handle, "WIDTH", self.width
-        print >> handle, "END_SCORE_METADATA"
+    def save(self, handle, indenter):
+        print >> handle, indenter("SCORE_METADATA")
+        indenter.increase()
+        print >> handle, indenter("TITLE", self.title)
+        print >> handle, indenter("ARTIST", self.artist)
+        print >> handle, indenter("CREATOR", self.creator)
+        print >> handle, indenter("BPM", self.bpm)
+        print >> handle, indenter("WIDTH", self.width)
+        indenter.decrease()
+        print >> handle, indenter("END_SCORE_METADATA")
+
 
     def exportASCII(self):
         metadataString = []

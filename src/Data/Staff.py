@@ -97,11 +97,6 @@ class Staff(object):
         return self[position.measureIndex].pasteMeasure(notes,
                                                         copyMeasureDecorations)
 
-    def setMeasureBeatCount(self, position, beats, counter):
-        if not (0 <= position.measureIndex <= self.numMeasures()):
-            raise BadTimeError(position)
-        self[position.measureIndex].setBeatCount(beats, counter)
-
     def setSectionEnd(self, position, onOff):
         if not (0 <= position.measureIndex < self.numMeasures()):
             raise BadTimeError(position)

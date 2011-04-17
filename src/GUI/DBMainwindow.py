@@ -16,7 +16,6 @@ from QDisplayProperties import QDisplayProperties
 from QNewScoreDialog import QNewScoreDialog
 from QAsciiExportDialog import QAsciiExportDialog
 import DBUtility
-from Data.MeasureCount import counterMaker
 import DBIcons
 import os
 
@@ -68,7 +67,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreView.startUp()
         self.beatsSpinBox.setValue(self.songProperties.beatsPerMeasure)
         DBUtility.populateCounterCombo(self.beatCountComboBox,
-                                       self.songProperties.beatCounter)
+                                       self.songProperties.beatCounter,
+                                       self.songProperties.counterRegistry)
         font = self.scoreScene.font()
         self.fontComboBox.setCurrentFont(font)
         self.noteSizeSpinBox.setValue(9)
@@ -225,21 +225,20 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if self.okToContinue():
             beats = self.songProperties.beatsPerMeasure
             counter = self.songProperties.beatCounter
+            registry = self.songProperties.counterRegistry
             dialog = QNewScoreDialog(self.parent(),
                                      beats,
-                                     counter)
+                                     counter,
+                                     registry)
             if dialog.exec_():
-                nMeasures, beats, counter = dialog.getValues()
-                counter = counterMaker(counter)
-                mWidth = beats * counter.beatLength
+                nMeasures, counter = dialog.getValues()
                 self.scoreScene.newScore(numMeasures = nMeasures,
-                                         measureWidth = mWidth,
                                          counter = counter)
                 self.filename = None
                 self.updateRecentFiles()
-                self.beatsSpinBox.setValue(beats)
+                self.beatsSpinBox.setValue(counter.numBeats())
                 DBUtility.populateCounterCombo(self.beatCountComboBox,
-                                               counter)
+                                               counter, registry)
                 self.updateStatus("Created a new blank score")
 
     def addToRecentFiles(self):
@@ -270,9 +269,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def on_beatCountComboBox_currentIndexChanged(self, index):
         if index == -1:
             return
-        counter = self.beatCountComboBox.itemData(index)
-        counter = counter.toInt()[0]
-        counter = counterMaker(counter)
+        counter = self.beatCountComboBox.currentIndex()
+        counter = self.songProperties.counterRegistry[counter]
         self.songProperties.beatCounter = counter
 
     def hideEvent(self, event):

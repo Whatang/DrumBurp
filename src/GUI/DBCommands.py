@@ -136,18 +136,18 @@ class RepeatNoteCommand(_COMMAND_CLASS):
                 self._score.addNote(np, head)
 
 class InsertMeasuresCommand(_COMMAND_CLASS):
-    def __init__(self, qScore, notePosition, numMeasures, width, counter):
+    def __init__(self, qScore, notePosition, numMeasures, counter):
         super(InsertMeasuresCommand, self).__init__(qScore, notePosition,
                                                     "Insert Measures")
         self._index = self._score.getMeasureIndex(self._np)
         self._numMeasures = numMeasures
-        self._width = width
+        self._width = len(counter)
         self._counter = counter
 
     def _redo(self):
         for dummyMeasureIndex in range(self._numMeasures):
             self._score.insertMeasureByIndex(self._width, self._index,
-                                                counter = self._counter)
+                                             counter = self._counter)
 
     def _undo(self):
         for dummyMeasureIndex in range(self._numMeasures):
@@ -186,18 +186,17 @@ class SetRepeatCountCommand(_COMMAND_CLASS):
         measure.repeatCount = self._oldCount
 
 class EditMeasurePropertiesCommand(_COMMAND_CLASS):
-    def __init__(self, qScore, np, beats, newCounter):
+    def __init__(self, qScore, np, newCounter):
         name = "Edit Measure Properties"
         super(EditMeasurePropertiesCommand, self).__init__(qScore,
                                                            np,
                                                            name)
-        self._beats = beats
         self._newCounter = newCounter
         self._oldMeasure = self._score.copyMeasure(np)
 
     def _redo(self):
-        self._score.setMeasureBeatCount(self._np,
-                                        self._beats, self._newCounter)
+        measure = self._score.getItemAtPosition(self._np)
+        measure.setBeatCount(self._newCounter)
 
     def _undo(self):
         self._score.pasteMeasure(self._np, self._oldMeasure, True)
