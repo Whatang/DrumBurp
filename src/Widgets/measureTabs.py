@@ -4,7 +4,7 @@ Created on 17 Apr 2011
 @author: Mike Thomas
 
 '''
-
+import copy
 from PyQt4.QtGui import QWidget
 from PyQt4.QtCore import pyqtSignal
 from ui_measureTabs import Ui_measureTabs
@@ -26,7 +26,9 @@ class measureTabs(QWidget, Ui_measureTabs):
         self._defaultCounter = None
         self._registry = None
         self._mcMaker = None
+        self._currentCount = None
         self.counterTabs.setTabEnabled(1, False)
+        self.counterTabs.currentChanged.connect(self.preview)
 
     beatChanged = pyqtSignal()
 
@@ -38,19 +40,24 @@ class measureTabs(QWidget, Ui_measureTabs):
               counterRegistry, mcMaker):
         self._measureCount = measureCount
         self._registry = counterRegistry
+        self._currentCount = copy.copy(measureCount)
         self._mcMaker = mcMaker
         self.beatCountComboBox.currentIndexChanged.connect(self.preview)
         self.beatsSpinBox.valueChanged.connect(self.preview)
+        self._populateCombo(self.beatCountComboBox)
         self.restoreOriginal()
 
     def restoreOriginal(self):
         self.setBeat(self._measureCount)
 
-    def populateCombo(self, combo, beatCount):
-        setCounter = False
+    def _populateCombo(self, combo):
         combo.clear()
-        for index, (name, counter) in enumerate(self._registry):
+        for (name, unusedCounter) in self._registry:
             combo.addItem(name)
+
+    def _setCombo(self, combo, beatCount):
+        setCounter = False
+        for index, (unusedName, counter) in enumerate(self._registry):
             if str(beatCount) == str(counter):
                 setCounter = True
                 combo.setCurrentIndex(index)
@@ -58,10 +65,7 @@ class measureTabs(QWidget, Ui_measureTabs):
             combo.setCurrentIndex(0)
 
     def getCounter(self):
-        if self.simpleSelected:
-            return self._simpleCounter()
-        else:
-            pass
+        return self._currentCount
 
     def _simpleCounter(self):
         beatCount = self._registry[self.beatCountComboBox.currentIndex()]
@@ -74,16 +78,17 @@ class measureTabs(QWidget, Ui_measureTabs):
             measureCount = self._mcMaker.makeSimpleCount(self._registry[0], 4)
         if measureCount.isSimpleCount():
             self.beatsSpinBox.setValue(measureCount.numBeats())
-            self.populateCombo(self.beatCountComboBox,
-                               measureCount[0].counter)
+            self._setCombo(self.beatCountComboBox,
+                           measureCount[0].counter)
             self.counterTabs.setCurrentIndex(0)
         else:
             pass
 
     def preview(self):
         if self.simpleSelected:
-            counter = self._simpleCounter()
-            self.previewText.setPlainText(counter.countString())
+            self._currentCount = self._simpleCounter()
         else:
             pass
+        if self._currentCount is not None:
+            self.previewText.setPlainText(self._currentCount.countString())
         self.beatChanged.emit()
