@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\Widgets\measureTabs.ui'
 #
-# Created: Sun Apr 17 17:45:11 2011
+# Created: Sun Apr 17 19:05:51 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -78,6 +78,19 @@ class Ui_measureTabs(object):
         self.counterTabs.addTab(self.simpleTab, _fromUtf8(""))
         self.complexTab = QtGui.QWidget()
         self.complexTab.setObjectName(_fromUtf8("complexTab"))
+        self.gridLayout_3 = QtGui.QGridLayout(self.complexTab)
+        self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
+        self.complexEditButton = QtGui.QPushButton(self.complexTab)
+        self.complexEditButton.setObjectName(_fromUtf8("complexEditButton"))
+        self.gridLayout_3.addWidget(self.complexEditButton, 1, 1, 1, 1)
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.gridLayout_3.addItem(spacerItem, 1, 0, 1, 1)
+        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.gridLayout_3.addItem(spacerItem1, 1, 2, 1, 1)
+        spacerItem2 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.gridLayout_3.addItem(spacerItem2, 0, 1, 1, 1)
+        spacerItem3 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.gridLayout_3.addItem(spacerItem3, 2, 1, 1, 1)
         self.counterTabs.addTab(self.complexTab, _fromUtf8(""))
         self.gridLayout_2.addWidget(self.counterTabs, 0, 0, 1, 1)
         self.groupBox = QtGui.QGroupBox(measureTabs)
@@ -91,26 +104,16 @@ class Ui_measureTabs(object):
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.groupBox)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.previewText = QtGui.QTextBrowser(self.groupBox)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.previewText.sizePolicy().hasHeightForWidth())
-        self.previewText.setSizePolicy(sizePolicy)
-        self.previewText.setMinimumSize(QtCore.QSize(200, 0))
-        self.previewText.setMaximumSize(QtCore.QSize(500, 30))
-        self.previewText.setBaseSize(QtCore.QSize(200, 0))
-        self.previewText.setAcceptDrops(False)
-        self.previewText.setAcceptRichText(False)
+        self.previewText = QtGui.QLabel(self.groupBox)
+        self.previewText.setAlignment(QtCore.Qt.AlignCenter)
         self.previewText.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
-        self.previewText.setOpenLinks(False)
         self.previewText.setObjectName(_fromUtf8("previewText"))
         self.verticalLayout_2.addWidget(self.previewText)
         self.gridLayout_2.addWidget(self.groupBox, 1, 0, 1, 1)
         self.label_2.setBuddy(self.beatsSpinBox)
 
         self.retranslateUi(measureTabs)
-        self.counterTabs.setCurrentIndex(0)
+        self.counterTabs.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(measureTabs)
 
     def retranslateUi(self, measureTabs):
@@ -121,6 +124,8 @@ class Ui_measureTabs(object):
         self.beatsSpinBox.setSuffix(QtGui.QApplication.translate("measureTabs", " beats", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("measureTabs", "Beat count", None, QtGui.QApplication.UnicodeUTF8))
         self.counterTabs.setTabText(self.counterTabs.indexOf(self.simpleTab), QtGui.QApplication.translate("measureTabs", "Simple Count", None, QtGui.QApplication.UnicodeUTF8))
+        self.complexEditButton.setText(QtGui.QApplication.translate("measureTabs", "Edit Count", None, QtGui.QApplication.UnicodeUTF8))
         self.counterTabs.setTabText(self.counterTabs.indexOf(self.complexTab), QtGui.QApplication.translate("measureTabs", "Complex Count", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox.setTitle(QtGui.QApplication.translate("measureTabs", "Preview", None, QtGui.QApplication.UnicodeUTF8))
+        self.previewText.setText(QtGui.QApplication.translate("measureTabs", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
 

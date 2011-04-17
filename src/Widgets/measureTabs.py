@@ -90,5 +90,5 @@ class measureTabs(QWidget, Ui_measureTabs):
         else:
             pass
         if self._currentCount is not None:
-            self.previewText.setPlainText(self._currentCount.countString())
+            self.previewText.setText(self._currentCount.countString())
         self.beatChanged.emit()
