@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="Icons">
+    <file>Icons/gplv3-88x31.png</file>
     <file>Icons/fit-page</file>
     <file>Icons/1299814882_Black_Numbered-List.png</file>
     <file>Icons/applications-multimedia.png</file>
