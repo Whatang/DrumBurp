@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\dbInfo.ui'
 #
-# Created: Sun Apr 17 14:03:05 2011
+# Created: Sun Apr 17 14:23:32 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -77,6 +77,10 @@ class Ui_InfoDialog(object):
         font.setWeight(75)
         font.setBold(True)
         self.licenseButton.setFont(font)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/gplv3-88x31.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.licenseButton.setIcon(icon)
+        self.licenseButton.setIconSize(QtCore.QSize(44, 16))
         self.licenseButton.setObjectName(_fromUtf8("licenseButton"))
         self.gridLayout.addWidget(self.licenseButton, 8, 0, 1, 1)
         self.label_5 = QtGui.QLabel(InfoDialog)
@@ -130,7 +134,7 @@ class Ui_InfoDialog(object):
 
     def retranslateUi(self, InfoDialog):
         InfoDialog.setWindowTitle(QtGui.QApplication.translate("InfoDialog", "DrumBurp Information", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("InfoDialog", "DrumBurp is Copyright 2010-2011 Michael Thomas. All rights reserved.", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("InfoDialog", "DrumBurp is Copyright 2011 Michael Thomas. All rights reserved.", None, QtGui.QApplication.UnicodeUTF8))
         self.label_6.setText(QtGui.QApplication.translate("InfoDialog", "Support", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("InfoDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
@@ -140,7 +144,11 @@ class Ui_InfoDialog(object):
         self.label_7.setText(QtGui.QApplication.translate("InfoDialog", "Technologies", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("InfoDialog", "DrumBurp is built using PyQt4.8", None, QtGui.QApplication.UnicodeUTF8))
         self.licenseButton.setText(QtGui.QApplication.translate("InfoDialog", "License", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_5.setText(QtGui.QApplication.translate("InfoDialog", "DrumBurp is issued under the GNU GPLv3.", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_5.setText(QtGui.QApplication.translate("InfoDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">DrumBurp is issued under the </span><a href=\"http://www.gnu.org/licenses/gpl.html\"><span style=\" text-decoration: underline; color:#0000ff;\">GNU GPLv3</span></a><span style=\" font-size:8pt;\">.</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.label_8.setText(QtGui.QApplication.translate("InfoDialog", "Cost", None, QtGui.QApplication.UnicodeUTF8))
         self.label_9.setText(QtGui.QApplication.translate("InfoDialog", "DrumBurp is free for private, non-commercial use. Donations to fund DrumBurp development & support are welcome: please see the website.", None, QtGui.QApplication.UnicodeUTF8))
 

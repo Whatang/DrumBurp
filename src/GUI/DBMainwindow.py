@@ -16,6 +16,7 @@ from QDisplayProperties import QDisplayProperties
 from QNewScoreDialog import QNewScoreDialog
 from QAsciiExportDialog import QAsciiExportDialog
 from DBInfoDialog import DBInfoDialog
+from DBStartupDialog import DBStartupDialog
 import DBUtility
 import DBIcons
 import os
@@ -91,6 +92,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreScene.redoTextChanged.connect(changeRedoText)
         beatsChanged = self.songProperties.measureBeatsChanged
         self.beatsSpinBox.valueChanged.connect(beatsChanged)
+        dlg = DBStartupDialog()
+        dlg.exec_()
         self.updateStatus("Welcome to %s" % APPNAME)
         self.restoreGeometry(settings.value("Geometry").toByteArray())
         self.restoreState(settings.value("MainWindow/State").toByteArray())
