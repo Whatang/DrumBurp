@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\Widgets\measureTabs.ui'
 #
-# Created: Sun Apr 17 21:11:32 2011
+# Created: Sun Apr 17 23:18:53 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -18,7 +18,7 @@ class Ui_measureTabs(object):
     def setupUi(self, measureTabs):
         measureTabs.setObjectName(_fromUtf8("measureTabs"))
         measureTabs.resize(218, 155)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Preferred)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(measureTabs.sizePolicy().hasHeightForWidth())
@@ -26,13 +26,13 @@ class Ui_measureTabs(object):
         self.gridLayout_2 = QtGui.QGridLayout(measureTabs)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
         self.counterTabs = QtGui.QTabWidget(measureTabs)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.counterTabs.sizePolicy().hasHeightForWidth())
         self.counterTabs.setSizePolicy(sizePolicy)
-        self.counterTabs.setMinimumSize(QtCore.QSize(200, 0))
-        self.counterTabs.setMaximumSize(QtCore.QSize(500, 16777215))
+        self.counterTabs.setMinimumSize(QtCore.QSize(200, 85))
+        self.counterTabs.setMaximumSize(QtCore.QSize(500, 85))
         self.counterTabs.setTabShape(QtGui.QTabWidget.Triangular)
         self.counterTabs.setObjectName(_fromUtf8("counterTabs"))
         self.simpleTab = QtGui.QWidget()
@@ -82,15 +82,11 @@ class Ui_measureTabs(object):
         self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
         self.complexEditButton = QtGui.QPushButton(self.complexTab)
         self.complexEditButton.setObjectName(_fromUtf8("complexEditButton"))
-        self.gridLayout_3.addWidget(self.complexEditButton, 1, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.complexEditButton, 0, 1, 1, 1)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.gridLayout_3.addItem(spacerItem, 1, 0, 1, 1)
+        self.gridLayout_3.addItem(spacerItem, 0, 0, 1, 1)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.gridLayout_3.addItem(spacerItem1, 1, 2, 1, 1)
-        spacerItem2 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.gridLayout_3.addItem(spacerItem2, 0, 1, 1, 1)
-        spacerItem3 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.gridLayout_3.addItem(spacerItem3, 2, 1, 1, 1)
+        self.gridLayout_3.addItem(spacerItem1, 0, 2, 1, 1)
         self.counterTabs.addTab(self.complexTab, _fromUtf8(""))
         self.gridLayout_2.addWidget(self.counterTabs, 0, 0, 1, 1)
         self.groupBox = QtGui.QGroupBox(measureTabs)
