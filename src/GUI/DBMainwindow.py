@@ -306,21 +306,6 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             self.updateStatus("Successfully exported ASCII to " + fname)
 
     @pyqtSignature("")
-    def on_songNameEdit_editingFinished(self):
-        newTitle = self.songNameEdit.text()
-        self.scoreView.setTitle(newTitle)
-
-    @pyqtSignature("")
-    def on_artistNameEdit_editingFinished(self):
-        newValue = self.artistNameEdit.text()
-        self.scoreView.setArtist(newValue)
-
-    @pyqtSignature("")
-    def on_tabberEdit_editingFinished(self):
-        newValue = self.tabberEdit.text()
-        self.scoreView.setCreator(newValue)
-
-    @pyqtSignature("")
     def on_actionPrint_triggered(self):
         self._printer.setPaperSize(self._getPaperSize())
         dialog = QPrintPreviewDialog(self._printer, parent = self)
@@ -329,18 +314,24 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionExportPDF_triggered(self):
-        printer = QPrinter()
-        printer.setPaperSize(self._getPaperSize())
-        if self.filename:
-            outfileName = list(os.path.splitext(self.filename)[:-1])
-            outfileName = os.extsep.join(outfileName + ["pdf"])
-        else:
-            outfileName = "Untitled.pdf"
-        printer.setOutputFileName(outfileName)
-        printer.setPaperSize(self._getPaperSize())
-        dialog = QPrintPreviewDialog(printer, parent = self)
-        dialog.paintRequested.connect(self.scoreScene.printScore)
-        dialog.exec_()
+        try:
+            printer = QPrinter()
+            printer.setPaperSize(self._getPaperSize())
+            if self.filename:
+                outfileName = list(os.path.splitext(self.filename)[:-1])
+                outfileName = os.extsep.join(outfileName + ["pdf"])
+            else:
+                outfileName = "Untitled.pdf"
+            printer.setOutputFileName(outfileName)
+            printer.setPaperSize(self._getPaperSize())
+            dialog = QPrintPreviewDialog(printer, parent = self)
+            dialog.paintRequested.connect(self.scoreScene.printScore)
+            dialog.exec_()
+            self.updateStatus("Exported to PDF %s" % outfileName)
+        except StandardError:
+            QMessageBox.warning(self.parent(), "Export failed!",
+                                "Could not export PDF to " + outfileName)
+
 
     @pyqtSignature("")
     def on_actionWhatsThis_triggered(self):
