@@ -11,7 +11,6 @@ from QSection import QSection
 from QMetaData import QMetaData
 from QKitData import QKitData
 from Data.Score import ScoreFactory
-from Data.MeasureCount import makeSimpleCount
 from DBCommands import MetaDataCommand, ScoreWidthCommand, PasteMeasure
 import functools
 _SCORE_FACTORY = ScoreFactory()

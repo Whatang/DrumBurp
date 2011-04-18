@@ -8,7 +8,7 @@ Created on 9 Jan 2011
 from ui_newScoreDialog import Ui_newScoreDialog
 from PyQt4.QtGui import QDialog
 import Data.MeasureCount
-
+from QComplexCountDialog import QComplexCountDialog
 class QNewScoreDialog(QDialog, Ui_newScoreDialog):
     '''
     classdocs
@@ -20,7 +20,8 @@ class QNewScoreDialog(QDialog, Ui_newScoreDialog):
         '''
         super(QNewScoreDialog, self).__init__(parent)
         self.setupUi(self)
-        self.measureTabs.setup(counter, registry, Data.MeasureCount)
+        self.measureTabs.setup(counter, registry,
+                               Data.MeasureCount, QComplexCountDialog)
 
     def getValues(self):
         mc = self.measureTabs.getCounter()

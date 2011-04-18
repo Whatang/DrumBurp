@@ -15,11 +15,8 @@ class MeasureCount(object):
 
     def count(self):
         for beatNum, beat in enumerate(self.beats):
-            for count in beat:
-                if count == BEAT_COUNT:
-                    yield str(beatNum + 1)
-                else:
-                    yield count
+            for count in beat.count(beatNum + 1):
+                yield count
 
     def isSimpleCount(self):
         firstBeat = "".join(self.beats[0])

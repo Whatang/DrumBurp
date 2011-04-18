@@ -27,7 +27,9 @@ class measureTabs(QWidget, Ui_measureTabs):
         self._registry = None
         self._mcMaker = None
         self._currentCount = None
-        self.counterTabs.setTabEnabled(1, False)
+        self._complexDialog = None
+#        self.counterTabs.setTabEnabled(1, False)
+        self.complexEditButton.clicked.connect(self._editComplex)
         self.counterTabs.currentChanged.connect(self.preview)
 
     beatChanged = pyqtSignal()
@@ -37,11 +39,13 @@ class measureTabs(QWidget, Ui_measureTabs):
         return self.counterTabs.currentWidget() == self.simpleTab
 
     def setup(self, measureCount,
-              counterRegistry, mcMaker):
+              counterRegistry, mcMaker,
+              complexDialog):
         self._measureCount = measureCount
         self._registry = counterRegistry
         self._currentCount = copy.copy(measureCount)
         self._mcMaker = mcMaker
+        self._complexDialog = complexDialog
         self.beatCountComboBox.currentIndexChanged.connect(self.preview)
         self.beatsSpinBox.valueChanged.connect(self.preview)
         self._populateCombo(self.beatCountComboBox)
@@ -82,7 +86,7 @@ class measureTabs(QWidget, Ui_measureTabs):
                            measureCount[0].counter)
             self.counterTabs.setCurrentIndex(0)
         else:
-            pass
+            self.counterTabs.setCurrentIndex(1)
 
     def preview(self):
         if self.simpleSelected:
@@ -92,3 +96,10 @@ class measureTabs(QWidget, Ui_measureTabs):
         if self._currentCount is not None:
             self.previewText.setText(self._currentCount.countString())
         self.beatChanged.emit()
+
+    def _editComplex(self):
+        dlg = self._complexDialog(self._registry, self._currentCount)
+        if dlg.exec_():
+            self._currentCount = dlg.getCount()
+            self.preview()
+

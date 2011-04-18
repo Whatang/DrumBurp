@@ -8,6 +8,7 @@ Created on 20 Jan 2011
 from ui_measurePropertiesDialog import Ui_measurePropertiesDialog
 from PyQt4.QtGui import QDialog
 import Data.MeasureCount
+from QComplexCountDialog import QComplexCountDialog
 
 class QEditMeasureDialog(QDialog, Ui_measurePropertiesDialog):
     '''
@@ -26,7 +27,8 @@ class QEditMeasureDialog(QDialog, Ui_measurePropertiesDialog):
         self.setupUi(self)
         self.measureTabs.setup(measureCount,
                                counterRegistry,
-                               Data.MeasureCount)
+                               Data.MeasureCount,
+                               QComplexCountDialog)
         self._defaultCounter = defaultCounter
         reset = self.buttonBox.button(self.buttonBox.Reset)
         reset.clicked.connect(self.measureTabs.restoreOriginal)

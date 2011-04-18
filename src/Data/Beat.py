@@ -6,7 +6,7 @@ Created on 16 Apr 2011
 '''
 
 import itertools
-from Counter import Counter
+from Counter import CounterRegistry
 from DBConstants import BEAT_COUNT
 
 class Beat(object):
@@ -29,6 +29,13 @@ class Beat(object):
         for unusedTickNum, count in itertools.izip(self.iterTicks(),
                                                    self.counter):
             yield count
+
+    def count(self, beatNum):
+        for count in self:
+            if count == BEAT_COUNT:
+                yield str(beatNum)
+            else:
+                yield count
 
     def __str__(self):
         return str(self.counter)
@@ -60,6 +67,7 @@ class Beat(object):
     def read(scoreIterator):
         numTicks = None
         counter = None
+        registry = CounterRegistry()
         for lineType, lineData in scoreIterator:
             if lineType == "BEAT_END":
                 return Beat(counter, numTicks)
@@ -69,7 +77,7 @@ class Beat(object):
                 if lineData[0] == "|" and lineData[-1] == "|":
                     lineData = lineData[1:-1]
                 lineData = BEAT_COUNT + lineData[1:]
-                counter = Counter(lineData)
+                counter = registry.findMaster(lineData)
             else:
                 raise IOError("Unrecognised line type")
 

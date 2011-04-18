@@ -78,6 +78,20 @@ class CounterRegistry(object):
     def getCounterByName(self, name):
         return self._counts[name]
 
+    def getCounterByIndex(self, index):
+        return self._counts[self._names[index]]
+
+    def lookupIndex(self, beat):
+        beatStr = str(beat)
+        for index, (unusedName, count) in enumerate(self):
+            if str(count) == beatStr:
+                return index
+        return(-1)
+
+    def findMaster(self, countString):
+        index = self.lookupIndex(countString)
+        return self._counts[self._names[index]]
+
     def __getitem__(self, index):
         return self._counts[self._names[index]]
 

@@ -10,7 +10,6 @@ from PyQt4 import QtGui
 from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 import DBIcons
 from Data import DBConstants
-from Data.MeasureCount import makeSimpleCount
 from DBCommands import (RepeatNoteCommand, InsertMeasuresCommand,
                         InsertSectionCommand, DeleteMeasureCommand,
                         SetAlternateCommand)
@@ -143,7 +142,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                                            QtGui.QMessageBox.Cancel)
         if yesNo == QtGui.QMessageBox.Ok:
             command = DeleteMeasureCommand(self._qScore,
-                                           self._measurePosition())
+                                           self._np)
             self._qScore.addCommand(command)
 
     def _deleteStaff(self):

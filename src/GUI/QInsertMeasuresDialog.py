@@ -6,6 +6,7 @@ Created on 9 Jan 2011
 from ui_insertMeasuresDialog import Ui_InsertMeasuresDialog
 from PyQt4.QtGui import QDialog
 import Data.MeasureCount
+from QComplexCountDialog import QComplexCountDialog
 
 class QInsertMeasuresDialog(QDialog, Ui_InsertMeasuresDialog):
     '''
@@ -18,7 +19,7 @@ class QInsertMeasuresDialog(QDialog, Ui_InsertMeasuresDialog):
         super(QInsertMeasuresDialog, self).__init__(parent)
         self.setupUi(self)
         self.measureTabs.setup(measureCount, counterRegistry,
-                               Data.MeasureCount)
+                               Data.MeasureCount, QComplexCountDialog)
         restore = self.buttonBox.button(self.buttonBox.RestoreDefaults)
         restore.clicked.connect(self._restoreDefault)
 

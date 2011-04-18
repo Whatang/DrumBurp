@@ -15,6 +15,7 @@ from QScore import QScore
 from QDisplayProperties import QDisplayProperties
 from QNewScoreDialog import QNewScoreDialog
 from QAsciiExportDialog import QAsciiExportDialog
+from QComplexCountDialog import QComplexCountDialog
 from DBInfoDialog import DBInfoDialog
 from DBStartupDialog import DBStartupDialog
 import Data.MeasureCount
@@ -89,7 +90,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.defaultMeasureTabs.beatChanged.connect(self._beatChanged)
         self.defaultMeasureTabs.setup(None,
                                       self.songProperties.counterRegistry,
-                                      Data.MeasureCount)
+                                      Data.MeasureCount,
+                                      QComplexCountDialog)
         dlg = DBStartupDialog()
         dlg.exec_()
         self.updateStatus("Welcome to %s" % APPNAME)
