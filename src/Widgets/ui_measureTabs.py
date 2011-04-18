@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\Widgets\measureTabs.ui'
 #
-# Created: Sun Apr 17 19:05:51 2011
+# Created: Sun Apr 17 21:11:32 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_measureTabs(object):
     def setupUi(self, measureTabs):
         measureTabs.setObjectName(_fromUtf8("measureTabs"))
-        measureTabs.resize(238, 172)
+        measureTabs.resize(218, 155)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -113,7 +113,7 @@ class Ui_measureTabs(object):
         self.label_2.setBuddy(self.beatsSpinBox)
 
         self.retranslateUi(measureTabs)
-        self.counterTabs.setCurrentIndex(1)
+        self.counterTabs.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(measureTabs)
 
     def retranslateUi(self, measureTabs):

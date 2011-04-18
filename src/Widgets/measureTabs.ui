@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>238</width>
-    <height>172</height>
+    <width>218</width>
+    <height>155</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -44,7 +44,7 @@
       <enum>QTabWidget::Triangular</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="simpleTab">
       <attribute name="title">
