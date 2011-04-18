@@ -322,7 +322,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionPrint_triggered(self):
-        self._printer.setPaperSize(QPrinter.Letter)
+        self._printer.setPaperSize(self._getPaperSize())
         dialog = QPrintPreviewDialog(self._printer, parent = self)
         dialog.paintRequested.connect(self.scoreScene.printScore)
         dialog.exec_()
@@ -330,13 +330,14 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     @pyqtSignature("")
     def on_actionExportPDF_triggered(self):
         printer = QPrinter()
-        printer.setPaperSize(QPrinter.Letter)
+        printer.setPaperSize(self._getPaperSize())
         if self.filename:
             outfileName = list(os.path.splitext(self.filename)[:-1])
             outfileName = os.extsep.join(outfileName + ["pdf"])
         else:
             outfileName = "Untitled.pdf"
         printer.setOutputFileName(outfileName)
+        printer.setPaperSize(self._getPaperSize())
         dialog = QPrintPreviewDialog(printer, parent = self)
         dialog.paintRequested.connect(self.scoreScene.printScore)
         dialog.exec_()
@@ -357,3 +358,15 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def on_actionAboutDrumBurp_triggered(self):
         dlg = DBInfoDialog()
         dlg.exec_()
+
+    def _getPaperSize(self):
+        return getattr(QPrinter, str(self.paperBox.currentText()))
+
+    @pyqtSignature("")
+    def on_actionFitPage_triggered(self):
+        papersize = self._getPaperSize()
+        printer = QPrinter()
+        printer.setPaperSize(papersize)
+        widthInPixels = printer.pageRect().width()
+        maxColumns = self.songProperties.maxColumns(widthInPixels)
+        self.widthSpinBox.setValue(maxColumns)

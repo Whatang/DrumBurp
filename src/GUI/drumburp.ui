@@ -529,7 +529,7 @@
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>40</width>
+            <width>0</width>
             <height>20</height>
            </size>
           </property>
@@ -621,59 +621,21 @@
        <property name="title">
         <string>Score Width</string>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>Columns:</string>
-          </property>
-          <property name="buddy">
-           <cstring>widthSpinBox</cstring>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="widthSpinBox">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="toolTip">
-           <string>Score width</string>
-          </property>
-          <property name="statusTip">
-           <string>The number of columns to display the Score on</string>
-          </property>
-          <property name="minimum">
-           <number>10</number>
-          </property>
-          <property name="maximum">
-           <number>1000</number>
-          </property>
-          <property name="value">
-           <number>80</number>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_5">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>10</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <widget class="QPushButton" name="fitPageButton">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Columns:</string>
+            </property>
+            <property name="buddy">
+             <cstring>widthSpinBox</cstring>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="widthSpinBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -681,57 +643,83 @@
              </sizepolicy>
             </property>
             <property name="toolTip">
-             <string>Fit Score to Page</string>
+             <string>Score width</string>
             </property>
             <property name="statusTip">
-             <string>Attempt to make the score as wide as possible within a standard page</string>
+             <string>The number of columns to display the Score on</string>
             </property>
-            <property name="text">
-             <string>Fit Page</string>
+            <property name="minimum">
+             <number>10</number>
             </property>
-            <property name="icon">
-             <iconset resource="DrumBurp.qrc">
-              <normaloff>:/Icons/Icons/fit-page</normaloff>:/Icons/Icons/fit-page</iconset>
+            <property name="maximum">
+             <number>1000</number>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="fitWindowButton">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="toolTip">
-             <string>Fit Score In Window</string>
-            </property>
-            <property name="statusTip">
-             <string>Attempt to make the score as wide as possible within the current window.</string>
-            </property>
-            <property name="text">
-             <string>Fit Window</string>
-            </property>
-            <property name="icon">
-             <iconset resource="DrumBurp.qrc">
-              <normaloff>:/Icons/Icons/video-display.png</normaloff>:/Icons/Icons/video-display.png</iconset>
+            <property name="value">
+             <number>80</number>
             </property>
            </widget>
           </item>
          </layout>
         </item>
-        <item>
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+        <item row="0" column="1">
+         <widget class="QPushButton" name="fitWindowButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>10</width>
-            <height>20</height>
-           </size>
+          <property name="toolTip">
+           <string>Fit Score In Window</string>
           </property>
-         </spacer>
+          <property name="statusTip">
+           <string>Attempt to make the score as wide as possible within the current window.</string>
+          </property>
+          <property name="text">
+           <string>Fit Window</string>
+          </property>
+          <property name="icon">
+           <iconset resource="DrumBurp.qrc">
+            <normaloff>:/Icons/Icons/video-display.png</normaloff>:/Icons/Icons/video-display.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QComboBox" name="paperBox">
+          <item>
+           <property name="text">
+            <string>A4</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Letter</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QPushButton" name="fitPageButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>Fit Score to Page</string>
+          </property>
+          <property name="statusTip">
+           <string>Attempt to make the score as wide as possible within a standard page</string>
+          </property>
+          <property name="text">
+           <string>Fit Page</string>
+          </property>
+          <property name="icon">
+           <iconset resource="DrumBurp.qrc">
+            <normaloff>:/Icons/Icons/fit-page</normaloff>:/Icons/Icons/fit-page</iconset>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -1117,7 +1105,6 @@ Writes this Score as a plain .txt file.</string>
   <tabstop>lineSpaceSlider</tabstop>
   <tabstop>widthSpinBox</tabstop>
   <tabstop>fitPageButton</tabstop>
-  <tabstop>fitWindowButton</tabstop>
   <tabstop>scoreView</tabstop>
  </tabstops>
  <resources>
@@ -1275,8 +1262,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>247</x>
-     <y>723</y>
+     <x>206</x>
+     <y>648</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -1291,8 +1278,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setWidth(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>113</x>
-     <y>706</y>
+     <x>110</x>
+     <y>631</y>
     </hint>
     <hint type="destinationlabel">
      <x>575</x>
@@ -1307,8 +1294,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>systemSpacingChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>131</x>
-     <y>544</y>
+     <x>141</x>
+     <y>317</y>
     </hint>
     <hint type="destinationlabel">
      <x>431</x>
@@ -1355,8 +1342,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setFont(QFont)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>177</x>
-     <y>363</y>
+     <x>162</x>
+     <y>136</y>
     </hint>
     <hint type="destinationlabel">
      <x>454</x>
@@ -1371,8 +1358,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setNoteFontSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>253</x>
-     <y>363</y>
+     <x>210</x>
+     <y>136</y>
     </hint>
     <hint type="destinationlabel">
      <x>349</x>
@@ -1387,8 +1374,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setSectionFontSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>253</x>
-     <y>422</y>
+     <x>210</x>
+     <y>195</y>
     </hint>
     <hint type="destinationlabel">
      <x>349</x>
@@ -1403,8 +1390,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setSectionFont(QFont)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>129</x>
-     <y>422</y>
+     <x>139</x>
+     <y>195</y>
     </hint>
     <hint type="destinationlabel">
      <x>320</x>
@@ -1423,8 +1410,8 @@ Writes this Score as a plain .txt file.</string>
      <y>188</y>
     </hint>
     <hint type="destinationlabel">
-     <x>113</x>
-     <y>706</y>
+     <x>110</x>
+     <y>631</y>
     </hint>
    </hints>
   </connection>
@@ -1435,8 +1422,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>247</x>
-     <y>693</y>
+     <x>206</x>
+     <y>618</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -1451,8 +1438,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setMetadataFont(QFont)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>85</x>
-     <y>467</y>
+     <x>95</x>
+     <y>254</y>
     </hint>
     <hint type="destinationlabel">
      <x>351</x>
@@ -1467,8 +1454,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setMetadataFontSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>232</x>
-     <y>469</y>
+     <x>210</x>
+     <y>254</y>
     </hint>
     <hint type="destinationlabel">
      <x>323</x>
@@ -1551,8 +1538,8 @@ Writes this Score as a plain .txt file.</string>
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>114</x>
-     <y>471</y>
+     <x>124</x>
+     <y>254</y>
     </hint>
    </hints>
   </connection>
@@ -1567,8 +1554,8 @@ Writes this Score as a plain .txt file.</string>
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>236</x>
-     <y>471</y>
+     <x>210</x>
+     <y>254</y>
     </hint>
    </hints>
   </connection>
