@@ -29,14 +29,20 @@ class QEditMeasureDialog(QDialog, Ui_measurePropertiesDialog):
                                counterRegistry,
                                Data.MeasureCount,
                                QComplexCountDialog)
+        self._original = measureCount
         self._defaultCounter = defaultCounter
         reset = self.buttonBox.button(self.buttonBox.Reset)
         reset.clicked.connect(self.measureTabs.restoreOriginal)
         restore = self.buttonBox.button(self.buttonBox.RestoreDefaults)
         restore.clicked.connect(self.restoreDefaults)
+        reset = self.buttonBox.button(self.buttonBox.Reset)
+        reset.clicked.connect(self.resetCount)
 
     def getValues(self):
         return self.measureTabs.getCounter()
 
     def restoreDefaults(self):
         self.measureTabs.setBeat(self._defaultCounter)
+
+    def resetCount(self):
+        self.measureTabs.setBeat(self._original)
