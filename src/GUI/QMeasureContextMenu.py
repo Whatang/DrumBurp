@@ -206,6 +206,6 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
 
     def _deleteAlternate(self):
         np = self._np.makeMeasurePosition()
-        command = SetAlternateCommand(self._qScore, np,
+        command = SetAlternateCommand(self._qScore, self._np,
                                       None)
         self._qScore.addCommand(command)

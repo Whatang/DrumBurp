@@ -22,15 +22,13 @@ class NotePosition(object):
         return ", ".join(str(x) for x in [self.staffIndex, self.measureIndex,
                                           self.noteTime, self.drumIndex])
 
-    @classmethod
-    def makeMeasurePosition(cls, np):
-        np = copy.copy(np)
+    def makeMeasurePosition(self):
+        np = copy.copy(self)
         np.noteTime = None
         np.drumIndex = None
         return np
 
-    @classmethod
-    def makeStaffPosition(cls, np):
-        np = cls.makeMeasurePosition(np)
+    def makeStaffPosition(self):
+        np = self.makeMeasurePosition()
         np.measureIndex = None
         return np
