@@ -154,8 +154,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                                            QtGui.QMessageBox.Ok,
                                            QtGui.QMessageBox.Cancel)
         if yesNo == QtGui.QMessageBox.Ok:
-            np = copy.copy(self._np)
-            np.measureIndex = None
+            np = self._np.makeStaffPosition()
             staff = score.getItemAtPosition(np)
             arguments = []
             np.measureIndex = staff.numMeasures() - 1
@@ -206,6 +205,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                                             DeleteMeasureCommand, arguments)
 
     def _deleteAlternate(self):
-        command = SetAlternateCommand(self._qScore, self._np,
+        np = self._np.makeMeasurePosition()
+        command = SetAlternateCommand(self._qScore, np,
                                       None)
         self._qScore.addCommand(command)

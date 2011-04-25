@@ -5,6 +5,7 @@ Created on 14 Dec 2010
 '''
 
 from DBErrors import BadNoteSpecification
+import copy
 
 class NotePosition(object):
     def __init__(self, staffIndex = None, measureIndex = None,
@@ -21,3 +22,15 @@ class NotePosition(object):
         return ", ".join(str(x) for x in [self.staffIndex, self.measureIndex,
                                           self.noteTime, self.drumIndex])
 
+    @classmethod
+    def makeMeasurePosition(cls, np):
+        np = copy.copy(np)
+        np.noteTime = None
+        np.drumIndex = None
+        return np
+
+    @classmethod
+    def makeStaffPosition(cls, np):
+        np = cls.makeMeasurePosition(np)
+        np.measureIndex = None
+        return np

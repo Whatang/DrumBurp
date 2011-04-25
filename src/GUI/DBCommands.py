@@ -158,8 +158,7 @@ class InsertSectionCommand(_COMMAND_CLASS):
         super(InsertSectionCommand, self).__init__(qScore, np,
                                                    "Insert Section Copy")
         self._np.measureIndex = 0
-        self._np.noteTime = None
-        self._np.drumIndex = None
+        self._np = self._np.makeMeasurePosition()
         self._np.staffIndex = self._score.getSectionStartStaffIndex(np)
         self._index = sectionIndex
 
@@ -210,9 +209,11 @@ class SetMeasureLineCommand(_COMMAND_CLASS):
 
     def _redo(self):
         self._method(self._score, self._np, self._onOff)
+        self._qScore.reBuild()
 
     def _undo(self):
         self._method(self._score, self._np, not self._onOff)
+        self._qScore.reBuild()
 
 class SetSectionEndCommand(SetMeasureLineCommand):
     def __init__(self, qScore, np, onOff):
@@ -304,7 +305,9 @@ class SetAlternateCommand(_COMMAND_CLASS):
                                                   np,
                                                   "Set Alternate Text")
         self._alternate = alternate
-        measure = self._score.getItemAtPosition(np)
+        self._np.noteTime = None
+        self._np.drumIndex = None
+        measure = self._score.getItemAtPosition(self._np)
         self._oldAlternate = measure.alternateText
 
     def _redo(self):
