@@ -225,7 +225,7 @@ class QDisplayProperties(QObject):
 
     @staticmethod
     def allowedNoteHeads():
-        return ("x", "X", "o", "O", "g", "f", "d", "+")
+        return ("x", "X", "o", "O", "g", "f", "d", "+", "#", "b")
 
     def save(self, settings):
         pass
