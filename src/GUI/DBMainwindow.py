@@ -10,7 +10,7 @@ from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QFileDialog, QMessageBox,
                          QPrintPreviewDialog, QWhatsThis,
                          QPrinter, QDesktopServices)
-from PyQt4.QtCore import pyqtSignature, QSettings, QVariant
+from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer
 from QScore import QScore
 from QDisplayProperties import QDisplayProperties
 from QNewScoreDialog import QNewScoreDialog
@@ -92,11 +92,15 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                                       self.songProperties.counterRegistry,
                                       Data.MeasureCount,
                                       QComplexCountDialog)
+        self.restoreGeometry(settings.value("Geometry").toByteArray())
+        self.restoreState(settings.value("MainWindow/State").toByteArray())
+        QTimer.singleShot(0, self._startUp)
+
+    def _startUp(self):
         dlg = DBStartupDialog()
         dlg.exec_()
         self.updateStatus("Welcome to %s" % APPNAME)
-        self.restoreGeometry(settings.value("Geometry").toByteArray())
-        self.restoreState(settings.value("MainWindow/State").toByteArray())
+
 
     def _makeQSettings(self):
         if self._fakeStartup:
