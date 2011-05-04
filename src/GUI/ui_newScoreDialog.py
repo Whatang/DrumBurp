@@ -1,5 +1,24 @@
 # -*- coding: utf-8 -*-
 
+# Copyright 2011 Michael Thomas
+#
+# See www.whatang.org for more information.
+#
+# This file is part of DrumBurp.
+#
+# DrumBurp is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# DrumBurp is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with DrumBurp.  If not, see <http://www.gnu.org/licenses/>
+
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\newScoreDialog.ui'
 #
 # Created: Sun Apr 17 18:21:30 2011
@@ -27,7 +46,7 @@ class Ui_newScoreDialog(object):
         self.gridLayout.setVerticalSpacing(6)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.label = QtGui.QLabel(newScoreDialog)
-        self.label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label.setObjectName(_fromUtf8("label"))
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
         self.numMeasuresSpinBox = QtGui.QSpinBox(newScoreDialog)
@@ -51,7 +70,7 @@ class Ui_newScoreDialog(object):
         self.horizontalLayout.addItem(spacerItem2)
         self.buttonBox = QtGui.QDialogButtonBox(newScoreDialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel | QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
         self.horizontalLayout.addWidget(self.buttonBox)
         self.verticalLayout.addLayout(self.horizontalLayout)

@@ -1,5 +1,25 @@
 # -*- coding: utf-8 -*-
 
+# Copyright 2011 Michael Thomas
+#
+# See www.whatang.org for more information.
+#
+# This file is part of DrumBurp.
+#
+# DrumBurp is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# DrumBurp is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with DrumBurp.  If not, see <http://www.gnu.org/licenses/>
+
+
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\dbInfo.ui'
 #
 # Created: Sun Apr 17 16:05:20 2011
@@ -94,7 +114,7 @@ class Ui_InfoDialog(object):
         self.gridLayout.addWidget(self.label_5, 8, 2, 1, 1)
         self.buttonBox = QtGui.QDialogButtonBox(InfoDialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel | QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
         self.gridLayout.addWidget(self.buttonBox, 10, 0, 1, 3)
         spacerItem = QtGui.QSpacerItem(20, 10, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)

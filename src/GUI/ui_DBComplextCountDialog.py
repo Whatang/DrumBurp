@@ -1,5 +1,25 @@
 # -*- coding: utf-8 -*-
 
+# Copyright 2011 Michael Thomas
+#
+# See www.whatang.org for more information.
+#
+# This file is part of DrumBurp.
+#
+# DrumBurp is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# DrumBurp is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with DrumBurp.  If not, see <http://www.gnu.org/licenses/>
+
+
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\DBComplextCountDialog.ui'
 #
 # Created: Sun Apr 17 19:41:55 2011
@@ -67,7 +87,7 @@ class Ui_complexCountDialog(object):
         self.verticalLayout_2.addWidget(self.groupBox)
         self.buttonBox = QtGui.QDialogButtonBox(complexCountDialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok|QtGui.QDialogButtonBox.Reset)
+        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel | QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Reset)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
         self.verticalLayout_2.addWidget(self.buttonBox)
 

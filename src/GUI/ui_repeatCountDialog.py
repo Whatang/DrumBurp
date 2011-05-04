@@ -1,5 +1,24 @@
 # -*- coding: utf-8 -*-
 
+# Copyright 2011 Michael Thomas
+#
+# See www.whatang.org for more information.
+#
+# This file is part of DrumBurp.
+#
+# DrumBurp is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# DrumBurp is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with DrumBurp.  If not, see <http://www.gnu.org/licenses/>
+
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\repeatCountDialog.ui'
 #
 # Created: Sun Apr 17 16:05:24 2011
@@ -27,7 +46,7 @@ class Ui_repeatCountDialog(object):
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem1)
         self.label = QtGui.QLabel(repeatCountDialog)
-        self.label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label.setObjectName(_fromUtf8("label"))
         self.horizontalLayout.addWidget(self.label)
         self.countBox = QtGui.QSpinBox(repeatCountDialog)
@@ -42,7 +61,7 @@ class Ui_repeatCountDialog(object):
         self.verticalLayout.addItem(spacerItem3)
         self.buttonBox = QtGui.QDialogButtonBox(repeatCountDialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel | QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
         self.verticalLayout.addWidget(self.buttonBox)
 

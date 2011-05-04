@@ -1,5 +1,25 @@
 # -*- coding: utf-8 -*-
 
+# Copyright 2011 Michael Thomas
+#
+# See www.whatang.org for more information.
+#
+# This file is part of DrumBurp.
+#
+# DrumBurp is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# DrumBurp is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with DrumBurp.  If not, see <http://www.gnu.org/licenses/>
+
+
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\dbStartup.ui'
 #
 # Created: Sun Apr 17 16:05:21 2011
@@ -24,7 +44,7 @@ class Ui_dbStartup(object):
         self.textBrowser.setAutoFillBackground(True)
         self.textBrowser.setFrameShape(QtGui.QFrame.NoFrame)
         self.textBrowser.setFrameShadow(QtGui.QFrame.Plain)
-        self.textBrowser.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByKeyboard|QtCore.Qt.LinksAccessibleByMouse)
+        self.textBrowser.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByKeyboard | QtCore.Qt.LinksAccessibleByMouse)
         self.textBrowser.setOpenExternalLinks(True)
         self.textBrowser.setObjectName(_fromUtf8("textBrowser"))
         self.verticalLayout.addWidget(self.textBrowser)
