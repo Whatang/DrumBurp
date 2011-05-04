@@ -116,9 +116,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         QTimer.singleShot(0, self._startUp)
 
     def _startUp(self):
-        dlg = DBStartupDialog()
+        dlg = DBStartupDialog(DB_VERSION)
         dlg.exec_()
-        self.updateStatus("Welcome to %s" % APPNAME)
+        self.updateStatus("Welcome to %s v%s" % (APPNAME, DB_VERSION))
 
 
     def _makeQSettings(self):
