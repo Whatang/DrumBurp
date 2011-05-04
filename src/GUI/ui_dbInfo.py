@@ -19,10 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with DrumBurp.  If not, see <http://www.gnu.org/licenses/>
 
-
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\dbInfo.ui'
 #
-# Created: Sun Apr 17 16:05:20 2011
+# Created: Tue May 03 20:53:07 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -46,15 +45,15 @@ class Ui_InfoDialog(object):
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.gridLayout.addWidget(self.label_2, 0, 0, 1, 1)
-        self.label = QtGui.QLabel(InfoDialog)
+        self.copyrightLabel = QtGui.QLabel(InfoDialog)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy)
-        self.label.setWordWrap(True)
-        self.label.setObjectName(_fromUtf8("label"))
-        self.gridLayout.addWidget(self.label, 0, 2, 1, 1)
+        sizePolicy.setHeightForWidth(self.copyrightLabel.sizePolicy().hasHeightForWidth())
+        self.copyrightLabel.setSizePolicy(sizePolicy)
+        self.copyrightLabel.setWordWrap(True)
+        self.copyrightLabel.setObjectName(_fromUtf8("copyrightLabel"))
+        self.gridLayout.addWidget(self.copyrightLabel, 0, 2, 1, 1)
         self.label_6 = QtGui.QLabel(InfoDialog)
         font = QtGui.QFont()
         font.setWeight(75)
@@ -154,7 +153,7 @@ class Ui_InfoDialog(object):
 
     def retranslateUi(self, InfoDialog):
         InfoDialog.setWindowTitle(QtGui.QApplication.translate("InfoDialog", "DrumBurp Information", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("InfoDialog", "DrumBurp is Copyright 2011 Michael Thomas. All rights reserved.", None, QtGui.QApplication.UnicodeUTF8))
+        self.copyrightLabel.setText(QtGui.QApplication.translate("InfoDialog", "DrumBurp is Copyright 2011 Michael Thomas. All rights reserved.", None, QtGui.QApplication.UnicodeUTF8))
         self.label_6.setText(QtGui.QApplication.translate("InfoDialog", "Contact Details", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("InfoDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"

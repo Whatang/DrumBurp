@@ -370,7 +370,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionAboutDrumBurp_triggered(self):
-        dlg = DBInfoDialog()
+        dlg = DBInfoDialog(DB_VERSION)
         dlg.exec_()
 
     def _getPaperSize(self):
