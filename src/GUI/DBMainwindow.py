@@ -41,6 +41,7 @@ import DBIcons
 import os
 
 APPNAME = "DrumBurp"
+DB_VERSION = "0.1"
 #pylint:disable-msg=R0904
 
 class FakeQSettings(object):
@@ -129,10 +130,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def updateStatus(self, message):
         self.statusBar().showMessage(message, 5000)
         if self.filename is not None:
-            self.setWindowTitle("DrumBurp - %s[*]"
-                                % os.path.basename(self.filename))
+            self.setWindowTitle("DrumBurp v%s - %s[*]"
+                                % (DB_VERSION, os.path.basename(self.filename)))
         else:
-            self.setWindowTitle("DrumBurp - Untitled[*]")
+            self.setWindowTitle("DrumBurp v%s - Untitled[*]" % DB_VERSION)
         self.setWindowModified(self.scoreScene.dirty)
 
     def okToContinue(self):
