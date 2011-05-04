@@ -143,7 +143,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
 
     def ySpacingChanged(self):
         lineOffsets = self._qScore.lineOffsets
-        for yOffset, label in zip(lineOffsets, self._lineLabels):
+        for yOffset, label in zip(lineOffsets[-len(self._lineLabels):], self._lineLabels):
             label.setY(yOffset)
             label.ySpacingChanged()
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
