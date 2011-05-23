@@ -70,7 +70,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         DBIcons.initialiseIcons()
         settings = self._makeQSettings()
         self.recentFiles = [unicode(fname) for fname in
-                            settings.value("RecentFiles").toStringList()]
+                            settings.value("RecentFiles").toStringList()
+                            if os.path.exists(unicode(fname))]
         self.filename = (None
                          if len(self.recentFiles) == 0
                          else self.recentFiles[0])
