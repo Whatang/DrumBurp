@@ -336,7 +336,7 @@ class QMeasure(QtGui.QGraphicsItem):
         elif self._isOverRepeatCount(point):
             self.changeRepeatCount()
         elif self._isOverAlternate(point):
-            self._setAlternate()
+            self.setAlternate()
         else:
             event.ignore()
 
