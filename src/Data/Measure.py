@@ -86,6 +86,9 @@ class Measure(object):
                                     drumIndex = drumIndex),
                        self._notes[noteTime][drumIndex])
 
+    def numNotes(self):
+        return sum(len(drumIndex) for drumIndex in self._notes.values())
+
     def _runCallBack(self, position):
         if self._callBack is not None:
             self._callBack(position)
@@ -188,7 +191,7 @@ class Measure(object):
         else:
             self.addNote(position, head)
 
-    def setWidth(self, newWidth):
+    def _setWidth(self, newWidth):
         assert(newWidth > 0)
         if newWidth == len(self):
             return
@@ -200,7 +203,7 @@ class Measure(object):
         self._runCallBack(NotePosition())
 
     def setBeatCount(self, counter):
-        self.setWidth(len(counter))
+        self._setWidth(len(counter))
         if counter != self.counter:
             self.counter = counter
             self._runCallBack(NotePosition())
@@ -219,7 +222,7 @@ class Measure(object):
     def pasteMeasure(self, other, copyMeasureDecorations = False):
         oldMeasure = self.copyMeasure()
         self.clear()
-        self.setWidth(len(other))
+        self._setWidth(len(other))
         self.counter = other.counter
         for pos, head in other:
             try:

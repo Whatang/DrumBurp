@@ -304,7 +304,7 @@ class TestCharacterFormatScore(unittest.TestCase):
         for staff in self.score.iterStaffs():
             self.assertEqual(staff.numMeasures(), 4)
             self.assertEqual(len(staff), 64)
-            self.assertEqual(staff.characterWidth(), 69)
+            self.assertEqual(staff.characterWidth(), 71)
 
     def testTextFormatScoreWithSections(self):
         for dummy in range(0, 20):
@@ -312,7 +312,7 @@ class TestCharacterFormatScore(unittest.TestCase):
         self.score.getMeasure(5).setSectionEnd(True)
         self.score.textFormatScore(80)
         self.assertEqual(self.score.numStaffs(), 6)
-        self.assertEqual(self.score.getStaff(1).characterWidth(), 36)
+        self.assertEqual(self.score.getStaff(1).characterWidth(), 37)
 
     def testTextFormatScore_SectionEndAtScoreEnd(self):
         for dummy in range(0, 20):
@@ -329,7 +329,7 @@ class TestCharacterFormatScore(unittest.TestCase):
         self.score.getMeasure(5).setRepeatEnd(True)
         self.score.textFormatScore(80)
         self.assertEqual(self.score.numStaffs(), 6)
-        self.assertEqual(self.score.getStaff(1).characterWidth(), 36)
+        self.assertEqual(self.score.getStaff(1).characterWidth(), 37)
 
     def testTextFormatScoreWithLargeBar(self):
         for dummy in range(0, 12):
@@ -339,7 +339,7 @@ class TestCharacterFormatScore(unittest.TestCase):
             self.score.addEmptyMeasure(16)
         self.score.textFormatScore(80)
         self.assertEqual(self.score.numStaffs(), 7)
-        self.assertEqual(self.score.getStaff(3).characterWidth(), 72)
+        self.assertEqual(self.score.getStaff(3).characterWidth(), 74)
 
     def testTextFormatScoreWithOverSizeBar_IgnoreErrors(self):
         for dummy in range(0, 12):
@@ -349,7 +349,7 @@ class TestCharacterFormatScore(unittest.TestCase):
             self.score.addEmptyMeasure(16)
         self.score.textFormatScore(80, ignoreErrors = True)
         self.assertEqual(self.score.numStaffs(), 7)
-        self.assertEqual(self.score.getStaff(3).characterWidth(), 82)
+        self.assertEqual(self.score.getStaff(3).characterWidth(), 84)
 
     def testTextFormatScoreWithOverSizeBar_DontIgnoreErrors(self):
         for dummy in range(0, 12):
