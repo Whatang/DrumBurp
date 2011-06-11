@@ -57,7 +57,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     classdocs
     '''
 
-    def __init__(self, parent = None, fakeStartup = False):
+    def __init__(self, parent = None, fakeStartup = False, filename = None):
         '''
         Constructor
         '''
@@ -68,13 +68,19 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self._printer = QPrinter()
         self.setupUi(self)
         DBIcons.initialiseIcons()
+        self.paperBox.clear()
+        for name in dir(QPrinter):
+            if isinstance(getattr(QPrinter, name), QPrinter.PageSize):
+                self.paperBox.addItem(name)
         settings = self._makeQSettings()
         self.recentFiles = [unicode(fname) for fname in
                             settings.value("RecentFiles").toStringList()
                             if os.path.exists(unicode(fname))]
-        self.filename = (None
-                         if len(self.recentFiles) == 0
-                         else self.recentFiles[0])
+        if filename is None:
+            filename = (None
+                        if len(self.recentFiles) == 0
+                        else self.recentFiles[0])
+        self.filename = filename
         self.updateRecentFiles()
         self.songProperties = QDisplayProperties()
         self.scoreScene = QScore(self)
