@@ -81,6 +81,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                         if len(self.recentFiles) == 0
                         else self.recentFiles[0])
         self.filename = filename
+        self.addToRecentFiles()
         self.updateRecentFiles()
         self.songProperties = QDisplayProperties()
         self.scoreScene = QScore(self)
