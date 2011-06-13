@@ -41,7 +41,7 @@ class QGraphicsListData(QGraphicsItem):
         self._qScore = qScore
         self._props = qScore.displayProperties
         self._rect = QRectF(0, 0, 0, 0)
-        self._setRect()
+        self.setRect()
         self.setCursor(Qt.PointingHandCursor)
 
     def _iterData(self):
@@ -53,12 +53,12 @@ class QGraphicsListData(QGraphicsItem):
     def font(self):
         raise NotImplementedError()
 
-    def _setRect(self, font = None):
-        if font is None:
+    def setRect(self, fm = None):
+        if fm is None:
             font = self.font()
-        if font is None:
-            return
-        fm = QFontMetrics(font)
+            if font is None:
+                return
+            fm = QFontMetrics(font)
         lineHeight = fm.height()
         height = lineHeight * self._dataLen() * 1.1
         width = max(fm.width(data) for data in self._iterData()) + 10
@@ -75,9 +75,10 @@ class QGraphicsListData(QGraphicsItem):
             font = self.font()
             if font is None:
                 font = painter.font()
-            self._setRect(font)
-            painter.setFont(font)
-            fm = QFontMetrics(font)
+            else:
+                painter.setFont(font)
+            fm = QFontMetrics(painter.font())
+            self.setRect(fm)
             lineHeight = fm.height()
             for index, data in enumerate(self._iterData()):
                 painter.drawText(QPoint(5, (index + 1) * lineHeight), data)
@@ -85,5 +86,8 @@ class QGraphicsListData(QGraphicsItem):
             painter.restore()
 
     def fontChanged(self):
-        self._setRect()
         self.update()
+
+    def update(self):
+        self.setRect()
+        super(QGraphicsListData, self).update()

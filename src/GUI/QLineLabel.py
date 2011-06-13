@@ -40,10 +40,10 @@ class QLineLabel(QtGui.QGraphicsItem):
         self.setCursor(QtCore.Qt.PointingHandCursor)
 
     def cellHeight(self):
-        return self._props.ySpacing
+        return self.scene().ySpacing
 
     def cellWidth(self):
-        return 2 * self._props.xSpacing
+        return 2 * self.scene().xSpacing
 
     def mouseDoubleClickEvent(self, event_):
         editDialog = QEditKitDialog(self.scene().score.drumKit,
@@ -82,7 +82,7 @@ class QLineLabel(QtGui.QGraphicsItem):
                 font = painter.font()
             else:
                 painter.setFont(font)
-            br = QtGui.QFontMetrics(font).tightBoundingRect(self._text)
+            br = QtGui.QFontMetrics(painter.font()).tightBoundingRect(self._text)
             w = br.width()
             h = br.height()
             textLocation = QtCore.QPointF((self.cellWidth() - w + 2) / 2,

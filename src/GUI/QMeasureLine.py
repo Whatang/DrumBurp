@@ -61,23 +61,23 @@ class QMeasureLine(QtGui.QGraphicsItem):
         self._painter = PAINTER_FACTORY(self._lastMeasure, self._nextMeasure)
 
     def paint(self, painter, dummyOption, dummyWidget = None):
-        self._painter(self, painter, dummyOption, dummyWidget = None)
+        self._painter(self, painter, dummyOption, self.scene().scale, dummyWidget = None)
 
     def _setHeight(self):
         if self._props.emptyLinesVisible:
-            self._height = self._props.ySpacing * self._qScore.kitSize
+            self._height = self.scene().ySpacing * self._qScore.kitSize
         else:
-            self._height = self._props.ySpacing * self._qScore.score.numVisibleLines(self._staffIndex)
+            self._height = self.scene().ySpacing * self._qScore.score.numVisibleLines(self._staffIndex)
 
     def setDimensions(self):
         self.prepareGeometryChange()
         self._setHeight()
-        self._rect.setBottomRight(QtCore.QPointF(self._props.xSpacing,
+        self._rect.setBottomRight(QtCore.QPointF(self.scene().xSpacing,
                                                  self._height))
 
     def xSpacingChanged(self):
         self.prepareGeometryChange()
-        self._rect.setRight(self._props.xSpacing)
+        self._rect.setRight(self.scene().xSpacing)
 
     def ySpacingChanged(self):
         self._setHeight()
@@ -88,7 +88,7 @@ class QMeasureLine(QtGui.QGraphicsItem):
         return self._height
 
     def width(self):
-        return self._props.xSpacing
+        return self.scene().xSpacing
 
     def _getEndNotePosition(self):
         assert(self._index > 0)
@@ -176,7 +176,7 @@ class BarLinePainter(object):
     DOT_OFFSET = 5
     DOT_RADIUS = 2
 
-    def __call__(self, qMeasureLine, painter, dummyOption, dummyWidget = None):
+    def __call__(self, qMeasureLine, painter, dummyOption, dummyScale, dummyWidget = None):
         raise NotImplementedError()
 
     @classmethod
@@ -186,49 +186,49 @@ class BarLinePainter(object):
         painter.drawRect(boundingRect)
 
     @classmethod
-    def _drawThickLine(cls, painter, xCenter, height, palette):
+    def _drawThickLine(cls, painter, xCenter, height, palette, scale):
         painter.setPen(QtCore.Qt.NoPen)
         painter.setBrush(palette.text())
-        painter.drawRect(xCenter - cls.THICK_LINE_OFFSET, 0,
-                         cls.THICK_LINE_WIDTH, height + 1)
+        painter.drawRect(xCenter - cls.THICK_LINE_OFFSET * scale, 0,
+                         cls.THICK_LINE_WIDTH * scale, height + 1)
 
     @classmethod
-    def _drawDot(cls, painter, x, y, palette):
+    def _drawDot(cls, painter, x, y, palette, scale):
         painter.setPen(QtCore.Qt.NoPen)
         painter.setBrush(palette.text())
         painter.drawEllipse(QtCore.QPointF(x, y),
-                            cls.DOT_RADIUS, cls.DOT_RADIUS)
+                            cls.DOT_RADIUS * scale, cls.DOT_RADIUS * scale)
 
     @classmethod
-    def _drawExtraLineBefore(cls, painter, xCenter, height, palette):
+    def _drawExtraLineBefore(cls, painter, xCenter, height, palette, scale):
         painter.setPen(QtCore.Qt.SolidLine)
         painter.setBrush(palette.text())
-        painter.drawLine(xCenter - cls.EXTRA_LINE_OFFSET, 0,
-                         xCenter - cls.EXTRA_LINE_OFFSET, height)
+        painter.drawLine(xCenter - cls.EXTRA_LINE_OFFSET * scale, 0,
+                         xCenter - cls.EXTRA_LINE_OFFSET * scale, height)
 
     @classmethod
-    def _drawExtraLineAfter(cls, painter, xCenter, height, palette):
+    def _drawExtraLineAfter(cls, painter, xCenter, height, palette, scale):
         painter.setPen(QtCore.Qt.SolidLine)
         painter.setBrush(palette.text())
-        painter.drawLine(xCenter + cls.EXTRA_LINE_OFFSET, 0,
-                         xCenter + cls.EXTRA_LINE_OFFSET, height)
+        painter.drawLine(xCenter + cls.EXTRA_LINE_OFFSET * scale, 0,
+                         xCenter + cls.EXTRA_LINE_OFFSET * scale, height)
 
     @classmethod
-    def _drawRepeatBefore(cls, painter, xCenter, height, palette):
-        cls._drawExtraLineBefore(painter, xCenter, height, palette)
+    def _drawRepeatBefore(cls, painter, xCenter, height, palette, scale):
+        cls._drawExtraLineBefore(painter, xCenter, height, palette, scale)
         y = height / 3
-        cls._drawDot(painter, xCenter - cls.DOT_OFFSET, y, palette)
-        cls._drawDot(painter, xCenter - cls.DOT_OFFSET, 2 * y, palette)
+        cls._drawDot(painter, xCenter - cls.DOT_OFFSET * scale, y, palette, scale)
+        cls._drawDot(painter, xCenter - cls.DOT_OFFSET * scale, 2 * y, palette, scale)
 
     @classmethod
-    def _drawRepeatAfter(cls, painter, xCenter, height, palette):
-        cls._drawExtraLineAfter(painter, xCenter, height, palette)
+    def _drawRepeatAfter(cls, painter, xCenter, height, palette, scale):
+        cls._drawExtraLineAfter(painter, xCenter, height, palette, scale)
         y = height / 3
-        cls._drawDot(painter, xCenter + cls.DOT_OFFSET, y, palette)
-        cls._drawDot(painter, xCenter + cls.DOT_OFFSET, 2 * y, palette)
+        cls._drawDot(painter, xCenter + cls.DOT_OFFSET * scale, y, palette, scale)
+        cls._drawDot(painter, xCenter + cls.DOT_OFFSET * scale, 2 * y, palette, scale)
 
 class NormalBarLinePainter(BarLinePainter):
-    def __call__(self, qMeasureLine, painter, dummyOption, dummyWidget = None):
+    def __call__(self, qMeasureLine, painter, dummyOption, dummyScale, dummyWidget = None):
         palette = qMeasureLine.scene().palette()
         self._clearBase(painter, palette, qMeasureLine.boundingRect())
         painter.setPen(QtCore.Qt.SolidLine)
@@ -236,38 +236,38 @@ class NormalBarLinePainter(BarLinePainter):
         painter.drawLine(x, 0, x, qMeasureLine.height())
 
 class RepeatStartLinePainter(BarLinePainter):
-    def __call__(self, qMeasureLine, painter, dummyOption, dummyWidget = None):
+    def __call__(self, qMeasureLine, painter, dummyOption, scale, dummyWidget = None):
         palette = qMeasureLine.scene().palette()
         self._clearBase(painter, palette, qMeasureLine.boundingRect())
         x = qMeasureLine.width() / 2
-        self._drawThickLine(painter, x, qMeasureLine.height(), palette)
-        self._drawRepeatAfter(painter, x, qMeasureLine.height(), palette)
+        self._drawThickLine(painter, x, qMeasureLine.height(), palette, scale)
+        self._drawRepeatAfter(painter, x, qMeasureLine.height(), palette, scale)
 
 
 class RepeatEndLinePainter(BarLinePainter):
-    def __call__(self, qMeasureLine, painter, dummyOption, dummyWidget = None):
+    def __call__(self, qMeasureLine, painter, dummyOption, scale, dummyWidget = None):
         palette = qMeasureLine.scene().palette()
         self._clearBase(painter, palette, qMeasureLine.boundingRect())
         x = qMeasureLine.width() / 2
-        self._drawThickLine(painter, x, qMeasureLine.height(), palette)
-        self._drawRepeatBefore(painter, x, qMeasureLine.height(), palette)
+        self._drawThickLine(painter, x, qMeasureLine.height(), palette, scale)
+        self._drawRepeatBefore(painter, x, qMeasureLine.height(), palette, scale)
 
 class RepeatStartEndLinePainter(BarLinePainter):
-    def __call__(self, qMeasureLine, painter, dummyOption, dummyWidget = None):
+    def __call__(self, qMeasureLine, painter, dummyOption, scale, dummyWidget = None):
         palette = qMeasureLine.scene().palette()
         self._clearBase(painter, palette, qMeasureLine.boundingRect())
         x = qMeasureLine.width() / 2
-        self._drawThickLine(painter, x, qMeasureLine.height(), palette)
-        self._drawRepeatBefore(painter, x, qMeasureLine.height(), palette)
-        self._drawRepeatAfter(painter, x, qMeasureLine.height(), palette)
+        self._drawThickLine(painter, x, qMeasureLine.height(), palette, scale)
+        self._drawRepeatBefore(painter, x, qMeasureLine.height(), palette, scale)
+        self._drawRepeatAfter(painter, x, qMeasureLine.height(), palette, scale)
 
 class SectionEndLinePainter(BarLinePainter):
-    def __call__(self, qMeasureLine, painter, dummyOption, dummyWidget = None):
+    def __call__(self, qMeasureLine, painter, dummyOption, scale, dummyWidget = None):
         palette = qMeasureLine.scene().palette()
         self._clearBase(painter, palette, qMeasureLine.boundingRect())
         x = qMeasureLine.width() / 2
-        self._drawThickLine(painter, x, qMeasureLine.height(), palette)
-        self._drawExtraLineBefore(painter, x, qMeasureLine.height(), palette)
+        self._drawThickLine(painter, x, qMeasureLine.height(), palette, scale)
+        self._drawExtraLineBefore(painter, x, qMeasureLine.height(), palette, scale)
 
 class BarLinePainterFactory(object):
     def __init__(self):

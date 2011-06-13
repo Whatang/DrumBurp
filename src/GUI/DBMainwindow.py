@@ -27,6 +27,7 @@ from ui_drumburp import Ui_DrumBurpWindow
 from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QFileDialog, QMessageBox,
                          QPrintPreviewDialog, QWhatsThis,
+                         QPrinterInfo,
                          QPrinter, QDesktopServices)
 from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer
 from QScore import QScore
@@ -338,15 +339,19 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionPrint_triggered(self):
+        self._printer = QPrinter(QPrinterInfo(self._printer),
+                                 QPrinter.HighResolution)
         self._printer.setPaperSize(self._getPaperSize())
         dialog = QPrintPreviewDialog(self._printer, parent = self)
-        dialog.paintRequested.connect(self.scoreScene.printScore)
+        def updatePages(qprinter):
+            self.scoreScene.printScore(qprinter, self.scoreView)
+        dialog.paintRequested.connect(updatePages)
         dialog.exec_()
 
     @pyqtSignature("")
     def on_actionExportPDF_triggered(self):
         try:
-            printer = QPrinter()
+            printer = QPrinter(mode = QPrinter.HighResolution)
             printer.setPaperSize(self._getPaperSize())
             if self.filename:
                 outfileName = list(os.path.splitext(self.filename)[:-1])
@@ -356,7 +361,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             printer.setOutputFileName(outfileName)
             printer.setPaperSize(self._getPaperSize())
             dialog = QPrintPreviewDialog(printer, parent = self)
-            dialog.paintRequested.connect(self.scoreScene.printScore)
+            def updatePages(qprinter):
+                self.scoreScene.printScore(qprinter, self.scoreView)
+            dialog.paintRequested.connect(updatePages)
             dialog.exec_()
             self.updateStatus("Exported to PDF %s" % outfileName)
         except StandardError:
