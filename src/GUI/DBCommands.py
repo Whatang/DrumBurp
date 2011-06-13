@@ -244,9 +244,10 @@ class SetSectionEndCommand(SetMeasureLineCommand):
             self._title = self._score.getSectionTitle(self._index)
 
     def _undo(self):
+        super(SetSectionEndCommand, self)._undo()
         if not self._onOff:
             self._score.setSectionTitle(self._index, self._title)
-        super(SetSectionEndCommand, self)._undo()
+
 
 class SetLineBreakCommand(SetMeasureLineCommand):
     def __init__(self, qScore, np, onOff):
