@@ -203,10 +203,39 @@ class Measure(object):
         self._runCallBack(NotePosition())
 
     def setBeatCount(self, counter):
+        if counter == self.counter:
+            return
+        oldNotes = copy.deepcopy(self._notes)
+        oldTimes = list(self.counter.iterTime())
         self._setWidth(len(counter))
-        if counter != self.counter:
-            self.counter = counter
-            self._runCallBack(NotePosition())
+        self.clear()
+        newTimes = list(counter.iterTime())
+        oldIndex = 0
+        newIndex = 0
+        while oldIndex < len(oldTimes) and newIndex < len(newTimes):
+            oldBeat, oldTick, oldCount = oldTimes[oldIndex]
+            newBeat, newTick, newCount = newTimes[newIndex]
+            if oldBeat < newBeat:
+                oldIndex += 1
+                continue
+            elif newBeat < oldBeat:
+                newIndex += 1
+                continue
+            prod1 = oldTick * newCount
+            prod2 = newTick * oldCount
+            if prod1 < prod2:
+                oldIndex += 1
+                continue
+            elif prod2 < prod1:
+                newIndex += 1
+                continue
+            if oldIndex in oldNotes:
+                for drumIndex, head in oldNotes[oldIndex].iteritems():
+                    self._notes[newIndex][drumIndex] = head
+            oldIndex += 1
+            newIndex += 1
+        self.counter = counter
+        self._runCallBack(NotePosition())
 
     def copyMeasure(self):
         copyMeasure = copy.deepcopy(self)
@@ -249,7 +278,8 @@ class Measure(object):
                 self._notes[noteTime][changes[drumIndex]] = head
 
     def lineIsVisible(self, index):
-        return len(self._notes) > 0 and any(index in noteTime for noteTime in self._notes.values())
+        return (len(self._notes) > 0 and
+                any(index in noteTime for noteTime in self._notes.values()))
 
     def write(self, handle, indenter):
         print >> handle, indenter("START_BAR %d" % len(self))
