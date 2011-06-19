@@ -120,6 +120,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self._beatChanged(self.scoreScene.defaultCount)
         self.restoreGeometry(settings.value("Geometry").toByteArray())
         self.restoreState(settings.value("MainWindow/State").toByteArray())
+        self.setSections()
         QTimer.singleShot(0, self._startUp)
 
     def _startUp(self):
@@ -421,4 +422,12 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     def setDefaultCount(self, count):
         self._beatChanged(count)
+
+    def setSections(self):
+        score = self.scoreScene.score
+        self.sectionNavigator.blockSignals(True)
+        self.sectionNavigator.clear()
+        for sectionTitle in score.iterSections():
+            self.sectionNavigator.addItem(sectionTitle)
+        self.sectionNavigator.blockSignals(False)
 

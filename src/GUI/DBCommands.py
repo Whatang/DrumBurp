@@ -184,9 +184,11 @@ class InsertSectionCommand(_COMMAND_CLASS):
     def _redo(self):
         self._score.insertSectionCopy(self._np,
                                       self._index)
+        self._qScore.sectionsChanged.emit()
 
     def _undo(self):
         self._score.deleteSection(self._np)
+        self._qScore.sectionsChanged.emit()
 
 class SetRepeatCountCommand(_COMMAND_CLASS):
     def __init__(self, qScore, notePosition, oldCount, newCount):
@@ -248,6 +250,12 @@ class SetSectionEndCommand(SetMeasureLineCommand):
         super(SetSectionEndCommand, self)._undo()
         if not self._onOff:
             self._score.setSectionTitle(self._index, self._title)
+        self._qScore.sectionsChanged.emit()
+
+    def _redo(self):
+        super(SetSectionEndCommand, self)._redo()
+        self._qScore.sectionsChanged.emit()
+
 
 
 class SetLineBreakCommand(SetMeasureLineCommand):
@@ -285,6 +293,8 @@ class DeleteMeasureCommand(_COMMAND_CLASS):
 
     def _redo(self):
         self._score.deleteMeasureByIndex(self._index)
+        if self._sectionIndex:
+            self._qScore.sectionsChanged.emit()
 
     def _undo(self):
         self._score.turnOffCallBacks()
@@ -295,6 +305,7 @@ class DeleteMeasureCommand(_COMMAND_CLASS):
             self._score.setSectionTitle(self._sectionIndex,
                                         self._sectionTitle)
             self._score.gridFormatScore()
+            self._qScore.sectionsChanged.emit()
         self._score.pasteMeasureByIndex(self._index, self._oldMeasure, True)
         self._score.turnOnCallBacks()
 
@@ -312,12 +323,14 @@ class SetSectionTitleCommand(_COMMAND_CLASS):
                                     self._title)
         self._qScore.setSectionTitle(self._index,
                                      self._title)
+        self._qScore.sectionsChanged.emit()
 
     def _undo(self):
         self._score.setSectionTitle(self._index,
                                     self._oldTitle)
         self._qScore.setSectionTitle(self._index,
                                      self._oldTitle)
+        self._qScore.sectionsChanged.emit()
 
 class SetAlternateCommand(_COMMAND_CLASS):
     def __init__(self, qScore, np, alternate):

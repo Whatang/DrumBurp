@@ -95,6 +95,7 @@ class QScore(QtGui.QGraphicsScene):
         else:
             self.newScore()
         self.defaultCountChanged.connect(parent.setDefaultCount)
+        self.sectionsChanged.connect(parent.setSections)
         self._properties.connectScore(self)
 
     canUndoChanged = QtCore.pyqtSignal(bool)
@@ -104,6 +105,7 @@ class QScore(QtGui.QGraphicsScene):
     metadataChanged = QtCore.pyqtSignal(str, object)
     paperSizeChanged = QtCore.pyqtSignal(str)
     defaultCountChanged = QtCore.pyqtSignal(object)
+    sectionsChanged = QtCore.pyqtSignal()
 
     def addCommand(self, command):
         self._undoStack.push(command)
@@ -192,6 +194,7 @@ class QScore(QtGui.QGraphicsScene):
             self._undoStack.setClean()
             self.paperSizeChanged.emit(self._score.paperSize)
             self.defaultCountChanged.emit(self._score.defaultCount)
+            self.sectionsChanged.emit()
 
     @_readOnly
     def score(self):
@@ -279,6 +282,10 @@ class QScore(QtGui.QGraphicsScene):
             command = SetPaperSizeCommand(self,
                                           newPaperSize)
             self.addCommand(command)
+
+    def getQSection(self, sectionIndex):
+        if 0 <= sectionIndex < len(self._qSections):
+            return self._qSections[sectionIndex]
 
     def _getdefaultCount(self):
         return self._score.defaultCount

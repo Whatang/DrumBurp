@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike\workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sun Jun 19 19:02:14 2011
+# Created: Sun Jun 19 19:21:09 2011
 #      by: PyQt4 UI code generator 4.8.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_DrumBurpWindow(object):
     def setupUi(self, DrumBurpWindow):
         DrumBurpWindow.setObjectName(_fromUtf8("DrumBurpWindow"))
-        DrumBurpWindow.resize(955, 769)
+        DrumBurpWindow.resize(965, 769)
         DrumBurpWindow.setFocusPolicy(QtCore.Qt.NoFocus)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/drumburp.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -153,13 +153,21 @@ class Ui_DrumBurpWindow(object):
         self.frame_9.setObjectName(_fromUtf8("frame_9"))
         self.horizontalLayout_8.addWidget(self.frame_9)
         self.sectionNavigator = QtGui.QComboBox(self.groupBox)
+        self.sectionNavigator.setSizeAdjustPolicy(QtGui.QComboBox.AdjustToContents)
+        self.sectionNavigator.setMinimumContentsLength(6)
+        self.sectionNavigator.setDuplicatesEnabled(True)
         self.sectionNavigator.setObjectName(_fromUtf8("sectionNavigator"))
         self.horizontalLayout_8.addWidget(self.sectionNavigator)
+        self.frame_10 = QtGui.QFrame(self.groupBox)
+        self.frame_10.setFrameShape(QtGui.QFrame.VLine)
+        self.frame_10.setFrameShadow(QtGui.QFrame.Raised)
+        self.frame_10.setObjectName(_fromUtf8("frame_10"))
+        self.horizontalLayout_8.addWidget(self.frame_10)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_8.addItem(spacerItem)
         self.verticalLayout.addWidget(self.groupBox)
         self.scoreView = ScoreView(self.centralwidget)
-        self.scoreView.setFocusPolicy(QtCore.Qt.TabFocus)
+        self.scoreView.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.scoreView.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.scoreView.setAcceptDrops(False)
         self.scoreView.setLineWidth(1)
@@ -170,7 +178,7 @@ class Ui_DrumBurpWindow(object):
         self.verticalLayout.addWidget(self.scoreView)
         DrumBurpWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(DrumBurpWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 955, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 965, 21))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
@@ -526,6 +534,7 @@ class Ui_DrumBurpWindow(object):
         QtCore.QObject.connect(self.scoreView, QtCore.SIGNAL(_fromUtf8("widthChanged(int)")), self.widthSpinBox.setValue)
         QtCore.QObject.connect(self.fontsButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionDisplayOptionsIsVisible.trigger)
         QtCore.QObject.connect(self.actionDisplayOptionsIsVisible, QtCore.SIGNAL(_fromUtf8("triggered()")), self.fontDock.raise_)
+        QtCore.QObject.connect(self.sectionNavigator, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(int)")), self.scoreView.showSection)
         QtCore.QMetaObject.connectSlotsByName(DrumBurpWindow)
         DrumBurpWindow.setTabOrder(self.paperBox, self.widthSpinBox)
         DrumBurpWindow.setTabOrder(self.widthSpinBox, self.lineSpaceSlider)

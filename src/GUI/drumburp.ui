@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>955</width>
+    <width>965</width>
     <height>769</height>
    </rect>
   </property>
@@ -321,7 +321,27 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="sectionNavigator"/>
+        <widget class="QComboBox" name="sectionNavigator">
+         <property name="sizeAdjustPolicy">
+          <enum>QComboBox::AdjustToContents</enum>
+         </property>
+         <property name="minimumContentsLength">
+          <number>6</number>
+         </property>
+         <property name="duplicatesEnabled">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="frame_10">
+         <property name="frameShape">
+          <enum>QFrame::VLine</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="horizontalSpacer_2">
@@ -342,7 +362,7 @@
     <item>
      <widget class="ScoreView" name="scoreView">
       <property name="focusPolicy">
-       <enum>Qt::TabFocus</enum>
+       <enum>Qt::ClickFocus</enum>
       </property>
       <property name="contextMenuPolicy">
        <enum>Qt::NoContextMenu</enum>
@@ -371,7 +391,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>955</width>
+     <width>965</width>
      <height>21</height>
     </rect>
    </property>
@@ -1432,7 +1452,7 @@ Writes this Score as a plain .txt file.</string>
    <slot>setFont(QFont)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>121</x>
+     <x>78</x>
      <y>215</y>
     </hint>
     <hint type="destinationlabel">
@@ -1448,7 +1468,7 @@ Writes this Score as a plain .txt file.</string>
    <slot>setNoteFontSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>169</x>
+     <x>126</x>
      <y>215</y>
     </hint>
     <hint type="destinationlabel">
@@ -1464,7 +1484,7 @@ Writes this Score as a plain .txt file.</string>
    <slot>setSectionFontSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>169</x>
+     <x>126</x>
      <y>432</y>
     </hint>
     <hint type="destinationlabel">
@@ -1480,7 +1500,7 @@ Writes this Score as a plain .txt file.</string>
    <slot>setSectionFont(QFont)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>121</x>
+     <x>78</x>
      <y>432</y>
     </hint>
     <hint type="destinationlabel">
@@ -1496,7 +1516,7 @@ Writes this Score as a plain .txt file.</string>
    <slot>setMetadataFont(QFont)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>95</x>
+     <x>78</x>
      <y>650</y>
     </hint>
     <hint type="destinationlabel">
@@ -1512,7 +1532,7 @@ Writes this Score as a plain .txt file.</string>
    <slot>setMetadataFontSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>169</x>
+     <x>126</x>
      <y>650</y>
     </hint>
     <hint type="destinationlabel">
@@ -1596,7 +1616,7 @@ Writes this Score as a plain .txt file.</string>
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>121</x>
+     <x>78</x>
      <y>650</y>
     </hint>
    </hints>
@@ -1612,7 +1632,7 @@ Writes this Score as a plain .txt file.</string>
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>169</x>
+     <x>126</x>
      <y>650</y>
     </hint>
    </hints>
@@ -1624,8 +1644,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>setWidth(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>406</x>
-     <y>98</y>
+     <x>371</x>
+     <y>105</y>
     </hint>
     <hint type="destinationlabel">
      <x>488</x>
@@ -1640,7 +1660,7 @@ Writes this Score as a plain .txt file.</string>
    <slot>systemSpacingChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>596</x>
+     <x>553</x>
      <y>107</y>
     </hint>
     <hint type="destinationlabel">
@@ -1660,7 +1680,7 @@ Writes this Score as a plain .txt file.</string>
      <y>130</y>
     </hint>
     <hint type="destinationlabel">
-     <x>414</x>
+     <x>371</x>
      <y>105</y>
     </hint>
    </hints>
@@ -1672,8 +1692,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>858</x>
-     <y>95</y>
+     <x>824</x>
+     <y>106</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -1694,6 +1714,22 @@ Writes this Score as a plain .txt file.</string>
     <hint type="destinationlabel">
      <x>97</x>
      <y>405</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sectionNavigator</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>scoreView</receiver>
+   <slot>showSection(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>884</x>
+     <y>98</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>876</x>
+     <y>202</y>
     </hint>
    </hints>
   </connection>
