@@ -34,10 +34,9 @@ from QScore import QScore
 from QDisplayProperties import QDisplayProperties
 from QNewScoreDialog import QNewScoreDialog
 from QAsciiExportDialog import QAsciiExportDialog
-from QComplexCountDialog import QComplexCountDialog
+from QEditMeasureDialog import QEditMeasureDialog
 from DBInfoDialog import DBInfoDialog
 from DBStartupDialog import DBStartupDialog
-import Data.MeasureCount
 import DBIcons
 import os
 
@@ -115,11 +114,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreScene.canRedoChanged.connect(self.actionRedo.setEnabled)
         changeRedoText = lambda txt:self.actionRedo.setText("Redo " + txt)
         self.scoreScene.redoTextChanged.connect(changeRedoText)
-        self.defaultMeasureTabs.beatChanged.connect(self._beatChanged)
-        self.defaultMeasureTabs.setup(None,
-                                      self.songProperties.counterRegistry,
-                                      Data.MeasureCount,
-                                      QComplexCountDialog)
+        self._beatChanged(self.songProperties.defaultCounter)
         self.restoreGeometry(settings.value("Geometry").toByteArray())
         self.restoreState(settings.value("MainWindow/State").toByteArray())
         QTimer.singleShot(0, self._startUp)
@@ -205,6 +200,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if len(fname) == 0:
             return
         if self.scoreScene.loadScore(fname):
+            self._beatChanged(self.songProperties.defaultCounter)
             self.filename = unicode(fname)
             self.updateStatus("Successfully loaded %s" % self.filename)
             self.addToRecentFiles()
@@ -270,7 +266,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                                          counter = counter)
                 self.filename = None
                 self.updateRecentFiles()
-                self.defaultMeasureTabs.setBeat(counter)
+                self._beatChanged(counter)
                 self.updateStatus("Created a new blank score")
 
     def addToRecentFiles(self):
@@ -297,10 +293,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 action.setIcon(DBIcons.getIcon("score"))
                 action.triggered.connect(openRecentFile)
 
-    def _beatChanged(self):
-        counter = self.defaultMeasureTabs.getCounter()
+    def _beatChanged(self, counter):
         if counter != self.songProperties.defaultCounter:
             self.songProperties.defaultCounter = counter
+        self.defaultMeasureButton.setText(counter.countString())
 
     def hideEvent(self, event):
         self._state = self.saveState()
@@ -329,7 +325,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self._asciiSettings = asciiDialog.getOptions()
         try:
             with open(fname, 'w') as txtHandle:
-                self.scoreScene.score.exportASCII(txtHandle, self._asciiSettings)
+                self.scoreScene.score.exportASCII(txtHandle,
+                                                  self._asciiSettings)
         except StandardError:
             QMessageBox.warning(self.parent(), "Export failed!",
                                 "Could not export to " + fname)
@@ -371,8 +368,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                                 "Could not export PDF to " + outfileName)
 
 
+    @staticmethod
     @pyqtSignature("")
-    def on_actionWhatsThis_triggered(self):
+    def on_actionWhatsThis_triggered():
         QWhatsThis.enterWhatsThisMode()
 
     @pyqtSignature("")
@@ -383,8 +381,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def on_actionRedo_triggered(self):
         self.scoreScene.redo()
 
+    @staticmethod
     @pyqtSignature("")
-    def on_actionAboutDrumBurp_triggered(self):
+    def on_actionAboutDrumBurp_triggered():
         dlg = DBInfoDialog(DB_VERSION)
         dlg.exec_()
 
@@ -399,3 +398,13 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         widthInPixels = printer.pageRect().width()
         maxColumns = self.songProperties.maxColumns(widthInPixels)
         self.widthSpinBox.setValue(maxColumns)
+
+    @pyqtSignature("")
+    def on_defaultMeasureButton_clicked(self):
+        counter = self.songProperties.defaultCounter
+        dlg = QEditMeasureDialog(counter, counter,
+                                 self.songProperties.counterRegistry,
+                                 self)
+        if dlg.exec_():
+            counter = dlg.getValues()
+            self._beatChanged(counter)
