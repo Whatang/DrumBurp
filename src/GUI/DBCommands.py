@@ -24,6 +24,7 @@ Created on 13 Feb 2011
 from PyQt4.QtGui import QUndoCommand
 from Data import DBConstants
 from Data.Score import Score
+from Data.NotePosition import NotePosition
 import copy
 
 class ScoreCommand(QUndoCommand):
@@ -338,3 +339,35 @@ class SetAlternateCommand(_COMMAND_CLASS):
         measure = self._score.getItemAtPosition(self._np)
         measure.alternateText = self._oldAlternate
         self._qScore.dataChanged(self._np)
+
+class SetPaperSizeCommand(_COMMAND_CLASS):
+    def __init__(self, qScore, newPaperSize, oldPaperSize):
+        super(SetPaperSizeCommand, self).__init__(qScore,
+                                                  NotePosition(),
+                                                  "Set Page Size")
+        self._new = newPaperSize
+        self._old = self._score.paperSize
+
+    def _redo(self):
+        self._score.paperSize = self._new
+        self._qScore.paperSizeChanged.emit(self._new)
+
+    def _undo(self):
+        self._score.paperSize = self._old
+        self._qScore.paperSizeChanged.emit(self._old)
+
+class SetDefaultCountCommand(_COMMAND_CLASS):
+    def __init__(self, qScore, newCount):
+        super(SetDefaultCountCommand, self).__init__(qScore,
+                                                     NotePosition(),
+                                                     "Set Default Count")
+        self._new = newCount
+        self._old = self._score.defaultCount
+
+    def _redo(self):
+        self._score.defaultCount = self._new
+        self._qScore.defaultCountChanged.emit(self._new)
+
+    def _undo(self):
+        self._score.defaultCount = self._old
+        self._qScore.defaultCountChanged.emit(self._old)

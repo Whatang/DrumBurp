@@ -63,8 +63,8 @@ class MeasureCount(object):
     def numBeats(self):
         return len(self.beats)
 
-    def write(self, handle, indenter):
-        print >> handle, indenter("COUNT_INFO_START")
+    def write(self, handle, indenter, title = "COUNT_INFO_START"):
+        print >> handle, indenter(title)
         indenter.increase()
         if self.isSimpleCount():
             # All beats are the same

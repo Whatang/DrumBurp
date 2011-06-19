@@ -66,7 +66,7 @@ class QDisplayProperties(QObject):
         self._head = None
         self._width = 80
         self._counterRegistry = CounterRegistry()
-        self.defaultCounter = Data.MeasureCount.makeSimpleCount(self._counterRegistry[0], 4)
+        self._score = None
 
     xSpacingChanged = pyqtSignal()
     ySpacingChanged = pyqtSignal()
@@ -81,19 +81,21 @@ class QDisplayProperties(QObject):
     beatCountVisibleChanged = pyqtSignal()
     emptyLinesVisibleChanged = pyqtSignal()
 
-    def connectScore(self, score):
-        self.xSpacingChanged.connect(score.xSpacingChanged)
-        self.ySpacingChanged.connect(score.ySpacingChanged)
-        self.lineSpacingChanged.connect(score.lineSpacingChanged)
-        self.fontChanged.connect(score.update)
-        self.sectionFontChanged.connect(score.sectionFontChanged)
-        self.sectionFontSizeChanged.connect(score.sectionFontChanged)
-        self.metadataFontChanged.connect(score.metadataFontChanged)
-        self.metadataFontSizeChanged.connect(score.metadataFontChanged)
-        self.metadataVisibilityChanged.connect(score.metadataVisibilityChanged)
-        self.kitDataVisibleChanged.connect(score.kitDataVisibleChanged)
-        self.beatCountVisibleChanged.connect(score.reBuild)
-        self.emptyLinesVisibleChanged.connect(score.reBuild)
+    def connectScore(self, qScore):
+        self._score = qScore.score
+        self.xSpacingChanged.connect(qScore.xSpacingChanged)
+        self.ySpacingChanged.connect(qScore.ySpacingChanged)
+        self.lineSpacingChanged.connect(qScore.lineSpacingChanged)
+        self.fontChanged.connect(qScore.update)
+        self.sectionFontChanged.connect(qScore.sectionFontChanged)
+        self.sectionFontSizeChanged.connect(qScore.sectionFontChanged)
+        self.metadataFontChanged.connect(qScore.metadataFontChanged)
+        self.metadataFontSizeChanged.connect(qScore.metadataFontChanged)
+        self.metadataVisibilityChanged.connect(qScore.metadataVisibilityChanged)
+        self.kitDataVisibleChanged.connect(qScore.kitDataVisibleChanged)
+        self.beatCountVisibleChanged.connect(qScore.reBuild)
+        self.emptyLinesVisibleChanged.connect(qScore.reBuild)
+
 
     def _getxSpacing(self):
         return self._xSpacing

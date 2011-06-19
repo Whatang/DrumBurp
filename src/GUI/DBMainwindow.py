@@ -84,7 +84,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.addToRecentFiles()
         self.updateRecentFiles()
         self.songProperties = QDisplayProperties()
+        # Create scene
         self.scoreScene = QScore(self)
+        # Setup signals
+        self.paperBox.currentIndexChanged.connect(lambda i: self.scoreScene.setPaperSize(self.paperBox.currentText()))
         self.scoreView.setScene(self.scoreScene)
         self.fontComboBox.setWritingSystem(QFontDatabase.Latin)
         self.sectionFontCombo.setWritingSystem(QFontDatabase.Latin)
@@ -114,7 +117,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreScene.canRedoChanged.connect(self.actionRedo.setEnabled)
         changeRedoText = lambda txt:self.actionRedo.setText("Redo " + txt)
         self.scoreScene.redoTextChanged.connect(changeRedoText)
-        self._beatChanged(self.songProperties.defaultCounter)
+        self._beatChanged(self.scoreScene.defaultCount)
         self.restoreGeometry(settings.value("Geometry").toByteArray())
         self.restoreState(settings.value("MainWindow/State").toByteArray())
         QTimer.singleShot(0, self._startUp)
@@ -200,7 +203,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if len(fname) == 0:
             return
         if self.scoreScene.loadScore(fname):
-            self._beatChanged(self.songProperties.defaultCounter)
+            self._beatChanged(self.scoreScene.defaultCount)
             self.filename = unicode(fname)
             self.updateStatus("Successfully loaded %s" % self.filename)
             self.addToRecentFiles()
@@ -255,7 +258,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     @pyqtSignature("")
     def on_actionNew_triggered(self):
         if self.okToContinue():
-            counter = self.songProperties.defaultCounter
+            counter = self.scoreScene.defaultCount
             registry = self.songProperties.counterRegistry
             dialog = QNewScoreDialog(self.parent(),
                                      counter,
@@ -294,8 +297,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 action.triggered.connect(openRecentFile)
 
     def _beatChanged(self, counter):
-        if counter != self.songProperties.defaultCounter:
-            self.songProperties.defaultCounter = counter
+        if counter != self.scoreScene.defaultCount:
+            self.scoreScene.defaultCount = counter
         self.defaultMeasureButton.setText(counter.countString())
 
     def hideEvent(self, event):
@@ -401,10 +404,21 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_defaultMeasureButton_clicked(self):
-        counter = self.songProperties.defaultCounter
+        counter = self.scoreScene.defaultCount
         dlg = QEditMeasureDialog(counter, counter,
                                  self.songProperties.counterRegistry,
                                  self)
         if dlg.exec_():
             counter = dlg.getValues()
             self._beatChanged(counter)
+
+    def setPaperSize(self, paperSize):
+        index = self.paperBox.findText(paperSize)
+        if index > -1 and index != self.paperBox.currentIndex():
+            self.paperBox.setCurrentIndex(index)
+        elif index == -1:
+            self.paperBox.setCurrentIndex(0)
+
+    def setDefaultCount(self, count):
+        self._beatChanged(count)
+

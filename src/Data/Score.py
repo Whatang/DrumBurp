@@ -27,12 +27,11 @@ from DrumKit import DrumKit
 from Staff import Staff
 from Measure import Measure
 from Counter import CounterRegistry
-from MeasureCount import makeSimpleCount
+from MeasureCount import makeSimpleCount, MeasureCount
 from DBErrors import BadTimeError, OverSizeMeasure
 from DBConstants import REPEAT_EXTENDER
 from NotePosition import NotePosition
 from ScoreMetaData import ScoreMetaData
-from ASCIISettings import ASCIISettings
 import os
 import bisect
 import copy
@@ -58,6 +57,9 @@ class Score(object):
         self.scoreData = ScoreMetaData()
         self._sections = []
         self._formatState = None
+        self.paperSize = "Letter"
+        counter = CounterRegistry().getCounterByIndex(0)
+        self.defaultCount = makeSimpleCount(counter, 4)
 
     def __len__(self):
         return sum(len(staff) for staff in self._staffs)
@@ -534,6 +536,9 @@ class Score(object):
             measure.write(handle, indenter)
         for title in self._sections:
             print >> handle, indenter("SECTION_TITLE", title)
+        print >> handle, "PAPER_SIZE", self.paperSize
+        self.defaultCount.write(handle, indenter,
+                                title = "DEFAULT_COUNT_INFO_START")
 
     def read(self, handle):
         def scoreHandle():
@@ -560,6 +565,11 @@ class Score(object):
                 self.drumKit.read(scoreIterator)
             elif lineType == "SECTION_TITLE":
                 self._sections.append(lineData)
+            elif lineType == "PAPER_SIZE":
+                self.paperSize = lineData
+            elif lineType == "DEFAULT_COUNT_INFO_START":
+                self.defaultCount = MeasureCount()
+                self.defaultCount.read(scoreIterator)
             else:
                 raise IOError("Unrecognised line type: " + lineType)
         # Format the score appropriately
@@ -575,12 +585,12 @@ class Score(object):
             self._sections = self._sections[:numSections]
 
     def hashScore(self):
-        settings = ASCIISettings()
         scoreString = StringIO()
-        self.exportASCII(scoreString, settings)
+        self.write(scoreString)
         scoreString.seek(0, 0)
         scoreString = "".join(scoreString)
-        return hashlib.md5(str(scoreString)).digest()
+        scoreString += self.paperSize
+        return hashlib.md5(str(scoreString)).digest() #pylint:disable-msg=E1101
 
     def exportASCII(self, handle, settings):
         metadataString = self.scoreData.exportASCII()
@@ -604,10 +614,12 @@ class Score(object):
                         asciiString.append("")
                     sectionIndex += 1
             newSection = staff.isSectionEnd()
-            staffString, isRepeating, repeatExtender = staff.exportASCII(self.drumKit,
-                                                                         settings,
-                                                                         isRepeating,
-                                                                         repeatExtender)
+            (staffString,
+             isRepeating,
+             repeatExtender) = staff.exportASCII(self.drumKit,
+                                                 settings,
+                                                 isRepeating,
+                                                 repeatExtender)
             asciiString.extend(staffString)
             asciiString.append("")
         asciiString = asciiString[:-1]
