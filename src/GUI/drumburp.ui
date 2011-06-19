@@ -6,9 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>923</width>
+    <width>955</width>
     <height>769</height>
    </rect>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::NoFocus</enum>
   </property>
   <property name="windowTitle">
    <string>DrumBurp</string>
@@ -318,6 +321,9 @@
         </widget>
        </item>
        <item>
+        <widget class="QComboBox" name="sectionNavigator"/>
+       </item>
+       <item>
         <spacer name="horizontalSpacer_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -335,6 +341,9 @@
     </item>
     <item>
      <widget class="ScoreView" name="scoreView">
+      <property name="focusPolicy">
+       <enum>Qt::TabFocus</enum>
+      </property>
       <property name="contextMenuPolicy">
        <enum>Qt::NoContextMenu</enum>
       </property>
@@ -362,7 +371,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>923</width>
+     <width>955</width>
      <height>21</height>
     </rect>
    </property>
@@ -625,6 +634,9 @@ p, li { white-space: pre-wrap; }
             <height>0</height>
            </size>
           </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
           <property name="statusTip">
            <string>The font used to display notes in the Score</string>
           </property>
@@ -647,6 +659,9 @@ p, li { white-space: pre-wrap; }
         </item>
         <item>
          <widget class="QSpinBox" name="noteSizeSpinBox">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
           <property name="statusTip">
            <string>Size of notes.</string>
           </property>
@@ -712,6 +727,9 @@ p, li { white-space: pre-wrap; }
             <height>0</height>
            </size>
           </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
           <property name="statusTip">
            <string>The font used to display section titles in the Score</string>
           </property>
@@ -734,6 +752,9 @@ p, li { white-space: pre-wrap; }
         </item>
         <item>
          <widget class="QSpinBox" name="sectionFontSizeSpinbox">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
           <property name="statusTip">
            <string>Size of section titles.</string>
           </property>
@@ -799,6 +820,9 @@ p, li { white-space: pre-wrap; }
             <height>0</height>
            </size>
           </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
           <property name="statusTip">
            <string>The font used to display section titles in the Score</string>
           </property>
@@ -821,6 +845,9 @@ p, li { white-space: pre-wrap; }
         </item>
         <item>
          <widget class="QSpinBox" name="metadataFontSizeSpinbox">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
           <property name="statusTip">
            <string>Size of section titles.</string>
           </property>
@@ -1209,9 +1236,10 @@ Writes this Score as a plain .txt file.</string>
   <tabstop>lineSpaceSlider</tabstop>
   <tabstop>defaultMeasureButton</tabstop>
   <tabstop>fontsButton</tabstop>
+  <tabstop>sectionNavigator</tabstop>
   <tabstop>scoreView</tabstop>
-  <tabstop>fontComboBox</tabstop>
   <tabstop>noteSizeSpinBox</tabstop>
+  <tabstop>fontComboBox</tabstop>
   <tabstop>sectionFontCombo</tabstop>
   <tabstop>sectionFontSizeSpinbox</tabstop>
   <tabstop>metadataFontCombo</tabstop>
@@ -1612,8 +1640,8 @@ Writes this Score as a plain .txt file.</string>
    <slot>systemSpacingChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>608</x>
-     <y>92</y>
+     <x>596</x>
+     <y>107</y>
     </hint>
     <hint type="destinationlabel">
      <x>661</x>
@@ -1632,8 +1660,8 @@ Writes this Score as a plain .txt file.</string>
      <y>130</y>
     </hint>
     <hint type="destinationlabel">
-     <x>415</x>
-     <y>94</y>
+     <x>414</x>
+     <y>105</y>
     </hint>
    </hints>
   </connection>

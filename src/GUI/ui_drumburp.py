@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike\workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sun Jun 19 17:10:40 2011
+# Created: Sun Jun 19 19:02:14 2011
 #      by: PyQt4 UI code generator 4.8.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,8 @@ except AttributeError:
 class Ui_DrumBurpWindow(object):
     def setupUi(self, DrumBurpWindow):
         DrumBurpWindow.setObjectName(_fromUtf8("DrumBurpWindow"))
-        DrumBurpWindow.resize(923, 769)
+        DrumBurpWindow.resize(955, 769)
+        DrumBurpWindow.setFocusPolicy(QtCore.Qt.NoFocus)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/drumburp.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         DrumBurpWindow.setWindowIcon(icon)
@@ -151,10 +152,14 @@ class Ui_DrumBurpWindow(object):
         self.frame_9.setFrameShadow(QtGui.QFrame.Raised)
         self.frame_9.setObjectName(_fromUtf8("frame_9"))
         self.horizontalLayout_8.addWidget(self.frame_9)
+        self.sectionNavigator = QtGui.QComboBox(self.groupBox)
+        self.sectionNavigator.setObjectName(_fromUtf8("sectionNavigator"))
+        self.horizontalLayout_8.addWidget(self.sectionNavigator)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_8.addItem(spacerItem)
         self.verticalLayout.addWidget(self.groupBox)
         self.scoreView = ScoreView(self.centralwidget)
+        self.scoreView.setFocusPolicy(QtCore.Qt.TabFocus)
         self.scoreView.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.scoreView.setAcceptDrops(False)
         self.scoreView.setLineWidth(1)
@@ -165,7 +170,7 @@ class Ui_DrumBurpWindow(object):
         self.verticalLayout.addWidget(self.scoreView)
         DrumBurpWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(DrumBurpWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 923, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 955, 21))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
@@ -235,6 +240,7 @@ class Ui_DrumBurpWindow(object):
         self.fontComboBox.setMinimumSize(QtCore.QSize(60, 20))
         self.fontComboBox.setMaximumSize(QtCore.QSize(187, 20))
         self.fontComboBox.setBaseSize(QtCore.QSize(100, 0))
+        self.fontComboBox.setFocusPolicy(QtCore.Qt.NoFocus)
         self.fontComboBox.setEditable(False)
         self.fontComboBox.setMaxVisibleItems(20)
         self.fontComboBox.setFontFilters(QtGui.QFontComboBox.ScalableFonts)
@@ -245,6 +251,7 @@ class Ui_DrumBurpWindow(object):
         self.fontComboBox.setObjectName(_fromUtf8("fontComboBox"))
         self.horizontalLayout_3.addWidget(self.fontComboBox)
         self.noteSizeSpinBox = QtGui.QSpinBox(self.groupBox_4)
+        self.noteSizeSpinBox.setFocusPolicy(QtCore.Qt.NoFocus)
         self.noteSizeSpinBox.setMinimum(6)
         self.noteSizeSpinBox.setMaximum(30)
         self.noteSizeSpinBox.setProperty(_fromUtf8("value"), 10)
@@ -267,6 +274,7 @@ class Ui_DrumBurpWindow(object):
         self.sectionFontCombo.setMinimumSize(QtCore.QSize(60, 20))
         self.sectionFontCombo.setMaximumSize(QtCore.QSize(187, 20))
         self.sectionFontCombo.setBaseSize(QtCore.QSize(100, 0))
+        self.sectionFontCombo.setFocusPolicy(QtCore.Qt.NoFocus)
         self.sectionFontCombo.setEditable(False)
         self.sectionFontCombo.setMaxVisibleItems(20)
         self.sectionFontCombo.setFontFilters(QtGui.QFontComboBox.ScalableFonts)
@@ -277,6 +285,7 @@ class Ui_DrumBurpWindow(object):
         self.sectionFontCombo.setObjectName(_fromUtf8("sectionFontCombo"))
         self.horizontalLayout_5.addWidget(self.sectionFontCombo)
         self.sectionFontSizeSpinbox = QtGui.QSpinBox(self.groupBox_5)
+        self.sectionFontSizeSpinbox.setFocusPolicy(QtCore.Qt.NoFocus)
         self.sectionFontSizeSpinbox.setMinimum(8)
         self.sectionFontSizeSpinbox.setMaximum(48)
         self.sectionFontSizeSpinbox.setProperty(_fromUtf8("value"), 20)
@@ -299,6 +308,7 @@ class Ui_DrumBurpWindow(object):
         self.metadataFontCombo.setMinimumSize(QtCore.QSize(60, 20))
         self.metadataFontCombo.setMaximumSize(QtCore.QSize(187, 20))
         self.metadataFontCombo.setBaseSize(QtCore.QSize(100, 0))
+        self.metadataFontCombo.setFocusPolicy(QtCore.Qt.NoFocus)
         self.metadataFontCombo.setEditable(False)
         self.metadataFontCombo.setMaxVisibleItems(20)
         self.metadataFontCombo.setFontFilters(QtGui.QFontComboBox.ScalableFonts)
@@ -309,6 +319,7 @@ class Ui_DrumBurpWindow(object):
         self.metadataFontCombo.setObjectName(_fromUtf8("metadataFontCombo"))
         self.horizontalLayout_4.addWidget(self.metadataFontCombo)
         self.metadataFontSizeSpinbox = QtGui.QSpinBox(self.groupBox_6)
+        self.metadataFontSizeSpinbox.setFocusPolicy(QtCore.Qt.NoFocus)
         self.metadataFontSizeSpinbox.setMinimum(8)
         self.metadataFontSizeSpinbox.setMaximum(48)
         self.metadataFontSizeSpinbox.setProperty(_fromUtf8("value"), 20)
@@ -520,10 +531,11 @@ class Ui_DrumBurpWindow(object):
         DrumBurpWindow.setTabOrder(self.widthSpinBox, self.lineSpaceSlider)
         DrumBurpWindow.setTabOrder(self.lineSpaceSlider, self.defaultMeasureButton)
         DrumBurpWindow.setTabOrder(self.defaultMeasureButton, self.fontsButton)
-        DrumBurpWindow.setTabOrder(self.fontsButton, self.scoreView)
-        DrumBurpWindow.setTabOrder(self.scoreView, self.fontComboBox)
-        DrumBurpWindow.setTabOrder(self.fontComboBox, self.noteSizeSpinBox)
-        DrumBurpWindow.setTabOrder(self.noteSizeSpinBox, self.sectionFontCombo)
+        DrumBurpWindow.setTabOrder(self.fontsButton, self.sectionNavigator)
+        DrumBurpWindow.setTabOrder(self.sectionNavigator, self.scoreView)
+        DrumBurpWindow.setTabOrder(self.scoreView, self.noteSizeSpinBox)
+        DrumBurpWindow.setTabOrder(self.noteSizeSpinBox, self.fontComboBox)
+        DrumBurpWindow.setTabOrder(self.fontComboBox, self.sectionFontCombo)
         DrumBurpWindow.setTabOrder(self.sectionFontCombo, self.sectionFontSizeSpinbox)
         DrumBurpWindow.setTabOrder(self.sectionFontSizeSpinbox, self.metadataFontCombo)
         DrumBurpWindow.setTabOrder(self.metadataFontCombo, self.metadataFontSizeSpinbox)
