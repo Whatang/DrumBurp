@@ -420,7 +420,7 @@ class QScore(QtGui.QGraphicsScene):
     def printScore(self, qprinter, scoreView):
         painter = QtGui.QPainter(qprinter)
         rect = qprinter.pageRect()
-        printerDpi = qprinter.resolution()
+        printerDpi = float(qprinter.resolution())
         painter.save()
         painter.setFont(self._properties.metadataFont)
         fm = QtGui.QFontMetrics(painter.font())

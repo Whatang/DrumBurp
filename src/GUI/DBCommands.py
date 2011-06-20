@@ -354,7 +354,7 @@ class SetAlternateCommand(_COMMAND_CLASS):
         self._qScore.dataChanged(self._np)
 
 class SetPaperSizeCommand(_COMMAND_CLASS):
-    def __init__(self, qScore, newPaperSize, oldPaperSize):
+    def __init__(self, qScore, newPaperSize):
         super(SetPaperSizeCommand, self).__init__(qScore,
                                                   NotePosition(),
                                                   "Set Page Size")
