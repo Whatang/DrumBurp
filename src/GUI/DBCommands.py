@@ -384,3 +384,21 @@ class SetDefaultCountCommand(_COMMAND_CLASS):
     def _undo(self):
         self._score.defaultCount = self._old
         self._qScore.defaultCountChanged.emit(self._old)
+
+class SetSystemSpacingCommand(_COMMAND_CLASS):
+    def __init__(self, qScore, newSpacing):
+        super(SetSystemSpacingCommand, self).__init__(qScore,
+                                                      NotePosition(),
+                                                      "Set System Spacing")
+        self._new = newSpacing
+        self._old = self._score.systemSpacing
+
+    def _redo(self):
+        self._score.systemSpacing = self._new
+        self._qScore.displayProperties.lineSpacing = self._new - 101
+        self._qScore.spacingChanged.emit(self._new)
+
+    def _undo(self):
+        self._score.systemSpacing = self._old
+        self._qScore.displayProperties.lineSpacing = self._old - 101
+        self._qScore.spacingChanged.emit(self._old)

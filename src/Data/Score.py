@@ -60,6 +60,7 @@ class Score(object):
         self.paperSize = "Letter"
         counter = CounterRegistry().getCounterByIndex(0)
         self.defaultCount = makeSimpleCount(counter, 4)
+        self.systemSpacing = 25
 
     def __len__(self):
         return sum(len(staff) for staff in self._staffs)
@@ -539,6 +540,7 @@ class Score(object):
         print >> handle, "PAPER_SIZE", self.paperSize
         self.defaultCount.write(handle, indenter,
                                 title = "DEFAULT_COUNT_INFO_START")
+        print >> handle, "SYSTEM_SPACE", self.systemSpacing
 
     def read(self, handle):
         def scoreHandle():
@@ -570,6 +572,8 @@ class Score(object):
             elif lineType == "DEFAULT_COUNT_INFO_START":
                 self.defaultCount = MeasureCount()
                 self.defaultCount.read(scoreIterator)
+            elif lineType == "SYSTEM_SPACE":
+                self.systemSpacing = int(lineData)
             else:
                 raise IOError("Unrecognised line type: " + lineType)
         # Format the score appropriately
