@@ -41,7 +41,7 @@ import DBIcons
 import os
 
 APPNAME = "DrumBurp"
-DB_VERSION = "0.3"
+DB_VERSION = "0.3.1"
 #pylint:disable-msg=R0904
 
 class FakeQSettings(object):
