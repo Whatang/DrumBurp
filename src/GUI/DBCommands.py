@@ -416,3 +416,31 @@ class SetNoteFontSizeCommand(_COMMAND_CLASS):
 
     def _undo(self):
         self._qScore.displayProperties.setNoteFontSize(self._oldSize)
+
+class SetSectionFontSizeCommand(_COMMAND_CLASS):
+    def __init__(self, qScore, newSize):
+        super(SetSectionFontSizeCommand, self).__init__(qScore,
+                                                        NotePosition(),
+                                                        "Set section font size")
+        self._newSize = newSize
+        self._oldSize = self._qScore.displayProperties.sectionFontSize
+
+    def _redo(self):
+        self._qScore.displayProperties.sectionFontSize = self._newSize
+
+    def _undo(self):
+        self._qScore.displayProperties.sectionFontSize = self._oldSize
+
+class SetMetadataFontSizeCommand(_COMMAND_CLASS):
+    def __init__(self, qScore, newSize):
+        super(SetMetadataFontSizeCommand, self).__init__(qScore,
+                                                        NotePosition(),
+                                                        "Set metadata font size")
+        self._newSize = newSize
+        self._oldSize = self._qScore.displayProperties.metadataFontSize
+
+    def _redo(self):
+        self._qScore.displayProperties.metadataFontSize = self._newSize
+
+    def _undo(self):
+        self._qScore.displayProperties.metadataFontSize = self._oldSize

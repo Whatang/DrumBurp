@@ -31,7 +31,8 @@ from QKitData import QKitData
 from Data.Score import ScoreFactory
 from DBCommands import (MetaDataCommand, ScoreWidthCommand, PasteMeasure,
                         SetPaperSizeCommand, SetDefaultCountCommand,
-                        SetSystemSpacingCommand, SetNoteFontSizeCommand)
+                        SetSystemSpacingCommand, SetNoteFontSizeCommand,
+                        SetSectionFontSizeCommand, SetMetadataFontSizeCommand)
 import functools
 _SCORE_FACTORY = ScoreFactory()
 
@@ -197,7 +198,7 @@ class QScore(QtGui.QGraphicsScene):
             self.defaultCountChanged.emit(self._score.defaultCount)
             self.spacingChanged.emit(self._score.systemSpacing)
             self.sectionsChanged.emit()
-            self._properties.readFromFontOptions(self._score.fontOptions)
+            self._properties.newScore(self)
             self._undoStack.clear()
             self._undoStack.setClean()
             self.dirty = False
@@ -411,7 +412,7 @@ class QScore(QtGui.QGraphicsScene):
         return True
 
     def saveScore(self, filename):
-        self._properties.updateFontOptions(self._score.fontOptions)
+        self._properties.updateFontOptions()
         try:
             _SCORE_FACTORY.saveScore(self._score, filename)
         except StandardError, exc:
@@ -483,4 +484,16 @@ class QScore(QtGui.QGraphicsScene):
         if value == self._properties.noteFontSize:
             return
         command = SetNoteFontSizeCommand(self, value)
+        self.addCommand(command)
+
+    def setSectionFontSize(self, value):
+        if value == self._properties.sectionFontSize:
+            return
+        command = SetSectionFontSizeCommand(self, value)
+        self.addCommand(command)
+
+    def setMetadataFontSize(self, value):
+        if value == self._properties.metadataFontSize:
+            return
+        command = SetMetadataFontSizeCommand(self, value)
         self.addCommand(command)
