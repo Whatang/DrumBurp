@@ -24,8 +24,8 @@ Created on 8 Jan 2011
 
 from Data.Counter import CounterRegistry
 from Data.ASCIISettings import ASCIISettings
-import Data.MeasureCount
 from PyQt4.QtCore import QObject, pyqtSignal
+from PyQt4.QtGui import QFontMetrics
 
 #pylint: disable-msg=R0902
 
@@ -55,6 +55,7 @@ class QDisplayProperties(QObject):
         self._ySpacing = self._START_NOTE_HEIGHT
         self._lineSpacing = self._START_LINE_SPACE
         self._noteFont = None
+        self._defaultNoteFontSize = 10
         self._sectionFont = None
         self._sectionFontSize = 20
         self._metadataVisible = True
@@ -72,6 +73,7 @@ class QDisplayProperties(QObject):
     ySpacingChanged = pyqtSignal()
     lineSpacingChanged = pyqtSignal()
     fontChanged = pyqtSignal()
+    noteSizeChanged = pyqtSignal(int)
     sectionFontChanged = pyqtSignal()
     sectionFontSizeChanged = pyqtSignal()
     metadataVisibilityChanged = pyqtSignal()
@@ -155,13 +157,31 @@ class QDisplayProperties(QObject):
             self.fontChanged.emit()
     noteFont = property(fget = _getnoteFont, fset = _setnoteFont)
 
+    def setNoteFontSize(self, size):
+        self._defaultNoteFontSize = size
+        self.noteFont.setPointSize(size)
+        fm = QFontMetrics(self.noteFont)
+        br = fm.boundingRect("X")
+        self.xSpacing = 1.2 * br.width() + 2
+        br = fm.tightBoundingRect("X")
+        self.ySpacing = br.height() + 2
+
+    @property
+    def noteFontSize(self):
+        if self.noteFont is None:
+            return self._defaultNoteFontSize
+        else:
+            return self.noteFont.pointSize()
+
+
     def _getsectionFontSize(self):
         return self._sectionFontSize
     def _setsectionFontSize(self, value):
         if self._sectionFontSize != value:
             self._sectionFontSize = value
-            self.sectionFont.setPointSize(value)
-            self.sectionFontSizeChanged.emit()
+            if self.sectionFont is not None:
+                self.sectionFont.setPointSize(value)
+                self.sectionFontSizeChanged.emit()
     sectionFontSize = property(fget = _getsectionFontSize,
                                fset = _setsectionFontSize)
 
@@ -181,8 +201,9 @@ class QDisplayProperties(QObject):
     def _setmetadataFontSize(self, value):
         if self._metadataFontSize != value:
             self._metadataFontSize = value
-            self.metadataFont.setPointSize(value)
-            self.metadataFontSizeChanged.emit()
+            if self._metadataFont is not None:
+                self.metadataFont.setPointSize(value)
+                self.metadataFontSizeChanged.emit()
     metadataFontSize = property(fget = _getmetadataFontSize,
                                 fset = _setmetadataFontSize)
 
@@ -195,6 +216,16 @@ class QDisplayProperties(QObject):
             self._metadataFont = value
             self.metadataFontChanged.emit()
     metadataFont = property(fget = _getmetadataFont, fset = _setmetadataFont)
+
+    def updateFontOptions(self, options):
+        options.noteFontSize = self.noteFont.pointSize()
+        options.sectionFontSize = self.sectionFontSize
+        options.metadataFontSize = self.metadataFontSize
+
+    def readFromFontOptions(self, options):
+        self._defaultNoteFontSize = options.noteFontSize
+        self.metadataFontSize = options.metadataFontSize
+        self.sectionFontSize = options.sectionFontSize
 
     def _gethead(self):
         return self._head

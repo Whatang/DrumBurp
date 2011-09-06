@@ -86,12 +86,7 @@ class ScoreView(QtGui.QGraphicsView):
 
     @QtCore.pyqtSlot(int)
     def setNoteFontSize(self, size):
-        self._props.noteFont.setPointSize(size)
-        fm = QtGui.QFontMetrics(self._props.noteFont)
-        br = fm.boundingRect("X")
-        self._props.xSpacing = 1.2 * br.width() + 2
-        br = fm.tightBoundingRect("X")
-        self._props.ySpacing = br.height() + 2
+        self.scene().setNoteFontSize(size)
 
     @QtCore.pyqtSlot(QtGui.QFont)
     def setSectionFont(self, font):

@@ -402,3 +402,17 @@ class SetSystemSpacingCommand(_COMMAND_CLASS):
         self._score.systemSpacing = self._old
         self._qScore.displayProperties.lineSpacing = self._old - 101
         self._qScore.spacingChanged.emit(self._old)
+
+class SetNoteFontSizeCommand(_COMMAND_CLASS):
+    def __init__(self, qScore, newSize):
+        super(SetNoteFontSizeCommand, self).__init__(qScore,
+                                              NotePosition(),
+                                              "Set note font size")
+        self._newSize = newSize
+        self._oldSize = self._qScore.displayProperties.noteFontSize
+
+    def _redo(self):
+        self._qScore.displayProperties.setNoteFontSize(self._newSize)
+
+    def _undo(self):
+        self._qScore.displayProperties.setNoteFontSize(self._oldSize)

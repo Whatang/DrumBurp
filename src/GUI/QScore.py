@@ -31,7 +31,7 @@ from QKitData import QKitData
 from Data.Score import ScoreFactory
 from DBCommands import (MetaDataCommand, ScoreWidthCommand, PasteMeasure,
                         SetPaperSizeCommand, SetDefaultCountCommand,
-                        SetSystemSpacingCommand)
+                        SetSystemSpacingCommand, SetNoteFontSizeCommand)
 import functools
 _SCORE_FACTORY = ScoreFactory()
 
@@ -192,14 +192,15 @@ class QScore(QtGui.QGraphicsScene):
                 self.startUp()
             self._score.setCallBack(self.dataChanged)
             self._build()
-            self.dirty = False
-            self._undoStack.clear()
-            self._undoStack.setClean()
             self._properties.lineSpacing = self._score.systemSpacing - 101
             self.paperSizeChanged.emit(self._score.paperSize)
             self.defaultCountChanged.emit(self._score.defaultCount)
             self.spacingChanged.emit(self._score.systemSpacing)
             self.sectionsChanged.emit()
+            self._properties.readFromFontOptions(self._score.fontOptions)
+            self._undoStack.clear()
+            self._undoStack.setClean()
+            self.dirty = False
 
     @_readOnly
     def score(self):
@@ -410,6 +411,7 @@ class QScore(QtGui.QGraphicsScene):
         return True
 
     def saveScore(self, filename):
+        self._properties.updateFontOptions(self._score.fontOptions)
         try:
             _SCORE_FACTORY.saveScore(self._score, filename)
         except StandardError, exc:
@@ -476,3 +478,6 @@ class QScore(QtGui.QGraphicsScene):
         self._metaData.setRect()
         self._kitData.setRect()
         self.scale = 1
+
+    def setNoteFontSize(self, value):
+        self._properties.setNoteFontSize(value)
