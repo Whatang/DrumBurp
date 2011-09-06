@@ -403,47 +403,22 @@ class SetSystemSpacingCommand(_COMMAND_CLASS):
         self._qScore.displayProperties.lineSpacing = self._old - 101
         self._qScore.spacingChanged.emit(self._old)
 
-class SetNoteFontSizeCommand(_COMMAND_CLASS):
-    def __init__(self, qScore, newSize):
-        super(SetNoteFontSizeCommand, self).__init__(qScore,
-                                              NotePosition(),
-                                              "Set note font size")
+class SetFontSizeCommand(_COMMAND_CLASS):
+    def __init__(self, qScore, newSize, fontType):
+        super(SetFontSizeCommand, self).__init__(qScore,
+                                                 NotePosition(),
+                                                 "Set " + fontType +
+                                                 " font size")
+        self._fontName = fontType + "FontSize"
         self._newSize = newSize
-        self._oldSize = self._qScore.displayProperties.noteFontSize
+        self._oldSize = getattr(self._qScore.displayProperties,
+                                self._fontName)
 
     def _redo(self):
-        self._qScore.displayProperties.setNoteFontSize(self._newSize)
+        setattr(self._qScore.displayProperties, self._fontName, self._newSize)
 
     def _undo(self):
-        self._qScore.displayProperties.setNoteFontSize(self._oldSize)
-
-class SetSectionFontSizeCommand(_COMMAND_CLASS):
-    def __init__(self, qScore, newSize):
-        super(SetSectionFontSizeCommand, self).__init__(qScore,
-                                                        NotePosition(),
-                                                        "Set section font size")
-        self._newSize = newSize
-        self._oldSize = self._qScore.displayProperties.sectionFontSize
-
-    def _redo(self):
-        self._qScore.displayProperties.sectionFontSize = self._newSize
-
-    def _undo(self):
-        self._qScore.displayProperties.sectionFontSize = self._oldSize
-
-class SetMetadataFontSizeCommand(_COMMAND_CLASS):
-    def __init__(self, qScore, newSize):
-        super(SetMetadataFontSizeCommand, self).__init__(qScore,
-                                                        NotePosition(),
-                                                        "Set metadata font size")
-        self._newSize = newSize
-        self._oldSize = self._qScore.displayProperties.metadataFontSize
-
-    def _redo(self):
-        self._qScore.displayProperties.metadataFontSize = self._newSize
-
-    def _undo(self):
-        self._qScore.displayProperties.metadataFontSize = self._oldSize
+        setattr(self._qScore.displayProperties, self._fontName, self._oldSize)
 
 class SetFontCommand(_COMMAND_CLASS):
     def __init__(self, qScore, font, fontType):

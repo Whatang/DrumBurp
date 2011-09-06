@@ -170,7 +170,12 @@ class QDisplayProperties(QObject):
         br = fm.tightBoundingRect("X")
         self.ySpacing = br.height() + 2
 
-    def setNoteFontSize(self, size):
+    def _getnoteFontSize(self):
+        if self.noteFont is None:
+            return self._defaultNoteFontSize
+        else:
+            return self.noteFont.pointSize()
+    def _setNoteFontSize(self, size):
         if size == self.noteFontSize:
             return
         self._defaultNoteFontSize = size
@@ -180,14 +185,8 @@ class QDisplayProperties(QObject):
             self.noteFont.setPointSize(size)
             self._updateSpacing()
         self.noteSizeChanged.emit(size)
-
-
-    @property
-    def noteFontSize(self):
-        if self.noteFont is None:
-            return self._defaultNoteFontSize
-        else:
-            return self.noteFont.pointSize()
+    noteFontSize = property(fget = _getnoteFontSize,
+                            fset = _setNoteFontSize)
 
 
     def _getsectionFontSize(self):
@@ -247,7 +246,7 @@ class QDisplayProperties(QObject):
     def readFromFontOptions(self):
         if self._score is not None:
             self.noteFont = QFont(self._score.fontOptions.noteFont)
-            self.setNoteFontSize(self._score.fontOptions.noteFontSize)
+            self.noteFontSize = self._score.fontOptions.noteFontSize
             self.metadataFont = QFont(self._score.fontOptions.metadataFont)
             self.metadataFontSize = self._score.fontOptions.metadataFontSize
             self.sectionFont = QFont(self._score.fontOptions.sectionFont)

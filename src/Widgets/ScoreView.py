@@ -55,7 +55,7 @@ class ScoreView(QtGui.QGraphicsView):
 
     @QtCore.pyqtSlot(int)
     def setNoteFontSize(self, size):
-        self.scene().setNoteFontSize(size)
+        self.scene().setScoreFontSize(size, "note")
 
     @QtCore.pyqtSlot(QtGui.QFont)
     def setSectionFont(self, font):
@@ -63,7 +63,7 @@ class ScoreView(QtGui.QGraphicsView):
 
     @QtCore.pyqtSlot(int)
     def setSectionFontSize(self, size):
-        self.scene().setSectionFontSize(size)
+        self.scene().setScoreFontSize(size, "section")
 
     @QtCore.pyqtSlot(QtGui.QFont)
     def setMetadataFont(self, font):
@@ -71,7 +71,7 @@ class ScoreView(QtGui.QGraphicsView):
 
     @QtCore.pyqtSlot(int)
     def setMetadataFontSize(self, size):
-        self.scene().setMetadataFontSize(size)
+        self.scene().setScoreFontSize(size, "metadata")
 
     @QtCore.pyqtSlot(bool)
     def setMetadataVisible(self, onOff):
