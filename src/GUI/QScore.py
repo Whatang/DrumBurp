@@ -480,4 +480,7 @@ class QScore(QtGui.QGraphicsScene):
         self.scale = 1
 
     def setNoteFontSize(self, value):
-        self._properties.setNoteFontSize(value)
+        if value == self._properties.noteFontSize:
+            return
+        command = SetNoteFontSizeCommand(self, value)
+        self.addCommand(command)

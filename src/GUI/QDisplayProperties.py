@@ -158,13 +158,18 @@ class QDisplayProperties(QObject):
     noteFont = property(fget = _getnoteFont, fset = _setnoteFont)
 
     def setNoteFontSize(self, size):
+        if size == self.noteFontSize:
+            return
         self._defaultNoteFontSize = size
-        self.noteFont.setPointSize(size)
-        fm = QFontMetrics(self.noteFont)
-        br = fm.boundingRect("X")
-        self.xSpacing = 1.2 * br.width() + 2
-        br = fm.tightBoundingRect("X")
-        self.ySpacing = br.height() + 2
+        if self.noteFont is not None:
+            self.noteFont.setPointSize(size)
+            fm = QFontMetrics(self.noteFont)
+            br = fm.boundingRect("X")
+            self.xSpacing = 1.2 * br.width() + 2
+            br = fm.tightBoundingRect("X")
+            self.ySpacing = br.height() + 2
+        self.noteSizeChanged.emit(size)
+
 
     @property
     def noteFontSize(self):
@@ -223,7 +228,8 @@ class QDisplayProperties(QObject):
         options.metadataFontSize = self.metadataFontSize
 
     def readFromFontOptions(self, options):
-        self._defaultNoteFontSize = options.noteFontSize
+#        self._defaultNoteFontSize = options.noteFontSize
+        self.setNoteFontSize(options.noteFontSize)
         self.metadataFontSize = options.metadataFontSize
         self.sectionFontSize = options.sectionFontSize
 

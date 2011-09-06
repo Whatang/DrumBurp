@@ -97,7 +97,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         font = self.scoreScene.font()
         font.setPointSize(self.songProperties.noteFontSize)
         self.fontComboBox.setCurrentFont(font)
-#        self.noteSizeSpinBox.setValue(self.songProperties.noteFontSize)
+        self.noteSizeSpinBox.setValue(self.songProperties.noteFontSize)
         self.songProperties.noteSizeChanged.connect(self.noteSizeSpinBox.setValue)
         self.sectionFontCombo.setCurrentFont(font)
         self.sectionFontSizeSpinbox.setValue(self.scoreScene.displayProperties.sectionFontSize)
