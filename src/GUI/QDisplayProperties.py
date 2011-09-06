@@ -85,7 +85,7 @@ class QDisplayProperties(QObject):
 
     def newScore(self, qScore):
         self._score = qScore.score
-        self.readFromFontOptions()
+        self._readFromFontOptions()
 
     def connectScore(self, qScore):
         self.newScore(qScore)
@@ -240,17 +240,15 @@ class QDisplayProperties(QObject):
             self.metadataFontChanged.emit()
     metadataFont = property(fget = _getmetadataFont, fset = _setmetadataFont)
 
-    def updateFontOptions(self):
-        pass
-
-    def readFromFontOptions(self):
+    def _readFromFontOptions(self):
         if self._score is not None:
-            self.noteFont = QFont(self._score.fontOptions.noteFont)
-            self.noteFontSize = self._score.fontOptions.noteFontSize
-            self.metadataFont = QFont(self._score.fontOptions.metadataFont)
-            self.metadataFontSize = self._score.fontOptions.metadataFontSize
-            self.sectionFont = QFont(self._score.fontOptions.sectionFont)
-            self.sectionFontSize = self._score.fontOptions.sectionFontSize
+            options = self._score.fontOptions
+            self.noteFont = QFont(options.noteFont)
+            self.noteFontSize = options.noteFontSize
+            self.metadataFont = QFont(options.metadataFont)
+            self.metadataFontSize = options.metadataFontSize
+            self.sectionFont = QFont(options.sectionFont)
+            self.sectionFontSize = options.sectionFontSize
 
     def _gethead(self):
         return self._head

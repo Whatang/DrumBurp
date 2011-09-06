@@ -407,7 +407,6 @@ class QScore(QtGui.QGraphicsScene):
         return True
 
     def saveScore(self, filename):
-        self._properties.updateFontOptions()
         try:
             _SCORE_FACTORY.saveScore(self._score, filename)
         except StandardError, exc:
