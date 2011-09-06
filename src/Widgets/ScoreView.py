@@ -37,7 +37,6 @@ class ScoreView(QtGui.QGraphicsView):
     def setScene(self, scene):
         super(ScoreView, self).setScene(scene)
         self._props = scene.displayProperties
-        scene.metadataChanged.connect(self.setMetadata)
         self.centerOn(0, 0)
 
     @QtCore.pyqtSlot(int)
@@ -49,34 +48,6 @@ class ScoreView(QtGui.QGraphicsView):
         self.scene().scoreWidth = width
         self.widthChanged.emit(width)
     widthChanged = QtCore.pyqtSignal(int)
-
-    @QtCore.pyqtSlot(int)
-    def setBPM(self, bpm):
-        self.scene().bpm = bpm
-        self.bpmChanged.emit(bpm)
-    bpmChanged = QtCore.pyqtSignal(int)
-
-    @QtCore.pyqtSlot(QtCore.QString)
-    def setTitle(self, title):
-        self.scene().title = title
-        self.titleChanged.emit(title)
-    titleChanged = QtCore.pyqtSignal(QtCore.QString)
-
-    @QtCore.pyqtSlot(QtCore.QString)
-    def setArtist(self, artist):
-        self.scene().artist = artist
-        self.artistChanged.emit(artist)
-    artistChanged = QtCore.pyqtSignal(QtCore.QString)
-
-    @QtCore.pyqtSlot(QtCore.QString)
-    def setCreator(self, creator):
-        self.scene().creator = creator
-        self.creatorChanged.emit(creator)
-    creatorChanged = QtCore.pyqtSignal(QtCore.QString)
-
-    def setMetadata(self, name, value):
-        signal = getattr(self, str(name) + "Changed")
-        signal.emit(value)
 
     @QtCore.pyqtSlot(QtGui.QFont)
     def setFont(self, font):

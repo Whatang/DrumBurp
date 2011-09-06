@@ -32,11 +32,17 @@ class QMetadataDialog(QDialog, Ui_ScoreDialog):
         self._qscore = qscore
         self.titleEdit.setText(qscore.title)
         self.artistEdit.setText(qscore.artist)
+        self.artistVisible.setChecked(qscore.artistVisible)
         self.creatorEdit.setText(qscore.creator)
+        self.creatorVisible.setChecked(qscore.creatorVisible)
         self.bpmSpinBox.setValue(qscore.bpm)
+        self.bpmVisible.setChecked(qscore.bpmVisible)
 
     def getValues(self):
         return {"title" : self.titleEdit.text(),
                 "artist" : self.artistEdit.text(),
+                "artistVisible" : self.artistVisible.isChecked(),
                 "creator": self.creatorEdit.text(),
-                "bpm" : self.bpmSpinBox.value()}
+                "creatorVisible": self.creatorVisible.isChecked(),
+                "bpm" : self.bpmSpinBox.value(),
+                "bpmVisible":self.bpmVisible.isChecked()}

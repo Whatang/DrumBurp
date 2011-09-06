@@ -45,9 +45,7 @@ def delayCall(method):
         QtCore.QTimer.singleShot(0, lambda: method(*args, **kwargs))
     return delayer
 
-def _metaDataProperty(varname, setName = None):
-    if setName is None:
-        setName = "set" + varname.capitalize()
+def _metaDataProperty(varname):
     def _getData(self):
         return getattr(self.score.scoreData, varname)
     def _setData(self, value):
@@ -138,10 +136,6 @@ class QScore(QtGui.QGraphicsScene):
 
     def startUp(self):
         self.metadataChanged.emit("width", self.scoreWidth)
-        self.metadataChanged.emit("artist", self.artist)
-        self.metadataChanged.emit("title", self.title)
-        self.metadataChanged.emit("creator", self.creator)
-        self.metadataChanged.emit("bpm", self.bpm)
 
     def _getscoreWidth(self):
         if self._score is not None:
@@ -158,9 +152,12 @@ class QScore(QtGui.QGraphicsScene):
                           fset = _setscoreWidth)
 
     artist = _metaDataProperty("artist")
+    artistVisible = _metaDataProperty("artistVisible")
     creator = _metaDataProperty("creator")
+    creatorVisible = _metaDataProperty("creatorVisible")
     title = _metaDataProperty("title")
-    bpm = _metaDataProperty("bpm", "setBPM")
+    bpm = _metaDataProperty("bpm")
+    bpmVisible = _metaDataProperty("bpmVisible")
 
     @_readOnly
     def displayProperties(self):
