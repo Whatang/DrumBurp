@@ -25,7 +25,7 @@ Created on 8 Jan 2011
 from Data.Counter import CounterRegistry
 from Data.ASCIISettings import ASCIISettings
 from PyQt4.QtCore import QObject, pyqtSignal
-from PyQt4.QtGui import QFontMetrics
+from PyQt4.QtGui import QFontMetrics, QFont
 
 #pylint: disable-msg=R0902
 
@@ -157,6 +157,8 @@ class QDisplayProperties(QObject):
     def _setnoteFont(self, value):
         if self._noteFont != value:
             self._noteFont = value
+            if self._score is not None:
+                self._score.fontOptions.noteFont = value.family()
             self._updateSpacing()
             self.fontChanged.emit()
     noteFont = property(fget = _getnoteFont, fset = _setnoteFont)
@@ -209,6 +211,8 @@ class QDisplayProperties(QObject):
             value.setItalic(True)
             value.setPointSize(self._sectionFontSize)
             self._sectionFont = value
+            if self._score is not None:
+                self._score.fontOptions.sectionFont = value.family()
             self.sectionFontChanged.emit()
     sectionFont = property(fget = _getsectionFont, fset = _setsectionFont)
 
@@ -232,6 +236,8 @@ class QDisplayProperties(QObject):
             value.setBold(True)
             value.setPointSize(self._metadataFontSize)
             self._metadataFont = value
+            if self._score is not None:
+                self._score.fontOptions.metadataFont = value.family()
             self.metadataFontChanged.emit()
     metadataFont = property(fget = _getmetadataFont, fset = _setmetadataFont)
 
@@ -240,8 +246,11 @@ class QDisplayProperties(QObject):
 
     def readFromFontOptions(self):
         if self._score is not None:
+            self.noteFont = QFont(self._score.fontOptions.noteFont)
             self.setNoteFontSize(self._score.fontOptions.noteFontSize)
+            self.metadataFont = QFont(self._score.fontOptions.metadataFont)
             self.metadataFontSize = self._score.fontOptions.metadataFontSize
+            self.sectionFont = QFont(self._score.fontOptions.sectionFont)
             self.sectionFontSize = self._score.fontOptions.sectionFontSize
 
     def _gethead(self):

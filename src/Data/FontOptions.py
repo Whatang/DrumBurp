@@ -27,19 +27,22 @@ class FontOptions(object):
 
     def __init__(self):
         self.noteFontSize = 10
-        self.noteFont = None
+        self.noteFont = "MS Shell Dlg 2"
         self.sectionFontSize = 14
-        self.sectionFont = None
+        self.sectionFont = "MS Shell Dlg 2"
         self.metadataFontSize = 16
-        self.metadataFont = None
+        self.metadataFont = "MS Shell Dlg 2"
 
     def write(self, handle, indenter):
         print >> handle, indenter("FONT_OPTIONS_START")
         indenter.increase()
+        print >> handle, indenter("NOTEFONT", self.noteFont)
         print >> handle, indenter("NOTEFONTSIZE %d"
                                   % self.noteFontSize)
+        print >> handle, indenter("SECTIONFONT", self.sectionFont)
         print >> handle, indenter("SECTIONFONTSIZE %d"
                                   % self.sectionFontSize)
+        print >> handle, indenter("METADATAFONT", self.metadataFont)
         print >> handle, indenter("METADATAFONTSIZE %d"
                                   % self.metadataFontSize)
         indenter.decrease()
@@ -47,12 +50,18 @@ class FontOptions(object):
 
     def read(self, scoreIterator):
         for lineType, lineData in scoreIterator:
-            if  lineType == "FONT_OPTIONS_END":
+            if lineType == "FONT_OPTIONS_END":
                 break
+            elif lineType == "NOTEFONT":
+                self.noteFont = lineData
             elif lineType == "NOTEFONTSIZE":
                 self.noteFontSize = int(lineData)
+            elif lineType == "SECTIONFONT":
+                self.sectionFont = lineData
             elif lineType == "SECTIONFONTSIZE":
                 self.sectionFontSize = int(lineData)
+            elif lineType == "METADATAFONT":
+                self.metadataFont = lineData
             elif lineType == "METADATAFONTSIZE":
                 self.metadataFontSize = int(lineData)
             else:

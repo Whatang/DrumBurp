@@ -32,7 +32,8 @@ from Data.Score import ScoreFactory
 from DBCommands import (MetaDataCommand, ScoreWidthCommand, PasteMeasure,
                         SetPaperSizeCommand, SetDefaultCountCommand,
                         SetSystemSpacingCommand, SetNoteFontSizeCommand,
-                        SetSectionFontSizeCommand, SetMetadataFontSizeCommand)
+                        SetSectionFontSizeCommand, SetMetadataFontSizeCommand,
+                        SetFontCommand)
 import functools
 _SCORE_FACTORY = ScoreFactory()
 
@@ -491,4 +492,16 @@ class QScore(QtGui.QGraphicsScene):
         if value == self._properties.metadataFontSize:
             return
         command = SetMetadataFontSizeCommand(self, value)
+        self.addCommand(command)
+
+    def setScoreFont(self, font, fontType):
+        fontName = fontType + "Font"
+        if self._properties is not None:
+            fontFamily = getattr(self._properties, fontName)
+            if fontFamily is None:
+                setattr(self._properties, fontName, font)
+                return
+            elif font.family() == fontFamily.family():
+                return
+        command = SetFontCommand(self, font, fontType)
         self.addCommand(command)

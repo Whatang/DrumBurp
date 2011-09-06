@@ -96,8 +96,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreView.setScene(self.scoreScene)
         # Connect signals
         props = self.songProperties
+        props.fontChanged.connect(self._setNoteFont)
         props.noteSizeChanged.connect(self.noteSizeSpinBox.setValue)
+        props.sectionFontChanged.connect(self._setSectionFont)
         props.sectionFontSizeChanged.connect(self._setSectionFontSize)
+        props.metadataFontChanged.connect(self._setMetadataFont)
         props.metadataFontSizeChanged.connect(self._setMetadataSize)
         self.scoreScene.dirtySignal.connect(self.setWindowModified)
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
@@ -106,12 +109,22 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.sectionFontCombo.setWritingSystem(QFontDatabase.Latin)
         self.sectionFontCombo.setWritingSystem(QFontDatabase.Latin)
         self.lineSpaceSlider.setValue(self.scoreScene.systemSpacing)
-        font = self.scoreScene.font()
+        font = self.songProperties.noteFont
+        if font is None:
+            font = self.scoreScene.font()
         font.setPointSize(self.songProperties.noteFontSize)
         self.fontComboBox.setCurrentFont(font)
         self.noteSizeSpinBox.setValue(self.songProperties.noteFontSize)
+        font = self.songProperties.sectionFont
+        if font is None:
+            font = self.scoreScene.font()
+        font.setPointSize(self.songProperties.sectionFontSize)
         self.sectionFontCombo.setCurrentFont(font)
         self.sectionFontSizeSpinbox.setValue(props.sectionFontSize)
+        font = self.songProperties.metadataFont
+        if font is None:
+            font = self.scoreScene.font()
+        font.setPointSize(self.songProperties.metadataFontSize)
         self.metadataFontCombo.setCurrentFont(font)
         self.metadataFontSizeSpinbox.setValue(props.metadataFontSize)
         # Undo/redo
@@ -143,9 +156,21 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def _setPaperSize(self, unusedIndex):
         self.scoreScene.setPaperSize(self.paperBox.currentText())
 
+    def _setNoteFont(self):
+        props = self.songProperties
+        self.fontComboBox.setCurrentFont(props.noteFont)
+
+    def _setSectionFont(self):
+        props = self.songProperties
+        self.sectionFontCombo.setCurrentFont(props.sectionFont)
+
     def _setSectionFontSize(self):
         props = self.songProperties
         self.sectionFontSizeSpinbox.setValue(props.sectionFontSize)
+
+    def _setMetadataFont(self):
+        props = self.songProperties
+        self.metadataFontCombo.setCurrentFont(props.metadataFont)
 
     def _setMetadataSize(self):
         props = self.songProperties

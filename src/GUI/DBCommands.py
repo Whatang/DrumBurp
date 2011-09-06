@@ -444,3 +444,19 @@ class SetMetadataFontSizeCommand(_COMMAND_CLASS):
 
     def _undo(self):
         self._qScore.displayProperties.metadataFontSize = self._oldSize
+
+class SetFontCommand(_COMMAND_CLASS):
+    def __init__(self, qScore, font, fontType):
+        super(SetFontCommand, self).__init__(qScore,
+                                             NotePosition(),
+                                             "Set " + fontType + " font")
+        self._newFont = font
+        self._fontName = fontType + "Font"
+        self._oldFont = getattr(self._qScore.displayProperties,
+                                self._fontName)
+
+    def _redo(self):
+        setattr(self._qScore.displayProperties, self._fontName, self._newFont)
+
+    def _undo(self):
+        setattr(self._qScore.displayProperties, self._fontName, self._oldFont)
