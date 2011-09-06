@@ -36,9 +36,6 @@ from DBCommands import (MetaDataCommand, ScoreWidthCommand, PasteMeasure,
 import functools
 _SCORE_FACTORY = ScoreFactory()
 
-def _readOnly(method):
-    return property(fget = method)
-
 def delayCall(method):
     @functools.wraps(method)
     def delayer(*args, **kwargs):
@@ -159,7 +156,7 @@ class QScore(QtGui.QGraphicsScene):
     bpm = _metaDataProperty("bpm")
     bpmVisible = _metaDataProperty("bpmVisible")
 
-    @_readOnly
+    @property
     def displayProperties(self):
         return self._properties
 
@@ -172,11 +169,11 @@ class QScore(QtGui.QGraphicsScene):
     dirty = property(fget = _getdirty, fset = _setdirty)
     dirtySignal = QtCore.pyqtSignal(bool)
 
-    @_readOnly
+    @property
     def kitSize(self):
         return len(self._score.drumKit)
 
-    @_readOnly
+    @property
     def lineOffsets(self):
         yOffsets = [(drumIndex + 1) * self.ySpacing
                     for drumIndex in range(0, self.kitSize)]
@@ -201,7 +198,7 @@ class QScore(QtGui.QGraphicsScene):
             self._undoStack.setClean()
             self.dirty = False
 
-    @_readOnly
+    @property
     def score(self):
         return self._score
 
@@ -220,23 +217,23 @@ class QScore(QtGui.QGraphicsScene):
             self.invalidate()
     scale = property(fget = _getscale, fset = _setscale)
 
-    @_readOnly
+    @property
     def xSpacing(self):
         return self._properties.xSpacing * self.scale
 
-    @_readOnly
+    @property
     def ySpacing(self):
         return self._properties.ySpacing * self.scale
 
-    @_readOnly
+    @property
     def lineSpacing(self):
         return self._properties.lineSpacing * self.scale
 
-    @_readOnly
+    @property
     def xMargins(self):
         return self._properties.xMargins * self.scale
 
-    @_readOnly
+    @property
     def yMargins(self):
         return self._properties.yMargins * self.scale
 
