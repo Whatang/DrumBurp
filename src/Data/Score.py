@@ -600,7 +600,6 @@ class Score(object):
         self.write(scoreString)
         scoreString.seek(0, 0)
         scoreString = "".join(scoreString)
-        scoreString += self.paperSize
         return hashlib.md5(str(scoreString)).digest() #pylint:disable-msg=E1101
 
     def exportASCII(self, handle, settings):
