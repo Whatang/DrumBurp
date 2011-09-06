@@ -102,7 +102,6 @@ class QDisplayProperties(QObject):
         self.beatCountVisibleChanged.connect(qScore.reBuild)
         self.emptyLinesVisibleChanged.connect(qScore.reBuild)
 
-
     def _getxSpacing(self):
         return self._xSpacing
     def _setxSpacing(self, value):
@@ -158,8 +157,16 @@ class QDisplayProperties(QObject):
     def _setnoteFont(self, value):
         if self._noteFont != value:
             self._noteFont = value
+            self._updateSpacing()
             self.fontChanged.emit()
     noteFont = property(fget = _getnoteFont, fset = _setnoteFont)
+
+    def _updateSpacing(self):
+        fm = QFontMetrics(self.noteFont)
+        br = fm.boundingRect("X")
+        self.xSpacing = 1.2 * br.width() + 2
+        br = fm.tightBoundingRect("X")
+        self.ySpacing = br.height() + 2
 
     def setNoteFontSize(self, size):
         if size == self.noteFontSize:
@@ -169,11 +176,7 @@ class QDisplayProperties(QObject):
             self._score.fontOptions.noteFontSize = size
         if self.noteFont is not None:
             self.noteFont.setPointSize(size)
-            fm = QFontMetrics(self.noteFont)
-            br = fm.boundingRect("X")
-            self.xSpacing = 1.2 * br.width() + 2
-            br = fm.tightBoundingRect("X")
-            self.ySpacing = br.height() + 2
+            self._updateSpacing()
         self.noteSizeChanged.emit(size)
 
 
