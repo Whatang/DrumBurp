@@ -52,7 +52,8 @@ def _metaDataProperty(varname, setName = None):
         return getattr(self.score.scoreData, varname)
     def _setData(self, value):
         if getattr(self, varname) != value:
-            command = MetaDataCommand(self, varname, self.metadataChanged, value)
+            command = MetaDataCommand(self, varname,
+                                      self.metadataChanged, value)
             self.addCommand(command)
     return property(fget = _getData, fset = _setData)
 

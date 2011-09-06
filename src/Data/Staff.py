@@ -272,7 +272,9 @@ class Staff(object):
         indices = range(0, kitSize)
         indices.reverse()
         position = NotePosition()
-        staffString, isRepeating, repeatExtender = self._getRepeatString(isRepeating, repeatExtender)
+        (staffString,
+         isRepeating, repeatExtender) = self._getRepeatString(isRepeating,
+                                                              repeatExtender)
         for drumIndex in indices:
             drum = kit[drumIndex]
             lineString, lineOk = self._getDrumLine(drum,
