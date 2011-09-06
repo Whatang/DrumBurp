@@ -32,7 +32,6 @@ class ScoreView(QtGui.QGraphicsView):
 
     def __init__(self, parent = None):
         super(ScoreView, self).__init__(parent)
-        self._fixedWidth = 80
         self._props = None
 
     def setScene(self, scene):
