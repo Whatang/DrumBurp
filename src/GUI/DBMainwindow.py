@@ -86,33 +86,35 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.songProperties = QDisplayProperties()
         # Create scene
         self.scoreScene = QScore(self)
-        self._initializeState()
         self.restoreGeometry(settings.value("Geometry").toByteArray())
         self.restoreState(settings.value("MainWindow/State").toByteArray())
+        self._initializeState()
         self.setSections()
         QTimer.singleShot(0, self._startUp)
 
     def _initializeState(self):
-        self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         self.scoreView.setScene(self.scoreScene)
+        # Connect signals
+        props = self.songProperties
+        props.noteSizeChanged.connect(self.noteSizeSpinBox.setValue)
+        props.sectionFontSizeChanged.connect(self._setSectionFontSize)
+        props.metadataFontSizeChanged.connect(self._setMetadataSize)
+        self.scoreScene.dirtySignal.connect(self.setWindowModified)
+        self.paperBox.currentIndexChanged.connect(self._setPaperSize)
+        # Fonts
         self.fontComboBox.setWritingSystem(QFontDatabase.Latin)
         self.sectionFontCombo.setWritingSystem(QFontDatabase.Latin)
         self.sectionFontCombo.setWritingSystem(QFontDatabase.Latin)
         self.lineSpaceSlider.setValue(self.scoreScene.systemSpacing)
-        self.scoreView.startUp()
         font = self.scoreScene.font()
-        props = self.songProperties
         font.setPointSize(self.songProperties.noteFontSize)
         self.fontComboBox.setCurrentFont(font)
         self.noteSizeSpinBox.setValue(self.songProperties.noteFontSize)
-        props.noteSizeChanged.connect(self.noteSizeSpinBox.setValue)
         self.sectionFontCombo.setCurrentFont(font)
         self.sectionFontSizeSpinbox.setValue(props.sectionFontSize)
-        props.sectionFontSizeChanged.connect(self._setSectionFontSize)
         self.metadataFontCombo.setCurrentFont(font)
         self.metadataFontSizeSpinbox.setValue(props.metadataFontSize)
-        props.metadataFontSizeChanged.connect(self._setMetadataSize)
-        self.scoreScene.dirtySignal.connect(self.setWindowModified)
+        # Undo/redo
         self.actionUndo.setEnabled(False)
         self.actionRedo.setEnabled(False)
         self.scoreScene.canUndoChanged.connect(self.actionUndo.setEnabled)
@@ -121,10 +123,12 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreScene.canRedoChanged.connect(self.actionRedo.setEnabled)
         changeRedoText = lambda txt:self.actionRedo.setText("Redo " + txt)
         self.scoreScene.redoTextChanged.connect(changeRedoText)
+        # Default beat
         self._beatChanged(self.scoreScene.defaultCount)
 
 
     def _startUp(self):
+        self.scoreView.startUp()
         dlg = DBStartupDialog(DB_VERSION)
         dlg.exec_()
         self.updateStatus("Welcome to %s v%s" % (APPNAME, DB_VERSION))
