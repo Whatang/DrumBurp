@@ -301,7 +301,7 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def _notePressEvent(self, event, noteTime, drumIndex):
         menu = None
-        if event.button() == QtCore.Qt.MiddleButton:
+        if event.button() == QtCore.Qt.MidButton:
             event.ignore()
             menu = QMenuIgnoreCancelClick(self._qScore)
             for noteHead in self._props.allowedNoteHeads():
