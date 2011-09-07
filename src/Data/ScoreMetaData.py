@@ -42,6 +42,10 @@ class ScoreMetaData(object):
         self.creator = ""
         self.creatorVisible = True
         self.width = 80
+        self.kitDataVisible = True
+        self.metadataVisible = True
+        self.beatCountVisible = True
+        self.emptyLinesVisible = True
 
     def makeEmpty(self):
         self.title = "Untitled"
@@ -68,6 +72,14 @@ class ScoreMetaData(object):
                 self.bpmVisible = (lineData == "True")
             elif lineType == "WIDTH":
                 self.width = int(lineData)
+            elif lineType == "KITDATAVISIBLE":
+                self.kitDataVisible = (lineData == "True")
+            elif lineType == "METADATAVISIBLE":
+                self.metadataVisible = (lineData == "True")
+            elif lineType == "BEATCOUNTVISIBLE":
+                self.beatCountVisible = (lineData == "True")
+            elif lineType == "EMPTYLINESVISIBLE":
+                self.emptyLinesVisible = (lineData == "True")
             elif lineType == "END_SCORE_METADATA":
                 break
 
@@ -82,6 +94,10 @@ class ScoreMetaData(object):
         print >> handle, indenter("BPM", self.bpm)
         print >> handle, indenter("BPMVISIBLE", str(self.bpmVisible))
         print >> handle, indenter("WIDTH", self.width)
+        print >> handle, indenter("KITDATAVISIBLE", str(self.kitDataVisible))
+        print >> handle, indenter("METADATAVISIBLE", str(self.metadataVisible))
+        print >> handle, indenter("BEATCOUNTVISIBLE", str(self.beatCountVisible))
+        print >> handle, indenter("EMPTYLINESVISIBLE", str(self.emptyLinesVisible))
         indenter.decrease()
         print >> handle, indenter("END_SCORE_METADATA")
 

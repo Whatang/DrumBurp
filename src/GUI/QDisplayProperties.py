@@ -86,9 +86,9 @@ class QDisplayProperties(QObject):
     def newScore(self, qScore):
         self._score = qScore.score
         self._readFromFontOptions()
+        self._readFromScoreData()
 
     def connectScore(self, qScore):
-        self.newScore(qScore)
         self.xSpacingChanged.connect(qScore.xSpacingChanged)
         self.ySpacingChanged.connect(qScore.ySpacingChanged)
         self.lineSpacingChanged.connect(qScore.lineSpacingChanged)
@@ -101,6 +101,7 @@ class QDisplayProperties(QObject):
         self.kitDataVisibleChanged.connect(qScore.kitDataVisibleChanged)
         self.beatCountVisibleChanged.connect(qScore.reBuild)
         self.emptyLinesVisibleChanged.connect(qScore.reBuild)
+        self.newScore(qScore)
 
     def _getxSpacing(self):
         return self._xSpacing
@@ -250,6 +251,14 @@ class QDisplayProperties(QObject):
             self.sectionFont = QFont(options.sectionFont)
             self.sectionFontSize = options.sectionFontSize
 
+    def _readFromScoreData(self):
+        if self._score is not None:
+            options = self._score.scoreData
+            self.kitDataVisible = options.kitDataVisible
+            self.metadataVisible = options.metadataVisible
+            self.beatCountVisible = options.beatCountVisible
+            self.emptyLinesVisible = options.emptyLinesVisible
+
     def _gethead(self):
         return self._head
     def _sethead(self, value):
@@ -262,6 +271,7 @@ class QDisplayProperties(QObject):
     def _setmetadataVisible(self, value):
         if self._metadataVisible != value:
             self._metadataVisible = value
+            self._score.scoreData.metadataVisible = value
             self.metadataVisibilityChanged.emit()
     metadataVisible = property(fget = _getmetadataVisible,
                                fset = _setmetadataVisible)
@@ -271,6 +281,7 @@ class QDisplayProperties(QObject):
     def _setkitDataVisible(self, value):
         if self._kitDataVisible != value:
             self._kitDataVisible = value
+            self._score.scoreData.kitDataVisible = value
             self.kitDataVisibleChanged.emit()
     kitDataVisible = property(fget = _getkitDataVisible,
                               fset = _setkitDataVisible)
@@ -280,6 +291,7 @@ class QDisplayProperties(QObject):
     def _setbeatCountVisible(self, value):
         if self._beatCountVisible != value:
             self._beatCountVisible = value
+            self._score.scoreData.beatCountVisible = value
             self.beatCountVisibleChanged.emit()
     beatCountVisible = property(fget = _getbeatCountVisible,
                                 fset = _setbeatCountVisible)
@@ -289,6 +301,7 @@ class QDisplayProperties(QObject):
     def _setemptyLinesVisible(self, value):
         if self._emptyLinesVisible != value:
             self._emptyLinesVisible = value
+            self._score.scoreData.emptyLinesVisible = value
             self.emptyLinesVisibleChanged.emit()
     emptyLinesVisible = property(fget = _getemptyLinesVisible,
                                  fset = _setemptyLinesVisible)

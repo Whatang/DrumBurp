@@ -104,6 +104,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         props.metadataFontSizeChanged.connect(self._setMetadataSize)
         self.scoreScene.dirtySignal.connect(self.setWindowModified)
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
+        props.kitDataVisibleChanged.connect(self._setKitDataVisible)
+        props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
+        props.metadataVisibilityChanged.connect(self._setMetadataVisible)
+        props.beatCountVisibleChanged.connect(self._setBeatCountVisible)
         # Fonts
         self.fontComboBox.setWritingSystem(QFontDatabase.Latin)
         self.sectionFontCombo.setWritingSystem(QFontDatabase.Latin)
@@ -127,6 +131,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         font.setPointSize(self.songProperties.metadataFontSize)
         self.metadataFontCombo.setCurrentFont(font)
         self.metadataFontSizeSpinbox.setValue(props.metadataFontSize)
+        # Visibility toggles
+        self.actionShowDrumKey.setChecked(props.kitDataVisible)
+        self.actionShowEmptyLines.setChecked(props.emptyLinesVisible)
+        self.actionShowScoreInfo.setChecked(props.metadataVisible)
+        self.actionShowBeatCount.setChecked(props.beatCountVisible)
         # Undo/redo
         self.actionUndo.setEnabled(False)
         self.actionRedo.setEnabled(False)
@@ -175,6 +184,26 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def _setMetadataSize(self):
         props = self.songProperties
         self.metadataFontSizeSpinbox.setValue(props.metadataFontSize)
+
+    def _setKitDataVisible(self):
+        props = self.songProperties
+        if props.kitDataVisible != self.actionShowDrumKey.isChecked():
+            self.actionShowDrumKey.setChecked(props.kitDataVisible)
+
+    def _setMetadataVisible(self):
+        props = self.songProperties
+        if props.metadataVisible != self.actionShowScoreInfo.isChecked():
+            self.actionShowScoreInfo.setChecked(props.metadataVisible)
+
+    def _setEmptyLinesVisible(self):
+        props = self.songProperties
+        if props.emptyLinesVisible != self.actionShowEmptyLines.isChecked():
+            self.actionShowEmptyLines.setChecked(props.emptyLinesVisible)
+
+    def _setBeatCountVisible(self):
+        props = self.songProperties
+        if props.beatCountVisible != self.actionShowBeatCount.isChecked():
+            self.actionShowBeatCount.setChecked(props.beatCountVisible)
 
     def updateStatus(self, message):
         self.statusBar().showMessage(message, 5000)

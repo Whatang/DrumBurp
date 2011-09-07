@@ -75,19 +75,23 @@ class ScoreView(QtGui.QGraphicsView):
 
     @QtCore.pyqtSlot(bool)
     def setMetadataVisible(self, onOff):
-        self._props.metadataVisible = onOff
+        self.scene().setElementVisibility(onOff, "metadata",
+                                          "score info")
 
     @QtCore.pyqtSlot(bool)
     def setBeatCountVisible(self, onOff):
-        self._props.beatCountVisible = onOff
+        self.scene().setElementVisibility(onOff, "beatCount",
+                                          "beat count")
 
     @QtCore.pyqtSlot(bool)
     def setEmptyLinesVisible(self, onOff):
-        self._props.emptyLinesVisible = onOff
+        self.scene().setElementVisibility(onOff, "emptyLines",
+                                          "empty lines")
 
     @QtCore.pyqtSlot(bool)
     def setKitDataVisible(self, onOff):
-        self._props.kitDataVisible = onOff
+        self.scene().setElementVisibility(onOff, "kitData",
+                                          "drum key")
 
     def startUp(self):
         self.scene().startUp()

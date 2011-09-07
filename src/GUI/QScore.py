@@ -32,7 +32,8 @@ from Data.Score import ScoreFactory
 from DBCommands import (MetaDataCommand, ScoreWidthCommand, PasteMeasure,
                         SetPaperSizeCommand, SetDefaultCountCommand,
                         SetSystemSpacingCommand,
-                        SetFontCommand, SetFontSizeCommand)
+                        SetFontCommand, SetFontSizeCommand,
+                        SetVisibilityCommand)
 import functools
 _SCORE_FACTORY = ScoreFactory()
 
@@ -194,6 +195,8 @@ class QScore(QtGui.QGraphicsScene):
             self.spacingChanged.emit(self._score.systemSpacing)
             self.sectionsChanged.emit()
             self._properties.newScore(self)
+            self._kitData.setVisible(self._properties.kitDataVisible)
+            self._metaData.setVisible(self._properties.metadataVisible)
             self._undoStack.clear()
             self._undoStack.setClean()
             self.dirty = False
@@ -491,4 +494,11 @@ class QScore(QtGui.QGraphicsScene):
             elif font.family() == fontFamily.family():
                 return
         command = SetFontCommand(self, font, fontType)
+        self.addCommand(command)
+
+    def setElementVisibility(self, onOff, elementName, text):
+        element = elementName + "Visible"
+        if getattr(self._properties, element) == onOff:
+            return
+        command = SetVisibilityCommand(self, onOff, elementName, text)
         self.addCommand(command)
