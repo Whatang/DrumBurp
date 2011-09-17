@@ -34,6 +34,7 @@ from DBCommands import (MetaDataCommand, ScoreWidthCommand, PasteMeasure,
                         SetSystemSpacingCommand,
                         SetFontCommand, SetFontSizeCommand,
                         SetVisibilityCommand)
+import DBMidi
 import functools
 _SCORE_FACTORY = ScoreFactory()
 
@@ -197,6 +198,7 @@ class QScore(QtGui.QGraphicsScene):
             self._properties.newScore(self)
             self._kitData.setVisible(self._properties.kitDataVisible)
             self._metaData.setVisible(self._properties.metadataVisible)
+            DBMidi.setKit(score.drumKit)
             self._undoStack.clear()
             self._undoStack.setClean()
             self.dirty = False

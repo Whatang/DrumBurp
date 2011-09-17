@@ -24,16 +24,21 @@ Created on 12 Dec 2010
 '''
 
 from DBConstants import DRUM_ABBR_WIDTH
+from DefaultKits import DEFAULT_KIT
 
 class Drum(object):
     '''
     classdocs
     '''
-    def __init__(self, name, abbr, head, locked = False):
+    def __init__(self, name, abbr, head, locked = False, midiNote = None):
         self.name = name
         self.abbr = abbr
         self.head = head
         self.locked = locked
+        if midiNote is None:
+            midiNote = _guessMidiNote(abbr)
+        self.midiNote = midiNote
+
         assert(len(name) > 0)
         assert(1 <= len(abbr) <= DRUM_ABBR_WIDTH)
         assert(len(head) == 1)
@@ -43,3 +48,9 @@ class Drum(object):
 
     def exportASCII(self):
         return "%2s - %s" % (self.abbr, self.name)
+
+def _guessMidiNote(abbr):
+    for drumData in DEFAULT_KIT:
+        if abbr == drumData[1]:
+            return drumData[4]
+    return None

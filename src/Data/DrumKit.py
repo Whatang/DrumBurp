@@ -24,23 +24,13 @@ Created on 12 Dec 2010
 '''
 
 from Drum import Drum
+from DefaultKits import DEFAULT_KIT
 from DBErrors import DuplicateDrumError, NoSuchDrumError
 
 class DrumKit(object):
     '''
     classdocs
     '''
-
-    DEFAULT_KIT = [("Foot pedal", "Hf", "x"),
-                   ("Kick", "Bd", "o", True),
-                   ("Floor Tom", "FT", "o"),
-                   ("Snare", "Sn", "o", True),
-                   ("Mid Tom", "MT", "o"),
-                   ("High Tom", "HT", "o"),
-                   ("Ride", "Ri", "x"),
-                   ("HiHat", "Hh", "x"),
-                   ("Crash", "Cr", "x")]
-
 
     def __init__(self):
         self._drums = []
@@ -55,7 +45,7 @@ class DrumKit(object):
         return iter(self._drums)
 
     def loadDefaultKit(self):
-        for drumData in self.DEFAULT_KIT:
+        for drumData in DEFAULT_KIT:
             self.addDrum(Drum(*drumData))
 
     def addDrum(self, drum):
