@@ -535,3 +535,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     @pyqtSignature("bool")
     def on_actionMuteNotes_toggled(self, onOff):
         DBMidi.setMute(onOff)
+
+    @pyqtSignature("")
+    def on_actionExportMIDI_triggered(self):
+        loc = QDesktopServices.HomeLocation
+        directory = QDesktopServices.storageLocation(loc)
+        filename = os.path.join(str(directory), 'db.mid')
+        with open(filename, 'wb') as handle:
+            DBMidi.exportMidi(self.scoreScene.score, handle)

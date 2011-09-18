@@ -59,29 +59,22 @@ class _midi(QObject):
                     notes.append((noteTime, drumIndex))
             baseTime += measure.counter.floatBeats()
             self._measureDetails.append((measureIndex, baseTime * msPerBeat))
-
         self._measureDetails.reverse()
-#        print "Built notes", time.clock() - start
         numNotes = len(notes)
         index = 0
         latency = numNotes * _LATENCYPERNOTE
         del self._midiOut
         self._midiOut = pygame.midi.Output(self._port, latency, _BUFSIZE)
-#        print "Ready to send notes", time.clock() - start
         midiTime = pygame.midi.time()
         self._songStart = time.clock() + latency / 1000.0
         while index < numNotes:
             midiNotes = [[[_PERCUSSION, drumIndex, _VELOCITY], midiTime + noteTime]
                          for (noteTime, drumIndex) in
                          notes[index:index + _NOTESPERSEND]]
-#            print "Made notes", time.clock() - start
             self._midiOut.write(midiNotes)
             index += _NOTESPERSEND
-#            print "Sent notes", time.clock() - start, index
-#        print "Sent %d notes" % numNotes, time.clock() - start
         self.timer.start(baseTime * msPerBeat + latency)
         self._measureTimer.start(latency)
-
 
     def shutUp(self):
         self.timer.stop()
@@ -99,7 +92,7 @@ class _midi(QObject):
         self._measureTimer.start(measureEnd -
                                  1000 * (time.clock() - self._songStart))
         self.highlightMeasure.emit(measureIndex)
-#        print measureIndex, measureEnd, measureEnd - 1000 * (time.clock() - self._songStart)
+
 
 _NOTEMAP = {}
 
@@ -126,6 +119,52 @@ def shutUp():
 
 def setMute(onOff):
     _PLAYER.setMute(onOff)
+
+def encodeSevenBitDelta(delta, midiData):
+    values = []
+    lastByte = True
+    if delta == 0:
+        midiData.append(0)
+        return
+    while delta:
+        thisValue = (delta & 0x7F)
+        delta >>= 7
+        if lastByte:
+            lastByte = False
+        else:
+            delta |= 0x80
+        values.append(thisValue)
+    values.reverse()
+    midiData.extend(values)
+
+def exportMidi(score, handle):
+    handle.write("MThd\x00\x00\x00\x06\x00\x00\x00\x01\x00\x0c")
+    notes = []
+    baseTime = 0
+    for measure in score.iterMeasures():
+        times = list(measure.counter.iterMidiTicks())
+        for notePos, unusedHead in measure:
+            drumIndex = _NOTEMAP.get(notePos.drumIndex, 71)
+            if drumIndex is not None:
+                noteTime = baseTime + times[notePos.noteTime]
+                notes.append((noteTime, drumIndex))
+        baseTime += times[-1]
+    lastNoteTime = 0
+    msPerBeat = int(60000000 / score.scoreData.bpm)
+    midiData = [0, 0xff, 0x51, 03, (msPerBeat >> 16) & 0xff,
+                (msPerBeat >> 8) & 0xff, msPerBeat & 0xff]
+    for noteTime, drumIndex in notes:
+        deltaTime = noteTime - lastNoteTime
+        lastNoteTime = noteTime
+        encodeSevenBitDelta(deltaTime, midiData)
+        midiData.extend([0x99, drumIndex, 0x7F])
+    midiData.extend([0, 0xFF, 0x2F, 0])
+    numBytes = len(midiData)
+    lenBytes = [((numBytes >> i) & 0xff) for i in xrange(24, -8, -8)]
+    midiData = lenBytes + midiData
+    handle.write("MTrk")
+    for byte in midiData:
+        handle.write("%c" % byte)
 
 atexit.register(_PLAYER.cleanup)
 

@@ -443,6 +443,7 @@
      <addaction name="actionFileToolbarIsVisible"/>
      <addaction name="actionDisplayToolBarIsVisible"/>
      <addaction name="actionExportToolBarIsVisible"/>
+     <addaction name="actionMIDIToolBarIsVisible"/>
      <addaction name="actionHelpToolBarIsVisible"/>
     </widget>
     <addaction name="actionFitInWindow"/>
@@ -913,6 +914,7 @@ p, li { white-space: pre-wrap; }
    </attribute>
    <addaction name="actionPlayScore"/>
    <addaction name="actionMuteNotes"/>
+   <addaction name="actionExportMIDI"/>
   </widget>
   <action name="actionQuit">
    <property name="icon">
@@ -1285,6 +1287,25 @@ Writes this Score as a plain .txt file.</string>
    </property>
    <property name="toolTip">
     <string>Enable/disable note audio</string>
+   </property>
+  </action>
+  <action name="actionExportMIDI">
+   <property name="text">
+    <string>Export MIDI</string>
+   </property>
+   <property name="toolTip">
+    <string>Export this score to a MIDI file</string>
+   </property>
+  </action>
+  <action name="actionMIDIToolBarIsVisible">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>MIDI</string>
+   </property>
+   <property name="toolTip">
+    <string>Change visibility of MIDI toolbar</string>
    </property>
   </action>
  </widget>
@@ -1775,6 +1796,38 @@ Writes this Score as a plain .txt file.</string>
     <hint type="destinationlabel">
      <x>876</x>
      <y>202</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionMIDIToolBarIsVisible</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MIDIToolBar</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>801</x>
+     <y>41</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>MIDIToolBar</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionMIDIToolBarIsVisible</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>801</x>
+     <y>41</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
     </hint>
    </hints>
   </connection>

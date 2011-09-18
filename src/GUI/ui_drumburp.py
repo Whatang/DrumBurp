@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sat Sep 17 20:11:01 2011
+# Created: Sun Sep 18 00:16:30 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -468,6 +468,11 @@ class Ui_DrumBurpWindow(object):
         icon20.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/audio-volume-muted.png")), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.actionMuteNotes.setIcon(icon20)
         self.actionMuteNotes.setObjectName(_fromUtf8("actionMuteNotes"))
+        self.actionExportMIDI = QtGui.QAction(DrumBurpWindow)
+        self.actionExportMIDI.setObjectName(_fromUtf8("actionExportMIDI"))
+        self.actionMIDIToolBarIsVisible = QtGui.QAction(DrumBurpWindow)
+        self.actionMIDIToolBarIsVisible.setCheckable(True)
+        self.actionMIDIToolBarIsVisible.setObjectName(_fromUtf8("actionMIDIToolBarIsVisible"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.menuRecentScores.menuAction())
@@ -482,6 +487,7 @@ class Ui_DrumBurpWindow(object):
         self.menuShowToolBars.addAction(self.actionFileToolbarIsVisible)
         self.menuShowToolBars.addAction(self.actionDisplayToolBarIsVisible)
         self.menuShowToolBars.addAction(self.actionExportToolBarIsVisible)
+        self.menuShowToolBars.addAction(self.actionMIDIToolBarIsVisible)
         self.menuShowToolBars.addAction(self.actionHelpToolBarIsVisible)
         self.menuView.addAction(self.actionFitInWindow)
         self.menuView.addAction(self.actionFitPage)
@@ -519,6 +525,7 @@ class Ui_DrumBurpWindow(object):
         self.helpToolBar.addAction(self.actionAboutDrumBurp)
         self.MIDIToolBar.addAction(self.actionPlayScore)
         self.MIDIToolBar.addAction(self.actionMuteNotes)
+        self.MIDIToolBar.addAction(self.actionExportMIDI)
         self.label_2.setBuddy(self.paperBox)
         self.label_3.setBuddy(self.widthSpinBox)
         self.label_4.setBuddy(self.lineSpaceSlider)
@@ -554,6 +561,8 @@ class Ui_DrumBurpWindow(object):
         QtCore.QObject.connect(self.fontsButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionDisplayOptionsIsVisible.trigger)
         QtCore.QObject.connect(self.actionDisplayOptionsIsVisible, QtCore.SIGNAL(_fromUtf8("triggered()")), self.fontDock.raise_)
         QtCore.QObject.connect(self.sectionNavigator, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(int)")), self.scoreView.showSection)
+        QtCore.QObject.connect(self.actionMIDIToolBarIsVisible, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.MIDIToolBar.setVisible)
+        QtCore.QObject.connect(self.MIDIToolBar, QtCore.SIGNAL(_fromUtf8("visibilityChanged(bool)")), self.actionMIDIToolBarIsVisible.setChecked)
         QtCore.QMetaObject.connectSlotsByName(DrumBurpWindow)
         DrumBurpWindow.setTabOrder(self.paperBox, self.widthSpinBox)
         DrumBurpWindow.setTabOrder(self.widthSpinBox, self.lineSpaceSlider)
@@ -688,6 +697,10 @@ class Ui_DrumBurpWindow(object):
         self.actionPlayScore.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Play this score through MIDI", None, QtGui.QApplication.UnicodeUTF8))
         self.actionMuteNotes.setText(QtGui.QApplication.translate("DrumBurpWindow", "Mute Notes", None, QtGui.QApplication.UnicodeUTF8))
         self.actionMuteNotes.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Enable/disable note audio", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExportMIDI.setText(QtGui.QApplication.translate("DrumBurpWindow", "Export MIDI", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExportMIDI.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Export this score to a MIDI file", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMIDIToolBarIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "MIDI", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMIDIToolBarIsVisible.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Change visibility of MIDI toolbar", None, QtGui.QApplication.UnicodeUTF8))
 
 from Widgets.ScoreView_plugin import ScoreView
 import DrumBurp_rc
