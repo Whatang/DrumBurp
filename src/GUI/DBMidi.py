@@ -10,6 +10,7 @@ import pygame.midi
 import atexit
 import time
 from PyQt4.QtCore import QTimer, pyqtSignal, QObject
+from Data.MeasureCount import MIDITICKSPERBEAT
 
 pygame.init()
 pygame.midi.init()
@@ -19,6 +20,7 @@ _BUFSIZE = 8192
 _NOTESPERSEND = 1024
 _LATENCYPERNOTE = 1
 _VELOCITY = 127
+
 
 class _midi(QObject):
     def __init__(self):
@@ -138,7 +140,9 @@ def encodeSevenBitDelta(delta, midiData):
     midiData.extend(values)
 
 def exportMidi(score, handle):
-    handle.write("MThd\x00\x00\x00\x06\x00\x00\x00\x01\x00\x0c")
+    handle.write("MThd\x00\x00\x00\x06\x00\x00\x00\x01")
+    handle.write("%c" % chr((MIDITICKSPERBEAT >> 8) & 0xFF))
+    handle.write("%c" % chr((MIDITICKSPERBEAT >> 0) & 0xFF))
     notes = []
     baseTime = 0
     for measure in score.iterMeasures():

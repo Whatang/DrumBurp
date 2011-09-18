@@ -26,6 +26,8 @@ Created on 18 Jan 2011
 from Beat import Beat
 from Counter import CounterRegistry
 
+MIDITICKSPERBEAT = 48
+
 class MeasureCount(object):
     def __init__(self):
         self.beats = []
@@ -45,7 +47,7 @@ class MeasureCount(object):
     def iterMidiTicks(self):
         total = 0
         for beat in self.beats:
-            midiTicks = 12 / beat.ticksPerBeat
+            midiTicks = MIDITICKSPERBEAT / beat.ticksPerBeat
             for unused in beat.iterTicks():
                 yield total
                 total += midiTicks
