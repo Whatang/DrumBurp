@@ -52,6 +52,7 @@ class _midi(QObject):
         baseTime = 0
         msPerBeat = 60000.0 / score.scoreData.bpm
         notes = []
+        self._measureDetails = []
         for measureIndex, measure in enumerate(score.iterMeasures()):
             times = list(measure.counter.iterFloatBeat())
             for notePos, unusedHead in measure:
@@ -90,10 +91,16 @@ class _midi(QObject):
         del self._midiOut
 
     def _highlight(self):
-        measureIndex, measureEnd = self._measureDetails.pop()
-        self._measureTimer.start(measureEnd -
-                                 1000 * (time.clock() - self._songStart))
-        self.highlightMeasure.emit(measureIndex)
+        delay = -1
+        measureIndex = None
+        while delay < 0 and self._measureDetails:
+            measureIndex, measureEnd = self._measureDetails.pop()
+            delay = (measureEnd - 1000 * (time.clock() - self._songStart))
+        if measureIndex is not None:
+            self.highlightMeasure.emit(measureIndex)
+        if delay > 0:
+            self._measureTimer.start(delay)
+
 
 
 _NOTEMAP = {}
