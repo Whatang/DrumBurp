@@ -153,6 +153,9 @@ def exportMidi(score, handle):
     msPerBeat = int(60000000 / score.scoreData.bpm)
     midiData = [0, 0xff, 0x51, 03, (msPerBeat >> 16) & 0xff,
                 (msPerBeat >> 8) & 0xff, msPerBeat & 0xff]
+    signature = "Created with DrumBurp"
+    midiData.extend([0, 0xff, 0x1, len(signature)])
+    midiData.extend([ord(ch) for ch in signature])
     for noteTime, drumIndex in notes:
         deltaTime = noteTime - lastNoteTime
         lastNoteTime = noteTime
