@@ -538,8 +538,27 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionExportMIDI_triggered(self):
-        loc = QDesktopServices.HomeLocation
-        directory = QDesktopServices.storageLocation(loc)
-        filename = os.path.join(str(directory), 'db.mid')
-        with open(filename, 'wb') as handle:
+        directory = self.filename
+        if directory is None:
+            suggestion = unicode(self.scoreScene.title)
+            if len(suggestion) == 0:
+                suggestion = "Untitled"
+            suggestion = os.extsep.join([suggestion, "brp"])
+            if len(self.recentFiles) > 0:
+                directory = os.path.dirname(self.recentFiles[-1])
+            else:
+                home = QDesktopServices.HomeLocation
+                directory = str(QDesktopServices.storageLocation(home))
+            directory = os.path.join(directory,
+                                     suggestion)
+        if os.path.splitext(directory)[-1] == os.extsep + 'brp':
+            directory = os.path.splitext(directory)[0]
+        caption = "Export to MIDI"
+        fname = QFileDialog.getSaveFileName(parent = self,
+                                            caption = caption,
+                                            directory = directory,
+                                            filter = "DrumBurp files (*.mid)")
+        if len(fname) == 0 :
+            return
+        with open(fname, 'wb') as handle:
             DBMidi.exportMidi(self.scoreScene.score, handle)

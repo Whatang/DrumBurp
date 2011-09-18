@@ -1290,6 +1290,10 @@ Writes this Score as a plain .txt file.</string>
    </property>
   </action>
   <action name="actionExportMIDI">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/midi</normaloff>:/Icons/Icons/midi</iconset>
+   </property>
    <property name="text">
     <string>Export MIDI</string>
    </property>

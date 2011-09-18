@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sun Sep 18 00:16:30 2011
+# Created: Sun Sep 18 01:40:43 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -469,6 +469,9 @@ class Ui_DrumBurpWindow(object):
         self.actionMuteNotes.setIcon(icon20)
         self.actionMuteNotes.setObjectName(_fromUtf8("actionMuteNotes"))
         self.actionExportMIDI = QtGui.QAction(DrumBurpWindow)
+        icon21 = QtGui.QIcon()
+        icon21.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/midi")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionExportMIDI.setIcon(icon21)
         self.actionExportMIDI.setObjectName(_fromUtf8("actionExportMIDI"))
         self.actionMIDIToolBarIsVisible = QtGui.QAction(DrumBurpWindow)
         self.actionMIDIToolBarIsVisible.setCheckable(True)
