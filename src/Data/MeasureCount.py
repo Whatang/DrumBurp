@@ -30,6 +30,18 @@ class MeasureCount(object):
     def __init__(self):
         self.beats = []
 
+    def iterFloatBeat(self):
+        for beatNum, beat in enumerate(self.beats):
+            beatTicks = beat.ticksPerBeat
+            for countIndex in beat.iterTicks():
+                yield beatNum + float(countIndex) / beatTicks
+
+    def floatBeats(self):
+        lastBeat = self.beats[-1]
+        beatTicks = lastBeat.ticksPerBeat
+        return ((len(self.beats) - 1) +
+                float(lastBeat.numTicks) / beatTicks)
+
     def count(self):
         for beatNum, beat in enumerate(self.beats):
             for count in beat.count(beatNum + 1):

@@ -70,10 +70,11 @@ class DrumKit(object):
         print >> handle, indenter("KIT_START")
         indenter.increase()
         for drum in self:
-            print >> handle, indenter("DRUM %s,%s,%s,%s" % (drum.name,
+            print >> handle, indenter("DRUM %s,%s,%s,%s,%s" % (drum.name,
                                                    drum.abbr,
                                                    drum.head,
-                                                   str(drum.locked)))
+                                                   str(drum.locked),
+                                                   str(drum.midiNote)))
         indenter.decrease()
         print >> handle, indenter("KIT_END")
 
@@ -83,9 +84,14 @@ class DrumKit(object):
                 break
             elif lineType == "DRUM":
                 fields = lineData.split(",")
+                if len(fields) > 3:
+                    fields[3] = (fields[3] == "True")
+                if len(fields) > 4:
+                    if fields[4] == "None":
+                        fields[4] = None
+                    else:
+                        fields[4] = int(fields[4])
                 drum = Drum(*fields)
-                if len(fields) == 4:
-                    drum.locked = (fields[3] == "True")
                 self.addDrum(drum)
             else:
                 raise IOError("Unrecognised line type.")

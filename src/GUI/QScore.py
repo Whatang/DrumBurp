@@ -74,6 +74,7 @@ class QScore(QtGui.QGraphicsScene):
         self._dirty = None
         self._ignoreNext = False
         self.measureClipboard = None
+        self._playingMeasure = None
         self._undoStack = QtGui.QUndoStack(self)
         self._undoStack.canUndoChanged.connect(self.canUndoChanged)
         self._undoStack.undoTextChanged.connect(self.undoTextChanged)
@@ -504,3 +505,18 @@ class QScore(QtGui.QGraphicsScene):
             return
         command = SetVisibilityCommand(self, onOff, elementName, text)
         self.addCommand(command)
+
+    def getQMeasure(self, position):
+        return self._qStaffs[position.staffIndex].getQMeasure(position)
+
+    def highlightPlayingMeasure(self, position):
+        if position == self._playingMeasure:
+            return
+        if self._playingMeasure != None:
+            qMeasure = self.getQMeasure(self._playingMeasure)
+            qMeasure.setPlaying(False)
+        self._playingMeasure = position
+        if self._playingMeasure == None:
+            return
+        qMeasure = self.getQMeasure(self._playingMeasure)
+        qMeasure.setPlaying(True)

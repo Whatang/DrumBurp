@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\Mike\workspace\DrumBurp\src\GUI\drumburp.ui'
+# Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sun Jun 19 19:21:09 2011
-#      by: PyQt4 UI code generator 4.8.2
+# Created: Sat Sep 17 18:16:10 2011
+#      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -338,6 +338,9 @@ class Ui_DrumBurpWindow(object):
         self.verticalLayout_2.addWidget(self.groupBox_6)
         self.fontDock.setWidget(self.dockWidgetContents_2)
         DrumBurpWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.fontDock)
+        self.MIDIToolBar = QtGui.QToolBar(DrumBurpWindow)
+        self.MIDIToolBar.setObjectName(_fromUtf8("MIDIToolBar"))
+        DrumBurpWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.MIDIToolBar)
         self.actionQuit = QtGui.QAction(DrumBurpWindow)
         icon2 = QtGui.QIcon()
         icon2.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/system-log-out.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -451,6 +454,13 @@ class Ui_DrumBurpWindow(object):
         icon18.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/fit-page")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionFitPage.setIcon(icon18)
         self.actionFitPage.setObjectName(_fromUtf8("actionFitPage"))
+        self.actionPlayScore = QtGui.QAction(DrumBurpWindow)
+        self.actionPlayScore.setCheckable(True)
+        icon19 = QtGui.QIcon()
+        icon19.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/media-playback-start.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon19.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/media-playback-stop.png")), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        self.actionPlayScore.setIcon(icon19)
+        self.actionPlayScore.setObjectName(_fromUtf8("actionPlayScore"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.menuRecentScores.menuAction())
@@ -500,6 +510,7 @@ class Ui_DrumBurpWindow(object):
         self.exportToolBar.addAction(self.actionExportPDF)
         self.helpToolBar.addAction(self.actionWhatsThis)
         self.helpToolBar.addAction(self.actionAboutDrumBurp)
+        self.MIDIToolBar.addAction(self.actionPlayScore)
         self.label_2.setBuddy(self.paperBox)
         self.label_3.setBuddy(self.widthSpinBox)
         self.label_4.setBuddy(self.lineSpaceSlider)
@@ -602,6 +613,7 @@ class Ui_DrumBurpWindow(object):
         self.groupBox_6.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "Song Properties Font", None, QtGui.QApplication.UnicodeUTF8))
         self.metadataFontCombo.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "The font used to display section titles in the Score", None, QtGui.QApplication.UnicodeUTF8))
         self.metadataFontSizeSpinbox.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Size of section titles.", None, QtGui.QApplication.UnicodeUTF8))
+        self.MIDIToolBar.setWindowTitle(QtGui.QApplication.translate("DrumBurpWindow", "MIDI ToolBar", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setText(QtGui.QApplication.translate("DrumBurpWindow", "Quit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Quit DrumBurp", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Quit DrumBurp", None, QtGui.QApplication.UnicodeUTF8))
@@ -664,6 +676,8 @@ class Ui_DrumBurpWindow(object):
         self.actionShowBeatCount.setText(QtGui.QApplication.translate("DrumBurpWindow", "Show Beat Count", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFitPage.setText(QtGui.QApplication.translate("DrumBurpWindow", "Fit Page...", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFitPage.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Fit Score to Page", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPlayScore.setText(QtGui.QApplication.translate("DrumBurpWindow", "Play Score", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPlayScore.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Play this score through MIDI", None, QtGui.QApplication.UnicodeUTF8))
 
 from Widgets.ScoreView_plugin import ScoreView
 import DrumBurp_rc

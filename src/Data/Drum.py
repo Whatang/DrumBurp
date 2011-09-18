@@ -38,7 +38,6 @@ class Drum(object):
         if midiNote is None:
             midiNote = _guessMidiNote(abbr)
         self.midiNote = midiNote
-
         assert(len(name) > 0)
         assert(1 <= len(abbr) <= DRUM_ABBR_WIDTH)
         assert(len(head) == 1)
@@ -53,4 +52,4 @@ def _guessMidiNote(abbr):
     for drumData in DEFAULT_KIT:
         if abbr == drumData[1]:
             return drumData[4]
-    return None
+    return 71

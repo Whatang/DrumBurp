@@ -211,3 +211,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
     def changeRepeatCount(self, np):
         qMeasure = self._measures[np.measureIndex]
         qMeasure.changeRepeatCount()
+
+    def getQMeasure(self, np):
+        return self._measures[np.measureIndex]
+

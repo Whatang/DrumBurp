@@ -901,6 +901,18 @@ p, li { white-space: pre-wrap; }
     </layout>
    </widget>
   </widget>
+  <widget class="QToolBar" name="MIDIToolBar">
+   <property name="windowTitle">
+    <string>MIDI ToolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionPlayScore"/>
+  </widget>
   <action name="actionQuit">
    <property name="icon">
     <iconset resource="DrumBurp.qrc">
@@ -1240,6 +1252,22 @@ Writes this Score as a plain .txt file.</string>
    </property>
    <property name="toolTip">
     <string>Fit Score to Page</string>
+   </property>
+  </action>
+  <action name="actionPlayScore">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/media-playback-start.png</normaloff>
+     <normalon>:/Icons/Icons/media-playback-stop.png</normalon>:/Icons/Icons/media-playback-start.png</iconset>
+   </property>
+   <property name="text">
+    <string>Play Score</string>
+   </property>
+   <property name="toolTip">
+    <string>Play this score through MIDI</string>
    </property>
   </action>
  </widget>

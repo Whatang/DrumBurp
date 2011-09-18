@@ -62,6 +62,7 @@ class QMeasure(QtGui.QGraphicsItem):
         self._repeatCountRect = None
         self._startClick = None
         self._alternate = None
+        self._playing = False
         self.setAcceptsHoverEvents(True)
         self.setMeasure(measure)
 
@@ -174,6 +175,11 @@ class QMeasure(QtGui.QGraphicsItem):
         font.setItalic(isItalic)
         painter.setFont(font)
 
+    def _paintPlayingHighlight(self, painter):
+        painter.setPen(self.scene().palette().linkVisited().color())
+        painter.setBrush(QtCore.Qt.NoBrush)
+        painter.drawRect(0, 0, self.width() - 1, self.height() - 1)
+
     def paint(self, painter, dummyOption, dummyWidget = None):
         painter.save()
         painter.setPen(QtCore.Qt.SolidLine)
@@ -192,6 +198,8 @@ class QMeasure(QtGui.QGraphicsItem):
             self._paintRepeatCount(painter)
         else:
             self._repeatCountRect = None
+        if self._playing:
+            self._paintPlayingHighlight(painter)
         if self._measure.alternateText is not None:
             self._paintAlternate(painter)
         else:
@@ -382,3 +390,7 @@ class QMeasure(QtGui.QGraphicsItem):
             command = SetAlternateCommand(self._qScore, self._measurePosition(),
                                           altDialog.getValue())
             self._qScore.addCommand(command)
+
+    def setPlaying(self, onOff):
+        self._playing = onOff
+        self.update()

@@ -39,6 +39,7 @@ from DBInfoDialog import DBInfoDialog
 from DBStartupDialog import DBStartupDialog
 import DBIcons
 import os
+import DBMidi
 
 APPNAME = "DrumBurp"
 DB_VERSION = "0.4"
@@ -108,6 +109,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
         props.metadataVisibilityChanged.connect(self._setMetadataVisible)
         props.beatCountVisibleChanged.connect(self._setBeatCountVisible)
+        DBMidi.SONGEND_SIGNAL.connect(lambda : self.actionPlayScore.setChecked(False))
+        DBMidi.HIGHLIGHT_SIGNAL.connect(self.highlightPlayingMeasure)
         # Fonts
         self.fontComboBox.setWritingSystem(QFontDatabase.Latin)
         self.sectionFontCombo.setWritingSystem(QFontDatabase.Latin)
@@ -513,3 +516,18 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             self.sectionNavigator.addItem(sectionTitle)
         self.sectionNavigator.blockSignals(False)
 
+    @pyqtSignature("bool")
+    def on_actionPlayScore_toggled(self, onOff):
+        if onOff:
+            DBMidi.playScore(self.scoreScene.score)
+        else:
+            DBMidi.shutUp()
+
+    def highlightPlayingMeasure(self, index):
+        if index == -1:
+            self.scoreScene.highlightPlayingMeasure(None)
+        else:
+            position = self.scoreScene.score.getMeasurePosition(index)
+            self.scoreScene.highlightPlayingMeasure(position)
+            measure = self.scoreScene.getQMeasure(position)
+            self.scoreView.ensureVisible(measure)
