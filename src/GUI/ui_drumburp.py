@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sat Sep 17 18:16:10 2011
+# Created: Sat Sep 17 20:11:01 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -461,6 +461,13 @@ class Ui_DrumBurpWindow(object):
         icon19.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/media-playback-stop.png")), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.actionPlayScore.setIcon(icon19)
         self.actionPlayScore.setObjectName(_fromUtf8("actionPlayScore"))
+        self.actionMuteNotes = QtGui.QAction(DrumBurpWindow)
+        self.actionMuteNotes.setCheckable(True)
+        icon20 = QtGui.QIcon()
+        icon20.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/audio-volume-medium.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon20.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/audio-volume-muted.png")), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        self.actionMuteNotes.setIcon(icon20)
+        self.actionMuteNotes.setObjectName(_fromUtf8("actionMuteNotes"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.menuRecentScores.menuAction())
@@ -511,6 +518,7 @@ class Ui_DrumBurpWindow(object):
         self.helpToolBar.addAction(self.actionWhatsThis)
         self.helpToolBar.addAction(self.actionAboutDrumBurp)
         self.MIDIToolBar.addAction(self.actionPlayScore)
+        self.MIDIToolBar.addAction(self.actionMuteNotes)
         self.label_2.setBuddy(self.paperBox)
         self.label_3.setBuddy(self.widthSpinBox)
         self.label_4.setBuddy(self.lineSpaceSlider)
@@ -678,6 +686,8 @@ class Ui_DrumBurpWindow(object):
         self.actionFitPage.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Fit Score to Page", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPlayScore.setText(QtGui.QApplication.translate("DrumBurpWindow", "Play Score", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPlayScore.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Play this score through MIDI", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMuteNotes.setText(QtGui.QApplication.translate("DrumBurpWindow", "Mute Notes", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMuteNotes.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Enable/disable note audio", None, QtGui.QApplication.UnicodeUTF8))
 
 from Widgets.ScoreView_plugin import ScoreView
 import DrumBurp_rc

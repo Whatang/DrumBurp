@@ -531,3 +531,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             self.scoreScene.highlightPlayingMeasure(position)
             measure = self.scoreScene.getQMeasure(position)
             self.scoreView.ensureVisible(measure)
+
+    @pyqtSignature("bool")
+    def on_actionMuteNotes_toggled(self, onOff):
+        DBMidi.setMute(onOff)

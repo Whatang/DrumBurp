@@ -912,6 +912,7 @@ p, li { white-space: pre-wrap; }
     <bool>false</bool>
    </attribute>
    <addaction name="actionPlayScore"/>
+   <addaction name="actionMuteNotes"/>
   </widget>
   <action name="actionQuit">
    <property name="icon">
@@ -1268,6 +1269,22 @@ Writes this Score as a plain .txt file.</string>
    </property>
    <property name="toolTip">
     <string>Play this score through MIDI</string>
+   </property>
+  </action>
+  <action name="actionMuteNotes">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/audio-volume-medium.png</normaloff>
+     <normalon>:/Icons/Icons/audio-volume-muted.png</normalon>:/Icons/Icons/audio-volume-medium.png</iconset>
+   </property>
+   <property name="text">
+    <string>Mute Notes</string>
+   </property>
+   <property name="toolTip">
+    <string>Enable/disable note audio</string>
    </property>
   </action>
  </widget>

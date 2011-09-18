@@ -33,12 +33,17 @@ class _midi(QObject):
         self._measureTimer.setSingleShot(True)
         self._measureTimer.timeout.connect(self._highlight)
         self._songStart = None
+        self._mute = False
+
+    def setMute(self, onOff):
+        self._mute = onOff
 
     highlightMeasure = pyqtSignal(int)
 
     def playNote(self, note):
-        self._midiOut.write([[[_PERCUSSION, note, _VELOCITY],
-                              pygame.midi.time()]])
+        if not self._mute:
+            self._midiOut.write([[[_PERCUSSION, note, _VELOCITY],
+                                  pygame.midi.time()]])
 
     def playScore(self, score):
         start = time.clock()
@@ -118,6 +123,9 @@ def playScore(score):
 
 def shutUp():
     _PLAYER.shutUp()
+
+def setMute(onOff):
+    _PLAYER.setMute(onOff)
 
 atexit.register(_PLAYER.cleanup)
 
