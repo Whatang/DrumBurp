@@ -234,6 +234,9 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             badNotes.remove(self._currentHead)
             badNotes.update(["-", "|"])
             for head in string.printable:
+                head = head.strip()
+                if not head:
+                    continue
                 if head in badNotes:
                     continue
                 self.currentNoteHead.addItem(head)
