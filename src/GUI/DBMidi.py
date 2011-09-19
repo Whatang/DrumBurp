@@ -9,6 +9,7 @@ import pygame
 import pygame.midi
 import atexit
 import time
+from PyQt4 import QtGui
 from PyQt4.QtCore import QTimer, pyqtSignal, QObject
 from Data.MeasureCount import MIDITICKSPERBEAT
 

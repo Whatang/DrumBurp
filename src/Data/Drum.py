@@ -26,6 +26,23 @@ Created on 12 Dec 2010
 from DBConstants import DRUM_ABBR_WIDTH
 from DefaultKits import DEFAULT_KIT
 
+class HeadData(object):
+    def __init__(self, midiNote = 36, midiVolume = 64, effect = "normal"):
+        self.midiNote = midiNote
+        self.midiVolume = midiVolume
+        self.effect = effect
+
+_DEFAULTEFFECT = {"x":"normal",
+                  "X":"accent",
+                  "o":"normal",
+                  "O":"accent",
+                  "g":"ghost",
+                  "f":"flam",
+                  "d":"drag",
+                  "+":"choke",
+                  "#":"choke",
+                  "b":"normal"}
+
 class Drum(object):
     '''
     classdocs
@@ -34,10 +51,15 @@ class Drum(object):
         self.name = name
         self.abbr = abbr
         self.head = head
-        self.locked = locked
         if midiNote is None:
             midiNote = _guessMidiNote(abbr)
         self.midiNote = midiNote
+        self.noteHeads = ["x", "X", "o", "O", "g", "f", "d", "+", "#", "b"]
+        self.headData = {}
+        for h in self.noteHeads:
+            self.headData[h] = HeadData(midiNote = midiNote,
+                                        effect = _DEFAULTEFFECT[h])
+        self.locked = locked
         assert(len(name) > 0)
         assert(1 <= len(abbr) <= DRUM_ABBR_WIDTH)
         assert(len(head) == 1)
@@ -47,6 +69,17 @@ class Drum(object):
 
     def exportASCII(self):
         return "%2s - %s" % (self.abbr, self.name)
+
+    def renameHead(self, oldHead, head):
+        try:
+            index = self.noteHeads.index(oldHead)
+        except IndexError:
+            return
+        self.noteHeads[index] = head
+        self.headData[head] = self.headData.pop(oldHead)
+        if self.head == oldHead:
+            self.head = head
+
 
 def _guessMidiNote(abbr):
     for drumData in DEFAULT_KIT:
