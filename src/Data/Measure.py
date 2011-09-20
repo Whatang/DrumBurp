@@ -268,14 +268,20 @@ class Measure(object):
         return oldMeasure
 
 
-    def changeKit(self, changes):
-        oldNotes = copy.deepcopy(self._notes)
-        self._notes = _makeNoteDict()
-        for noteTime, line in oldNotes.iteritems():
+    def changeKit(self, newKit, changes):
+        transposed = _makeNoteDict()
+        for noteTime, line in self._notes.iteritems():
             for drumIndex, head in line.iteritems():
-                if changes[drumIndex] == -1:
-                    continue
-                self._notes[noteTime][changes[drumIndex]] = head
+                transposed[drumIndex][noteTime] = head
+        self._notes = _makeNoteDict()
+        for newDrumIndex, newDrum in enumerate(newKit):
+            oldDrumIndex = changes[newDrumIndex]
+            if oldDrumIndex == -1:
+                continue
+            for noteTime, head in transposed[oldDrumIndex].iteritems():
+                if not newDrum.isAllowedHead(head):
+                    head = newDrum.head
+                self._notes[noteTime][newDrumIndex] = head
 
     def lineIsVisible(self, index):
         return (len(self._notes) > 0 and

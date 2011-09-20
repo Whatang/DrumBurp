@@ -50,35 +50,89 @@ class Drum(object):
     def __init__(self, name, abbr, head, locked = False, midiNote = None):
         self.name = name
         self.abbr = abbr
-        self.head = head
+        self._head = head
         if midiNote is None:
             midiNote = _guessMidiNote(abbr)
         self.midiNote = midiNote
-        self.noteHeads = ["x", "X", "o", "O", "g", "f", "d", "+", "#", "b"]
-        self.headData = {}
-        for h in self.noteHeads:
-            self.headData[h] = HeadData(midiNote = midiNote,
-                                        effect = _DEFAULTEFFECT[h])
+        self._noteHeads = ["x", "X", "o", "O", "g", "f", "d", "+", "#", "b"]
+        self._headData = {}
+        for h in self._noteHeads:
+            self._headData[h] = HeadData(midiNote = midiNote,
+                                         effect = _DEFAULTEFFECT[h])
         self.locked = locked
+        self.setDefaultHead(head)
         assert(len(name) > 0)
         assert(1 <= len(abbr) <= DRUM_ABBR_WIDTH)
         assert(len(head) == 1)
 
+    @property
+    def head(self):
+        return self._head
+
+    def setDefaultHead(self, head):
+        assert(head in self._headData)
+        self._head = head
+        index = self._noteHeads.index(head)
+        self._noteHeads = [head] + self._noteHeads[:index] + self._noteHeads[index + 1:]
+
+    def __iter__(self):
+        return iter(self._noteHeads)
+
+    def __len__(self):
+        return len(self._noteHeads)
+
+    def __getitem__(self, index):
+        return self._noteHeads[index]
+
     def __eq__(self, other):
         return self.name == other.name or self.abbr == other.abbr
+
+    def headData(self, head):
+        return self._headData[head]
 
     def exportASCII(self):
         return "%2s - %s" % (self.abbr, self.name)
 
+    def isAllowedHead(self, head):
+        return head in self._headData
+
     def renameHead(self, oldHead, head):
         try:
-            index = self.noteHeads.index(oldHead)
+            index = self._noteHeads.index(oldHead)
         except IndexError:
             return
-        self.noteHeads[index] = head
-        self.headData[head] = self.headData.pop(oldHead)
-        if self.head == oldHead:
-            self.head = head
+        self._noteHeads[index] = head
+        self._headData[head] = self._headData.pop(oldHead)
+        if self._head == oldHead:
+            self._head = head
+
+    def addNoteHead(self, head):
+        self._noteHeads.append(head)
+        self._headData[head] = HeadData(midiNote = self.midiNote)
+
+    def removeNoteHead(self, head):
+        try:
+            self._noteHeads.remove(head)
+        except ValueError:
+            return
+        self._headData.pop(head)
+
+    def moveHeadUp(self, head):
+        try:
+            index = self._noteHeads.index(head)
+        except IndexError:
+            return
+        assert(index > 1)
+        self._noteHeads[index - 1:index + 1] = reversed(self._noteHeads[index - 1:index + 1])
+
+    def moveHeadDown(self, head):
+        try:
+            index = self._noteHeads.index(head)
+        except IndexError:
+            return
+        assert(index < len(self) - 1)
+        self._noteHeads[index:index + 2] = reversed(self._noteHeads[index:index + 2])
+
 
 
 def _guessMidiNote(abbr):

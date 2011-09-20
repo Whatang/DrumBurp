@@ -507,7 +507,7 @@ class Score(object):
 
     def changeKit(self, newKit, changes):
         for measure in self.iterMeasures():
-            measure.changeKit(changes)
+            measure.changeKit(newKit, changes)
         self.drumKit = newKit
 
     def numVisibleLines(self, index):

@@ -24,11 +24,11 @@ Created on 26 Jan 2011
 '''
 from PyQt4.QtGui import QDialog, QRadioButton
 from ui_editKit import Ui_editKitDialog
-from PyQt4.QtCore import pyqtSignature, Qt, QVariant
+from PyQt4.QtCore import QVariant
 from Data.DrumKit import DrumKit
 from Data.Drum import Drum
 import copy
-import string
+import string #IGNORE:W0402
 
 class QEditKitDialog(QDialog, Ui_editKitDialog):
     '''
@@ -42,7 +42,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         super(QEditKitDialog, self).__init__(parent)
         self.setupUi(self)
         self._currentKit = []
-        self._oldLines = []
+        self._oldLines = {}
         self._initialKit = kit
         self._populate()
         self.kitTable.currentRowChanged.connect(self._drumChanged)
@@ -79,11 +79,12 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
     def _populate(self):
         self.oldDrum.addItem("None", userData = QVariant(-1))
         for drumIndex, drum in enumerate(reversed(self._initialKit)):
+            drum = copy.deepcopy(drum)
             self.kitTable.insertItem(drumIndex, drum.name)
-            self._currentKit.append(copy.deepcopy(drum))
+            self._currentKit.append(drum)
             self.oldDrum.addItem(drum.name, userData = QVariant(drumIndex))
-            self._oldLines.append(drumIndex)
-        self._checkEnoughDrums()
+            self._oldLines[drum] = drumIndex
+        self._checkDrumButtons()
 
     @property
     def _currentDrumIndex(self):
@@ -94,48 +95,45 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         drumIndex = self._currentDrumIndex
         return self._currentKit[drumIndex]
 
-    def _checkEnoughDrums(self):
+    def _checkDrumButtons(self):
         self.deleteButton.setEnabled(len(self._currentKit) > 1)
+        index = self._currentDrumIndex
+        self.upButton.setEnabled(index > 0)
+        self.downButton.setEnabled(index < len(self._currentKit) - 1)
 
     def _drumChanged(self):
-        self._checkDrumMoveButtons()
-        drumIndex = self._currentDrumIndex
         drum = self._currentDrum
         self.drumName.setText(drum.name)
         self.drumAbbr.setText(drum.abbr)
-        self.oldDrum.setCurrentIndex(self._oldLines[drumIndex] + 1)
+        self.oldDrum.setCurrentIndex(self._oldLines[drum] + 1)
         self.lockedCheckBox.setChecked(drum.locked)
         self._populateHeadTable()
+        self._checkDrumButtons()
         self.noteHeadTable.blockSignals(False)
 
     def _addDrum(self):
         drum = Drum("New drum", "XX", "x")
         self._currentKit.append(drum)
-        self._oldLines.append(-1)
+        self._oldLines[drum] = -1
         self.kitTable.addItem(drum.name)
         self.kitTable.setCurrentRow(len(self._currentKit) - 1)
-        self._checkEnoughDrums()
+        self._checkDrumButtons()
 
     def _removeDrum(self):
         index = self._currentDrumIndex
+        drum = self._currentDrum
         self._currentKit = self._currentKit[:index] + self._currentKit[index + 1:]
-        self._oldLines = self._oldLines[:index] + self._oldLines[index + 1:]
-        if index < len(self._currentKit) - 1 :
+        self._oldLines.pop(drum)
+        if index < len(self._currentKit) - 1:
             self._drumChanged()
         else:
             self.kitTable.setCurrentRow(index - 1)
         self.kitTable.takeItem(index)
-        self._checkEnoughDrums()
-
-    def _checkDrumMoveButtons(self):
-        index = self._currentDrumIndex
-        self.upButton.setEnabled(index > 0)
-        self.downButton.setEnabled(index < len(self._currentKit) - 1)
+        self._checkDrumButtons()
 
     def _moveDrumUp(self):
         index = self._currentDrumIndex
         self._currentKit[index - 1:index + 1] = reversed(self._currentKit[index - 1:index + 1])
-        self._oldLines[index - 1:index + 1] = reversed(self._oldLines[index - 1:index + 1])
         self.kitTable.item(index).setText(self._currentKit[index].name)
         self.kitTable.item(index - 1).setText(self._currentKit[index - 1].name)
         self.kitTable.setCurrentRow(index - 1)
@@ -143,7 +141,6 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
     def _moveDrumDown(self):
         index = self._currentDrumIndex
         self._currentKit[index:index + 2] = reversed(self._currentKit[index:index + 2])
-        self._oldLines[index:index + 2] = reversed(self._oldLines[index:index + 2])
         self.kitTable.item(index).setText(self._currentKit[index].name)
         self.kitTable.item(index + 1).setText(self._currentKit[index + 1].name)
         self.kitTable.setCurrentRow(index + 1)
@@ -169,16 +166,16 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self._currentDrum.abbr = unicode(self.drumAbbr.text())
 
     def _oldDrumChanged(self):
-        drumIndex = self._currentDrumIndex
+        drum = self._currentDrum
         newOldDrumIndex = self.oldDrum.currentIndex()
         newOldDrumIndex = self.oldDrum.itemData(newOldDrumIndex).toInt()[0]
-        self._oldLines[drumIndex] = newOldDrumIndex
+        self._oldLines[drum] = newOldDrumIndex
 
     def _populateHeadTable(self):
         self.noteHeadTable.blockSignals(True)
         drum = self._currentDrum
         self.noteHeadTable.clear()
-        for head in drum.noteHeads:
+        for head in drum:
             headString = head
             if head == drum.head:
                 headString += " (Default)"
@@ -190,24 +187,21 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
     def _currentHead(self):
         drum = self._currentDrum
         row = self.noteHeadTable.currentRow()
-        head = drum.noteHeads[row]
+        head = drum[row]
         return head
 
     @property
     def _currentHeadData(self):
         drum = self._currentDrum
         row = self.noteHeadTable.currentRow()
-        head = drum.noteHeads[row]
-        return drum.headData[head]
-
-    def _checkHeadDelete(self):
-        self.deleteHeadButton.setEnabled(self._currentHead != self._currentDrum.head)
+        head = drum[row]
+        return drum.headData(head)
 
     def _headEdited(self):
         noteHead = str(self.currentNoteHead.currentText())
         row = self.noteHeadTable.currentRow()
         drum = self._currentDrum
-        oldHead = drum.noteHeads[row]
+        oldHead = drum[row]
         drum.renameHead(oldHead, noteHead)
         headString = noteHead
         if noteHead == drum.head:
@@ -224,49 +218,77 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         midiIndex = self.midiNoteCombo.findData(QVariant(headData.midiNote))
         self.midiNoteCombo.setCurrentIndex(midiIndex)
         self._setEffect(headData.effect)
-        self._checkHeadDelete()
-        self._checkHeadMoveButtons()
+        self._checkHeadButtons()
 
     def _populateCurrentNoteHead(self):
         self.currentNoteHead.blockSignals(True)
         try:
-            badNotes = set(self._currentDrum.noteHeads)
+            badNotes = set(self._currentDrum)
             badNotes.remove(self._currentHead)
             badNotes.update(["-", "|"])
             for head in string.printable:
                 head = head.strip()
-                if not head:
-                    continue
-                if head in badNotes:
+                if not head or head in badNotes:
                     continue
                 self.currentNoteHead.addItem(head)
         finally:
             self.currentNoteHead.blockSignals(False)
 
     def _addNoteHead(self):
-        pass
+        badNotes = set(self._currentDrum)
+        badNotes.update(["-", "|"])
+        head = "?"
+        if head in badNotes:
+            candidates = string.printable
+            for head in candidates:
+                if head not in badNotes:
+                    break
+        self._currentDrum.addNoteHead(head)
+        self._populateHeadTable()
+        self.noteHeadTable.setCurrentRow(len(self._currentDrum) - 1)
+        self._checkHeadButtons()
 
     def _removeNoteHead(self):
-        pass
+        row = self.noteHeadTable.currentRow()
+        head = self._currentHead
+        self._currentDrum.removeNoteHead(head)
+        self._populateHeadTable()
+        if row >= len(self._currentDrum):
+            self.noteHeadTable.setCurrentRow(row - 1)
+        else:
+            self.noteHeadTable.setCurrentRow(row)
+        self._checkHeadButtons()
 
-    def _checkHeadMoveButtons(self):
-        index = self.noteHeadTable.currentRow()
-        self.headUpButton.setEnabled(index > 0)
-        self.headDownButton.setEnabled(index < len(self._currentDrum.noteHeads) - 1)
+    def _checkHeadButtons(self):
+        isDefault = (self._currentHead == self._currentDrum.head)
+        self.deleteHeadButton.setEnabled(not isDefault)
+        if isDefault:
+            self.headUpButton.setEnabled(False)
+            self.headDownButton.setEnabled(False)
+        else:
+            index = self.noteHeadTable.currentRow()
+            self.headUpButton.setEnabled(index > 1)
+            self.headDownButton.setEnabled(index <
+                                           len(self._currentDrum) - 1)
 
     def _moveNoteHeadUp(self):
-        pass
+        index = self.noteHeadTable.currentRow()
+        self._currentDrum.moveHeadUp(self._currentHead)
+        self._populateHeadTable()
+        self.noteHeadTable.setCurrentRow(index - 1)
 
     def _moveNoteHeadDown(self):
-        pass
+        index = self.noteHeadTable.currentRow()
+        self._currentDrum.moveHeadDown(self._currentHead)
+        self._populateHeadTable()
+        self.noteHeadTable.setCurrentRow(index + 1)
 
     def _setDefaultHead(self):
         self.noteHeadTable.blockSignals(True)
-        index = self.noteHeadTable.currentIndex()
-        self._currentDrum.head = self._currentHead
+        self._currentDrum.setDefaultHead(self._currentHead)
         self._populateHeadTable()
         self.noteHeadTable.blockSignals(False)
-        self.noteHeadTable.setCurrentIndex(index)
+        self.noteHeadTable.setCurrentRow(0)
 
 
     def _midiNoteChanged(self):
@@ -295,11 +317,22 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
                 self._currentHeadData.effect = str(effect.text()).lower()
 
     def _lockChanged(self):
-        pass
+        self._currentDrum.locked = self.lockedCheckBox.isChecked()
 
     def _populateMidiCombo(self):
         for midiNote, midiName in _MIDIDATA:
             self.midiNoteCombo.addItem(midiName, userData = QVariant(midiNote))
+
+    def getNewKit(self):
+        newKit = DrumKit()
+        oldLines = []
+        for drum in reversed(self._currentKit):
+            newKit.addDrum(drum)
+            if self._oldLines[drum] == -1:
+                oldLines.append(-1)
+            else:
+                oldLines.append(len(self._initialKit) - self._oldLines[drum] - 1)
+        return newKit, oldLines
 
 _MIDIDATA = [(35, "Acoustic Bass Drum"),
              (36, "Bass Drum 1"),
@@ -349,230 +382,7 @@ _MIDIDATA = [(35, "Acoustic Bass Drum"),
              (80, "Mute Triangle"),
              (81, "Open Triangle")]
 
-#class Bob(object):
-#
-##        header.setResizeMode(3, QHeaderView.ResizeToContents)
-##        header.setResizeMode(4, QHeaderView.ResizeToContents)
-##        self._populate()
-##        self.kitTable.selectRow(0)
-##        self.kitTable.itemChanged.connect(self._checkItem)
-#
-#    def _populate(self):
-#        self.kitTable.setRowCount(len(self._kit))
-#        drums = list(self._kit)
-#        drums.reverse()
-#        for row, drum in enumerate(drums):
-#            self._setDrum(drum, row, len(self._kit) - row - 1)
-#
-#    def _setDrum(self, drum, row, previous):
-#        name = QTableWidgetItem(drum.name)
-#        self.kitTable.setItem(row, 0, name)
-#        abbr = QTableWidgetItem(drum.abbr)
-#        abbr.setTextAlignment(Qt.AlignCenter)
-#        self.kitTable.setItem(row, 1, abbr)
-#        head = QTableWidgetItem(drum.head)
-#        head.setTextAlignment(Qt.AlignCenter)
-#        self.kitTable.setItem(row, 2, head)
-#        layout = QHBoxLayout()
-#        check = QCheckBox(self)
-#        check.setChecked(drum.locked)
-#        layout.addWidget(check, alignment = Qt.AlignCenter)
-#        layout.setContentsMargins(0, 0, 0, 0)
-#        frame = QFrame()
-#        frame.setLayout(layout)
-#        self.kitTable.setCellWidget(row, 3, frame)
-#        combo = self._createCombo(previous)
-#        def focusOnRow(dummy = None):
-#            self.kitTable.selectRow(self.kitTable.currentRow())
-#            self.kitTable.setFocus()
-#        check.clicked.connect(focusOnRow)
-#        combo.activated.connect(focusOnRow)
-#        def callExclusive(newValue):
-#            qv = combo.itemData(newValue)
-#            newValue = qv.toInt()[0]
-#            self._exclusiveCombos(self.kitTable.currentRow(), newValue)
-#        combo.currentIndexChanged.connect(callExclusive)
-#        self.kitTable.setCellWidget(row, 4, combo)
-#        return name
-#
-#    def _exclusiveCombos(self, row, newValue):
-#        if newValue == -1:
-#            return
-#        for otherRow in range(self.kitTable.rowCount()):
-#            if otherRow == row:
-#                continue
-#            combo = self.kitTable.cellWidget(otherRow, 4)
-#            currentValue = combo.itemData(combo.currentIndex())
-#            currentValue = currentValue.toInt()[0]
-#            if currentValue == newValue:
-#                combo.setCurrentIndex(0)
-#
-#    def _getData(self, row):
-#        name = unicode(self.kitTable.item(row, 0).text())
-#        abbr = unicode(self.kitTable.item(row, 1).text())
-#        head = unicode(self.kitTable.item(row, 2).text())
-#        frame = self.kitTable.cellWidget(row, 3)
-#        check = None
-#        for child in frame.children():
-#            if isinstance(child, QCheckBox):
-#                check = child
-#                break
-#        locked = check.isChecked()
-#        drum = Drum(name, abbr, head, locked)
-#        combo = self.kitTable.cellWidget(row, 4)
-#        previous = combo.itemData(combo.currentIndex()).toInt()[0]
-#        return drum, previous
-#
-#    def _switchRows(self, row1, row2):
-#        drum1, previous1 = self._getData(row1)
-#        drum2, previous2 = self._getData(row2)
-#        self._setDrum(drum1, row2, previous1)
-#        self._setDrum(drum2, row1, previous2)
-#
-#    def _createCombo(self, index):
-#        combo = QComboBox(self.kitTable)
-#        combo.addItem("None", userData = QVariant(-1))
-#        if index == -1:
-#            combo.setCurrentIndex(0)
-#        for drumIndex, drum in enumerate(self._kit):
-#            combo.addItem(drum.name, userData = QVariant(drumIndex))
-#            if drumIndex == index:
-#                combo.setCurrentIndex(index + 1)
-#        combo.setEditable(False)
-#        return combo
-#
-#    @pyqtSignature("")
-#    def on_resetButton_clicked(self):
-#        self._populate()
-#        self.kitTable.scrollToTop()
-#        self.kitTable.selectRow(0)
-#        self.kitTable.setFocus()
-#
-#    @pyqtSignature("")
-#    def on_clearButton_clicked(self):
-#        self.kitTable.setRowCount(0)
-#        self.kitTable.scrollToTop()
-#
-#    @pyqtSignature("")
-#    def on_deleteButton_clicked(self):
-#        row = self.kitTable.currentRow()
-#        self.kitTable.removeRow(row)
-#        self.kitTable.selectRow(max(0, row - 1))
-#        self.kitTable.setFocus()
-#
-#    @pyqtSignature("")
-#    def on_addButton_clicked(self):
-#        row = self.kitTable.rowCount()
-#        self.kitTable.setRowCount(row + 1)
-#        drum = Drum("New Drum", "??", "x")
-#        name = self._setDrum(drum, row, -1)
-#        self.kitTable.scrollToItem(name)
-#        self.kitTable.selectRow(row)
-#        self.kitTable.setFocus()
-#
-#    @pyqtSignature("int, int, int, int")
-#    def on_kitTable_currentCellChanged(self, currentRow, *dummyArgs):
-#        self.downButton.setEnabled(currentRow != -1
-#                                   and (currentRow !=
-#                                        self.kitTable.rowCount() - 1))
-#        self.upButton.setEnabled(currentRow != -1
-#                                 and currentRow != 0)
-#
-#    @pyqtSignature("")
-#    def on_downButton_clicked(self):
-#        row = self.kitTable.currentRow()
-#        self._switchRows(row, row + 1)
-#        self.kitTable.selectRow(row + 1)
-#        self.kitTable.setFocus()
-#
-#    @pyqtSignature("")
-#    def on_upButton_clicked(self):
-#        row = self.kitTable.currentRow()
-#        self._switchRows(row, row - 1)
-#        self.kitTable.selectRow(row - 1)
-#        self.kitTable.setFocus()
-#
-#    @pyqtSignature("QTableWidgetItem *")
-#    def _checkItem(self, item):
-#        if item.column() not in (1, 2):
-#            return
-#        elif item.column() == 1:
-#            text = unicode(item.text())
-#            if not 1 <= len(text) <= 2:
-#                msg = "Abbreviations must be 1 or 2 characters long"
-#                QMessageBox.warning(self,
-#                                    "Bad abbreviation",
-#                                    msg)
-#                item.setText("??")
-#                self.kitTable.selectItem(item)
-#                self.kitTable.setFocus()
-#        elif item.column() == 2:
-#            text = unicode(item.text())
-#            if len(text) != 1:
-#                msg = "Default note heads must be a single character"
-#                QMessageBox.warning(self,
-#                                    "Bad note head",
-#                                    msg)
-#                item.setText("?")
-#                self.kitTable.selectItem(item)
-#                self.kitTable.setFocus()
-#
-#
-#    def _validate(self):
-#        badRow = -1
-#        msg = ""
-#        drumNames = set()
-#        drumAbs = set()
-#        for row in range(self.kitTable.rowCount()):
-#            drum, dummyPrevious = self._getData(row)
-#            if len(drum.name) == 0:
-#                badRow = row
-#                msg = "Drum %d has no name" % drum.name
-#                break
-#            elif drum.name in drumNames:
-#                badRow = row
-#                msg = "%s is a duplicated name" % drum.name
-#                break
-#            drumNames.add(drum.name)
-#            if len(drum.abbr) == 0:
-#                badRow = row
-#                msg = "Drum %d has no abbreviation" % drum.abbr
-#                break
-#            elif drum.abbr in drumAbs:
-#                badRow = row
-#                msg = ("For %s, %s is a duplicated drum abbreviation"
-#                       % (drum.name, drum.abbr))
-#                break
-#            drumAbs.add(drum.abbr)
-#        return badRow == -1, badRow, msg
-#
-#    def _badKit(self, row, msg):
-#        QMessageBox.warning(self,
-#                            "Drum kit error",
-#                            "There is a problem with the drum kit.\n\n" +
-#                            msg)
-#        self.kitTable.selectRow(row)
-#        self.kitTable.setFocus()
-#
-#    def accept(self):
-#        ok, badRow, msg = self._validate()
-#        if ok:
-#            super(QEditKitDialog, self).accept()
-#        else:
-#            self._badKit(badRow, msg)
-#
-#    def getNewKit(self):
-#        numDrums = self.kitTable.rowCount()
-#        indexes = range(numDrums)
-#        indexes.reverse()
-#        newKit = DrumKit()
-#        changes = [-1] * len(self._kit)
-#        for row in indexes:
-#            drum, previous = self._getData(row)
-#            newKit.addDrum(drum)
-#            if previous != -1:
-#                changes[previous] = numDrums - row - 1
-#        return newKit, changes
+
 
 
 def main():
@@ -588,10 +398,9 @@ def main():
     if dialog.result():
         newKit, changes = dialog.getNewKit()
         print changes
-        for drum in newKit:
-            print drum.name
-        for drum, change in zip(kit, changes):
-            print drum.name, newKit[change].name if change != -1 else None
+        for drum, oldDrumIndex in zip(newKit, changes):
+            print drum.name, kit[oldDrumIndex].name if oldDrumIndex != -1 else None, drum.head
+
 
 if __name__ == "__main__":
     main()
