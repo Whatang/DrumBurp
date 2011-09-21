@@ -29,6 +29,7 @@ from Data.DrumKit import DrumKit
 from Data.Drum import Drum
 import copy
 import string #IGNORE:W0402
+import DBMidi
 
 class QEditKitDialog(QDialog, Ui_editKitDialog):
     '''
@@ -218,6 +219,8 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         midiIndex = self.midiNoteCombo.findData(QVariant(headData.midiNote))
         self.midiNoteCombo.setCurrentIndex(midiIndex)
         self._setEffect(headData.effect)
+        if not self.muteButton.isChecked():
+            DBMidi.playHeadData(self._currentHeadData)
         self._checkHeadButtons()
 
     def _populateCurrentNoteHead(self):
@@ -295,6 +298,8 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         midiNote = self.midiNoteCombo.currentIndex()
         midiNote = self.midiNoteCombo.itemData(midiNote).toInt()[0]
         self._currentHeadData.midiNote = midiNote
+        if not self.muteButton.isChecked():
+            DBMidi.playHeadData(self._currentHeadData)
 
     def _midiVolumeChanged(self):
         self._currentHeadData.midiVolume = self.volumeSlider.value()
@@ -315,6 +320,9 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
                 continue
             if effect.isChecked():
                 self._currentHeadData.effect = str(effect.text()).lower()
+                if not self.muteButton.isChecked():
+                    DBMidi.playHeadData(self._currentHeadData)
+                break
 
     def _lockChanged(self):
         self._currentDrum.locked = self.lockedCheckBox.isChecked()

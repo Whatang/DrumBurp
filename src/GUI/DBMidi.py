@@ -48,6 +48,9 @@ class _midi(QObject):
         if self.kit is None or self._mute:
             return
         headData = self.kit[drumIndex].headData(head)
+        self.playHeadData(headData)
+
+    def playHeadData(self, headData):
         self._midiOut.write([[[_PERCUSSION, headData.midiNote,
                                headData.midiVolume],
                               pygame.midi.time()]])
@@ -120,6 +123,9 @@ def setKit(drumKit):
 
 def playNote(drumIndex, head):
     _PLAYER.playNote(drumIndex, head)
+
+def playHeadData(headData):
+    _PLAYER.playHeadData(headData)
 
 def playScore(score):
     _PLAYER.playScore(score)
