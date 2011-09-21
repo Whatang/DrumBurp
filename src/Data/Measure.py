@@ -30,8 +30,82 @@ from NotePosition import NotePosition
 from Data import MeasureCount
 import copy
 
+class NoteDictionary(dict):
+    def __init__(self, *args, **kwargs):
+        super(NoteDictionary, self).__init__(*args, **kwargs)
+        self.noteTimes = []
+
+    def __iter__(self):
+        return iter(self.noteTimes)
+
+    def iterkeys(self):
+        return iter(self.noteTimes)
+
+    def itervalues(self):
+        for noteTime in self.noteTimes:
+            yield self[noteTime]
+
+    def iteritems(self):
+        for noteTime in self.noteTimes:
+            yield (noteTime, self[noteTime])
+
+    def __contains__(self, key):
+        return key in self.noteTimes
+
+    def __getitem__(self, key):
+        if key not in self:
+            self[key] = defaultdict(dict)
+        return dict.__getitem__(self, key)
+
+    def __setitem__(self, index, value):
+        if index not in self:
+            self.noteTimes.append(index)
+            self.noteTimes.sort()
+        super(NoteDictionary, self).__setitem__(index, value)
+
+    def __delitem__(self, key):
+        self.noteTimes.remove(key)
+        dict.__delitem__(self, key)
+
+    def clear(self):
+        dict.clear(self)
+        self.noteTimes = []
+
+    def get(self, key, default = None):
+        if key not in self:
+            return default
+        return self[key]
+
+    def items(self):
+        return list(self.iteritems())
+
+    def keys(self):
+        return list(self.iterkeys())
+
+    def pop(self, key):
+        item = dict.pop(self, key)
+        self.noteTimes.remove(key)
+        return item
+
+    def popitem(self):
+        key, value = dict.popitem(self)
+        self.noteTimes.remove(key)
+        return key, value
+
+    def setdefault(self, key, default = None):
+        if key not in self:
+            self.noteTimes.append(default)
+            self.noteTimes.sort()
+        dict.setdefault(key, default)
+
+    def values(self):
+        return list(self.itervalues())
+
+
+
+
 def _makeNoteDict():
-    return defaultdict(lambda: defaultdict(dict))
+    return NoteDictionary()
 
 _DEFAULTREPEATCOUNT = 1
 
@@ -77,17 +151,14 @@ class Measure(object):
         return self._width
 
     def __iter__(self):
-        noteTimes = self._notes.keys()
-        noteTimes.sort()
-        for noteTime in noteTimes:
-            drumIndexes = self._notes[noteTime].keys()
-            for drumIndex in drumIndexes:
+        for noteTime, drumDict in self._notes.iteritems():
+            for drumIndex, drumHead in drumDict.iteritems():
                 yield (NotePosition(noteTime = noteTime,
                                     drumIndex = drumIndex),
-                       self._notes[noteTime][drumIndex])
+                       drumHead)
 
     def numNotes(self):
-        return sum(len(drumIndex) for drumIndex in self._notes.values())
+        return sum(len(drumIndex) for drumIndex in self._notes.itervalues())
 
     def _runCallBack(self, position):
         if self._callBack is not None:
@@ -285,7 +356,7 @@ class Measure(object):
 
     def lineIsVisible(self, index):
         return (len(self._notes) > 0 and
-                any(index in noteTime for noteTime in self._notes.values()))
+                any(index in drumData for drumData in self._notes.itervalues()))
 
     def write(self, handle, indenter):
         print >> handle, indenter("START_BAR %d" % len(self))
