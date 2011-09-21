@@ -151,17 +151,14 @@ class Measure(object):
         return self._width
 
     def __iter__(self):
-        noteTimes = self._notes.keys()
-        noteTimes.sort()
-        for noteTime in noteTimes:
-            drumIndexes = self._notes[noteTime].keys()
-            for drumIndex in drumIndexes:
+        for noteTime, drumDict in self._notes.iteritems():
+            for drumIndex, drumHead in drumDict.iteritems():
                 yield (NotePosition(noteTime = noteTime,
                                     drumIndex = drumIndex),
-                       self._notes[noteTime][drumIndex])
+                       drumHead)
 
     def numNotes(self):
-        return sum(len(drumIndex) for drumIndex in self._notes.values())
+        return sum(len(drumIndex) for drumIndex in self._notes.itervalues())
 
     def _runCallBack(self, position):
         if self._callBack is not None:
@@ -353,7 +350,7 @@ class Measure(object):
 
     def lineIsVisible(self, index):
         return (len(self._notes) > 0 and
-                any(index in noteTime for noteTime in self._notes.values()))
+                any(index in drumData for drumData in self._notes.itervalues()))
 
     def write(self, handle, indenter):
         print >> handle, indenter("START_BAR %d" % len(self))
