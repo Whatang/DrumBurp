@@ -520,3 +520,9 @@ class QScore(QtGui.QGraphicsScene):
             return
         qMeasure = self.getQMeasure(self._playingMeasure)
         qMeasure.setPlaying(True)
+
+    def changeKit(self, kit, changes):
+        self.score.changeKit(kit, changes)
+        DBMidi.setKit(kit)
+        self.reBuild()
+        self.dirty = True

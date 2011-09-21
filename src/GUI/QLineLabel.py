@@ -50,9 +50,8 @@ class QLineLabel(QtGui.QGraphicsItem):
                                     self.scene().parent())
         if editDialog.exec_():
             newKit, changes = editDialog.getNewKit()
-            self.scene().score.changeKit(newKit, changes)
-            self.scene().reBuild()
-            self.scene().dirty = True
+            self.scene().changeKit(newKit, changes)
+
 
     def setText(self, text):
         self._text = text

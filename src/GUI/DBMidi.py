@@ -37,30 +37,36 @@ class _midi(QObject):
         self._measureTimer.timeout.connect(self._highlight)
         self._songStart = None
         self._mute = False
+        self.kit = None
 
     def setMute(self, onOff):
         self._mute = onOff
 
     highlightMeasure = pyqtSignal(int)
 
-    def playNote(self, note):
-        if not self._mute:
-            self._midiOut.write([[[_PERCUSSION, note, _VELOCITY],
-                                  pygame.midi.time()]])
+    def playNote(self, drumIndex, head):
+        if self.kit is None or self._mute:
+            return
+        headData = self.kit[drumIndex].headData(head)
+        self._midiOut.write([[[_PERCUSSION, headData.midiNote,
+                               headData.midiVolume],
+                              pygame.midi.time()]])
 
     def playScore(self, score):
-        start = time.clock()
+        if self.kit is None:
+            return
         baseTime = 0
         msPerBeat = 60000.0 / score.scoreData.bpm
         notes = []
         self._measureDetails = []
         for measureIndex, measure in enumerate(score.iterMeasures()):
             times = list(measure.counter.iterFloatBeat())
-            for notePos, unusedHead in measure:
-                drumIndex = _NOTEMAP.get(notePos.drumIndex, 71)
-                if drumIndex is not None:
+            for notePos, head in measure:
+                drumData = self.kit[notePos.drumIndex]
+                headData = drumData.headData(head)
+                if headData is not None:
                     noteTime = (baseTime + times[notePos.noteTime]) * msPerBeat
-                    notes.append((noteTime, drumIndex))
+                    notes.append((noteTime, headData))
             baseTime += measure.counter.floatBeats()
             self._measureDetails.append((measureIndex, baseTime * msPerBeat))
         self._measureDetails.reverse()
@@ -72,8 +78,9 @@ class _midi(QObject):
         midiTime = pygame.midi.time()
         self._songStart = time.clock() + latency / 1000.0
         while index < numNotes:
-            midiNotes = [[[_PERCUSSION, drumIndex, _VELOCITY], midiTime + noteTime]
-                         for (noteTime, drumIndex) in
+            midiNotes = [[[_PERCUSSION, headData.midiNote, headData.midiVolume],
+                          midiTime + noteTime]
+                         for (noteTime, headData) in
                          notes[index:index + _NOTESPERSEND]]
             self._midiOut.write(midiNotes)
             index += _NOTESPERSEND
@@ -103,23 +110,16 @@ class _midi(QObject):
             self._measureTimer.start(delay)
 
 
-
-_NOTEMAP = {}
-
 _PLAYER = _midi()
 
 SONGEND_SIGNAL = _PLAYER.timer.timeout
 HIGHLIGHT_SIGNAL = _PLAYER.highlightMeasure
 
 def setKit(drumKit):
-    _NOTEMAP.clear()
-    for index, drum in enumerate(drumKit):
-        _NOTEMAP[index] = drum.midiNote
+    _PLAYER.kit = drumKit
 
-def playNote(drumIndex):
-    note = _NOTEMAP.get(drumIndex, 71)
-    if note is not None:
-        _PLAYER.playNote(note)
+def playNote(drumIndex, head):
+    _PLAYER.playNote(drumIndex, head)
 
 def playScore(score):
     _PLAYER.playScore(score)
@@ -155,11 +155,12 @@ def exportMidi(score, handle):
     baseTime = 0
     for measure in score.iterMeasures():
         times = list(measure.counter.iterMidiTicks())
-        for notePos, unusedHead in measure:
-            drumIndex = _NOTEMAP.get(notePos.drumIndex, 71)
-            if drumIndex is not None:
+        for notePos, head in measure:
+            drumData = score.drumKit[notePos.drumIndex]
+            headData = drumData.headData(head)
+            if headData is not None:
                 noteTime = baseTime + times[notePos.noteTime]
-                notes.append((noteTime, drumIndex))
+                notes.append((noteTime, headData))
         baseTime += times[-1]
     lastNoteTime = 0
     msPerBeat = int(60000000 / score.scoreData.bpm)
@@ -168,11 +169,11 @@ def exportMidi(score, handle):
     signature = "Created with DrumBurp"
     midiData.extend([0, 0xff, 0x1, len(signature)])
     midiData.extend([ord(ch) for ch in signature])
-    for noteTime, drumIndex in notes:
+    for noteTime, headData in notes:
         deltaTime = noteTime - lastNoteTime
         lastNoteTime = noteTime
         encodeSevenBitDelta(deltaTime, midiData)
-        midiData.extend([0x99, drumIndex, 0x7F])
+        midiData.extend([0x99, headData.midiNote, headData.midiVolume])
     midiData.extend([0, 0xFF, 0x2F, 0])
     numBytes = len(midiData)
     lenBytes = [((numBytes >> i) & 0xff) for i in xrange(24, -8, -8)]

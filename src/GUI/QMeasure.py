@@ -209,10 +209,10 @@ class QMeasure(QtGui.QGraphicsItem):
     def dataChanged(self, notePosition):
         if None not in (notePosition.noteTime, notePosition.drumIndex):
             self.update()
-            if (self._measure.noteAt(notePosition.noteTime,
-                                    notePosition.drumIndex)
-                != DBConstants.EMPTY_NOTE):
-                DBMidi.playNote(notePosition.drumIndex)
+            head = self._measure.noteAt(notePosition.noteTime,
+                notePosition.drumIndex)
+            if (head != DBConstants.EMPTY_NOTE):
+                DBMidi.playNote(notePosition.drumIndex, head)
         else:
             self._setDimensions()
             self.update()
