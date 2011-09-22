@@ -63,15 +63,15 @@ class _midi(QObject):
         notes = []
         self._measureDetails = []
         for measureIndex, measure in enumerate(score.iterMeasures()):
-            times = list(measure.counter.iterFloatBeat())
+            times = list(measure.counter.iterTimesMs(msPerBeat))
             for notePos, head in measure:
                 drumData = self.kit[notePos.drumIndex]
                 headData = drumData.headData(head)
                 if headData is not None:
-                    noteTime = (baseTime + times[notePos.noteTime]) * msPerBeat
+                    noteTime = baseTime + times[notePos.noteTime]
                     notes.append((noteTime, headData))
-            baseTime += measure.counter.floatBeats()
-            self._measureDetails.append((measureIndex, baseTime * msPerBeat))
+            baseTime += times[-1]
+            self._measureDetails.append((measureIndex, baseTime))
         self._measureDetails.reverse()
         numNotes = len(notes)
         index = 0
@@ -87,7 +87,7 @@ class _midi(QObject):
                          notes[index:index + _NOTESPERSEND]]
             self._midiOut.write(midiNotes)
             index += _NOTESPERSEND
-        self.timer.start(baseTime * msPerBeat + latency)
+        self.timer.start(baseTime + latency)
         self._measureTimer.start(latency)
 
     def shutUp(self):
