@@ -30,51 +30,56 @@ from NotePosition import NotePosition
 from Data import MeasureCount
 import copy
 
-class NoteDictionary(dict):
-    def __init__(self, *args, **kwargs):
-        super(NoteDictionary, self).__init__(*args, **kwargs)
-        self.noteTimes = []
+class NoteDictionary(object):
+    def __init__(self):
+        self._notes = defaultdict(lambda:defaultdict(dict))
+        self._noteTimes = []
+
+    def __len__(self):
+        return len(self._noteTimes)
 
     def __iter__(self):
-        return iter(self.noteTimes)
+        return iter(self._noteTimes)
 
     def iterkeys(self):
-        return iter(self.noteTimes)
+        return iter(self._noteTimes)
 
     def itervalues(self):
-        for noteTime in self.noteTimes:
-            yield self[noteTime]
+        for noteTime in self._noteTimes:
+            yield self._notes[noteTime]
 
     def iteritems(self):
-        for noteTime in self.noteTimes:
-            yield (noteTime, self[noteTime])
+        for noteTime in self._noteTimes:
+            yield (noteTime, self._notes[noteTime])
 
     def __contains__(self, key):
-        return key in self.noteTimes
+        return key in self._notes
 
     def __getitem__(self, key):
-        if key not in self:
-            self[key] = defaultdict(dict)
-        return dict.__getitem__(self, key)
+        if key not in self._notes:
+            self._noteTimes.append(key)
+            self._noteTimes.sort()
+        return self._notes[key]
 
     def __setitem__(self, index, value):
         if index not in self:
-            self.noteTimes.append(index)
-            self.noteTimes.sort()
-        super(NoteDictionary, self).__setitem__(index, value)
+            self._noteTimes.append(index)
+            self._noteTimes.sort()
+        self._notes[index] = value
 
     def __delitem__(self, key):
-        self.noteTimes.remove(key)
-        dict.__delitem__(self, key)
+        self._noteTimes.remove(key)
+        del self._notes[key]
 
     def clear(self):
-        dict.clear(self)
-        self.noteTimes = []
+        self._notes.clear()
+        self._noteTimes = []
 
-    def get(self, key, default = None):
-        if key not in self:
-            return default
-        return self[key]
+    def copy(self):
+        newDict = NoteDictionary()
+        for key, value in self.iteritems():
+            newDict[key] = value
+        return newDict
 
     def items(self):
         return list(self.iteritems())
@@ -83,26 +88,17 @@ class NoteDictionary(dict):
         return list(self.iterkeys())
 
     def pop(self, key):
-        item = dict.pop(self, key)
-        self.noteTimes.remove(key)
+        item = self._notes.pop(key)
+        self._noteTimes.remove(key)
         return item
 
     def popitem(self):
-        key, value = dict.popitem(self)
-        self.noteTimes.remove(key)
+        key, value = self._notes.popitem(self)
+        self._noteTimes.remove(key)
         return key, value
-
-    def setdefault(self, key, default = None):
-        if key not in self:
-            self.noteTimes.append(default)
-            self.noteTimes.sort()
-        dict.setdefault(key, default)
 
     def values(self):
         return list(self.itervalues())
-
-
-
 
 def _makeNoteDict():
     return NoteDictionary()
@@ -151,11 +147,13 @@ class Measure(object):
         return self._width
 
     def __iter__(self):
-        for noteTime, drumDict in self._notes.iteritems():
-            for drumIndex, drumHead in drumDict.iteritems():
-                yield (NotePosition(noteTime = noteTime,
-                                    drumIndex = drumIndex),
-                       drumHead)
+        notes = [(NotePosition(noteTime = noteTime,
+                               drumIndex = drumIndex),
+                  drumHead)
+                 for noteTime, drumDict in self._notes.iteritems()
+                 for drumIndex, drumHead in drumDict.iteritems()
+                 ]
+        return iter(notes)
 
     def numNotes(self):
         return sum(len(drumIndex) for drumIndex in self._notes.itervalues())
@@ -232,7 +230,7 @@ class Measure(object):
         return EMPTY_NOTE
 
     def clear(self):
-        for pos, dummyHead in self:
+        for pos, dummyHead in list(self):
             self.deleteNote(pos)
 
     def addNote(self, position, head):
