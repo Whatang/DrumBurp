@@ -24,7 +24,7 @@ Created on 12 Dec 2010
 '''
 
 from Drum import Drum, HeadData
-from DefaultKits import DEFAULT_KIT
+from DefaultKits import DEFAULT_KIT, DEFAULT_EXTRA_HEADS
 from DBErrors import DuplicateDrumError, NoSuchDrumError
 
 class DrumKit(object):
@@ -44,11 +44,21 @@ class DrumKit(object):
     def __iter__(self):
         return iter(self._drums)
 
+    def clear(self):
+        self._drums = []
+
     def loadDefaultKit(self):
         for drumData, midiNote in DEFAULT_KIT:
             drum = Drum(*drumData)
             headData = HeadData(midiNote = midiNote)
             drum.addNoteHead(drum.head, headData)
+            for extraHead, newMidi, newMidiVolume, newEffect in DEFAULT_EXTRA_HEADS.get(drum.abbr, []):
+                if newMidi is None:
+                    newMidi = midiNote
+                if newMidiVolume is None:
+                    newMidiVolume = headData.midiVolume
+                newData = HeadData(newMidi, newMidiVolume, newEffect)
+                drum.addNoteHead(extraHead, newData)
             self.addDrum(drum)
 
     def addDrum(self, drum):

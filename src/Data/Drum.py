@@ -25,7 +25,7 @@ Created on 12 Dec 2010
 import copy
 
 from DBConstants import DRUM_ABBR_WIDTH
-from DefaultKits import DEFAULT_KIT
+from DefaultKits import DEFAULT_KIT, DEFAULT_EXTRA_HEADS
 
 _DEFAULTNOTE = 71
 _DEFAULTVOLUME = 96
@@ -137,8 +137,16 @@ class Drum(object):
     def guessHeadData(self):
         self._noteHeads = [self._head]
         midiNote = _guessMidiNote(self.abbr)
-        self._headData = {self._head: HeadData(midiNote)}
+        headData = HeadData(midiNote)
+        self._headData = {self._head: headData}
         self._guessEffect(self._head)
+        for extraHead, newMidi, newMidiVolume, newEffect in DEFAULT_EXTRA_HEADS.get(self.abbr, []):
+            if newMidi is None:
+                newMidi = midiNote
+            if newMidiVolume is None:
+                newMidiVolume = headData.midiVolume
+            newData = HeadData(newMidi, newMidiVolume, newEffect)
+            self.addNoteHead(extraHead, newData)
 
     def readHeadData(self, dataString):
         head, data = HeadData.read(dataString)
