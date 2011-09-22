@@ -583,6 +583,9 @@ class Score(object):
                 self.fontOptions.read(scoreIterator)
             else:
                 raise IOError("Unrecognised line type: " + lineType)
+        for np, head in self.iterNotes():
+            if not self.drumKit[np.drumIndex].isAllowedHead(head):
+                self.drumKit[np.drumIndex].addNoteHead(head)
         # Format the score appropriately
         self.gridFormatScore(self.scoreData.width)
         # Make sure we've got the right number of section titles

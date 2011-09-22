@@ -22,15 +22,36 @@ Created on 12 Dec 2010
 @author: Mike Thomas
 
 '''
+import copy
 
 from DBConstants import DRUM_ABBR_WIDTH
 from DefaultKits import DEFAULT_KIT
 
+_DEFAULTNOTE = 71
+_DEFAULTVOLUME = 96
+
 class HeadData(object):
-    def __init__(self, midiNote = 36, midiVolume = 64, effect = "normal"):
+    def __init__(self, midiNote = _DEFAULTNOTE,
+                 midiVolume = _DEFAULTVOLUME,
+                 effect = "normal"):
         self.midiNote = midiNote
         self.midiVolume = midiVolume
         self.effect = effect
+
+    def write(self, noteHead, handle, indenter):
+        dataString = "%s %d,%d,%s" % (noteHead, self.midiNote,
+                                      self.midiVolume,
+                                      self.effect)
+        print >> handle, indenter("NOTEHEAD", dataString)
+
+    @staticmethod
+    def read(dataString):
+        head, data = dataString.split()
+        note, volume, effect = data.split(",")
+        note = int(note)
+        volume = int(volume)
+        return head, HeadData(note, volume, effect)
+
 
 _DEFAULTEFFECT = {"x":"normal",
                   "X":"accent",
@@ -43,24 +64,19 @@ _DEFAULTEFFECT = {"x":"normal",
                   "#":"choke",
                   "b":"normal"}
 
+
+
 class Drum(object):
     '''
     classdocs
     '''
-    def __init__(self, name, abbr, head, locked = False, midiNote = None):
+    def __init__(self, name, abbr, head, locked = False):
         self.name = name
         self.abbr = abbr
         self._head = head
-        if midiNote is None:
-            midiNote = _guessMidiNote(abbr)
-        self.midiNote = midiNote
-        self._noteHeads = ["x", "X", "o", "O", "g", "f", "d", "+", "#", "b"]
+        self._noteHeads = []
         self._headData = {}
-        for h in self._noteHeads:
-            self._headData[h] = HeadData(midiNote = midiNote,
-                                         effect = _DEFAULTEFFECT[h])
         self.locked = locked
-        self.setDefaultHead(head)
         assert(len(name) > 0)
         assert(1 <= len(abbr) <= DRUM_ABBR_WIDTH)
         assert(len(head) == 1)
@@ -106,9 +122,28 @@ class Drum(object):
         if self._head == oldHead:
             self._head = head
 
-    def addNoteHead(self, head):
+    def addNoteHead(self, head, headData = None):
         self._noteHeads.append(head)
-        self._headData[head] = HeadData(midiNote = self.midiNote)
+        if headData is None:
+            self._headData[head] = copy.deepcopy(self._headData[self.head])
+            self._guessEffect(head)
+        else:
+            self._headData[head] = headData
+
+    def _guessEffect(self, head):
+        assert(head in self._headData)
+        self._headData[head].effect = _DEFAULTEFFECT.get(head, "normal")
+
+    def guessHeadData(self):
+        self._noteHeads = [self._head]
+        midiNote = _guessMidiNote(self.abbr)
+        self._headData = {self._head: HeadData(midiNote)}
+        self._guessEffect(self._head)
+
+    def readHeadData(self, dataString):
+        head, data = HeadData.read(dataString)
+        self._noteHeads.append(head)
+        self._headData[head] = data
 
     def removeNoteHead(self, head):
         try:
@@ -133,10 +168,21 @@ class Drum(object):
         assert(index < len(self) - 1)
         self._noteHeads[index:index + 2] = reversed(self._noteHeads[index:index + 2])
 
+    def write(self, handle, indenter):
+        print >> handle, indenter("DRUM %s,%s,%s,%s" % (self.name,
+                                                        self.abbr,
+                                                        self.head,
+                                                        str(self.locked)))
+        for head in self:
+            headData = self.headData(head)
+            indenter.increase()
+            headData.write(head, handle, indenter)
+            indenter.decrease()
+
 
 
 def _guessMidiNote(abbr):
-    for drumData in DEFAULT_KIT:
+    for drumData, midiNote in DEFAULT_KIT:
         if abbr == drumData[1]:
-            return drumData[4]
-    return 71
+            return midiNote
+    return _DEFAULTNOTE

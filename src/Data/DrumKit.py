@@ -23,7 +23,7 @@ Created on 12 Dec 2010
 
 '''
 
-from Drum import Drum
+from Drum import Drum, HeadData
 from DefaultKits import DEFAULT_KIT
 from DBErrors import DuplicateDrumError, NoSuchDrumError
 
@@ -45,8 +45,11 @@ class DrumKit(object):
         return iter(self._drums)
 
     def loadDefaultKit(self):
-        for drumData in DEFAULT_KIT:
-            self.addDrum(Drum(*drumData))
+        for drumData, midiNote in DEFAULT_KIT:
+            drum = Drum(*drumData)
+            headData = HeadData(midiNote = midiNote)
+            drum.addNoteHead(drum.head, headData)
+            self.addDrum(drum)
 
     def addDrum(self, drum):
         if drum in self._drums:
@@ -70,28 +73,29 @@ class DrumKit(object):
         print >> handle, indenter("KIT_START")
         indenter.increase()
         for drum in self:
-            print >> handle, indenter("DRUM %s,%s,%s,%s,%s" % (drum.name,
-                                                   drum.abbr,
-                                                   drum.head,
-                                                   str(drum.locked),
-                                                   str(drum.midiNote)))
+            drum.write(handle, indenter)
         indenter.decrease()
         print >> handle, indenter("KIT_END")
 
     def read(self, scoreIterator):
+        lastDrum = None
         for lineType, lineData in scoreIterator:
             if  lineType == "KIT_END":
+                if lastDrum is not None and len(lastDrum) == 0:
+                    lastDrum.guessHeadData()
                 break
             elif lineType == "DRUM":
+                if lastDrum is not None and len(lastDrum) == 0:
+                    lastDrum.guessHeadData()
                 fields = lineData.split(",")
                 if len(fields) > 3:
                     fields[3] = (fields[3] == "True")
-                if len(fields) > 4:
-                    if fields[4] == "None":
-                        fields[4] = None
-                    else:
-                        fields[4] = int(fields[4])
+                    if len(fields) > 4:
+                        fields = fields[:3]
                 drum = Drum(*fields)
                 self.addDrum(drum)
+                lastDrum = drum
+            elif lineType == "NOTEHEAD":
+                lastDrum.readHeadData(lineData)
             else:
                 raise IOError("Unrecognised line type.")
