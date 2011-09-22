@@ -52,7 +52,6 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.addButton.clicked.connect(self._addDrum)
         self.deleteButton.clicked.connect(self._removeDrum)
         self.clearButton.clicked.connect(self._clearKit)
-        self.clearButton.setDisabled(True)
         self.resetButton.clicked.connect(self._resetKit)
         self.resetButton.setDisabled(True)
         self.loadButton.clicked.connect(self._loadKit)
@@ -110,10 +109,11 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.lockedCheckBox.setChecked(drum.locked)
         self._populateHeadTable()
         self._checkDrumButtons()
-        self.noteHeadTable.blockSignals(False)
+
 
     def _addDrum(self):
         drum = Drum("New drum", "XX", "x")
+        drum.guessHeadData()
         self._currentKit.append(drum)
         self._oldLines[drum] = -1
         self.kitTable.addItem(drum.name)
@@ -147,7 +147,12 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.kitTable.setCurrentRow(index + 1)
 
     def _clearKit(self):
-        pass
+        self._currentKit = []
+        self._oldLines.clear()
+        self.kitTable.blockSignals(True)
+        self.kitTable.clear()
+        self.kitTable.blockSignals(False)
+        self._addDrum()
 
     def _resetKit(self):
         pass
@@ -181,8 +186,10 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             if head == drum.head:
                 headString += " (Default)"
             self.noteHeadTable.addItem(headString)
+        self.noteHeadTable.setCurrentRow(-1)
         self.noteHeadTable.blockSignals(False)
         self.noteHeadTable.setCurrentRow(0)
+
 
     @property
     def _currentHead(self):
