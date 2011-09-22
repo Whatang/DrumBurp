@@ -226,6 +226,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
     def _populateCurrentNoteHead(self):
         self.currentNoteHead.blockSignals(True)
         try:
+            self.currentNoteHead.clear()
             badNotes = set(self._currentDrum)
             badNotes.remove(self._currentHead)
             badNotes.update(["-", "|"])
