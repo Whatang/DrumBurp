@@ -219,8 +219,6 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
 
     def _noteHeadChanged(self):
         self._populateCurrentNoteHead()
-        headIndex = self.currentNoteHead.findText(self._currentHead)
-        self.currentNoteHead.setCurrentIndex(headIndex)
         headData = self._currentHeadData
         self.volumeSlider.setValue(headData.midiVolume)
         midiIndex = self.midiNoteCombo.findData(QVariant(headData.midiNote))
@@ -242,6 +240,8 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
                 if not head or head in badNotes:
                     continue
                 self.currentNoteHead.addItem(head)
+            headIndex = self.currentNoteHead.findText(self._currentHead)
+            self.currentNoteHead.setCurrentIndex(headIndex)
         finally:
             self.currentNoteHead.blockSignals(False)
 
