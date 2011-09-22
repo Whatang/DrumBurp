@@ -317,7 +317,8 @@ class QMeasure(QtGui.QGraphicsItem):
         if event.button() == QtCore.Qt.MidButton:
             event.ignore()
             menu = QMenuIgnoreCancelClick(self._qScore)
-            for noteHead in self._props.allowedNoteHeads():
+            kit = self.scene().score.drumKit
+            for noteHead in kit.allowedNoteHeads(drumIndex):
                 def noteAction(nh = noteHead):
                     self.toggleNote(noteTime, drumIndex, nh)
                 menu.addAction(noteHead, noteAction)

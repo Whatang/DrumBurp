@@ -69,6 +69,9 @@ class DrumKit(object):
             raise NoSuchDrumError(index)
         self._drums.pop(index)
 
+    def allowedNoteHeads(self, drumIndex):
+        return list(self._drums[drumIndex])
+
     def write(self, handle, indenter):
         print >> handle, indenter("KIT_START")
         indenter.increase()
