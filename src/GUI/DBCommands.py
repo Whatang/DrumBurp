@@ -22,6 +22,7 @@ Created on 13 Feb 2011
 @author: Mike Thomas
 '''
 from PyQt4.QtGui import QUndoCommand
+import DBMidi
 from Data import DBConstants
 from Data.Score import Score
 from Data.NotePosition import NotePosition
@@ -75,14 +76,19 @@ class NoteCommand(_COMMAND_CLASS): #pylint:disable-msg=W0223
             self._score.deleteNote(self._np)
         else:
             self._score.addNote(self._np, self._oldHead)
+            DBMidi.playNote(self._np.drumIndex, self._oldHead)
 
 class SetNote(NoteCommand):
     def _redo(self):
         self._score.addNote(self._np, self._head)
+        if self._head != DBConstants.EMPTY_NOTE:
+            DBMidi.playNote(self._np.drumIndex, self._head)
 
 class ToggleNote(NoteCommand):
     def _redo(self):
         self._score.toggleNote(self._np, self._head)
+        if (self._head != DBConstants.EMPTY_NOTE):
+            DBMidi.playNote(self._np.drumIndex, self._head)
 
 class MetaDataCommand(_COMMAND_CLASS):
     def __init__(self, qScore, varName, signal, value):

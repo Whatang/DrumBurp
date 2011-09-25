@@ -38,8 +38,6 @@ from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 from QMeasureContextMenu import QMeasureContextMenu
 from QAlternateDialog import QAlternateDialog
 
-import DBMidi
-
 class QMeasure(QtGui.QGraphicsItem):
     '''
     classdocs
@@ -209,10 +207,6 @@ class QMeasure(QtGui.QGraphicsItem):
     def dataChanged(self, notePosition):
         if None not in (notePosition.noteTime, notePosition.drumIndex):
             self.update()
-            head = self._measure.noteAt(notePosition.noteTime,
-                notePosition.drumIndex)
-            if (head != DBConstants.EMPTY_NOTE):
-                DBMidi.playNote(notePosition.drumIndex, head)
         else:
             self._setDimensions()
             self.update()

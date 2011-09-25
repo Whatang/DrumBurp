@@ -104,6 +104,8 @@ class Drum(object):
         return self.name == other.name or self.abbr == other.abbr
 
     def headData(self, head):
+        if head is None:
+            head = self.head
         return self._headData[head]
 
     def exportASCII(self):
