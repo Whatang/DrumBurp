@@ -165,7 +165,7 @@ class Score(object):
                 repeatStart = index
                 afterRepeat, numRepeats = repeatData[index]
                 repeatNum += 1
-            if index in alternateIndexes:
+            if index in alternateIndexes and repeatNum > -1:
                 theseAlternates = alternateIndexes[index]
                 alternateStarts.update((aStart, index) for aStart in theseAlternates)
                 if repeatNum + 1 not in theseAlternates:
