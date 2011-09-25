@@ -40,6 +40,7 @@ from DBStartupDialog import DBStartupDialog
 import DBIcons
 import os
 import DBMidi
+from Data.Score import InconsistentRepeats
 
 APPNAME = "DrumBurp"
 DB_VERSION = "0.4"
@@ -516,9 +517,24 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             self.sectionNavigator.addItem(sectionTitle)
         self.sectionNavigator.blockSignals(False)
 
+    def _canPlayback(self):
+        try:
+            measures = list(self.scoreScene.score.iterMeasuresWithRepeats())
+        except InconsistentRepeats, exc:
+                QMessageBox.warning(self, "Playback error",
+                                    "There are inconsistent repeat markings.")
+                position = self.scoreScene.score.getMeasurePosition(exc[0])
+                measure = self.scoreScene.getQMeasure(position)
+                self.scoreView.ensureVisible(measure)
+                return False
+        return True
+
     @pyqtSignature("bool")
     def on_actionPlayScore_toggled(self, onOff):
         if onOff:
+            if not self._canPlayback():
+                self.actionPlayScore.toggle()
+                return
             DBMidi.playScore(self.scoreScene.score)
         else:
             DBMidi.shutUp()
@@ -538,6 +554,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionExportMIDI_triggered(self):
+        if not self._canPlayback():
+            return
         directory = self.filename
         if directory is None:
             suggestion = unicode(self.scoreScene.title)

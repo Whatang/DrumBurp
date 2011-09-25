@@ -41,6 +41,9 @@ from StringIO import StringIO
 
 #pylint: disable-msg=R0904
 
+class InconsistentRepeats(StandardError):
+    "Bad repeat data"
+
 class Score(object):
     '''
     classdocs
@@ -96,6 +99,102 @@ class Score(object):
         for staff in self.iterStaffs():
             for measure in staff:
                 yield measure
+
+    @staticmethod
+    def _readAlternates(text):
+        alternates = [t.strip() for t in
+                      text.split(",")]
+        theseAlternates = set()
+        for aText in alternates:
+            if "-" in aText:
+                aStart, aEnd = aText.split("-")
+                for aVal in xrange(int(aStart), int(aEnd.rstrip(".")) + 1):
+                    theseAlternates.add(aVal)
+            else:
+                theseAlternates.add(int(aText.rstrip(".")))
+        return theseAlternates
+
+    @staticmethod
+    def _findRepeatData(measures, index, alternateIndexes):
+        start = index
+        numMeasures = len(measures)
+        numRepeats = 0
+        alternates = set()
+        while index < numMeasures:
+            measure = measures[index]
+            if index in alternateIndexes:
+                numRepeats += len(alternateIndexes[index])
+                alternates.update(alternateIndexes[index])
+            if (measure.isRepeatEnd() or measure.isSectionEnd()):
+                if alternates:
+                    if (index + 1 == numMeasures or
+                        not measures[index + 1].alternateText
+                        or measures[index + 1].isRepeatStart()
+                        or measure.isSectionEnd()):
+                        if alternates != set(xrange(1, numRepeats + 1)):
+                            raise InconsistentRepeats(start, index)
+                        return index + 1, numRepeats
+                else:
+                    numRepeats = measure.repeatCount
+                    return index + 1, numRepeats
+            index += 1
+        return index, numRepeats
+
+
+    def iterMeasuresWithRepeats(self):
+        measures = list(self.iterMeasures())
+        alternateIndexes = {}
+        repeatData = {}
+        repeatStart = -1
+        for index, measure in enumerate(measures):
+            if measure.alternateText:
+                alternateIndexes[index] = self._readAlternates(measure.alternateText)
+        for index, measure in enumerate(measures):
+            if measure.isRepeatStart():
+                repeatData[index] = self._findRepeatData(measures, index, alternateIndexes)
+        index = 0
+        repeatStart = 0
+        repeatNum = -1
+        afterRepeat = -1
+        latestRepeatEnd = -1
+        numMeasures = len(measures)
+        alternateStarts = {}
+        while index < numMeasures:
+            measure = measures[index]
+            if measure.isRepeatStart():
+                repeatStart = index
+                afterRepeat, numRepeats = repeatData[index]
+                repeatNum += 1
+            if index in alternateIndexes:
+                theseAlternates = alternateIndexes[index]
+                alternateStarts.update((aStart, index) for aStart in theseAlternates)
+                if repeatNum + 1 not in theseAlternates:
+                    index = alternateStarts.get(repeatNum + 1,
+                                                latestRepeatEnd + 1)
+                    continue
+            yield measure, index
+            if measure.isRepeatEnd() and repeatNum > -1:
+                if alternateStarts:
+                    if repeatNum < numRepeats - 1:
+                        if index > latestRepeatEnd:
+                            latestRepeatEnd = index
+                        index = repeatStart
+                    else:
+                        index = afterRepeat
+                        repeatNum = -1
+                        alternateStarts = {}
+                elif repeatNum < numRepeats - 1:
+                    index = repeatStart
+                else:
+                    index += 1
+                    repeatNum = -1
+            elif measure.isSectionEnd():
+                repeatNum = -1
+                index += 1
+                alternateStarts = {}
+            else:
+                index += 1
+
 
     def iterNotes(self):
         for sIndex, staff in enumerate(self.iterStaffs()):

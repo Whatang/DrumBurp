@@ -9,9 +9,10 @@ import pygame
 import pygame.midi
 import atexit
 import time
-from PyQt4 import QtGui
+from PyQt4 import QtGui #IGNORE:W0611
 from PyQt4.QtCore import QTimer, pyqtSignal, QObject
 from Data.MeasureCount import MIDITICKSPERBEAT
+from Data.Score import InconsistentRepeats
 
 pygame.init()
 pygame.midi.init()
@@ -62,16 +63,20 @@ class _midi(QObject):
         msPerBeat = 60000.0 / score.scoreData.bpm
         notes = []
         self._measureDetails = []
-        for measureIndex, measure in enumerate(score.iterMeasures()):
-            times = list(measure.counter.iterTimesMs(msPerBeat))
-            for notePos, head in measure:
-                drumData = self.kit[notePos.drumIndex]
-                headData = drumData.headData(head)
-                if headData is not None:
-                    noteTime = baseTime + times[notePos.noteTime]
-                    notes.append((noteTime, headData))
-            baseTime += times[-1]
-            self._measureDetails.append((measureIndex, baseTime))
+        try:
+            for measure, measureIndex in score.iterMeasuresWithRepeats():
+                times = list(measure.counter.iterTimesMs(msPerBeat))
+                for notePos, head in measure:
+                    drumData = self.kit[notePos.drumIndex]
+                    headData = drumData.headData(head)
+                    if headData is not None:
+                        noteTime = baseTime + times[notePos.noteTime]
+                        notes.append((noteTime, headData))
+                baseTime += times[-1]
+                self._measureDetails.append((measureIndex, baseTime))
+        except InconsistentRepeats, exc:
+            self.timer.timeout.emit()
+            raise
         self._measureDetails.reverse()
         numNotes = len(notes)
         index = 0
@@ -159,7 +164,7 @@ def exportMidi(score, handle):
     handle.write("%c" % chr((MIDITICKSPERBEAT >> 0) & 0xFF))
     notes = []
     baseTime = 0
-    for measure in score.iterMeasures():
+    for measure, unusedIndex in score.iterMeasuresWithRepeats():
         times = list(measure.counter.iterMidiTicks())
         for notePos, head in measure:
             drumData = score.drumKit[notePos.drumIndex]
