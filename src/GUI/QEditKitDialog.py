@@ -58,7 +58,6 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.deleteEmptyButton.clicked.connect(self._deleteEmpty)
         self.clearButton.clicked.connect(self._clearKit)
         self.resetButton.clicked.connect(self._resetKit)
-        self.resetButton.setDisabled(True)
         self.loadButton.clicked.connect(self._loadKit)
         self.saveButton.clicked.connect(self._saveKit)
         self.drumName.textEdited.connect(self._drumNameEdited)
@@ -184,9 +183,15 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self._currentKit = newKit
         self._populate()
 
-
     def _resetKit(self):
-        pass
+        self._currentKit = []
+        self._oldLines = {}
+        for drumIndex, drum in enumerate(reversed(self._initialKit)):
+            drum = copy.deepcopy(drum)
+            self._currentKit.append(drum)
+            self._oldLines[drum] = drumIndex
+        self._populate()
+
 
     def _loadKit(self):
         pass
