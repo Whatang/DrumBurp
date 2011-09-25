@@ -531,6 +531,14 @@ class Score(object):
             if drum.locked or staff.lineIsVisible(lineNum):
                 yield drum
 
+    def emptyDrums(self):
+        emptyDrums = set(self.drumKit)
+        for staffIndex in xrange(self.numStaffs()):
+            emptyDrums.difference_update(set(self.iterVisibleLines(staffIndex)))
+            if not emptyDrums:
+                break
+        return emptyDrums
+
     def write(self, handle):
         indenter = Indenter()
         self.scoreData.save(handle, indenter)

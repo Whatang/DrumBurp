@@ -43,6 +43,7 @@ class QKitData(QGraphicsListData):
 
     def mouseDoubleClickEvent(self, event_):
         editDialog = QEditKitDialog(self.scene().score.drumKit,
+                                    self.scene().score.emptyDrums(),
                                     self.scene().parent())
         if editDialog.exec_():
             newKit, changes = editDialog.getNewKit()

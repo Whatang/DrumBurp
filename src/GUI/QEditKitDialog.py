@@ -36,21 +36,26 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
     classdocs
     '''
 
-    def __init__(self, kit, parent = None):
+    def __init__(self, kit, emptyDrums = None, parent = None):
         '''
         Constructor
         '''
         super(QEditKitDialog, self).__init__(parent)
         self.setupUi(self)
+        if emptyDrums is None:
+            emptyDrums = []
+            self.deleteEmptyButton.setEnabled(False)
+        self._emptyDrums = emptyDrums
         self._currentKit = []
         self._oldLines = {}
         self._initialKit = kit
-        self._populate()
+        self._initialize()
         self.kitTable.currentRowChanged.connect(self._drumChanged)
         self.upButton.clicked.connect(self._moveDrumUp)
         self.downButton.clicked.connect(self._moveDrumDown)
         self.addButton.clicked.connect(self._addDrum)
         self.deleteButton.clicked.connect(self._removeDrum)
+        self.deleteEmptyButton.clicked.connect(self._deleteEmpty)
         self.clearButton.clicked.connect(self._clearKit)
         self.resetButton.clicked.connect(self._resetKit)
         self.resetButton.setDisabled(True)
@@ -73,18 +78,25 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             if isinstance(effect, QRadioButton):
                 effect.toggled.connect(self._effectChanged)
         self.lockedCheckBox.stateChanged.connect(self._lockChanged)
-        self.kitTable.setCurrentRow(0)
+        self._populate()
 
 
-    def _populate(self):
+    def _initialize(self):
         self.oldDrum.addItem("None", userData = QVariant(-1))
         for drumIndex, drum in enumerate(reversed(self._initialKit)):
             drum = copy.deepcopy(drum)
-            self.kitTable.insertItem(drumIndex, drum.name)
             self._currentKit.append(drum)
             self.oldDrum.addItem(drum.name, userData = QVariant(drumIndex))
             self._oldLines[drum] = drumIndex
-        self._checkDrumButtons()
+
+    def _populate(self):
+        self.kitTable.blockSignals(True)
+        self.kitTable.clear()
+        for drum in self._currentKit:
+            self.kitTable.addItem(drum.name)
+        self.kitTable.blockSignals(False)
+        self.kitTable.setCurrentRow(0)
+
 
     @property
     def _currentDrumIndex(self):
@@ -153,6 +165,25 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.kitTable.clear()
         self.kitTable.blockSignals(False)
         self._addDrum()
+
+    def _deleteEmpty(self):
+        newKit = []
+        toDelete = []
+        for drum in self._currentKit:
+            oldIndex = self._oldLines[drum]
+            if oldIndex == -1:
+                newKit.append(drum)
+                continue
+            oldDrum = self._initialKit[len(self._initialKit) - 1 - self._oldLines[drum]]
+            if oldDrum in self._emptyDrums:
+                toDelete.append(drum)
+            else:
+                newKit.append(drum)
+        for drum in toDelete:
+            self._oldLines.pop(drum)
+        self._currentKit = newKit
+        self._populate()
+
 
     def _resetKit(self):
         pass
@@ -407,7 +438,7 @@ def main():
     app = QApplication(sys.argv)
     kit = DrumKit()
     kit.loadDefaultKit()
-    dialog = QEditKitDialog(kit)
+    dialog = QEditKitDialog(kit, [kit[0]])
     dialog.show()
     print kit
     app.exec_()

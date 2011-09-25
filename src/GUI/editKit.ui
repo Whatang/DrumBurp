@@ -30,10 +30,16 @@
           <item>
            <widget class="QListWidget" name="kitTable">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>256</width>
+              <height>0</height>
+             </size>
             </property>
             <property name="toolTip">
              <string>The drums and their order</string>
@@ -48,9 +54,28 @@
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <property name="spacing">
+             <number>0</number>
+            </property>
             <property name="sizeConstraint">
              <enum>QLayout::SetFixedSize</enum>
             </property>
+            <item>
+             <spacer name="horizontalSpacer_12">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Maximum</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>10</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
             <item>
              <widget class="QPushButton" name="addButton">
               <property name="sizePolicy">
@@ -225,6 +250,12 @@
                 <height>24</height>
                </size>
               </property>
+              <property name="maximumSize">
+               <size>
+                <width>24</width>
+                <height>24</height>
+               </size>
+              </property>
               <property name="toolTip">
                <string>Reset the kit</string>
               </property>
@@ -234,6 +265,41 @@
               <property name="icon">
                <iconset resource="DrumBurp.qrc">
                 <normaloff>:/Icons/Icons/edit-undo.png</normaloff>:/Icons/Icons/edit-undo.png</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="deleteEmptyButton">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>24</width>
+                <height>24</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>24</width>
+                <height>24</height>
+               </size>
+              </property>
+              <property name="statusTip">
+               <string>Delete empty non-locked drums</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="DrumBurp.qrc">
+                <normaloff>:/Icons/Icons/process-stop.png</normaloff>:/Icons/Icons/process-stop.png</iconset>
               </property>
              </widget>
             </item>
