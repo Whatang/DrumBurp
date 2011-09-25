@@ -12,7 +12,6 @@ import time
 from PyQt4 import QtGui #IGNORE:W0611
 from PyQt4.QtCore import QTimer, pyqtSignal, QObject
 from Data.MeasureCount import MIDITICKSPERBEAT
-from Data.Score import InconsistentRepeats
 
 pygame.init()
 pygame.midi.init()
@@ -74,24 +73,25 @@ class _midi(QObject):
                         notes.append((noteTime, headData))
                 baseTime += times[-1]
                 self._measureDetails.append((measureIndex, baseTime))
-        except InconsistentRepeats, exc:
+            self._measureDetails.reverse()
+            numNotes = len(notes)
+            index = 0
+            latency = numNotes * _LATENCYPERNOTE
+            del self._midiOut
+            self._midiOut = pygame.midi.Output(self._port, latency, _BUFSIZE)
+            midiTime = pygame.midi.time()
+            self._songStart = time.clock() + latency / 1000.0
+            while index < numNotes:
+                midiNotes = [[[_PERCUSSION, headData.midiNote,
+                               headData.midiVolume],
+                              midiTime + noteTime]
+                             for (noteTime, headData) in
+                             notes[index:index + _NOTESPERSEND]]
+                self._midiOut.write(midiNotes)
+                index += _NOTESPERSEND
+        except:
             self.timer.timeout.emit()
             raise
-        self._measureDetails.reverse()
-        numNotes = len(notes)
-        index = 0
-        latency = numNotes * _LATENCYPERNOTE
-        del self._midiOut
-        self._midiOut = pygame.midi.Output(self._port, latency, _BUFSIZE)
-        midiTime = pygame.midi.time()
-        self._songStart = time.clock() + latency / 1000.0
-        while index < numNotes:
-            midiNotes = [[[_PERCUSSION, headData.midiNote, headData.midiVolume],
-                          midiTime + noteTime]
-                         for (noteTime, headData) in
-                         notes[index:index + _NOTESPERSEND]]
-            self._midiOut.write(midiNotes)
-            index += _NOTESPERSEND
         self.timer.start(baseTime + latency)
         self._measureTimer.start(latency)
 
