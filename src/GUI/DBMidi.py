@@ -13,6 +13,7 @@ from PyQt4 import QtGui #IGNORE:W0611
 from PyQt4.QtCore import QTimer, pyqtSignal, QObject
 from Data.MeasureCount import MIDITICKSPERBEAT
 
+
 pygame.init()
 pygame.midi.init()
 
@@ -22,6 +23,14 @@ _NOTESPERSEND = 1024
 _LATENCYPERNOTE = 1
 _VELOCITY = 127
 
+freq = 44100    # audio CD quality
+bitsize = -16   # unsigned 16 bit
+channels = 2    # 1 is mono, 2 is stereo
+bufferSize = 4096    # number of samples
+pygame.mixer.init(freq, bitsize, channels, bufferSize)
+
+# optional volume 0 to 1.0
+pygame.mixer.music.set_volume(0.8)
 
 class _midi(QObject):
     def __init__(self):
@@ -45,60 +54,52 @@ class _midi(QObject):
     highlightMeasure = pyqtSignal(int)
 
     def playNote(self, drumIndex, head):
-        if self.kit is None or self._mute:
+        if self.kit is None or self._mute or self._midiOut is None:
             return
         headData = self.kit[drumIndex].headData(head)
         self.playHeadData(headData)
 
     def playHeadData(self, headData):
-        self._midiOut.write([[[_PERCUSSION, headData.midiNote,
-                               headData.midiVolume],
-                              pygame.midi.time()]])
+        if self._midiOut:
+            self._midiOut.write([[[_PERCUSSION, headData.midiNote,
+                                   headData.midiVolume],
+                                  pygame.midi.time()]])
 
     def playScore(self, score):
         if self.kit is None:
             return
         baseTime = 0
         msPerBeat = 60000.0 / score.scoreData.bpm
-        notes = []
         self._measureDetails = []
         try:
             for measure, measureIndex in score.iterMeasuresWithRepeats():
                 times = list(measure.counter.iterTimesMs(msPerBeat))
-                for notePos, head in measure:
-                    drumData = self.kit[notePos.drumIndex]
-                    headData = drumData.headData(head)
-                    if headData is not None:
-                        noteTime = baseTime + times[notePos.noteTime]
-                        notes.append((noteTime, headData))
                 baseTime += times[-1]
                 self._measureDetails.append((measureIndex, baseTime))
             self._measureDetails.reverse()
-            numNotes = len(notes)
-            index = 0
-            latency = numNotes * _LATENCYPERNOTE
             del self._midiOut
-            self._midiOut = pygame.midi.Output(self._port, latency, _BUFSIZE)
-            midiTime = pygame.midi.time()
-            self._songStart = time.clock() + latency / 1000.0
-            while index < numNotes:
-                midiNotes = [[[_PERCUSSION, headData.midiNote,
-                               headData.midiVolume],
-                              midiTime + noteTime]
-                             for (noteTime, headData) in
-                             notes[index:index + _NOTESPERSEND]]
-                self._midiOut.write(midiNotes)
-                index += _NOTESPERSEND
+            self._midiOut = None
+            import StringIO
+            midi = StringIO.StringIO()
+            exportMidi(score.iterMeasuresWithRepeats(), score, midi)
+            midi.seek(0, 0)
+            pygame.mixer.music.load(midi)
+            pygame.mixer.music.play()
+            self._songStart = time.clock()
         except:
             self.timer.timeout.emit()
             raise
-        self.timer.start(baseTime + latency)
-        self._measureTimer.start(latency)
+        self.timer.start(baseTime)
+        self._measureTimer.start(0)
+
 
     def shutUp(self):
         self.timer.stop()
         self._measureTimer.stop()
-        del self._midiOut
+        if self._midiOut:
+            del self._midiOut
+        if pygame.mixer.music.get_busy():
+            pygame.mixer.music.stop()
         self.highlightMeasure.emit(-1)
         self._midiOut = pygame.midi.Output(self._port, 0, _BUFSIZE)
 
@@ -153,18 +154,18 @@ def encodeSevenBitDelta(delta, midiData):
         if lastByte:
             lastByte = False
         else:
-            delta |= 0x80
+            thisValue |= 0x80
         values.append(thisValue)
     values.reverse()
     midiData.extend(values)
 
-def exportMidi(score, handle):
+def exportMidi(measureIterator, score, handle):
     handle.write("MThd\x00\x00\x00\x06\x00\x00\x00\x01")
     handle.write("%c" % chr((MIDITICKSPERBEAT >> 8) & 0xFF))
     handle.write("%c" % chr((MIDITICKSPERBEAT >> 0) & 0xFF))
     notes = []
     baseTime = 0
-    for measure, unusedIndex in score.iterMeasuresWithRepeats():
+    for measure, unusedIndex in measureIterator:
         times = list(measure.counter.iterMidiTicks())
         for notePos, head in measure:
             drumData = score.drumKit[notePos.drumIndex]

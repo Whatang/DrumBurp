@@ -579,4 +579,5 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if len(fname) == 0 :
             return
         with open(fname, 'wb') as handle:
-            DBMidi.exportMidi(self.scoreScene.score, handle)
+            DBMidi.exportMidi(self.scoreScene.score.iterMeasuresWithRepeats(),
+                              self.scoreScene.score, handle)
