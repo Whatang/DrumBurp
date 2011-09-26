@@ -106,6 +106,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         props.metadataFontSizeChanged.connect(self._setMetadataSize)
         self.scoreScene.dirtySignal.connect(self.setWindowModified)
         self.scoreScene.dragHighlight.connect(self.actionLoopBars.setEnabled)
+        self.scoreScene.dragHighlight.connect(self.actionPlayOnce.setEnabled)
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
@@ -142,6 +143,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.actionShowScoreInfo.setChecked(props.metadataVisible)
         self.actionShowBeatCount.setChecked(props.beatCountVisible)
         # Set doable actions
+        self.actionPlayOnce.setEnabled(False)
         self.actionLoopBars.setEnabled(False)
         # Undo/redo
         self.actionUndo.setEnabled(False)
@@ -597,6 +599,19 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         else:
             DBMidi.shutUp()
 
+    @pyqtSignature("bool")
+    def on_actionPlayOnce_toggled(self, onOff):
+        if onOff:
+            if not self.scoreScene.hasDragSelection():
+                self.actionPlayOnce.toggle()
+                return
+            DBMidi.loopBars(self.scoreScene.iterDragSelection(),
+                            self.scoreScene.score,
+                            loopCount = 1)
+        else:
+            DBMidi.shutUp()
+
     def musicDone(self):
         self.actionPlayScore.setChecked(False)
         self.actionLoopBars.setChecked(False)
+        self.actionPlayOnce.setChecked(False)

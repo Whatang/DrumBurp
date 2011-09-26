@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sun Sep 25 20:23:12 2011
+# Created: Sun Sep 25 23:31:34 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -480,6 +480,9 @@ class Ui_DrumBurpWindow(object):
         self.actionLoopBars = QtGui.QAction(DrumBurpWindow)
         self.actionLoopBars.setCheckable(True)
         self.actionLoopBars.setObjectName(_fromUtf8("actionLoopBars"))
+        self.actionPlayOnce = QtGui.QAction(DrumBurpWindow)
+        self.actionPlayOnce.setCheckable(True)
+        self.actionPlayOnce.setObjectName(_fromUtf8("actionPlayOnce"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.menuRecentScores.menuAction())
@@ -531,6 +534,7 @@ class Ui_DrumBurpWindow(object):
         self.helpToolBar.addAction(self.actionWhatsThis)
         self.helpToolBar.addAction(self.actionAboutDrumBurp)
         self.MIDIToolBar.addAction(self.actionPlayScore)
+        self.MIDIToolBar.addAction(self.actionPlayOnce)
         self.MIDIToolBar.addAction(self.actionLoopBars)
         self.MIDIToolBar.addAction(self.actionMuteNotes)
         self.MIDIToolBar.addAction(self.actionExportMIDI)
@@ -709,8 +713,10 @@ class Ui_DrumBurpWindow(object):
         self.actionExportMIDI.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Export this score to a MIDI file", None, QtGui.QApplication.UnicodeUTF8))
         self.actionMIDIToolBarIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "MIDI", None, QtGui.QApplication.UnicodeUTF8))
         self.actionMIDIToolBarIsVisible.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Change visibility of MIDI toolbar", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionLoopBars.setText(QtGui.QApplication.translate("DrumBurpWindow", "loop", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionLoopBars.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Loop the selected bars", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionLoopBars.setText(QtGui.QApplication.translate("DrumBurpWindow", "Loop", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionLoopBars.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Play the selected bars in a constant loop", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPlayOnce.setText(QtGui.QApplication.translate("DrumBurpWindow", "Play Once", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPlayOnce.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Play the selected measures once", None, QtGui.QApplication.UnicodeUTF8))
 
 from Widgets.ScoreView_plugin import ScoreView
 import DrumBurp_rc

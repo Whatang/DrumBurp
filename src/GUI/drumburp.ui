@@ -916,6 +916,7 @@ p, li { white-space: pre-wrap; }
     <bool>false</bool>
    </attribute>
    <addaction name="actionPlayScore"/>
+   <addaction name="actionPlayOnce"/>
    <addaction name="actionLoopBars"/>
    <addaction name="actionMuteNotes"/>
    <addaction name="actionExportMIDI"/>
@@ -1321,10 +1322,21 @@ Writes this Score as a plain .txt file.</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>loop</string>
+    <string>Loop</string>
    </property>
    <property name="toolTip">
-    <string>Loop the selected bars</string>
+    <string>Play the selected bars in a constant loop</string>
+   </property>
+  </action>
+  <action name="actionPlayOnce">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Play Once</string>
+   </property>
+   <property name="toolTip">
+    <string>Play the selected measures once</string>
    </property>
   </action>
  </widget>

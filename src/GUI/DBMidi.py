@@ -92,13 +92,12 @@ class _midi(QObject):
         self.timer.start(baseTime)
         self._measureTimer.start(0)
 
-    def loopBars(self, measureIterator, score):
+    def loopBars(self, measureIterator, score, loopCount = 100):
         if self.kit is None:
             return
         baseTime = 0
         msPerBeat = 60000.0 / score.scoreData.bpm
         self._measureDetails = []
-        loopCount = 1000
         measureList = list(measureIterator) * loopCount
         try:
             for measure, measureIndex in measureList:
@@ -127,14 +126,14 @@ class _midi(QObject):
         self._measureTimer.stop()
         if self._midiOut:
             del self._midiOut
-        if pygame.mixer.music.get_busy():
-            pygame.mixer.music.stop()
+        pygame.mixer.music.stop()
         self.highlightMeasure.emit(-1)
         self._midiOut = pygame.midi.Output(self._port, 0, _BUFSIZE)
 
     def cleanup(self):
-        self._midiOut.abort()
-        del self._midiOut
+        if self._midiOut is not None:
+            self._midiOut.abort()
+            del self._midiOut
 
     def _highlight(self):
         delay = -1
@@ -165,8 +164,8 @@ def playHeadData(headData):
 def playScore(score):
     _PLAYER.playScore(score)
 
-def loopBars(measureIterator, score):
-    _PLAYER.loopBars(measureIterator, score)
+def loopBars(measureIterator, score, loopCount = 100):
+    _PLAYER.loopBars(measureIterator, score, loopCount)
 
 def shutUp():
     _PLAYER.shutUp()
