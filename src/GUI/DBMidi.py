@@ -18,16 +18,13 @@ pygame.init()
 pygame.midi.init()
 
 _PERCUSSION = 0x99
-_BUFSIZE = 8192
-_NOTESPERSEND = 1024
-_LATENCYPERNOTE = 1
-_VELOCITY = 127
+_BUFSIZE = 1024
 
-freq = 44100    # audio CD quality
-bitsize = -16   # unsigned 16 bit
-channels = 2    # 1 is mono, 2 is stereo
-bufferSize = 4096    # number of samples
-pygame.mixer.init(freq, bitsize, channels, bufferSize)
+_FREQ = 44100    # audio CD quality
+_BITSIZE = -16   # unsigned 16 bit
+_CHANNELS = 2    # 1 is mono, 2 is stereo
+_NUMSAMPLES = 4096    # number of samples
+pygame.mixer.init(_FREQ, _BITSIZE, _CHANNELS, _NUMSAMPLES)
 
 # optional volume 0 to 1.0
 pygame.mixer.music.set_volume(0.8)
@@ -216,7 +213,9 @@ def exportMidi(measureIterator, score, handle):
         deltaTime = noteTime - lastNoteTime
         lastNoteTime = noteTime
         encodeSevenBitDelta(deltaTime, midiData)
-        midiData.extend([0x99, headData.midiNote, headData.midiVolume])
+        midiData.extend([_PERCUSSION,
+                         headData.midiNote,
+                         headData.midiVolume])
     deltaTime = baseTime - lastNoteTime
     encodeSevenBitDelta(deltaTime, midiData)
     midiData.extend([0x89, 38, 0])
