@@ -437,6 +437,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         try:
             printer = QPrinter(mode = QPrinter.HighResolution)
             printer.setPaperSize(self._getPaperSize())
+            printer.setOutputFormat(QPrinter.PdfFormat)
             if self.filename:
                 outfileName = list(os.path.splitext(self.filename)[:-1])
                 outfileName = os.extsep.join(outfileName + ["pdf"])
