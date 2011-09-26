@@ -26,6 +26,7 @@ Created on 4 Jan 2011
 from PyQt4 import QtGui, QtCore
 from QStaff import QStaff
 from QSection import QSection
+from QMeasure import QMeasure
 from QMetaData import QMetaData
 from QKitData import QKitData
 from Data.Score import ScoreFactory
@@ -113,6 +114,7 @@ class QScore(QtGui.QGraphicsScene):
     defaultCountChanged = QtCore.pyqtSignal(object)
     spacingChanged = QtCore.pyqtSignal(int)
     sectionsChanged = QtCore.pyqtSignal()
+    dragHighlight = QtCore.pyqtSignal(bool)
 
     def addCommand(self, command):
         self._undoStack.push(command)
@@ -383,11 +385,20 @@ class QScore(QtGui.QGraphicsScene):
         self._ignoreNext = True
 
     def mousePressEvent(self, event):
+        item = self.itemAt(event.scenePos())
+        if not isinstance(item, QMeasure):
+            self.clearDragSelection()
         event.ignore()
         if self._ignoreNext:
             self._ignoreNext = False
         else:
             super(QScore, self).mousePressEvent(event)
+
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key_Escape:
+            self.clearDragSelection()
+        event.ignore()
+        return super(QScore, self).keyPressEvent(event)
 
     def copyMeasure(self, np):
         self.measureClipboard = self._score.copyMeasure(np)
@@ -538,6 +549,7 @@ class QScore(QtGui.QGraphicsScene):
                                qmeasure.makeNotePosition(None, None)]
         self._dragged = []
         self._updateDragged()
+        self.dragHighlight.emit(True)
 
     def _updateDragged(self):
         if not self.hasDragSelection():
@@ -585,6 +597,7 @@ class QScore(QtGui.QGraphicsScene):
     def clearDragSelection(self):
         self._dragSelection = []
         self._updateDragged()
+        self.dragHighlight.emit(False)
 
     def setDragHighlight(self, position, onOff):
         staff = self._qStaffs[position.staffIndex]

@@ -105,6 +105,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         props.metadataFontChanged.connect(self._setMetadataFont)
         props.metadataFontSizeChanged.connect(self._setMetadataSize)
         self.scoreScene.dirtySignal.connect(self.setWindowModified)
+        self.scoreScene.dragHighlight.connect(self.actionLoopBars.setEnabled)
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
@@ -140,6 +141,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.actionShowEmptyLines.setChecked(props.emptyLinesVisible)
         self.actionShowScoreInfo.setChecked(props.metadataVisible)
         self.actionShowBeatCount.setChecked(props.beatCountVisible)
+        # Set doable actions
+        self.actionLoopBars.setEnabled(False)
         # Undo/redo
         self.actionUndo.setEnabled(False)
         self.actionRedo.setEnabled(False)

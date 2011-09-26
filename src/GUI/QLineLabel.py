@@ -75,8 +75,12 @@ class QLineLabel(QtGui.QGraphicsItem):
     def paint(self, painter, dummyOption, dummyWidget = None):
         painter.save()
         painter.setPen(QtCore.Qt.NoPen)
+        if self._highlighted:
+            painter.setBrush(QtGui.QColor(QtCore.Qt.yellow).lighter())
+            painter.drawRect(0, 0, self.cellWidth() - 1, self.cellHeight())
         if len(self._text) > 0:
             painter.setPen(QtCore.Qt.SolidLine)
+            painter.setBrush(QtCore.Qt.NoBrush)
             font = self._props.noteFont
             if font is None:
                 font = painter.font()
@@ -89,11 +93,6 @@ class QLineLabel(QtGui.QGraphicsItem):
             textLocation = QtCore.QPointF((self.cellWidth() - w + 2) / 2,
                                           (self.cellHeight() + h) / 2)
             painter.drawText(textLocation, self._text)
-        if self._highlighted:
-            painter.setPen(QtCore.Qt.SolidLine)
-            painter.setPen(self.scene().palette().highlight().color())
-            painter.setBrush(QtCore.Qt.NoBrush)
-            painter.drawRect(0, 0, self.cellWidth() - 1, self.cellHeight())
         painter.restore()
 
     def setHighlight(self, onOff):

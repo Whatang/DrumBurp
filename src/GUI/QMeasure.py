@@ -121,8 +121,8 @@ class QMeasure(QtGui.QGraphicsItem):
         baseline = (self.numLines() - drumIndex) * self.scene().ySpacing
         countLine = (self.numLines() + 1) * self.scene().ySpacing
         x = xValues[noteTime]
-        painter.setPen(self.scene().palette().highlight().color())
-        painter.setBrush(QtCore.Qt.NoBrush)
+        painter.setPen(QtCore.Qt.NoPen)
+        painter.setBrush(QtGui.QColor(QtCore.Qt.yellow).lighter())
         painter.drawRect(x, baseline,
                          self.scene().xSpacing - 1, self.scene().ySpacing - 1)
         painter.drawRect(x, countLine,
@@ -175,15 +175,18 @@ class QMeasure(QtGui.QGraphicsItem):
         painter.setFont(font)
 
     def _paintPlayingHighlight(self, painter):
-        painter.setPen(self.scene().palette().linkVisited().color())
         painter.setBrush(QtCore.Qt.NoBrush)
+        painter.setPen(QtCore.Qt.blue)
+        painter.drawRect(-1, -1, self.width() + 1, self.height() + 1)
+        painter.setPen(QtGui.QColor(QtCore.Qt.blue).lighter())
         painter.drawRect(0, 0, self.width() - 1, self.height() - 1)
 
     def paint(self, painter, dummyOption, dummyWidget = None):
         painter.save()
         if self._dragHighlight:
-            painter.setBrush(QtCore.Qt.cyan)
-            painter.setPen(QtCore.Qt.cyan)
+            color = QtGui.QColor(QtCore.Qt.gray).lighter()
+            painter.setBrush(color)
+            painter.setPen(color)
             painter.drawRect(self._rect)
         painter.setPen(QtCore.Qt.SolidLine)
         font = self._props.noteFont
@@ -192,11 +195,11 @@ class QMeasure(QtGui.QGraphicsItem):
         painter.setFont(font)
         xValues = [noteTime * self.scene().xSpacing
                    for noteTime in range(0, len(self._measure))]
+        if self._highlight:
+            self._paintHighlight(painter, xValues)
         self._paintNotes(painter, xValues)
         if self._props.beatCountVisible:
             self._paintBeatCount(painter, xValues)
-        if self._highlight:
-            self._paintHighlight(painter, xValues)
         if self._measure.isRepeatEnd() and self._measure.repeatCount > 2:
             self._paintRepeatCount(painter)
         else:
