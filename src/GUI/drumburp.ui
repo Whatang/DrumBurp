@@ -377,10 +377,13 @@
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
       </property>
       <property name="dragMode">
-       <enum>QGraphicsView::RubberBandDrag</enum>
+       <enum>QGraphicsView::NoDrag</enum>
       </property>
       <property name="transformationAnchor">
        <enum>QGraphicsView::NoAnchor</enum>
+      </property>
+      <property name="rubberBandSelectionMode">
+       <enum>Qt::IntersectsItemBoundingRect</enum>
       </property>
      </widget>
     </item>
@@ -913,6 +916,7 @@ p, li { white-space: pre-wrap; }
     <bool>false</bool>
    </attribute>
    <addaction name="actionPlayScore"/>
+   <addaction name="actionLoopBars"/>
    <addaction name="actionMuteNotes"/>
    <addaction name="actionExportMIDI"/>
   </widget>
@@ -1310,6 +1314,17 @@ Writes this Score as a plain .txt file.</string>
    </property>
    <property name="toolTip">
     <string>Change visibility of MIDI toolbar</string>
+   </property>
+  </action>
+  <action name="actionLoopBars">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>loop</string>
+   </property>
+   <property name="toolTip">
+    <string>Loop the selected bars</string>
    </property>
   </action>
  </widget>

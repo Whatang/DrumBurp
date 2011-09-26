@@ -61,6 +61,7 @@ class QMeasure(QtGui.QGraphicsItem):
         self._startClick = None
         self._alternate = None
         self._playing = False
+        self._dragHighlight = False
         self.setAcceptsHoverEvents(True)
         self.setMeasure(measure)
 
@@ -180,6 +181,10 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def paint(self, painter, dummyOption, dummyWidget = None):
         painter.save()
+        if self._dragHighlight:
+            painter.setBrush(QtCore.Qt.cyan)
+            painter.setPen(QtCore.Qt.cyan)
+            painter.drawRect(self._rect)
         painter.setPen(QtCore.Qt.SolidLine)
         font = self._props.noteFont
         if font is None:
@@ -292,13 +297,14 @@ class QMeasure(QtGui.QGraphicsItem):
         self.setCursor(QtCore.Qt.ArrowCursor)
 
     def toggleNote(self, noteTime, drumIndex, head = None):
-        notePosition = self._makeNotePosition(noteTime, drumIndex)
+        notePosition = self.makeNotePosition(noteTime, drumIndex)
         if head is None:
             head = self._props.head
         command = ToggleNote(self._qScore, notePosition, head)
         self._qScore.addCommand(command)
 
     def mousePressEvent(self, event):
+        self.scene().clearDragSelection()
         point = self.mapFromScene(event.scenePos())
         if self._isOverNotes(point):
             noteTime, drumIndex = self._getNotePosition(point)
@@ -306,8 +312,22 @@ class QMeasure(QtGui.QGraphicsItem):
         else:
             event.ignore()
 
+    def mouseMoveEvent(self, event):
+        if self._startClick is None:
+            event.ignore()
+            return
+        point = self.mapFromScene(event.scenePos())
+        item = self.scene().itemAt(event.scenePos())
+        if item is self and self._isOverNotes(point):
+            if self._getNotePosition(point) == self._startClick:
+                event.ignore()
+                return
+        if isinstance(item, QMeasure):
+            self.scene().dragging(item)
+
     def _notePressEvent(self, event, noteTime, drumIndex):
         menu = None
+        self._startClick = None
         if event.button() == QtCore.Qt.MidButton:
             event.ignore()
             menu = QMenuIgnoreCancelClick(self._qScore)
@@ -319,7 +339,7 @@ class QMeasure(QtGui.QGraphicsItem):
         elif event.button() == QtCore.Qt.RightButton:
             event.ignore()
             menu = QMeasureContextMenu(self._qScore, self,
-                                       self._makeNotePosition(noteTime,
+                                       self.makeNotePosition(noteTime,
                                                               drumIndex),
                                        self._measure.noteAt(noteTime,
                                                             drumIndex),
@@ -331,6 +351,8 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def mouseReleaseEvent(self, event):
         point = self.mapFromScene(event.scenePos())
+        if self.scene().isDragging():
+            self.scene().endDragging()
         if self._isOverNotes(point):
             noteTime, drumIndex = self._getNotePosition(point)
             if (event.button() == QtCore.Qt.LeftButton and
@@ -352,7 +374,7 @@ class QMeasure(QtGui.QGraphicsItem):
         else:
             event.ignore()
 
-    def _makeNotePosition(self, noteTime, drumIndex):
+    def makeNotePosition(self, noteTime, drumIndex):
         np = NotePosition(measureIndex = self._index,
                           noteTime = noteTime,
                           drumIndex = drumIndex)
@@ -388,4 +410,8 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def setPlaying(self, onOff):
         self._playing = onOff
+        self.update()
+
+    def setDragHighlight(self, onOff):
+        self._dragHighlight = onOff
         self.update()

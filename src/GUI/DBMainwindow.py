@@ -110,7 +110,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
         props.metadataVisibilityChanged.connect(self._setMetadataVisible)
         props.beatCountVisibleChanged.connect(self._setBeatCountVisible)
-        DBMidi.SONGEND_SIGNAL.connect(lambda : self.actionPlayScore.setChecked(False))
+        DBMidi.SONGEND_SIGNAL.connect(self.musicDone)
         DBMidi.HIGHLIGHT_SIGNAL.connect(self.highlightPlayingMeasure)
         # Fonts
         self.fontComboBox.setWritingSystem(QFontDatabase.Latin)
@@ -581,3 +581,18 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         with open(fname, 'wb') as handle:
             DBMidi.exportMidi(self.scoreScene.score.iterMeasuresWithRepeats(),
                               self.scoreScene.score, handle)
+
+    @pyqtSignature("bool")
+    def on_actionLoopBars_toggled(self, onOff):
+        if onOff:
+            if not self.scoreScene.hasDragSelection():
+                self.actionLoopBars.toggle()
+                return
+            DBMidi.loopBars(self.scoreScene.iterDragSelection(),
+                            self.scoreScene.score)
+        else:
+            DBMidi.shutUp()
+
+    def musicDone(self):
+        self.actionPlayScore.setChecked(False)
+        self.actionLoopBars.setChecked(False)

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sun Sep 18 01:40:43 2011
+# Created: Sun Sep 25 20:23:12 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -172,8 +172,9 @@ class Ui_DrumBurpWindow(object):
         self.scoreView.setAcceptDrops(False)
         self.scoreView.setLineWidth(1)
         self.scoreView.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
-        self.scoreView.setDragMode(QtGui.QGraphicsView.RubberBandDrag)
+        self.scoreView.setDragMode(QtGui.QGraphicsView.NoDrag)
         self.scoreView.setTransformationAnchor(QtGui.QGraphicsView.NoAnchor)
+        self.scoreView.setRubberBandSelectionMode(QtCore.Qt.IntersectsItemBoundingRect)
         self.scoreView.setObjectName(_fromUtf8("scoreView"))
         self.verticalLayout.addWidget(self.scoreView)
         DrumBurpWindow.setCentralWidget(self.centralwidget)
@@ -476,6 +477,9 @@ class Ui_DrumBurpWindow(object):
         self.actionMIDIToolBarIsVisible = QtGui.QAction(DrumBurpWindow)
         self.actionMIDIToolBarIsVisible.setCheckable(True)
         self.actionMIDIToolBarIsVisible.setObjectName(_fromUtf8("actionMIDIToolBarIsVisible"))
+        self.actionLoopBars = QtGui.QAction(DrumBurpWindow)
+        self.actionLoopBars.setCheckable(True)
+        self.actionLoopBars.setObjectName(_fromUtf8("actionLoopBars"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.menuRecentScores.menuAction())
@@ -527,6 +531,7 @@ class Ui_DrumBurpWindow(object):
         self.helpToolBar.addAction(self.actionWhatsThis)
         self.helpToolBar.addAction(self.actionAboutDrumBurp)
         self.MIDIToolBar.addAction(self.actionPlayScore)
+        self.MIDIToolBar.addAction(self.actionLoopBars)
         self.MIDIToolBar.addAction(self.actionMuteNotes)
         self.MIDIToolBar.addAction(self.actionExportMIDI)
         self.label_2.setBuddy(self.paperBox)
@@ -704,6 +709,8 @@ class Ui_DrumBurpWindow(object):
         self.actionExportMIDI.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Export this score to a MIDI file", None, QtGui.QApplication.UnicodeUTF8))
         self.actionMIDIToolBarIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "MIDI", None, QtGui.QApplication.UnicodeUTF8))
         self.actionMIDIToolBarIsVisible.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Change visibility of MIDI toolbar", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionLoopBars.setText(QtGui.QApplication.translate("DrumBurpWindow", "loop", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionLoopBars.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Loop the selected bars", None, QtGui.QApplication.UnicodeUTF8))
 
 from Widgets.ScoreView_plugin import ScoreView
 import DrumBurp_rc

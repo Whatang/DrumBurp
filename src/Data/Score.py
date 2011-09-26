@@ -100,6 +100,26 @@ class Score(object):
             for measure in staff:
                 yield measure
 
+    def iterMeasuresBetween(self, start, end):
+        if self.getMeasureIndex(end) < self.getMeasureIndex(start):
+            start, end = end, start
+        staffIndex = start.staffIndex
+        measureIndex = start.measureIndex
+        absIndex = self.getMeasureIndex(start)
+        while staffIndex < end.staffIndex:
+            staff = self.getStaff(staffIndex)
+            while measureIndex < staff.numMeasures():
+                yield staff[measureIndex], absIndex
+                measureIndex += 1
+                absIndex += 1
+            measureIndex = 0
+            staffIndex += 1
+        staff = self.getStaff(staffIndex)
+        while measureIndex <= end.measureIndex:
+            yield staff[measureIndex], absIndex
+            absIndex += 1
+            measureIndex += 1
+
     @staticmethod
     def _readAlternates(text):
         alternates = [t.strip() for t in

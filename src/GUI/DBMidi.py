@@ -92,6 +92,35 @@ class _midi(QObject):
         self.timer.start(baseTime)
         self._measureTimer.start(0)
 
+    def loopBars(self, measureIterator, score):
+        if self.kit is None:
+            return
+        baseTime = 0
+        msPerBeat = 60000.0 / score.scoreData.bpm
+        self._measureDetails = []
+        loopCount = 1000
+        measureList = list(measureIterator) * loopCount
+        try:
+            for measure, measureIndex in measureList:
+                times = list(measure.counter.iterTimesMs(msPerBeat))
+                baseTime += times[-1]
+                self._measureDetails.append((measureIndex, baseTime))
+            self._measureDetails.reverse()
+            del self._midiOut
+            self._midiOut = None
+            import StringIO
+            midi = StringIO.StringIO()
+            exportMidi(measureList, score, midi)
+            midi.seek(0, 0)
+            pygame.mixer.music.load(midi)
+            pygame.mixer.music.play()
+            self._songStart = time.clock()
+        except:
+            self.timer.timeout.emit()
+            raise
+        self.timer.start(baseTime)
+        self._measureTimer.start(0)
+
 
     def shutUp(self):
         self.timer.stop()
@@ -135,6 +164,9 @@ def playHeadData(headData):
 
 def playScore(score):
     _PLAYER.playScore(score)
+
+def loopBars(measureIterator, score):
+    _PLAYER.loopBars(measureIterator, score)
 
 def shutUp():
     _PLAYER.shutUp()
@@ -186,6 +218,9 @@ def exportMidi(measureIterator, score, handle):
         lastNoteTime = noteTime
         encodeSevenBitDelta(deltaTime, midiData)
         midiData.extend([0x99, headData.midiNote, headData.midiVolume])
+    deltaTime = baseTime - lastNoteTime
+    encodeSevenBitDelta(deltaTime, midiData)
+    midiData.extend([0x89, 38, 0])
     midiData.extend([0, 0xFF, 0x2F, 0])
     numBytes = len(midiData)
     lenBytes = [((numBytes >> i) & 0xff) for i in xrange(24, -8, -8)]

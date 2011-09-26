@@ -75,6 +75,10 @@ class QScore(QtGui.QGraphicsScene):
         self._ignoreNext = False
         self.measureClipboard = None
         self._playingMeasure = None
+        self._dragStart = None
+        self._lastDrag = None
+        self._dragSelection = []
+        self._dragged = []
         self._undoStack = QtGui.QUndoStack(self)
         self._undoStack.canUndoChanged.connect(self.canUndoChanged)
         self._undoStack.undoTextChanged.connect(self.undoTextChanged)
@@ -526,3 +530,63 @@ class QScore(QtGui.QGraphicsScene):
         DBMidi.setKit(kit)
         self.reBuild()
         self.dirty = True
+
+    def startDragging(self, qmeasure):
+        self._dragStart = qmeasure
+        self._lastDrag = qmeasure
+        self._dragSelection = [qmeasure.makeNotePosition(None, None),
+                               qmeasure.makeNotePosition(None, None)]
+        self._dragged = []
+        self._updateDragged()
+
+    def _updateDragged(self):
+        if not self.hasDragSelection():
+            for index in self._dragged:
+                # Turn off
+                position = self.score.getMeasurePosition(index)
+                self.setDragHighlight(position, False)
+            self._dragged = []
+            return
+        newDragged = [index for unused, index in self.score.iterMeasuresBetween(*self._dragSelection)]
+        for index in newDragged:
+            if index not in self._dragged: # Turn on
+                position = self.score.getMeasurePosition(index)
+                self.setDragHighlight(position, True)
+        for index in self._dragged:
+            if index not in newDragged: # Turn off
+                position = self.score.getMeasurePosition(index)
+                self.setDragHighlight(position, False)
+        self._dragged = newDragged
+
+    def dragging(self, qmeasure):
+        if self._dragStart is None:
+            self.startDragging(qmeasure)
+        elif self._lastDrag != qmeasure:
+            self._lastDrag = qmeasure
+            self._dragSelection[1] = self._lastDrag.makeNotePosition(None, None)
+            self._updateDragged()
+
+    def isDragging(self):
+        return self._dragStart is not None
+
+    def endDragging(self):
+        self._dragStart = None
+        self._lastDrag = None
+
+    def hasDragSelection(self):
+        return len(self._dragSelection) == 2
+
+    def iterDragSelection(self):
+        if self.hasDragSelection():
+            return self.score.iterMeasuresBetween(*self._dragSelection)
+        else:
+            return iter([])
+
+    def clearDragSelection(self):
+        self._dragSelection = []
+        self._updateDragged()
+
+    def setDragHighlight(self, position, onOff):
+        staff = self._qStaffs[position.staffIndex]
+        qmeasure = staff.getQMeasure(position)
+        qmeasure.setDragHighlight(onOff)
