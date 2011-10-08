@@ -72,13 +72,22 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
             DBConstants.EMPTY_NOTE):
             repeatNoteAction.setEnabled(False)
         self.addSeparator()
-        self.addAction(DBIcons.getIcon("copy"), "Copy Measure",
-                       lambda:self._qScore.copyMeasure(self._np))
-        pasteAction = self.addAction(DBIcons.getIcon("paste"),
-            "Paste Measure",
-            lambda:self._qScore.pasteMeasure(self._np))
-        if self._qScore.measureClipboard is None:
-            pasteAction.setEnabled(False)
+        pasteText = "Paste Measure"
+        if len(self._qScore.measureClipboard) > 1:
+            pasteText += "s"
+        if self._qScore.hasDragSelection():
+            self.addAction(DBIcons.getIcon("copy"), "Copy Measures",
+                           lambda:self._qScore.copyMeasure(None))
+            pasteAction = self.addAction(DBIcons.getIcon("paste"),
+                                         pasteText,
+                                         lambda:self._qScore.pasteMeasureInstead(self._np))
+        else:
+            self.addAction(DBIcons.getIcon("copy"), "Copy Measure",
+                           lambda:self._qScore.copyMeasure(self._np))
+            pasteAction = self.addAction(DBIcons.getIcon("paste"),
+                                         pasteText,
+                                         lambda:self._qScore.pasteMeasure(self._np))
+        pasteAction.setEnabled(len(self._qScore.measureClipboard) > 0)
         self.addSeparator()
 
     def _setupInsertSection(self, score):

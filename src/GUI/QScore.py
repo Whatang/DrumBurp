@@ -74,7 +74,7 @@ class QScore(QtGui.QGraphicsScene):
         self._score = None
         self._dirty = None
         self._ignoreNext = False
-        self.measureClipboard = None
+        self.measureClipboard = []
         self._playingMeasure = None
         self._dragStart = None
         self._lastDrag = None
@@ -401,12 +401,28 @@ class QScore(QtGui.QGraphicsScene):
         return super(QScore, self).keyPressEvent(event)
 
     def copyMeasure(self, np):
-        self.measureClipboard = self._score.copyMeasure(np)
+        if np is not None:
+            self.measureClipboard = [self._score.copyMeasure(np)]
+        elif self.hasDragSelection():
+            self.measureClipboard = [self._score.copyMeasure(dragNP)
+                                     for (unusedMeasure, unusedIndex, dragNP)
+                                     in self.iterDragSelection()]
+
 
     @delayCall
     def pasteMeasure(self, np):
-        command = PasteMeasure(self, np, self.measureClipboard)
-        self.addCommand(command)
+        if len(self.measureClipboard) == 1:
+            command = PasteMeasure(self, np, self.measureClipboard[0])
+            self.addCommand(command)
+        elif len(self.measureClipboard) > 1:
+            self.beginMacro("paste measures")
+            for pasteData in self.measureClipboard:
+                command = PasteMeasure(self, np, pasteData)
+                self.addCommand(command)
+                np = self._score.nextMeasurePositionInSection(np)
+                if np.staffIndex == None:
+                    break
+            self.endMacro()
 
     def changeRepeatCount(self, np):
         qStaff = self._qStaffs[np.staffIndex]
@@ -553,20 +569,18 @@ class QScore(QtGui.QGraphicsScene):
 
     def _updateDragged(self):
         if not self.hasDragSelection():
-            for index in self._dragged:
+            for index, position in self._dragged:
                 # Turn off
-                position = self.score.getMeasurePosition(index)
                 self.setDragHighlight(position, False)
             self._dragged = []
             return
-        newDragged = [index for unused, index in self.score.iterMeasuresBetween(*self._dragSelection)]
-        for index in newDragged:
-            if index not in self._dragged: # Turn on
-                position = self.score.getMeasurePosition(index)
+        newDragged = [(index, position) for (unused, index, position) in
+                      self.score.iterMeasuresBetween(*self._dragSelection)]
+        for index, position in newDragged:
+            if all(x[0] != index for x in self._dragged): # Turn on
                 self.setDragHighlight(position, True)
-        for index in self._dragged:
-            if index not in newDragged: # Turn off
-                position = self.score.getMeasurePosition(index)
+        for index, position in self._dragged:
+            if all(x[0] != index for x in newDragged): # Turn off
                 self.setDragHighlight(position, False)
         self._dragged = newDragged
 
@@ -603,3 +617,15 @@ class QScore(QtGui.QGraphicsScene):
         staff = self._qStaffs[position.staffIndex]
         qmeasure = staff.getQMeasure(position)
         qmeasure.setDragHighlight(onOff)
+
+    def inDragSelection(self, np):
+        if not self.hasDragSelection():
+            return False
+        start, end = self._dragSelection
+        return ((start.staffIndex == np.staffIndex
+                 and start.measureIndex <= np.measureIndex
+                 and (np.staffIndex < end.staffIndex or
+                      np.measureIndex <= end.measureIndex))
+                or (start.staffIndex < np.staffIndex < end.staffIndex)
+                or (np.staffIndex == end.staffIndex
+                    and np.measureIndex <= end.measureIndex))

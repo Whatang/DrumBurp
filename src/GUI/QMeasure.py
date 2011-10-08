@@ -307,12 +307,12 @@ class QMeasure(QtGui.QGraphicsItem):
         self._qScore.addCommand(command)
 
     def mousePressEvent(self, event):
-        self.scene().clearDragSelection()
         point = self.mapFromScene(event.scenePos())
         if self._isOverNotes(point):
             noteTime, drumIndex = self._getNotePosition(point)
             self._notePressEvent(event, noteTime, drumIndex)
         else:
+            self.scene().clearDragSelection()
             event.ignore()
 
     def mouseMoveEvent(self, event):
@@ -333,6 +333,7 @@ class QMeasure(QtGui.QGraphicsItem):
         self._startClick = None
         if event.button() == QtCore.Qt.MidButton:
             event.ignore()
+            self.scene().clearDragSelection()
             menu = QMenuIgnoreCancelClick(self._qScore)
             kit = self.scene().score.drumKit
             for noteHead in kit.allowedNoteHeads(drumIndex):
@@ -341,6 +342,10 @@ class QMeasure(QtGui.QGraphicsItem):
                 menu.addAction(noteHead, noteAction)
         elif event.button() == QtCore.Qt.RightButton:
             event.ignore()
+            if self._qScore.hasDragSelection():
+                np = self.makeNotePosition(None, None)
+                if not self._qScore.inDragSelection(np):
+                    self._qScore.clearDragSelection()
             menu = QMeasureContextMenu(self._qScore, self,
                                        self.makeNotePosition(noteTime,
                                                               drumIndex),
@@ -348,6 +353,7 @@ class QMeasure(QtGui.QGraphicsItem):
                                                             drumIndex),
                                        self._measure.alternateText)
         else:
+            self.scene().clearDragSelection()
             self._startClick = (noteTime, drumIndex)
         if menu is not None:
             menu.exec_(event.screenPos())

@@ -109,14 +109,14 @@ class Score(object):
         while staffIndex < end.staffIndex:
             staff = self.getStaff(staffIndex)
             while measureIndex < staff.numMeasures():
-                yield staff[measureIndex], absIndex
+                yield staff[measureIndex], absIndex, NotePosition(staffIndex, measureIndex)
                 measureIndex += 1
                 absIndex += 1
             measureIndex = 0
             staffIndex += 1
         staff = self.getStaff(staffIndex)
         while measureIndex <= end.measureIndex:
-            yield staff[measureIndex], absIndex
+            yield staff[measureIndex], absIndex, NotePosition(staffIndex, measureIndex)
             absIndex += 1
             measureIndex += 1
 
@@ -482,9 +482,32 @@ class Score(object):
         for measure in self.iterMeasures():
             if inSection:
                 yield measure
+                if measure.isSectionEnd():
+                    break
             if measure.isSectionEnd():
                 thisSection += 1
                 inSection = (thisSection == sectionIndex)
+
+    def nextMeasurePositionInSection(self, position):
+        if not(0 <= position.staffIndex < self.numStaffs()):
+            raise BadTimeError()
+        staff = self.getStaff(position.staffIndex)
+        if not (0 <= position.measureIndex < staff.numMeasures()):
+            raise BadTimeError()
+        position = NotePosition(position.staffIndex, position.measureIndex)
+        if staff[position.measureIndex].isSectionEnd():
+            position.staffIndex = None
+            position.measureIndex = None
+        else:
+            position.measureIndex += 1
+            if position.measureIndex == staff.numMeasures:
+                position.staffIndex += 1
+                if position.staffIndex == self.numStaffs():
+                    position.staffIndex = None
+                    position.measureIndex = None
+                else:
+                    position.measureIndex = 0
+        return position
 
     def insertSectionCopy(self, position, sectionIndex):
         self.turnOffCallBacks()

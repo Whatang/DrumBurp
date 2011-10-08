@@ -95,7 +95,9 @@ class _midi(QObject):
         baseTime = 0
         msPerBeat = 60000.0 / score.scoreData.bpm
         self._measureDetails = []
-        measureList = list(measureIterator) * loopCount
+        measureList = [(measure, measureIndex) for
+                       (measure, measureIndex, unused)
+                       in measureIterator] * loopCount
         try:
             for measure, measureIndex in measureList:
                 times = list(measure.counter.iterTimesMs(msPerBeat))
