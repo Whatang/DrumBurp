@@ -51,7 +51,7 @@ class Counter(object):
 
 _COUNTER_BEAT = Counter(BEAT_COUNT)
 _EIGHTH_COUNT = Counter(BEAT_COUNT + "+")
-_TRIPLET_COUNT = Counter(BEAT_COUNT + "ea")
+_TRIPLET_COUNT = Counter(BEAT_COUNT + "+a")
 _SIXTEENTH_COUNT = Counter(BEAT_COUNT + "e+a")
 _SIXTEENTH_COUNT_SPARSE = Counter(BEAT_COUNT + ' + ')
 _SIXTEENTH_TRIPLETS = Counter(BEAT_COUNT + 'ea+ea')
