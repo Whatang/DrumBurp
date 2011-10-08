@@ -87,7 +87,8 @@ class SetNote(NoteCommand):
 class ToggleNote(NoteCommand):
     def _redo(self):
         self._score.toggleNote(self._np, self._head)
-        if (self._head != DBConstants.EMPTY_NOTE):
+        newHead = self._score.getNote(self._np)
+        if (newHead != DBConstants.EMPTY_NOTE):
             DBMidi.playNote(self._np.drumIndex, self._head)
 
 class MetaDataCommand(_COMMAND_CLASS):
