@@ -9,6 +9,8 @@ import pygame
 import pygame.midi
 import atexit
 import time
+import StringIO
+
 from PyQt4 import QtGui #IGNORE:W0611
 from PyQt4.QtCore import QTimer, pyqtSignal, QObject
 from Data.MeasureCount import MIDITICKSPERBEAT
@@ -36,7 +38,6 @@ class _midi(QObject):
         self._midiOut = pygame.midi.Output(self._port, 0, _BUFSIZE)
         self.timer = QTimer()
         self.timer.setSingleShot(True)
-        self.timer.timeout.connect(self.shutUp)
         self._measureDetails = []
         self._measureTimer = QTimer()
         self._measureTimer.setSingleShot(True)
@@ -76,7 +77,6 @@ class _midi(QObject):
             self._measureDetails.reverse()
             del self._midiOut
             self._midiOut = None
-            import StringIO
             midi = StringIO.StringIO()
             exportMidi(score.iterMeasuresWithRepeats(), score, midi)
             midi.seek(0, 0)
@@ -104,7 +104,6 @@ class _midi(QObject):
             self._measureDetails.reverse()
             del self._midiOut
             self._midiOut = None
-            import StringIO
             midi = StringIO.StringIO()
             exportMidi(measureList, score, midi)
             midi.seek(0, 0)
@@ -120,11 +119,13 @@ class _midi(QObject):
 
     def shutUp(self):
         self.timer.stop()
+        self._measureDetails = []
         self._measureTimer.stop()
+        self.highlightMeasure.emit(-1)
         if self._midiOut:
             del self._midiOut
         pygame.mixer.music.stop()
-        self.highlightMeasure.emit(-1)
+        time.sleep(0.1)
         self._midiOut = pygame.midi.Output(self._port, 0, _BUFSIZE)
 
     def cleanup(self):
