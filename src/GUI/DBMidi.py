@@ -44,6 +44,7 @@ class _midi(QObject):
         self._measureTimer.timeout.connect(self._highlight)
         self._songStart = None
         self._mute = False
+        self._musicPlaying = False
         self.kit = None
 
     def setMute(self, onOff):
@@ -83,6 +84,7 @@ class _midi(QObject):
             pygame.mixer.music.load(midi)
             pygame.mixer.music.play()
             self._songStart = time.clock()
+            self._musicPlaying = True
         except:
             self.timer.timeout.emit()
             raise
@@ -112,6 +114,7 @@ class _midi(QObject):
             pygame.mixer.music.load(midi)
             pygame.mixer.music.play()
             self._songStart = time.clock()
+            self._musicPlaying = True
         except:
             self.timer.timeout.emit()
             raise
@@ -120,15 +123,16 @@ class _midi(QObject):
 
 
     def shutUp(self):
-        self.timer.stop()
-        self._measureDetails = []
-        self._measureTimer.stop()
-        self.highlightMeasure.emit(-1)
-        if self._midiOut:
-            del self._midiOut
-        pygame.mixer.music.stop()
-        time.sleep(0.1)
-        self._midiOut = pygame.midi.Output(self._port, 0, _BUFSIZE)
+        if self._musicPlaying:
+            self.timer.stop()
+            self._measureDetails = []
+            self._measureTimer.stop()
+            self.highlightMeasure.emit(-1)
+            if self._midiOut:
+                del self._midiOut
+            pygame.mixer.music.stop()
+            self._midiOut = pygame.midi.Output(self._port, 0, _BUFSIZE)
+            self._musicPlaying = False
 
     def cleanup(self):
         if self._midiOut is not None:

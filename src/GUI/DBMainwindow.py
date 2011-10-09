@@ -647,6 +647,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreScene.deleteMeasures()
 
     def musicDone(self):
-        self.actionPlayScore.setChecked(False)
-        self.actionLoopBars.setChecked(False)
-        self.actionPlayOnce.setChecked(False)
+        players = [self.actionPlayScore, self.actionPlayOnce,
+                   self.actionLoopBars]
+        for playButton in players:
+            if playButton.isChecked():
+                playButton.setChecked(False)
