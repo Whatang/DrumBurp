@@ -107,6 +107,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreScene.dirtySignal.connect(self.setWindowModified)
         self.scoreScene.dragHighlight.connect(self.actionLoopBars.setEnabled)
         self.scoreScene.dragHighlight.connect(self.actionPlayOnce.setEnabled)
+        self.scoreScene.dragHighlight.connect(self.actionCopyMeasures.setEnabled)
+        self.scoreScene.dragHighlight.connect(self.checkPasteMeasure)
+        self.scoreScene.dragHighlight.connect(self.actionClearMeasures.setEnabled)
+        self.scoreScene.dragHighlight.connect(self.actionDeleteMeasures.setEnabled)
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
@@ -145,6 +149,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         # Set doable actions
         self.actionPlayOnce.setEnabled(False)
         self.actionLoopBars.setEnabled(False)
+        self.actionCopyMeasures.setEnabled(False)
+        self.actionPasteMeasures.setEnabled(False)
+        self.actionFillPasteMeasures.setEnabled(False)
+        self.actionClearMeasures.setEnabled(False)
+        self.actionDeleteMeasures.setEnabled(False)
         # Undo/redo
         self.actionUndo.setEnabled(False)
         self.actionRedo.setEnabled(False)
@@ -610,6 +619,32 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                             loopCount = 1)
         else:
             DBMidi.shutUp()
+
+    @pyqtSignature("")
+    def on_actionCopyMeasures_triggered(self):
+        self.scoreScene.copyMeasures()
+
+    def checkPasteMeasure(self):
+        onOff = (self.scoreScene.hasDragSelection() and
+                 len(self.scoreScene.measureClipboard) > 0)
+        self.actionPasteMeasures.setEnabled(onOff)
+        self.actionFillPasteMeasures.setEnabled(onOff)
+
+    @pyqtSignature("")
+    def on_actionPasteMeasures_triggered(self):
+        self.scoreScene.pasteMeasuresOver()
+
+    @pyqtSignature("")
+    def on_actionFillPasteMeasures_triggered(self):
+        self.scoreScene.pasteMeasuresOver(repeating = True)
+
+    @pyqtSignature("")
+    def on_actionClearMeasures_triggered(self):
+        self.scoreScene.clearMeasures()
+
+    @pyqtSignature("")
+    def on_actionDeleteMeasures_triggered(self):
+        self.scoreScene.deleteMeasures()
 
     def musicDone(self):
         self.actionPlayScore.setChecked(False)

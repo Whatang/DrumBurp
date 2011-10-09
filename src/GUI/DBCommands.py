@@ -125,33 +125,23 @@ class ScoreWidthCommand(_COMMAND_CLASS):
         for view in self._qScore.views():
             view.setWidth(self._oldValue)
 
-class PasteMeasure(_COMMAND_CLASS):
-    def __init__(self, qScore, notePosition, clipboard):
-        super(PasteMeasure, self).__init__(qScore, notePosition,
-                                           "paste measure")
-        self._measure = clipboard
-        self._oldMeasure = None
-
-    def _redo(self):
-        self._oldMeasure = self._score.pasteMeasure(self._np, self._measure)
-
-    def _undo(self):
-        self._score.pasteMeasure(self._np, self._oldMeasure)
-
-class PasteMultiMeasures(_COMMAND_CLASS):
-    def __init__(self, qScore, notePositions, measureData):
-        super(PasteMultiMeasures, self).__init__(qScore, NotePosition(),
-                                                 "paste measures")
-        self._notePositions = notePositions
+class InsertAndPasteMeasures(_COMMAND_CLASS):
+    def __init__(self, qScore, startPosition, measureData):
+        super(InsertAndPasteMeasures, self).__init__(qScore, startPosition,
+                                                     "insert copied measures")
+        self._startPosition = startPosition
         self._measureData = measureData
-        self._oldMeasures = []
 
     def _redo(self):
-        self._oldMeasures = [self._score.pasteMeasure(np, measureData) for np, measureData in zip(self._notePositions, self._measureData)]
+        np = self._startPosition
+        for measure in reversed(self._measureData):
+            self._score.insertMeasureByPosition(len(measure), np,
+                                                measure.counter)
+            self._score.pasteMeasure(np, measure)
 
     def _undo(self):
-        for np, measureData in zip(self._notePositions, self._oldMeasures):
-            self._score.pasteMeasure(np, measureData)
+        self._score.deleteMeasuresAtPosition(self._startPosition,
+                                             len(self._measureData))
 
 class RepeatNoteCommand(_COMMAND_CLASS):
     def __init__(self, qScore, notePosition, nRepeats, repInterval, head):
@@ -301,11 +291,30 @@ class SetRepeatEndCommand(SetMeasureLineCommand):
                                                   np, onOff,
                                                   Score.setRepeatEnd)
 
+class ClearMeasureCommand(_COMMAND_CLASS):
+    def __init__(self, qScore, positions):
+        super(ClearMeasureCommand, self).__init__(qScore, NotePosition(),
+                                                  "clear measures")
+        self._positions = positions
+        self._oldMeasures = [self._score.copyMeasure(np)
+                             for np in positions]
+
+    def _redo(self):
+        for np in self._positions:
+            self._score.clearMeasure(np)
+
+    def _undo(self):
+        for np, data in zip(self._positions, self._oldMeasures):
+            self._score.pasteMeasure(np, data)
+
 class DeleteMeasureCommand(_COMMAND_CLASS):
-    def __init__(self, qScore, np):
+    def __init__(self, qScore, np, measureIndex = None):
+        np = np.makeMeasurePosition()
         super(DeleteMeasureCommand, self).__init__(qScore, np,
                                                    "delete measure")
-        self._index = self._score.getMeasureIndex(np)
+        if measureIndex is None:
+            measureIndex = self._score.getMeasureIndex(np)
+        self._index = measureIndex
         self._oldMeasure = self._score.copyMeasure(np)
         self._sectionIndex = None
         self._sectionTitle = None

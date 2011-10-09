@@ -30,8 +30,9 @@ from QMeasure import QMeasure
 from QMetaData import QMetaData
 from QKitData import QKitData
 from Data.Score import ScoreFactory
-from DBCommands import (MetaDataCommand, ScoreWidthCommand, PasteMeasure,
-                        PasteMultiMeasures,
+from DBCommands import (MetaDataCommand, ScoreWidthCommand,
+                        DeleteMeasureCommand, InsertAndPasteMeasures,
+                        ClearMeasureCommand,
                         SetPaperSizeCommand, SetDefaultCountCommand,
                         SetSystemSpacingCommand,
                         SetFontCommand, SetFontSizeCommand,
@@ -401,7 +402,7 @@ class QScore(QtGui.QGraphicsScene):
         event.ignore()
         return super(QScore, self).keyPressEvent(event)
 
-    def copyMeasure(self, np):
+    def copyMeasures(self, np = None):
         if np is not None:
             self.measureClipboard = [self._score.copyMeasure(np)]
         elif self.hasDragSelection():
@@ -409,23 +410,60 @@ class QScore(QtGui.QGraphicsScene):
                                      for (unusedMeasure, unusedIndex, dragNP)
                                      in self.iterDragSelection()]
 
+    def clearMeasures(self, np = None):
+        if np is not None:
+            command = ClearMeasureCommand(self, [np])
+        else:
+            command = ClearMeasureCommand(self,
+                                          [dragNP for (unusedMeasure,
+                                                       unusedIndex,
+                                                       dragNP)
+                                           in self.iterDragSelection()])
+        self.addCommand(command)
+
+    def deleteMeasures(self, np = None):
+        if np is not None:
+            command = DeleteMeasureCommand(self, np)
+            self.addCommand(command)
+        else:
+            if not self.hasDragSelection():
+                return
+            start = self._dragSelection[0]
+            measureIndex = self._score.getMeasureIndex(start)
+            self.beginMacro("delete measures")
+            for unused in self.iterDragSelection():
+                command = DeleteMeasureCommand(self, start, measureIndex)
+                self.addCommand(command)
+            self.endMacro()
 
     @delayCall
-    def pasteMeasure(self, np):
-        if len(self.measureClipboard) == 1:
-            command = PasteMeasure(self, np, self.measureClipboard[0])
+    def insertMeasures(self, np):
+        if len(self.measureClipboard) > 0:
+            command = InsertAndPasteMeasures(self, np, self.measureClipboard)
             self.addCommand(command)
-        elif len(self.measureClipboard) > 1:
+
+    @delayCall
+    def pasteMeasuresOver(self, repeating = False):
+        if len(self.measureClipboard) == 0 or not self.hasDragSelection():
+            return
+        start = self._dragSelection[0]
+        measureIndex = self._score.getMeasureIndex(start)
+        self.beginMacro("paste over measures")
+        numMeasures = 0
+        for unused in self.iterDragSelection():
+            numMeasures += 1
+            command = DeleteMeasureCommand(self, start, measureIndex)
+            self.addCommand(command)
+        if repeating:
             measureData = []
-            notePositions = []
-            for pasteData in self.measureClipboard:
-                notePositions.append(np)
-                measureData.append(pasteData)
-                np = self._score.nextMeasurePositionInSection(np)
-                if np.staffIndex == None:
-                    break
-            command = PasteMultiMeasures(self, notePositions, measureData)
-            self.addCommand(command)
+            while len(measureData) < numMeasures:
+                measureData.extend(self.measureClipboard)
+            measureData = measureData[:numMeasures]
+        else:
+            measureData = self.measureClipboard
+        command = InsertAndPasteMeasures(self, start, measureData)
+        self.addCommand(command)
+        self.endMacro()
 
     def changeRepeatCount(self, np):
         qStaff = self._qStaffs[np.staffIndex]

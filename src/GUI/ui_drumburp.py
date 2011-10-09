@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sun Sep 25 23:31:34 2011
+# Created: Sat Oct 08 22:22:26 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -483,6 +483,26 @@ class Ui_DrumBurpWindow(object):
         self.actionPlayOnce = QtGui.QAction(DrumBurpWindow)
         self.actionPlayOnce.setCheckable(True)
         self.actionPlayOnce.setObjectName(_fromUtf8("actionPlayOnce"))
+        self.actionCopyMeasures = QtGui.QAction(DrumBurpWindow)
+        icon22 = QtGui.QIcon()
+        icon22.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/edit-copy.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionCopyMeasures.setIcon(icon22)
+        self.actionCopyMeasures.setObjectName(_fromUtf8("actionCopyMeasures"))
+        self.actionPasteMeasures = QtGui.QAction(DrumBurpWindow)
+        icon23 = QtGui.QIcon()
+        icon23.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/edit-paste.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionPasteMeasures.setIcon(icon23)
+        self.actionPasteMeasures.setObjectName(_fromUtf8("actionPasteMeasures"))
+        self.actionClearMeasures = QtGui.QAction(DrumBurpWindow)
+        self.actionClearMeasures.setObjectName(_fromUtf8("actionClearMeasures"))
+        self.actionDeleteMeasures = QtGui.QAction(DrumBurpWindow)
+        icon24 = QtGui.QIcon()
+        icon24.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/edit-delete.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionDeleteMeasures.setIcon(icon24)
+        self.actionDeleteMeasures.setObjectName(_fromUtf8("actionDeleteMeasures"))
+        self.actionFillPasteMeasures = QtGui.QAction(DrumBurpWindow)
+        self.actionFillPasteMeasures.setIcon(icon23)
+        self.actionFillPasteMeasures.setObjectName(_fromUtf8("actionFillPasteMeasures"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.menuRecentScores.menuAction())
@@ -511,6 +531,13 @@ class Ui_DrumBurpWindow(object):
         self.menuView.addAction(self.menuShowToolBars.menuAction())
         self.menuEdit.addAction(self.actionUndo)
         self.menuEdit.addAction(self.actionRedo)
+        self.menuEdit.addSeparator()
+        self.menuEdit.addAction(self.actionCopyMeasures)
+        self.menuEdit.addAction(self.actionPasteMeasures)
+        self.menuEdit.addAction(self.actionFillPasteMeasures)
+        self.menuEdit.addSeparator()
+        self.menuEdit.addAction(self.actionClearMeasures)
+        self.menuEdit.addAction(self.actionDeleteMeasures)
         self.menuHelp.addAction(self.actionWhatsThis)
         self.menuHelp.addAction(self.actionAboutDrumBurp)
         self.menubar.addAction(self.menuFile.menuAction())
@@ -717,6 +744,21 @@ class Ui_DrumBurpWindow(object):
         self.actionLoopBars.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Play the selected bars in a constant loop", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPlayOnce.setText(QtGui.QApplication.translate("DrumBurpWindow", "Play Once", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPlayOnce.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Play the selected measures once", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCopyMeasures.setText(QtGui.QApplication.translate("DrumBurpWindow", "Copy Measures", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCopyMeasures.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Copy the currently selected measures", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCopyMeasures.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+C", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPasteMeasures.setText(QtGui.QApplication.translate("DrumBurpWindow", "Paste Measures", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPasteMeasures.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Paste the clipboard over the currently selected measures", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPasteMeasures.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+V", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionClearMeasures.setText(QtGui.QApplication.translate("DrumBurpWindow", "Clear Measures", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionClearMeasures.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Clears the selected measures of all notes", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionClearMeasures.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Del", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDeleteMeasures.setText(QtGui.QApplication.translate("DrumBurpWindow", "Delete Measures", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDeleteMeasures.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Deletes the currently selected measures", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDeleteMeasures.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+Del", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionFillPasteMeasures.setText(QtGui.QApplication.translate("DrumBurpWindow", "Fill Paste Measures", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionFillPasteMeasures.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Paste the copied measues enough times to fill the selected ones.", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionFillPasteMeasures.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+Shift+V", None, QtGui.QApplication.UnicodeUTF8))
 
 from Widgets.ScoreView_plugin import ScoreView
 import DrumBurp_rc

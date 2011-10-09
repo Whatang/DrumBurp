@@ -372,6 +372,23 @@ class Score(object):
             self.deleteSectionTitle(sectionIndex)
         staff.deleteMeasure(position)
 
+    def deleteMeasuresAtPosition(self, position, numToDelete):
+        position = copy.copy(position)
+        staff = self.getStaff(position.staffIndex)
+        for dummyIndex in xrange(numToDelete):
+            if position.measureIndex == staff.numMeasures():
+                if staff.numMeasures() == 0:
+                    self.deleteStaff(position)
+                else:
+                    position.staffIndex += 1
+                    position.measureIndex = 0
+                staff = self.getStaff(position.staffIndex)
+            staff.deleteMeasure(position)
+
+    def clearMeasure(self, position):
+        measure = self.getItemAtPosition(position.makeMeasurePosition())
+        measure.clear() #IGNORE:E1103
+
     def trailingEmptyMeasures(self):
         emptyMeasures = []
         np = NotePosition(staffIndex = self.numStaffs() - 1)

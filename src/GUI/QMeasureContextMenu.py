@@ -72,21 +72,22 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
             DBConstants.EMPTY_NOTE):
             repeatNoteAction.setEnabled(False)
         self.addSeparator()
-        pasteText = "Paste Measure"
-        if len(self._qScore.measureClipboard) > 1:
-            pasteText += "s"
         if self._qScore.hasDragSelection():
-            self.addAction(DBIcons.getIcon("copy"), "Copy Measures",
-                           lambda:self._qScore.copyMeasure(None))
+            self.addAction(DBIcons.getIcon("copy"), "Copy Selected Measures",
+                           lambda:self._qScore.copyMeasures)
             pasteAction = self.addAction(DBIcons.getIcon("paste"),
-                                         pasteText,
-                                         lambda:self._qScore.pasteMeasureInstead(self._np))
+                                         "Paste Over Selected Measures",
+                                         self._qScore.pasteMeasuresOver)
+            fillAction = self.addAction(DBIcons.getIcon("paste"),
+                                         "Fill Paste Selected Measures",
+                                         lambda: self._qScore.pasteMeasuresOver(True))
+            fillAction.setEnabled(len(self._qScore.measureClipboard) > 0)
         else:
             self.addAction(DBIcons.getIcon("copy"), "Copy Measure",
-                           lambda:self._qScore.copyMeasure(self._np))
+                           lambda:self._qScore.copyMeasures(self._np))
             pasteAction = self.addAction(DBIcons.getIcon("paste"),
-                                         pasteText,
-                                         lambda:self._qScore.pasteMeasure(self._np))
+                                         "Insert Measures From Clipboard",
+                                         lambda:self._qScore.insertMeasures(self._np))
         pasteAction.setEnabled(len(self._qScore.measureClipboard) > 0)
         self.addSeparator()
 
@@ -104,9 +105,21 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         self.addSeparator()
 
     def _setupDeleteSection(self, score):
-        deleteAction = self.addAction(DBIcons.getIcon("delete"),
-                                      "Delete Measure", self._deleteMeasure)
-        deleteAction.setEnabled(score.numMeasures() > 1)
+        if self._qScore.hasDragSelection():
+            deleteAction = self.addAction(DBIcons.getIcon("delete"),
+                                          "Delete Selected Measures",
+                                          self._qScore.deleteMeasures)
+            deleteAction.setEnabled(score.numMeasures() >
+                                    len(list(self._qScore.iterDragSelection())))
+            self.addAction("Clear Selected Measures",
+                           self._qScore.clearMeasures)
+        else:
+            deleteAction = self.addAction(DBIcons.getIcon("delete"),
+                                          "Delete Measure",
+                                          lambda:self._qScore.deleteMeasures(self._np))
+            deleteAction.setEnabled(score.numMeasures() > 1)
+            self.addAction("Clear Measure",
+                           lambda : self._qScore.clearMeasures(self._np))
         deleteMenu = self.addMenu("Delete...")
         deleteStaffAction = deleteMenu.addAction("Staff", self._deleteStaff)
         deleteStaffAction.setEnabled(score.numStaffs() > 1)
@@ -161,17 +174,6 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         command = InsertSectionCommand(self._qScore, self._np, sectionIndex)
         self._qScore.addCommand(command)
 
-    def _deleteMeasure(self):
-        yesNo = QtGui.QMessageBox.question(self._qScore.parent(),
-                                           "Delete Measure",
-                                           "Really delete this measure?",
-                                           QtGui.QMessageBox.Ok,
-                                           QtGui.QMessageBox.Cancel)
-        if yesNo == QtGui.QMessageBox.Ok:
-            command = DeleteMeasureCommand(self._qScore,
-                                           self._np)
-            self._qScore.addCommand(command)
-
     def _deleteStaff(self):
         score = self._qScore.score
         msg = "Really delete this staff?"
@@ -188,14 +190,14 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
             while np.measureIndex >= 0:
                 arguments.append((copy.copy(np),))
                 np.measureIndex -= 1
-            self._qScore.addRepeatedCommand("Delete Staff",
+            self._qScore.addRepeatedCommand("delete staff",
                                             DeleteMeasureCommand, arguments)
 
     def _deleteSection(self):
         score = self._qScore.score
         msg = "Really delete this section?"
         yesNo = QtGui.QMessageBox.question(self._qScore.parent(),
-                                           "Delete Staff?",
+                                           "Delete Section?",
                                            msg,
                                            QtGui.QMessageBox.Ok,
                                            QtGui.QMessageBox.Cancel)
@@ -214,7 +216,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                 for np.measureIndex in range(staff.numMeasures() - 1, -1, -1):
                     arguments.append((copy.copy(np),))
                 np.staffIndex -= 1
-            self._qScore.addRepeatedCommand("Delete Section: " + sectionName,
+            self._qScore.addRepeatedCommand("delete section: " + sectionName,
                                             DeleteMeasureCommand, arguments)
 
     def _deleteEmptyMeasures(self):
@@ -228,7 +230,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         if yesNo == QtGui.QMessageBox.Ok:
             positions = score.trailingEmptyMeasures()
             arguments = [(np,) for np in positions]
-            self._qScore.addRepeatedCommand("Delete Empty Measures",
+            self._qScore.addRepeatedCommand("delete empty measures",
                                             DeleteMeasureCommand, arguments)
 
     def _deleteAlternate(self):

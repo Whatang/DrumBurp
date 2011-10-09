@@ -466,6 +466,13 @@
     </property>
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
+    <addaction name="separator"/>
+    <addaction name="actionCopyMeasures"/>
+    <addaction name="actionPasteMeasures"/>
+    <addaction name="actionFillPasteMeasures"/>
+    <addaction name="separator"/>
+    <addaction name="actionClearMeasures"/>
+    <addaction name="actionDeleteMeasures"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1337,6 +1344,77 @@ Writes this Score as a plain .txt file.</string>
    </property>
    <property name="toolTip">
     <string>Play the selected measures once</string>
+   </property>
+  </action>
+  <action name="actionCopyMeasures">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/edit-copy.png</normaloff>:/Icons/Icons/edit-copy.png</iconset>
+   </property>
+   <property name="text">
+    <string>Copy Measures</string>
+   </property>
+   <property name="toolTip">
+    <string>Copy the currently selected measures</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="actionPasteMeasures">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/edit-paste.png</normaloff>:/Icons/Icons/edit-paste.png</iconset>
+   </property>
+   <property name="text">
+    <string>Paste Measures</string>
+   </property>
+   <property name="toolTip">
+    <string>Paste the clipboard over the currently selected measures</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="actionClearMeasures">
+   <property name="text">
+    <string>Clear Measures</string>
+   </property>
+   <property name="toolTip">
+    <string>Clears the selected measures of all notes</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
+  </action>
+  <action name="actionDeleteMeasures">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/edit-delete.png</normaloff>:/Icons/Icons/edit-delete.png</iconset>
+   </property>
+   <property name="text">
+    <string>Delete Measures</string>
+   </property>
+   <property name="toolTip">
+    <string>Deletes the currently selected measures</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Del</string>
+   </property>
+  </action>
+  <action name="actionFillPasteMeasures">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/edit-paste.png</normaloff>:/Icons/Icons/edit-paste.png</iconset>
+   </property>
+   <property name="text">
+    <string>Fill Paste Measures</string>
+   </property>
+   <property name="toolTip">
+    <string>Paste the copied measues enough times to fill the selected ones.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+V</string>
    </property>
   </action>
  </widget>
