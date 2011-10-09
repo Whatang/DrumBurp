@@ -138,6 +138,21 @@ class PasteMeasure(_COMMAND_CLASS):
     def _undo(self):
         self._score.pasteMeasure(self._np, self._oldMeasure)
 
+class PasteMultiMeasures(_COMMAND_CLASS):
+    def __init__(self, qScore, notePositions, measureData):
+        super(PasteMultiMeasures, self).__init__(qScore, NotePosition(),
+                                                 "paste measures")
+        self._notePositions = notePositions
+        self._measureData = measureData
+        self._oldMeasures = []
+
+    def _redo(self):
+        self._oldMeasures = [self._score.pasteMeasure(np, measureData) for np, measureData in zip(self._notePositions, self._measureData)]
+
+    def _undo(self):
+        for np, measureData in zip(self._notePositions, self._oldMeasures):
+            self._score.pasteMeasure(np, measureData)
+
 class RepeatNoteCommand(_COMMAND_CLASS):
     def __init__(self, qScore, notePosition, nRepeats, repInterval, head):
         super(RepeatNoteCommand, self).__init__(qScore, notePosition,

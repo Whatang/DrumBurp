@@ -31,6 +31,7 @@ from QMetaData import QMetaData
 from QKitData import QKitData
 from Data.Score import ScoreFactory
 from DBCommands import (MetaDataCommand, ScoreWidthCommand, PasteMeasure,
+                        PasteMultiMeasures,
                         SetPaperSizeCommand, SetDefaultCountCommand,
                         SetSystemSpacingCommand,
                         SetFontCommand, SetFontSizeCommand,
@@ -415,14 +416,16 @@ class QScore(QtGui.QGraphicsScene):
             command = PasteMeasure(self, np, self.measureClipboard[0])
             self.addCommand(command)
         elif len(self.measureClipboard) > 1:
-            self.beginMacro("paste measures")
+            measureData = []
+            notePositions = []
             for pasteData in self.measureClipboard:
-                command = PasteMeasure(self, np, pasteData)
-                self.addCommand(command)
+                notePositions.append(np)
+                measureData.append(pasteData)
                 np = self._score.nextMeasurePositionInSection(np)
                 if np.staffIndex == None:
                     break
-            self.endMacro()
+            command = PasteMultiMeasures(self, notePositions, measureData)
+            self.addCommand(command)
 
     def changeRepeatCount(self, np):
         qStaff = self._qStaffs[np.staffIndex]
