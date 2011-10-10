@@ -147,6 +147,8 @@ class _midi(QObject):
             delay = (measureEnd - 1000 * (time.clock() - self._songStart))
         if measureIndex is not None:
             self.highlightMeasure.emit(measureIndex)
+        else:
+            self.highlightMeasure.emit(-1)
         if delay > 0:
             self._measureTimer.start(delay)
 
