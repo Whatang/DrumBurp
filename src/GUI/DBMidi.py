@@ -201,7 +201,7 @@ def exportMidi(measureIterator, score, handle):
     handle.write("%c" % chr((MIDITICKSPERBEAT >> 8) & 0xFF))
     handle.write("%c" % chr((MIDITICKSPERBEAT >> 0) & 0xFF))
     notes = []
-    baseTime = 0
+    baseTime = 1
     for measure, unusedIndex in measureIterator:
         times = list(measure.counter.iterMidiTicks())
         for notePos, head in measure:
@@ -225,10 +225,13 @@ def exportMidi(measureIterator, score, handle):
         midiData.extend([_PERCUSSION,
                          headData.midiNote,
                          headData.midiVolume])
+    # Turn off drum notes
     deltaTime = baseTime - lastNoteTime
     encodeSevenBitDelta(deltaTime, midiData)
     midiData.extend([0x89, 38, 0])
-    midiData.extend([0, 0xFF, 0x2F, 0])
+    # Insert a delay before the end of the track.
+    encodeSevenBitDelta(10, midiData)
+    midiData.extend([0xFF, 0x2F, 0])
     numBytes = len(midiData)
     lenBytes = [((numBytes >> i) & 0xff) for i in xrange(24, -8, -8)]
     midiData = lenBytes + midiData
