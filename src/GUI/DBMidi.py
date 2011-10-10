@@ -65,41 +65,15 @@ class _midi(QObject):
                                   pygame.midi.time()]])
 
     def playScore(self, score):
-        if self.kit is None:
-            return
-        baseTime = 0
-        msPerBeat = 60000.0 / score.scoreData.bpm
-        self._measureDetails = []
-        try:
-            for measure, measureIndex in score.iterMeasuresWithRepeats():
-                times = list(measure.counter.iterTimesMs(msPerBeat))
-                baseTime += times[-1]
-                self._measureDetails.append((measureIndex, baseTime))
-            self._measureDetails.reverse()
-            del self._midiOut
-            self._midiOut = None
-            midi = StringIO.StringIO()
-            exportMidi(score.iterMeasuresWithRepeats(), score, midi)
-            midi.seek(0, 0)
-            pygame.mixer.music.load(midi)
-            pygame.mixer.music.play()
-            self._songStart = time.clock()
-            self._musicPlaying = True
-        except:
-            self.timer.timeout.emit()
-            raise
-        self.timer.start(baseTime)
-        self._measureTimer.start(0)
+        measureList = list(score.iterMeasuresWithRepeats())
+        self._playMIDINow(measureList, score)
 
-    def loopBars(self, measureIterator, score, loopCount = 100):
+    def _playMIDINow(self, measureList, score):
         if self.kit is None:
             return
         baseTime = 0
         msPerBeat = 60000.0 / score.scoreData.bpm
         self._measureDetails = []
-        measureList = [(measure, measureIndex) for
-                       (measure, measureIndex, unused)
-                       in measureIterator] * loopCount
         try:
             for measure, measureIndex in measureList:
                 times = list(measure.counter.iterTimesMs(msPerBeat))
@@ -118,9 +92,14 @@ class _midi(QObject):
         except:
             self.timer.timeout.emit()
             raise
-        self.timer.start(baseTime)
+        self.timer.start(baseTime + 500)
         self._measureTimer.start(0)
 
+    def loopBars(self, measureIterator, score, loopCount = 100):
+        measureList = [(measure, measureIndex) for
+                       (measure, measureIndex, unused)
+                       in measureIterator] * loopCount
+        self._playMIDINow(measureList, score)
 
     def shutUp(self):
         if self._musicPlaying:
@@ -227,10 +206,10 @@ def exportMidi(measureIterator, score, handle):
                          headData.midiVolume])
     # Turn off drum notes
     deltaTime = baseTime - lastNoteTime
-    encodeSevenBitDelta(deltaTime, midiData)
+    encodeSevenBitDelta(deltaTime + 4 * MIDITICKSPERBEAT, midiData)
     midiData.extend([0x89, 38, 0])
     # Insert a delay before the end of the track.
-    encodeSevenBitDelta(10, midiData)
+    encodeSevenBitDelta(0, midiData)
     midiData.extend([0xFF, 0x2F, 0])
     numBytes = len(midiData)
     lenBytes = [((numBytes >> i) & 0xff) for i in xrange(24, -8, -8)]
