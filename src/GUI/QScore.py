@@ -696,3 +696,19 @@ class QScore(QtGui.QGraphicsScene):
                 or (start.staffIndex < np.staffIndex < end.staffIndex)
                 or (np.staffIndex == end.staffIndex
                     and np.measureIndex <= end.measureIndex))
+
+    def metaChange(self):
+        return _metaChangeContext(self, self._metaData)
+
+class _metaChangeContext(object):
+    def __init__(self, qScore, metaData):
+        self._qScore = qScore
+        self._metaData = metaData
+        self._metaSize = metaData.boundingRect().height()
+    def __enter__(self):
+        return self
+    def __exit__(self, excType, excValue, excTraceback):
+        self._metaData.update()
+        if self._metaData.boundingRect().height() != self._metaSize:
+            self._qScore.reBuild()
+        return False

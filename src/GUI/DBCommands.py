@@ -101,12 +101,15 @@ class MetaDataCommand(_COMMAND_CLASS):
         self._value = value
 
     def _redo(self):
-        setattr(self._score.scoreData, self._varname, self._value)
-        self._signal.emit(self._varname, self._value)
+        with self._qScore.metaChange():
+            setattr(self._score.scoreData, self._varname, self._value)
+            self._signal.emit(self._varname, self._value)
+
 
     def _undo(self):
-        setattr(self._score.scoreData, self._varname, self._oldValue)
-        self._signal.emit(self._varname, self._oldValue)
+        with self._qScore.metaChange():
+            setattr(self._score.scoreData, self._varname, self._oldValue)
+            self._signal.emit(self._varname, self._oldValue)
 
 class ScoreWidthCommand(_COMMAND_CLASS):
     def __init__(self, qScore, value):

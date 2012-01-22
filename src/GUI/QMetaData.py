@@ -42,7 +42,10 @@ class QMetaData(QGraphicsListData):
             yield "Tabbed by " + self._qScore.creator
 
     def _dataLen(self):
-        return 2
+        if self._qScore.creatorVisible:
+            return 2
+        else:
+            return 1
 
     def font(self):
         return self._props.metadataFont
