@@ -70,10 +70,13 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self._printer = QPrinter()
         self.setupUi(self)
         DBIcons.initialiseIcons()
+        self.scoreScene = None
         self.paperBox.clear()
         for name in dir(QPrinter):
-            if isinstance(getattr(QPrinter, name), QPrinter.PageSize):
+            if isinstance(getattr(QPrinter, name), QPrinter.PageSize) and name != "Custom":
                 self.paperBox.addItem(name)
+        printer = QPrinter()
+        self._pageHeight = printer.paperRect().height()
         settings = self._makeQSettings()
         self.recentFiles = [unicode(fname) for fname in
                             settings.value("RecentFiles").toStringList()
@@ -111,6 +114,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreScene.dragHighlight.connect(self.checkPasteMeasure)
         self.scoreScene.dragHighlight.connect(self.actionClearMeasures.setEnabled)
         self.scoreScene.dragHighlight.connect(self.actionDeleteMeasures.setEnabled)
+        self.scoreScene.setNumPages.connect(self.setNumPages)
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
@@ -492,7 +496,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         dlg.exec_()
 
     def _getPaperSize(self):
-        return getattr(QPrinter, str(self.paperBox.currentText()))
+        try:
+            return getattr(QPrinter, str(self.paperBox.currentText()))
+        except AttributeError:
+            return QPrinter.Letter
 
     @pyqtSignature("")
     def on_actionFitPage_triggered(self):
@@ -655,3 +662,19 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         for playButton in players:
             if playButton.isChecked():
                 playButton.setChecked(False)
+
+    @pyqtSignature("int")
+    def on_paperBox_currentIndexChanged(self, index):
+        printer = QPrinter()
+        printer.setOutputFileName("invalid.pdf")
+        printer.setPaperSize(self._getPaperSize())
+        self._pageHeight = printer.pageRect().height()
+        self.setNumPages()
+
+    def setNumPages(self):
+        if self.scoreScene:
+            numPages = self.scoreScene.numPages(self._pageHeight)
+            if numPages > 1:
+                self.pagesLabel.setText("%d Pages" % numPages)
+            else:
+                self.pagesLabel.setText("1 Page")

@@ -117,6 +117,7 @@ class QScore(QtGui.QGraphicsScene):
     spacingChanged = QtCore.pyqtSignal(int)
     sectionsChanged = QtCore.pyqtSignal()
     dragHighlight = QtCore.pyqtSignal(bool)
+    setNumPages = QtCore.pyqtSignal()
 
     def addCommand(self, command):
         self._undoStack.push(command)
@@ -261,6 +262,8 @@ class QScore(QtGui.QGraphicsScene):
         for title in self._score.iterSections():
             self._addSection(title)
         self._placeStaffs()
+        self.setNumPages.emit()
+
 
     @delayCall
     def reBuild(self):
@@ -534,6 +537,19 @@ class QScore(QtGui.QGraphicsScene):
                                   counter = counter)
         self._setScore(newScore)
 
+    def numPages(self, pageHeight):
+        topLeft = QtCore.QPointF(self.xMargins, self.yMargins)
+        bottomRight = QtCore.QPointF(self.sceneRect().right() - self.xMargins,
+                                     self.yMargins)
+        numPages = 1
+        for staff in self._qStaffs:
+            newBottom = staff.y() + staff.height()
+            if newBottom - topLeft.y() > pageHeight:
+                numPages += 1
+                topLeft.setY(bottomRight.y() + self.lineSpacing)
+            bottomRight.setY(newBottom)
+        return numPages
+
     def printScore(self, qprinter, scoreView):
         painter = QtGui.QPainter(qprinter)
         rect = qprinter.pageRect()
@@ -577,6 +593,8 @@ class QScore(QtGui.QGraphicsScene):
         self._metaData.setRect()
         self._kitData.setRect()
         self.scale = 1
+
+
 
     def setScoreFontSize(self, size, fontType):
         fontName = fontType + "FontSize"

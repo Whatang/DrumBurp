@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike\workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sun Jan 22 15:44:04 2012
+# Created: Sun Jan 22 15:49:06 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -156,6 +156,10 @@ class Ui_DrumBurpWindow(object):
         self.frame_10.setFrameShadow(QtGui.QFrame.Raised)
         self.frame_10.setObjectName(_fromUtf8("frame_10"))
         self.horizontalLayout_8.addWidget(self.frame_10)
+        self.pagesLabel = QtGui.QLabel(self.groupBox)
+        self.pagesLabel.setText(QtGui.QApplication.translate("DrumBurpWindow", "0 Pages", None, QtGui.QApplication.UnicodeUTF8))
+        self.pagesLabel.setObjectName(_fromUtf8("pagesLabel"))
+        self.horizontalLayout_8.addWidget(self.pagesLabel)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_8.addItem(spacerItem)
         self.verticalLayout.addWidget(self.groupBox)
