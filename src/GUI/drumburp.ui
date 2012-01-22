@@ -65,45 +65,23 @@
         <number>3</number>
        </property>
        <item>
-        <widget class="QFrame" name="frame_2">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
+        <widget class="QComboBox" name="paperBox">
+         <property name="toolTip">
+          <string>Page size</string>
          </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
+         <property name="statusTip">
+          <string>Select the page size</string>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_6">
-          <property name="spacing">
-           <number>3</number>
+         <item>
+          <property name="text">
+           <string>A4</string>
           </property>
-          <property name="margin">
-           <number>0</number>
+         </item>
+         <item>
+          <property name="text">
+           <string>Letter</string>
           </property>
-          <item>
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>Page Size</string>
-            </property>
-            <property name="buddy">
-             <cstring>paperBox</cstring>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="paperBox">
-            <item>
-             <property name="text">
-              <string>A4</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Letter</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-         </layout>
+         </item>
         </widget>
        </item>
        <item>
@@ -117,46 +95,29 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <property name="spacing">
-          <number>3</number>
+        <widget class="QSpinBox" name="widthSpinBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
-         <item>
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>Columns</string>
-           </property>
-           <property name="buddy">
-            <cstring>widthSpinBox</cstring>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="widthSpinBox">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="toolTip">
-            <string>Score width</string>
-           </property>
-           <property name="statusTip">
-            <string>The number of columns to display the Score on</string>
-           </property>
-           <property name="minimum">
-            <number>10</number>
-           </property>
-           <property name="maximum">
-            <number>1000</number>
-           </property>
-           <property name="value">
-            <number>80</number>
-           </property>
-          </widget>
-         </item>
-        </layout>
+         <property name="toolTip">
+          <string>Score width</string>
+         </property>
+         <property name="statusTip">
+          <string>The number of columns to display the Score on</string>
+         </property>
+         <property name="minimum">
+          <number>10</number>
+         </property>
+         <property name="maximum">
+          <number>1000</number>
+         </property>
+         <property name="value">
+          <number>80</number>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QFrame" name="frame_5">
@@ -184,16 +145,6 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="label_4">
-            <property name="text">
-             <string>System Spacing</string>
-            </property>
-            <property name="buddy">
-             <cstring>lineSpaceSlider</cstring>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QFrame" name="frame_4">
             <property name="frameShape">
              <enum>QFrame::Box</enum>
@@ -217,10 +168,10 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Inter-system distance</string>
+                <string>Inter-staff distance</string>
                </property>
                <property name="statusTip">
-                <string>The distance between each system in the Score</string>
+                <string>The distance between each staff in the Score</string>
                </property>
                <property name="maximum">
                 <number>100</number>
@@ -274,17 +225,13 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>Default Measure</string>
-            </property>
-            <property name="buddy">
-             <cstring>defaultMeasureButton</cstring>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QPushButton" name="defaultMeasureButton">
+            <property name="toolTip">
+             <string>Default count</string>
+            </property>
+            <property name="statusTip">
+             <string>The default count to use for new measures</string>
+            </property>
             <property name="text">
              <string>MeasureCount</string>
             </property>
@@ -305,6 +252,12 @@
        </item>
        <item>
         <widget class="QPushButton" name="fontsButton">
+         <property name="toolTip">
+          <string>Fonts</string>
+         </property>
+         <property name="statusTip">
+          <string>Adjust the fonts used by this score</string>
+         </property>
          <property name="text">
           <string>Fonts...</string>
          </property>
@@ -322,6 +275,12 @@
        </item>
        <item>
         <widget class="QComboBox" name="sectionNavigator">
+         <property name="toolTip">
+          <string>Section navigator</string>
+         </property>
+         <property name="statusTip">
+          <string>Quickly jump to a section of the score</string>
+         </property>
          <property name="sizeAdjustPolicy">
           <enum>QComboBox::AdjustToContents</enum>
          </property>
@@ -1426,8 +1385,6 @@ Writes this Score as a plain .txt file.</string>
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>paperBox</tabstop>
-  <tabstop>widthSpinBox</tabstop>
   <tabstop>lineSpaceSlider</tabstop>
   <tabstop>defaultMeasureButton</tabstop>
   <tabstop>fontsButton</tabstop>
