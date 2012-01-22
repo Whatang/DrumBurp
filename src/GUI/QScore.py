@@ -32,9 +32,9 @@ from QKitData import QKitData
 from Data.Score import ScoreFactory
 from DBCommands import (MetaDataCommand, ScoreWidthCommand,
                         DeleteMeasureCommand, InsertAndPasteMeasures,
-                        ClearMeasureCommand,
+                        ClearMeasureCommand, PasteMeasuresCommand,
                         SetPaperSizeCommand, SetDefaultCountCommand,
-                        SetSystemSpacingCommand,
+                        SetSystemSpacingCommand, InsertMeasuresCommand,
                         SetFontCommand, SetFontSizeCommand,
                         SetVisibilityCommand)
 import DBMidi
@@ -448,20 +448,43 @@ class QScore(QtGui.QGraphicsScene):
             return
         start = self._dragSelection[0]
         measureIndex = self._score.getMeasureIndex(start)
+        sourceLength = len(self.measureClipboard)
+        targetLength = len(list(self.iterDragSelection()))
         self.beginMacro("paste over measures")
-        numMeasures = 0
-        for unused in self.iterDragSelection():
-            numMeasures += 1
-            command = DeleteMeasureCommand(self, start, measureIndex)
-            self.addCommand(command)
+        measureCount = 0
+        clearPositions = []
         if repeating:
+            resultLength = targetLength
+            while measureCount < resultLength:
+                clearPositions.append(self.score.getMeasurePosition(measureIndex + measureCount))
+                measureCount += 1
+            command = ClearMeasureCommand(self, clearPositions)
+            self.addCommand(command)
             measureData = []
-            while len(measureData) < numMeasures:
+            while len(measureData) < resultLength:
                 measureData.extend(self.measureClipboard)
-            measureData = measureData[:numMeasures]
+            measureData = measureData[:targetLength]
         else:
+            resultLength = min([sourceLength, targetLength])
+            while measureCount < resultLength:
+                clearPositions.append(self.score.getMeasurePosition(measureIndex + measureCount))
+                measureCount += 1
+            command = ClearMeasureCommand(self, clearPositions)
+            self.addCommand(command)
+            while measureCount < targetLength:
+                deletePosition = self.score.getMeasurePosition(measureIndex + sourceLength)
+                command = DeleteMeasureCommand(self, deletePosition, measureIndex + sourceLength)
+                self.addCommand(command)
+                measureCount += 1
+            if measureCount < sourceLength:
+                command = InsertMeasuresCommand(self,
+                                                self.score.getMeasurePosition(measureIndex + measureCount),
+                                                sourceLength - measureCount,
+                                                self.defaultCount)
+                self.addCommand(command)
             measureData = self.measureClipboard
-        command = InsertAndPasteMeasures(self, start, measureData)
+            measureData = measureData[:sourceLength]
+        command = PasteMeasuresCommand(self, start, measureData)
         self.addCommand(command)
         self.endMacro()
 

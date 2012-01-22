@@ -105,12 +105,12 @@ class Staff(object):
             self._setMeasureCallBack(nextMeasure, index)
 
     def copyMeasure(self, position):
-        if not (0 <= position.measureIndex <= self.numMeasures()):
+        if not (0 <= position.measureIndex < self.numMeasures()):
             raise BadTimeError(position)
         return self[position.measureIndex].copyMeasure()
 
     def pasteMeasure(self, position, notes, copyMeasureDecorations = False):
-        if not (0 <= position.measureIndex <= self.numMeasures()):
+        if not (0 <= position.measureIndex < self.numMeasures()):
             raise BadTimeError(position)
         return self[position.measureIndex].pasteMeasure(notes,
                                                         copyMeasureDecorations)

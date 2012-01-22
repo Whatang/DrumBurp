@@ -143,6 +143,29 @@ class InsertAndPasteMeasures(_COMMAND_CLASS):
         self._score.deleteMeasuresAtPosition(self._startPosition,
                                              len(self._measureData))
 
+class PasteMeasuresCommand(_COMMAND_CLASS):
+    def __init__(self, qScore, startPosition, measureData):
+        super(PasteMeasuresCommand, self).__init__(qScore, startPosition,
+                                                     "paste measures")
+        self._startPosition = startPosition
+        self._measureData = measureData
+
+    def _exchange(self):
+        oldData = []
+        np = self._startPosition
+        for measure in self._measureData:
+            oldData.append(self._score.copyMeasure(np))
+            self._score.pasteMeasure(np, measure)
+            np = self._score.nextMeasure(np)
+        return oldData
+
+    def _redo(self):
+        self._measureData = self._exchange()
+
+    def _undo(self):
+        self._measureData = self._exchange()
+
+
 class RepeatNoteCommand(_COMMAND_CLASS):
     def __init__(self, qScore, notePosition, nRepeats, repInterval, head):
         super(RepeatNoteCommand, self).__init__(qScore, notePosition,

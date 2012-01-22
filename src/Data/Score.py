@@ -505,6 +505,23 @@ class Score(object):
                 thisSection += 1
                 inSection = (thisSection == sectionIndex)
 
+    def nextMeasure(self, position):
+        if not(0 <= position.staffIndex < self.numStaffs()):
+            raise BadTimeError()
+        staff = self.getStaff(position.staffIndex)
+        if not (0 <= position.measureIndex < staff.numMeasures()):
+            raise BadTimeError()
+        position = NotePosition(position.staffIndex, position.measureIndex)
+        position.measureIndex += 1
+        if position.measureIndex == staff.numMeasures():
+            position.staffIndex += 1
+            if position.staffIndex == self.numStaffs():
+                position.staffIndex = None
+                position.measureIndex = None
+            else:
+                position.measureIndex = 0
+        return position
+
     def nextMeasurePositionInSection(self, position):
         if not(0 <= position.staffIndex < self.numStaffs()):
             raise BadTimeError()
