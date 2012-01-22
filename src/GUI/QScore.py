@@ -212,6 +212,7 @@ class QScore(QtGui.QGraphicsScene):
             self._undoStack.setClean()
             for view in self.views():
                 view.setWidth(self.scoreWidth)
+            self.reBuild()
             self.dirty = False
 
     @property

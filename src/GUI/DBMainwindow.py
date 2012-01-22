@@ -275,6 +275,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         widthInPixels = self.scoreView.width()
         maxColumns = self.songProperties.maxColumns(widthInPixels)
         self.widthSpinBox.setValue(maxColumns)
+        self.scoreScene.reBuild()
 
     @pyqtSignature("")
     def on_actionLoad_triggered(self):
@@ -501,6 +502,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         widthInPixels = printer.pageRect().width()
         maxColumns = self.songProperties.maxColumns(widthInPixels)
         self.widthSpinBox.setValue(maxColumns)
+        self.scoreScene.reBuild()
 
     @pyqtSignature("")
     def on_defaultMeasureButton_clicked(self):
