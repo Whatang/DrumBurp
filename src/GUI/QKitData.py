@@ -32,7 +32,7 @@ class QKitData(QGraphicsListData):
 
     def _iterData(self):
         kit = self._qScore.score.drumKit
-        for drum in kit:
+        for drum in reversed(kit):
             yield "%-2s = %s" % (drum.abbr, drum.name)
 
     def font(self):
