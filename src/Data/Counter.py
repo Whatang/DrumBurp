@@ -36,7 +36,7 @@ class Counter(object):
         Constructor
         '''
         self._counts = counts
-        self._alternatives = []
+        self._alternatives = alternatives
 
     def __iter__(self):
         return iter(self._counts)
@@ -113,7 +113,7 @@ class CounterRegistry(object):
             if count.matchesExact(beatStr):
                 return index
         for index, (unusedName, count) in enumerate(self):
-            if count.matchesAlternatives(beatStr):
+            if count.matchesAlternative(beatStr):
                 return index
         return(-1)
 
