@@ -291,8 +291,11 @@
                 <height>24</height>
                </size>
               </property>
-              <property name="statusTip">
+              <property name="toolTip">
                <string>Delete empty non-locked drums</string>
+              </property>
+              <property name="statusTip">
+               <string/>
               </property>
               <property name="text">
                <string/>
@@ -583,6 +586,19 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_4">
               <item>
+               <spacer name="horizontalSpacer_13">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
                <widget class="QLabel" name="label_6">
                 <property name="text">
                  <string>Current note head</string>
@@ -590,7 +606,17 @@
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="currentNoteHead"/>
+               <widget class="QComboBox" name="currentNoteHead">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>Change the selected note head</string>
+                </property>
+               </widget>
               </item>
               <item>
                <spacer name="horizontalSpacer_11">
@@ -602,7 +628,7 @@
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
-                  <width>100</width>
+                  <width>40</width>
                   <height>20</height>
                  </size>
                 </property>
@@ -861,7 +887,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Mute audio</string>
+             <string>Mute audio in this dialog</string>
             </property>
             <property name="text">
              <string/>
@@ -1015,6 +1041,9 @@
          <layout class="QGridLayout" name="gridLayout">
           <item row="0" column="1">
            <widget class="QRadioButton" name="normalEffect">
+            <property name="toolTip">
+             <string>A normal strike</string>
+            </property>
             <property name="text">
              <string>Normal</string>
             </property>
@@ -1025,6 +1054,9 @@
           </item>
           <item row="0" column="3">
            <widget class="QRadioButton" name="accentEffect">
+            <property name="toolTip">
+             <string>A harder strike</string>
+            </property>
             <property name="text">
              <string>Accent</string>
             </property>
@@ -1045,6 +1077,9 @@
           </item>
           <item row="1" column="1">
            <widget class="QRadioButton" name="ghostEffect">
+            <property name="toolTip">
+             <string>A quieter strike</string>
+            </property>
             <property name="text">
              <string>Ghost</string>
             </property>
@@ -1052,6 +1087,9 @@
           </item>
           <item row="1" column="3">
            <widget class="QRadioButton" name="chokeEffect">
+            <property name="toolTip">
+             <string>A choked strike</string>
+            </property>
             <property name="text">
              <string>Choke</string>
             </property>
@@ -1059,6 +1097,9 @@
           </item>
           <item row="2" column="1">
            <widget class="QRadioButton" name="flamEffect">
+            <property name="toolTip">
+             <string>A two-handed strike</string>
+            </property>
             <property name="text">
              <string>Flam</string>
             </property>
@@ -1066,6 +1107,9 @@
           </item>
           <item row="2" column="3">
            <widget class="QRadioButton" name="dragEffect">
+            <property name="toolTip">
+             <string>Two or more strikes in quick succession</string>
+            </property>
             <property name="text">
              <string>Drag</string>
             </property>
@@ -1117,6 +1161,9 @@
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
            <widget class="QCheckBox" name="lockedCheckBox">
+            <property name="toolTip">
+             <string>Lock this line</string>
+            </property>
             <property name="text">
              <string/>
             </property>
