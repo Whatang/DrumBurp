@@ -210,6 +210,8 @@ class QScore(QtGui.QGraphicsScene):
             DBMidi.setKit(score.drumKit)
             self._undoStack.clear()
             self._undoStack.setClean()
+            for view in self.views():
+                view.setWidth(self.scoreWidth)
             self.dirty = False
 
     @property

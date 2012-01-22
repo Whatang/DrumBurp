@@ -165,6 +165,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreScene.redoTextChanged.connect(changeRedoText)
         # Default beat
         self._beatChanged(self.scoreScene.defaultCount)
+        self.widthSpinBox.setValue(self.scoreScene.scoreWidth)
 
 
     def _startUp(self):
