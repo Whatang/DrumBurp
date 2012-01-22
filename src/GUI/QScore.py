@@ -700,6 +700,9 @@ class QScore(QtGui.QGraphicsScene):
     def metaChange(self):
         return _metaChangeContext(self, self._metaData)
 
+    def staffSizeContext(self, *staffIndexes):
+        return _staffSizeContext(self, staffIndexes)
+
 class _metaChangeContext(object):
     def __init__(self, qScore, metaData):
         self._qScore = qScore
@@ -711,4 +714,20 @@ class _metaChangeContext(object):
         self._metaData.update()
         if self._metaData.boundingRect().height() != self._metaSize:
             self._qScore.reBuild()
+        return False
+
+class _staffSizeContext(object):
+    def __init__(self, qScore, staffIndexes):
+        self.qScore = qScore
+        self.staffIndexes = staffIndexes
+        self._numLines = []
+        if not self.qScore.displayProperties.emptyLinesVisible:
+            self._numLines = [self.qScore.score.numVisibleLines(n) for n in staffIndexes]
+
+    def __enter__(self):
+        return self
+    def __exit__(self, excType, excValue, excTraceback):
+        if not self.qScore.displayProperties.emptyLinesVisible:
+            if self._numLines != [self.qScore.score.numVisibleLines(n) for n in self.staffIndexes]:
+                self.qScore.reBuild()
         return False

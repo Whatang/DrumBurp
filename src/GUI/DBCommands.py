@@ -72,24 +72,27 @@ class NoteCommand(_COMMAND_CLASS): #pylint:disable-msg=W0223
         self._head = head
 
     def _undo(self):
-        if self._oldHead == DBConstants.EMPTY_NOTE:
-            self._score.deleteNote(self._np)
-        else:
-            self._score.addNote(self._np, self._oldHead)
-            DBMidi.playNote(self._np.drumIndex, self._oldHead)
+        with self._qScore.staffSizeContext(self._np.staffIndex):
+            if self._oldHead == DBConstants.EMPTY_NOTE:
+                self._score.deleteNote(self._np)
+            else:
+                self._score.addNote(self._np, self._oldHead)
+                DBMidi.playNote(self._np.drumIndex, self._oldHead)
 
 class SetNote(NoteCommand):
     def _redo(self):
-        self._score.addNote(self._np, self._head)
-        if self._head != DBConstants.EMPTY_NOTE:
-            DBMidi.playNote(self._np.drumIndex, self._head)
+        with self._qScore.staffSizeContext(self._np.staffIndex):
+            self._score.addNote(self._np, self._head)
+            if self._head != DBConstants.EMPTY_NOTE:
+                DBMidi.playNote(self._np.drumIndex, self._head)
 
 class ToggleNote(NoteCommand):
     def _redo(self):
-        self._score.toggleNote(self._np, self._head)
-        newHead = self._score.getNote(self._np)
-        if (newHead != DBConstants.EMPTY_NOTE):
-            DBMidi.playNote(self._np.drumIndex, self._head)
+        with self._qScore.staffSizeContext(self._np.staffIndex):
+            self._score.toggleNote(self._np, self._head)
+            newHead = self._score.getNote(self._np)
+            if (newHead != DBConstants.EMPTY_NOTE):
+                DBMidi.playNote(self._np.drumIndex, self._head)
 
 class MetaDataCommand(_COMMAND_CLASS):
     def __init__(self, qScore, varName, signal, value):
