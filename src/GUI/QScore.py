@@ -261,9 +261,7 @@ class QScore(QtGui.QGraphicsScene):
             self._addStaff(staff)
         for title in self._score.iterSections():
             self._addSection(title)
-        self._placeStaffs()
-        self.setNumPages.emit()
-
+        self.placeStaffs()
 
     @delayCall
     def reBuild(self):
@@ -326,7 +324,7 @@ class QScore(QtGui.QGraphicsScene):
             self.addCommand(command)
     systemSpacing = property(_getsystemSpacing, _setsystemSpacing)
 
-    def _placeStaffs(self, staffCall = QStaff.placeMeasures):
+    def placeStaffs(self, staffCall = QStaff.placeMeasures):
         xMargins = self.xMargins
         yMargins = self.yMargins
         lineSpacing = self.lineSpacing
@@ -357,15 +355,16 @@ class QScore(QtGui.QGraphicsScene):
         self.setSceneRect(0, 0,
                           maxWidth + 2 * xMargins,
                           yOffset - lineSpacing + yMargins)
+        self.setNumPages.emit()
 
     def xSpacingChanged(self):
-        self._placeStaffs(QStaff.xSpacingChanged)
+        self.placeStaffs(QStaff.xSpacingChanged)
 
     def ySpacingChanged(self):
-        self._placeStaffs(QStaff.ySpacingChanged)
+        self.placeStaffs(QStaff.ySpacingChanged)
 
     def lineSpacingChanged(self):
-        self._placeStaffs(None)
+        self.placeStaffs(None)
 
     def sectionFontChanged(self):
         self._metaData.fontChanged()
@@ -378,8 +377,8 @@ class QScore(QtGui.QGraphicsScene):
         self.reBuild()
 
     def metadataFontChanged(self):
-        self._metaData.fontChanged()
-        self.lineSpacingChanged()
+        with self.metaChange():
+            self._metaData.fontChanged()
 
     def kitDataVisibleChanged(self):
         self._kitData.setVisible(self._properties.kitDataVisible)
@@ -568,7 +567,7 @@ class QScore(QtGui.QGraphicsScene):
         for qSection in self._qSections:
             qSection.setFont(painter.font())
         painter.restore()
-        self._placeStaffs()
+        self.placeStaffs()
         topLeft = QtCore.QPointF(self.xMargins, self.yMargins)
         bottomRight = QtCore.QPointF(self.sceneRect().right() - self.xMargins,
                                      self.yMargins)
@@ -593,8 +592,6 @@ class QScore(QtGui.QGraphicsScene):
         self._metaData.setRect()
         self._kitData.setRect()
         self.scale = 1
-
-
 
     def setScoreFontSize(self, size, fontType):
         fontName = fontType + "FontSize"
@@ -718,9 +715,6 @@ class QScore(QtGui.QGraphicsScene):
     def metaChange(self):
         return _metaChangeContext(self, self._metaData)
 
-    def staffSizeContext(self, *staffIndexes):
-        return _staffSizeContext(self, staffIndexes)
-
 class _metaChangeContext(object):
     def __init__(self, qScore, metaData):
         self._qScore = qScore
@@ -731,21 +725,5 @@ class _metaChangeContext(object):
     def __exit__(self, excType, excValue, excTraceback):
         self._metaData.update()
         if self._metaData.boundingRect().height() != self._metaSize:
-            self._qScore.reBuild()
-        return False
-
-class _staffSizeContext(object):
-    def __init__(self, qScore, staffIndexes):
-        self.qScore = qScore
-        self.staffIndexes = staffIndexes
-        self._numLines = []
-        if not self.qScore.displayProperties.emptyLinesVisible:
-            self._numLines = [self.qScore.score.numVisibleLines(n) for n in staffIndexes]
-
-    def __enter__(self):
-        return self
-    def __exit__(self, excType, excValue, excTraceback):
-        if not self.qScore.displayProperties.emptyLinesVisible:
-            if self._numLines != [self.qScore.score.numVisibleLines(n) for n in self.staffIndexes]:
-                self.qScore.reBuild()
+            self._qScore.placeStaffs()
         return False

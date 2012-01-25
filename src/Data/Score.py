@@ -632,8 +632,12 @@ class Score(object):
             measure = staff[pos.measureIndex]
         return pos
 
+    def _getFormatState(self):
+         return [(staff.numMeasures(), self.numVisibleLines(index))
+                 for index, staff in enumerate(self.iterStaffs())]
+
     def saveFormatState(self):
-        self._formatState = [staff.numMeasures() for staff in self.iterStaffs()]
+        self._formatState = self._getFormatState()
 
     def _formatScore(self, width,
                      widthFunction, ignoreErrors = False):
@@ -642,7 +646,6 @@ class Score(object):
         measures = list(self.iterMeasures())
         if not self._formatState:
             self.saveFormatState()
-#        oldNumMeasures = [staff.numMeasures() for staff in self.iterStaffs()]
         for staff in self.iterStaffs():
             staff.clear()
         staff = self.getStaff(0)
@@ -670,8 +673,7 @@ class Score(object):
                 staff = self.getStaff(staffIndex)
         while self.numStaffs() > staffIndex + 1:
             self.deleteLastStaff()
-        newNumMeasures = [staff.numMeasures() for staff in self.iterStaffs()]
-        return newNumMeasures != self._formatState
+        return self._formatState != self._getFormatState()
 
     def textFormatScore(self, width = None, ignoreErrors = False):
         return self._formatScore(width, Staff.characterWidth, ignoreErrors)
@@ -687,9 +689,12 @@ class Score(object):
         self.drumKit = newKit
 
     def numVisibleLines(self, index):
-        staff = self.getStaff(index)
-        return sum(drum.locked or staff.lineIsVisible(index)
-                   for index, drum in enumerate(self.drumKit))
+        if self.scoreData.emptyLinesVisible:
+            return len(self.drumKit)
+        else:
+            staff = self.getStaff(index)
+            return sum(drum.locked or staff.lineIsVisible(index)
+                       for index, drum in enumerate(self.drumKit))
 
     def nthVisibleLineIndex(self, staffIndex, lineIndex):
         count = -1
