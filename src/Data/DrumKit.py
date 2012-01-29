@@ -52,7 +52,10 @@ class DrumKit(object):
             drum = Drum(*drumData)
             headData = HeadData(midiNote = midiNote)
             drum.addNoteHead(drum.head, headData)
-            for extraHead, newMidi, newMidiVolume, newEffect in DEFAULT_EXTRA_HEADS.get(drum.abbr, []):
+            for (extraHead,
+                 newMidi,
+                 newMidiVolume,
+                 newEffect) in DEFAULT_EXTRA_HEADS.get(drum.abbr, []):
                 if newMidi is None:
                     newMidi = midiNote
                 if newMidiVolume is None:

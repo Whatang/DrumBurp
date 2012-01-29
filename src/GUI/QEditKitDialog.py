@@ -134,7 +134,8 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
     def _removeDrum(self):
         index = self._currentDrumIndex
         drum = self._currentDrum
-        self._currentKit = self._currentKit[:index] + self._currentKit[index + 1:]
+        self._currentKit = (self._currentKit[:index]
+                            + self._currentKit[index + 1:])
         self._oldLines.pop(drum)
         if index < len(self._currentKit) - 1:
             self._drumChanged()
@@ -173,7 +174,8 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             if oldIndex == -1:
                 newKit.append(drum)
                 continue
-            oldDrum = self._initialKit[len(self._initialKit) - 1 - self._oldLines[drum]]
+            oldDrum = self._initialKit[len(self._initialKit)
+                                       - 1 - self._oldLines[drum]]
             if oldDrum in self._emptyDrums:
                 toDelete.append(drum)
             else:
@@ -383,7 +385,8 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             if self._oldLines[drum] == -1:
                 oldLines.append(-1)
             else:
-                oldLines.append(len(self._initialKit) - self._oldLines[drum] - 1)
+                oldLines.append(len(self._initialKit)
+                                - self._oldLines[drum] - 1)
         return newKit, oldLines
 
 _MIDIDATA = [(35, "Acoustic Bass Drum"),
@@ -451,7 +454,9 @@ def main():
         newKit, changes = dialog.getNewKit()
         print changes
         for drum, oldDrumIndex in zip(newKit, changes):
-            print drum.name, kit[oldDrumIndex].name if oldDrumIndex != -1 else None, drum.head
+            print (drum.name, kit[oldDrumIndex].name
+                   if oldDrumIndex != -1
+                   else None, drum.head)
 
 
 if __name__ == "__main__":

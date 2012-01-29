@@ -89,7 +89,8 @@ class Drum(object):
         assert(head in self._headData)
         self._head = head
         index = self._noteHeads.index(head)
-        self._noteHeads = [head] + self._noteHeads[:index] + self._noteHeads[index + 1:]
+        self._noteHeads = ([head] + self._noteHeads[:index]
+                           + self._noteHeads[index + 1:])
 
     def __iter__(self):
         return iter(self._noteHeads)
@@ -142,7 +143,10 @@ class Drum(object):
         headData = HeadData(midiNote)
         self._headData = {self._head: headData}
         self._guessEffect(self._head)
-        for extraHead, newMidi, newMidiVolume, newEffect in DEFAULT_EXTRA_HEADS.get(self.abbr, []):
+        for (extraHead,
+             newMidi,
+             newMidiVolume,
+             newEffect) in DEFAULT_EXTRA_HEADS.get(self.abbr, []):
             if newMidi is None:
                 newMidi = midiNote
             if newMidiVolume is None:

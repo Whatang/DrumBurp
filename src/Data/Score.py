@@ -109,14 +109,16 @@ class Score(object):
         while staffIndex < end.staffIndex:
             staff = self.getStaff(staffIndex)
             while measureIndex < staff.numMeasures():
-                yield staff[measureIndex], absIndex, NotePosition(staffIndex, measureIndex)
+                yield (staff[measureIndex], absIndex,
+                       NotePosition(staffIndex, measureIndex))
                 measureIndex += 1
                 absIndex += 1
             measureIndex = 0
             staffIndex += 1
         staff = self.getStaff(staffIndex)
         while measureIndex <= end.measureIndex:
-            yield staff[measureIndex], absIndex, NotePosition(staffIndex, measureIndex)
+            yield (staff[measureIndex], absIndex,
+                   NotePosition(staffIndex, measureIndex))
             absIndex += 1
             measureIndex += 1
 
@@ -171,7 +173,8 @@ class Score(object):
                 alternateIndexes[index] = self._readAlternates(measure.alternateText)
         for index, measure in enumerate(measures):
             if measure.isRepeatStart():
-                repeatData[index] = self._findRepeatData(measures, index, alternateIndexes)
+                repeatData[index] = self._findRepeatData(measures, index,
+                                                         alternateIndexes)
         index = 0
         repeatStart = 0
         repeatNum = -1
@@ -187,7 +190,8 @@ class Score(object):
                 repeatNum += 1
             if index in alternateIndexes and repeatNum > -1:
                 theseAlternates = alternateIndexes[index]
-                alternateStarts.update((aStart, index) for aStart in theseAlternates)
+                alternateStarts.update((aStart, index) for aStart
+                                       in theseAlternates)
                 if repeatNum + 1 not in theseAlternates:
                     index = alternateStarts.get(repeatNum + 1,
                                                 latestRepeatEnd + 1)
@@ -633,8 +637,8 @@ class Score(object):
         return pos
 
     def _getFormatState(self):
-         return [(staff.numMeasures(), self.numVisibleLines(index))
-                 for index, staff in enumerate(self.iterStaffs())]
+        return [(staff.numMeasures(), self.numVisibleLines(index))
+                for index, staff in enumerate(self.iterStaffs())]
 
     def saveFormatState(self):
         self._formatState = self._getFormatState()

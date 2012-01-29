@@ -461,7 +461,9 @@ class QScore(QtGui.QGraphicsScene):
         if repeating:
             resultLength = targetLength
             while measureCount < resultLength:
-                clearPositions.append(self.score.getMeasurePosition(measureIndex + measureCount))
+                position = self.score.getMeasurePosition(measureIndex
+                                                         + measureCount)
+                clearPositions.append(position)
                 measureCount += 1
             command = ClearMeasureCommand(self, clearPositions)
             self.addCommand(command)
@@ -472,18 +474,24 @@ class QScore(QtGui.QGraphicsScene):
         else:
             resultLength = min([sourceLength, targetLength])
             while measureCount < resultLength:
-                clearPositions.append(self.score.getMeasurePosition(measureIndex + measureCount))
+                position = self.score.getMeasurePosition(measureIndex
+                                                         + measureCount)
+                clearPositions.append(position)
                 measureCount += 1
             command = ClearMeasureCommand(self, clearPositions)
             self.addCommand(command)
             while measureCount < targetLength:
-                deletePosition = self.score.getMeasurePosition(measureIndex + sourceLength)
-                command = DeleteMeasureCommand(self, deletePosition, measureIndex + sourceLength)
+                deletePosition = self.score.getMeasurePosition(measureIndex
+                                                               + sourceLength)
+                command = DeleteMeasureCommand(self, deletePosition,
+                                               measureIndex + sourceLength)
                 self.addCommand(command)
                 measureCount += 1
             if measureCount < sourceLength:
+                position = self.score.getMeasurePosition(measureIndex
+                                                         + measureCount)
                 command = InsertMeasuresCommand(self,
-                                                self.score.getMeasurePosition(measureIndex + measureCount),
+                                                position,
                                                 sourceLength - measureCount,
                                                 self.defaultCount)
                 self.addCommand(command)

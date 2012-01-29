@@ -73,7 +73,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreScene = None
         self.paperBox.clear()
         for name in dir(QPrinter):
-            if isinstance(getattr(QPrinter, name), QPrinter.PageSize) and name != "Custom":
+            if (isinstance(getattr(QPrinter, name), QPrinter.PageSize)
+                and name != "Custom"):
                 self.paperBox.addItem(name)
         printer = QPrinter()
         self._pageHeight = printer.paperRect().height()
@@ -97,24 +98,23 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.setSections()
         QTimer.singleShot(0, self._startUp)
 
-    def _initializeState(self):
-        self.scoreView.setScene(self.scoreScene)
+
+    def _connectSignals(self, props, scene):
         # Connect signals
-        props = self.songProperties
         props.fontChanged.connect(self._setNoteFont)
         props.noteSizeChanged.connect(self.noteSizeSpinBox.setValue)
         props.sectionFontChanged.connect(self._setSectionFont)
         props.sectionFontSizeChanged.connect(self._setSectionFontSize)
         props.metadataFontChanged.connect(self._setMetadataFont)
         props.metadataFontSizeChanged.connect(self._setMetadataSize)
-        self.scoreScene.dirtySignal.connect(self.setWindowModified)
-        self.scoreScene.dragHighlight.connect(self.actionLoopBars.setEnabled)
-        self.scoreScene.dragHighlight.connect(self.actionPlayOnce.setEnabled)
-        self.scoreScene.dragHighlight.connect(self.actionCopyMeasures.setEnabled)
-        self.scoreScene.dragHighlight.connect(self.checkPasteMeasure)
-        self.scoreScene.dragHighlight.connect(self.actionClearMeasures.setEnabled)
-        self.scoreScene.dragHighlight.connect(self.actionDeleteMeasures.setEnabled)
-        self.scoreScene.setNumPages.connect(self.setNumPages)
+        scene.dirtySignal.connect(self.setWindowModified)
+        scene.dragHighlight.connect(self.actionLoopBars.setEnabled)
+        scene.dragHighlight.connect(self.actionPlayOnce.setEnabled)
+        scene.dragHighlight.connect(self.actionCopyMeasures.setEnabled)
+        scene.dragHighlight.connect(self.checkPasteMeasure)
+        scene.dragHighlight.connect(self.actionClearMeasures.setEnabled)
+        scene.dragHighlight.connect(self.actionDeleteMeasures.setEnabled)
+        scene.setNumPages.connect(self.setNumPages)
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
@@ -122,27 +122,33 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         props.beatCountVisibleChanged.connect(self._setBeatCountVisible)
         DBMidi.SONGEND_SIGNAL.connect(self.musicDone)
         DBMidi.HIGHLIGHT_SIGNAL.connect(self.highlightPlayingMeasure)
+
+    def _initializeState(self):
+        props = self.songProperties
+        scene = self.scoreScene
+        self.scoreView.setScene(scene)
+        self._connectSignals(props, scene)
         # Fonts
         self.fontComboBox.setWritingSystem(QFontDatabase.Latin)
         self.sectionFontCombo.setWritingSystem(QFontDatabase.Latin)
         self.sectionFontCombo.setWritingSystem(QFontDatabase.Latin)
-        self.lineSpaceSlider.setValue(self.scoreScene.systemSpacing)
-        font = self.songProperties.noteFont
+        self.lineSpaceSlider.setValue(scene.systemSpacing)
+        font = props.noteFont
         if font is None:
-            font = self.scoreScene.font()
-        font.setPointSize(self.songProperties.noteFontSize)
+            font = scene.font()
+        font.setPointSize(props.noteFontSize)
         self.fontComboBox.setCurrentFont(font)
-        self.noteSizeSpinBox.setValue(self.songProperties.noteFontSize)
-        font = self.songProperties.sectionFont
+        self.noteSizeSpinBox.setValue(props.noteFontSize)
+        font = props.sectionFont
         if font is None:
-            font = self.scoreScene.font()
-        font.setPointSize(self.songProperties.sectionFontSize)
+            font = scene.font()
+        font.setPointSize(props.sectionFontSize)
         self.sectionFontCombo.setCurrentFont(font)
         self.sectionFontSizeSpinbox.setValue(props.sectionFontSize)
-        font = self.songProperties.metadataFont
+        font = props.metadataFont
         if font is None:
-            font = self.scoreScene.font()
-        font.setPointSize(self.songProperties.metadataFontSize)
+            font = scene.font()
+        font.setPointSize(props.metadataFontSize)
         self.metadataFontCombo.setCurrentFont(font)
         self.metadataFontSizeSpinbox.setValue(props.metadataFontSize)
         # Visibility toggles
@@ -161,15 +167,15 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         # Undo/redo
         self.actionUndo.setEnabled(False)
         self.actionRedo.setEnabled(False)
-        self.scoreScene.canUndoChanged.connect(self.actionUndo.setEnabled)
+        scene.canUndoChanged.connect(self.actionUndo.setEnabled)
         changeUndoText = lambda txt:self.actionUndo.setText("Undo " + txt)
-        self.scoreScene.undoTextChanged.connect(changeUndoText)
-        self.scoreScene.canRedoChanged.connect(self.actionRedo.setEnabled)
+        scene.undoTextChanged.connect(changeUndoText)
+        scene.canRedoChanged.connect(self.actionRedo.setEnabled)
         changeRedoText = lambda txt:self.actionRedo.setText("Redo " + txt)
-        self.scoreScene.redoTextChanged.connect(changeRedoText)
+        scene.redoTextChanged.connect(changeRedoText)
         # Default beat
-        self._beatChanged(self.scoreScene.defaultCount)
-        self.widthSpinBox.setValue(self.scoreScene.scoreWidth)
+        self._beatChanged(scene.defaultCount)
+        self.widthSpinBox.setValue(scene.scoreWidth)
 
 
     def _startUp(self):
@@ -546,12 +552,12 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         try:
             measures = list(self.scoreScene.score.iterMeasuresWithRepeats())
         except InconsistentRepeats, exc:
-                QMessageBox.warning(self, "Playback error",
-                                    "There are inconsistent repeat markings.")
-                position = self.scoreScene.score.getMeasurePosition(exc[0])
-                measure = self.scoreScene.getQMeasure(position)
-                self.scoreView.ensureVisible(measure)
-                return False
+            QMessageBox.warning(self, "Playback error",
+                                "There are inconsistent repeat markings.")
+            position = self.scoreScene.score.getMeasurePosition(exc[0])
+            measure = self.scoreScene.getQMeasure(position)
+            self.scoreView.ensureVisible(measure)
+            return False
         return True
 
     @pyqtSignature("bool")
