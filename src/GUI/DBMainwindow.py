@@ -36,7 +36,6 @@ from QNewScoreDialog import QNewScoreDialog
 from QAsciiExportDialog import QAsciiExportDialog
 from QEditMeasureDialog import QEditMeasureDialog
 from DBInfoDialog import DBInfoDialog
-from DBStartupDialog import DBStartupDialog
 import DBIcons
 import os
 import DBMidi
@@ -180,8 +179,6 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     def _startUp(self):
         self.scoreView.startUp()
-        dlg = DBStartupDialog(DB_VERSION)
-        dlg.exec_()
         self.updateStatus("Welcome to %s v%s" % (APPNAME, DB_VERSION))
 
 
