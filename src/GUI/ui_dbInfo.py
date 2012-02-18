@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\dbInfo.ui'
 #
-# Created: Sat Oct 08 22:58:00 2011
+# Created: Sat Feb 18 12:40:46 2012
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -134,7 +134,7 @@ class Ui_InfoDialog(object):
 
     def retranslateUi(self, InfoDialog):
         InfoDialog.setWindowTitle(QtGui.QApplication.translate("InfoDialog", "DrumBurp Information", None, QtGui.QApplication.UnicodeUTF8))
-        self.copyrightLabel.setText(QtGui.QApplication.translate("InfoDialog", "DrumBurp is Copyright 2011 Michael Thomas. All rights reserved.", None, QtGui.QApplication.UnicodeUTF8))
+        self.copyrightLabel.setText(QtGui.QApplication.translate("InfoDialog", "DrumBurp is Copyright 2011-12 Michael Thomas. All rights reserved.", None, QtGui.QApplication.UnicodeUTF8))
         self.label_6.setText(QtGui.QApplication.translate("InfoDialog", "Contact Details", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("InfoDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
