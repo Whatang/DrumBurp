@@ -1,4 +1,4 @@
-# Copyright 2011 Michael Thomas
+# Copyright 2011-2012 Michael Thomas
 #
 # See www.whatang.org for more information.
 #
@@ -43,7 +43,7 @@ import DBMidi
 from Data.Score import InconsistentRepeats
 
 APPNAME = "DrumBurp"
-DB_VERSION = "0.4"
+DB_VERSION = "0.5"
 #pylint:disable-msg=R0904
 
 class FakeQSettings(object):
