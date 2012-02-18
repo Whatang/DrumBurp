@@ -68,7 +68,6 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self._asciiSettings = None
         self._printer = QPrinter()
         self.setupUi(self)
-        DBIcons.initialiseIcons()
         self.scoreScene = None
         self.paperBox.clear()
         for name in dir(QPrinter):

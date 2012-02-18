@@ -22,11 +22,11 @@ Created on 31 Jul 2010
 @author: Mike Thomas
 '''
 import sys
+import optparse
 from PyQt4.QtGui import QApplication
 import GUI.DBMainwindow
 import GUI.DBIcons
-import optparse
-from GUI.DBStartupDialog import DBStartupDialog
+import GUI.DBStartupDialog
 
 def main():
     import ctypes
@@ -45,12 +45,13 @@ def main():
     app.setOrganizationName("Whatang Software")
     app.setOrganizationDomain("whatang.org")
     app.setApplicationName(GUI.DBMainwindow.APPNAME)
-    splash = DBStartupDialog(GUI.DBMainwindow.DB_VERSION)
+    splash = GUI.DBStartupDialog.DBStartupDialog(GUI.DBMainwindow.DB_VERSION)
+    GUI.DBIcons.initialiseIcons()
+    app.setWindowIcon(GUI.DBIcons.getIcon("drumburp"))
     splash.exec_()
     mainWindow = GUI.DBMainwindow.DrumBurp(fakeStartup = opts.virgin,
                                            filename = filename)
     mainWindow.setWindowTitle("DrumBurp v" + GUI.DBMainwindow.DB_VERSION)
-    app.setWindowIcon(GUI.DBIcons.getIcon("drumburp"))
     mainWindow.show()
     app.exec_()
 
