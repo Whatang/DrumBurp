@@ -62,25 +62,25 @@ class QMeasureLine(QtGui.QGraphicsItem):
 
     def paint(self, painter, dummyOption, dummyWidget = None):
         self._painter(self, painter, dummyOption,
-                      self.scene().scale, dummyWidget = None)
+                      self._qScore.scale, dummyWidget = None)
 
     def _setHeight(self):
         if self._props.emptyLinesVisible:
-            self._height = self.scene().ySpacing * self._qScore.kitSize
+            self._height = self._qScore.ySpacing * self._qScore.kitSize
         else:
-            score = self.scene().score
-            self._height = (self.scene().ySpacing *
+            score = self._qScore.score
+            self._height = (self._qScore.ySpacing *
                             score.numVisibleLines(self._staffIndex))
 
     def setDimensions(self):
         self.prepareGeometryChange()
         self._setHeight()
-        self._rect.setBottomRight(QtCore.QPointF(self.scene().xSpacing,
+        self._rect.setBottomRight(QtCore.QPointF(self._qScore.xSpacing,
                                                  self._height))
 
     def xSpacingChanged(self):
         self.prepareGeometryChange()
-        self._rect.setRight(self.scene().xSpacing)
+        self._rect.setRight(self._qScore.xSpacing)
 
     def ySpacingChanged(self):
         self._setHeight()
@@ -91,7 +91,7 @@ class QMeasureLine(QtGui.QGraphicsItem):
         return self._height
 
     def width(self):
-        return self.scene().xSpacing
+        return self._qScore.xSpacing
 
     def _getEndNotePosition(self):
         assert(self._index > 0)

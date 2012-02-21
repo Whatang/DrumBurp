@@ -113,6 +113,7 @@ class Measure(object):
     def __init__(self, width = 0):
         self._width = width
         self._notes = _makeNoteDict()
+        self._notesOnLine = defaultdict(lambda : 0)
         self.startBar = BAR_TYPES["NORMAL_BAR"]
         self.endBar = BAR_TYPES["NORMAL_BAR"]
         self._callBack = None
@@ -236,6 +237,8 @@ class Measure(object):
     def addNote(self, position, head):
         if not(0 <= position.noteTime < len(self)):
             raise BadTimeError(position)
+        if position.drumIndex not in self._notes[position.noteTime]:
+            self._notesOnLine[position.drumIndex] += 1
         if head != self._notes[position.noteTime][position.drumIndex]:
             self._notes[position.noteTime][position.drumIndex] = head
             self._runCallBack(position)
@@ -243,6 +246,7 @@ class Measure(object):
     def deleteNote(self, position):
         if not(0 <= position.noteTime < len(self)):
             raise BadTimeError(position)
+        self._notesOnLine[position.drumIndex] -= 1
         if (position.noteTime in self._notes
             and position.drumIndex in self._notes[position.noteTime]):
             del self._notes[position.noteTime][position.drumIndex]
@@ -343,6 +347,7 @@ class Measure(object):
             for drumIndex, head in line.iteritems():
                 transposed[drumIndex][noteTime] = head
         self._notes = _makeNoteDict()
+        self._notesOnLine.clear()
         for newDrumIndex, newDrum in enumerate(newKit):
             oldDrumIndex = changes[newDrumIndex]
             if oldDrumIndex == -1:
@@ -350,11 +355,12 @@ class Measure(object):
             for noteTime, head in transposed[oldDrumIndex].iteritems():
                 if not newDrum.isAllowedHead(head):
                     head = newDrum.head
-                self._notes[noteTime][newDrumIndex] = head
+                self.addNote(NotePosition(None, None,
+                                          noteTime, newDrumIndex),
+                             head)
 
     def lineIsVisible(self, index):
-        return (len(self._notes) > 0 and
-                any(index in drumData for drumData in self._notes.itervalues()))
+        return (self._notesOnLine.get(index, 0) > 0)
 
     def write(self, handle, indenter):
         print >> handle, indenter("START_BAR %d" % len(self))
