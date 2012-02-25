@@ -1,28 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Michael Thomas
+# Form implementation generated from reading ui file 'C:\Users\Mike\workspace\DrumBurp\src\GUI\alternateRepeats.ui'
 #
-# See www.whatang.org for more information.
-#
-# This file is part of DrumBurp.
-#
-# DrumBurp is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# DrumBurp is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with DrumBurp.  If not, see <http://www.gnu.org/licenses/>
-
-# Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\alternateRepeats.ui'
-#
-# Created: Sun Apr 17 16:05:19 2011
-#      by: PyQt4 UI code generator 4.8.1
+# Created: Sat Feb 25 16:35:14 2012
+#      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -36,22 +17,52 @@ except AttributeError:
 class Ui_AlternateDialog(object):
     def setupUi(self, AlternateDialog):
         AlternateDialog.setObjectName(_fromUtf8("AlternateDialog"))
-        AlternateDialog.resize(244, 92)
-        self.gridLayout = QtGui.QGridLayout(AlternateDialog)
-        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
+        AlternateDialog.resize(502, 214)
+        AlternateDialog.setWindowTitle(QtGui.QApplication.translate("AlternateDialog", "Alternate Repeats", None, QtGui.QApplication.UnicodeUTF8))
+        self.verticalLayout = QtGui.QVBoxLayout(AlternateDialog)
+        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.label = QtGui.QLabel(AlternateDialog)
+        self.label.setText(QtGui.QApplication.translate("AlternateDialog", "Enter alternate repeat information:", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setObjectName(_fromUtf8("label"))
-        self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
-        self.repeatText = QtGui.QLineEdit(AlternateDialog)
-        self.repeatText.setObjectName(_fromUtf8("repeatText"))
-        self.gridLayout.addWidget(self.repeatText, 1, 0, 1, 1)
-        spacerItem = QtGui.QSpacerItem(20, 1, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem, 2, 0, 1, 1)
+        self.horizontalLayout.addWidget(self.label)
+        self.addButton = QtGui.QPushButton(AlternateDialog)
+        self.addButton.setText(QtGui.QApplication.translate("AlternateDialog", "Add", None, QtGui.QApplication.UnicodeUTF8))
+        self.addButton.setObjectName(_fromUtf8("addButton"))
+        self.horizontalLayout.addWidget(self.addButton)
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem)
+        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.repeatsFrame = QtGui.QScrollArea(AlternateDialog)
+        self.repeatsFrame.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.repeatsFrame.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.repeatsFrame.setWidgetResizable(True)
+        self.repeatsFrame.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.repeatsFrame.setObjectName(_fromUtf8("repeatsFrame"))
+        self.scrollAreaWidgetContents = QtGui.QWidget()
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 465, 134))
+        self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
+        self.verticalLayout_2 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
+        self.verticalLayout_2.setSpacing(0)
+        self.verticalLayout_2.setContentsMargins(9, 0, -1, 0)
+        self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
+        self.repeatsLayout = QtGui.QVBoxLayout()
+        self.repeatsLayout.setSpacing(0)
+        self.repeatsLayout.setObjectName(_fromUtf8("repeatsLayout"))
+        self.verticalLayout_2.addLayout(self.repeatsLayout)
+        self.stretchyLayout = QtGui.QVBoxLayout()
+        self.stretchyLayout.setObjectName(_fromUtf8("stretchyLayout"))
+        spacerItem1 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.stretchyLayout.addItem(spacerItem1)
+        self.verticalLayout_2.addLayout(self.stretchyLayout)
+        self.repeatsFrame.setWidget(self.scrollAreaWidgetContents)
+        self.verticalLayout.addWidget(self.repeatsFrame)
         self.buttonBox = QtGui.QDialogButtonBox(AlternateDialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel | QtGui.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
-        self.gridLayout.addWidget(self.buttonBox, 3, 0, 1, 1)
+        self.verticalLayout.addWidget(self.buttonBox)
 
         self.retranslateUi(AlternateDialog)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), AlternateDialog.accept)
@@ -59,6 +70,5 @@ class Ui_AlternateDialog(object):
         QtCore.QMetaObject.connectSlotsByName(AlternateDialog)
 
     def retranslateUi(self, AlternateDialog):
-        AlternateDialog.setWindowTitle(QtGui.QApplication.translate("AlternateDialog", "Alternate Repeats", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("AlternateDialog", "Enter alternate repeat information:", None, QtGui.QApplication.UnicodeUTF8))
+        pass
 
