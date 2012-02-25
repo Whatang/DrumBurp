@@ -408,6 +408,7 @@ class QScore(QtGui.QGraphicsScene):
         return super(QScore, self).keyPressEvent(event)
 
     def copyMeasures(self, np = None):
+        print np
         if np is not None:
             self.measureClipboard = [self._score.copyMeasure(np)]
         elif self.hasDragSelection():

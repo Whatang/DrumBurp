@@ -74,7 +74,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         self.addSeparator()
         if self._qScore.hasDragSelection():
             self.addAction(DBIcons.getIcon("copy"), "Copy Selected Measures",
-                           lambda:self._qScore.copyMeasures)
+                           self._qScore.copyMeasures)
             pasteAction = self.addAction(DBIcons.getIcon("paste"),
                                          "Paste Over Selected Measures",
                                          self._qScore.pasteMeasuresOver)
