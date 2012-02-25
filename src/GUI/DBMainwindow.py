@@ -359,7 +359,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if self.okToContinue():
             counter = self.scoreScene.defaultCount
             registry = self.songProperties.counterRegistry
-            dialog = QNewScoreDialog(self.parent(),
+            dialog = QNewScoreDialog(self,
                                      counter,
                                      registry)
             if dialog.exec_():
@@ -426,7 +426,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             fname = os.path.splitext(fname)[0] + '.txt'
         props = self.songProperties
         self._asciiSettings = props.generateAsciiSettings(self._asciiSettings)
-        asciiDialog = QAsciiExportDialog(fname, self,
+        asciiDialog = QAsciiExportDialog(fname, parent = self,
                                          settings = self._asciiSettings)
         if not asciiDialog.exec_():
             return
@@ -491,10 +491,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def on_actionRedo_triggered(self):
         self.scoreScene.redo()
 
-    @staticmethod
     @pyqtSignature("")
-    def on_actionAboutDrumBurp_triggered():
-        dlg = DBInfoDialog(DB_VERSION)
+    def on_actionAboutDrumBurp_triggered(self):
+        dlg = DBInfoDialog(DB_VERSION, self)
         dlg.exec_()
 
     def _getPaperSize(self):

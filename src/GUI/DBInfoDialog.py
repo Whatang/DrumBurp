@@ -41,5 +41,5 @@ class DBInfoDialog(QDialog, Ui_InfoDialog):
 
     @pyqtSignature("")
     def on_licenseButton_clicked(self): #IGNORE:R0201
-        dlg = DBLicenseDialog()
+        dlg = DBLicenseDialog(self)
         dlg.exec_()
