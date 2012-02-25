@@ -66,16 +66,23 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         super(DrumBurp, self).__init__(parent)
         self._state = None
         self._asciiSettings = None
-        self._printer = QPrinter()
+        self._printer = None
         self.setupUi(self)
         self.scoreScene = None
+        self.paperBox.blockSignals(True)
         self.paperBox.clear()
+        self._knownPageHeights = []
+        printer = QPrinter()
+        printer.setOutputFileName("invalid.pdf")
         for name in dir(QPrinter):
-            if (isinstance(getattr(QPrinter, name), QPrinter.PageSize)
+            attr = getattr(QPrinter, name)
+            if (isinstance(attr, QPrinter.PageSize)
                 and name != "Custom"):
                 self.paperBox.addItem(name)
-        printer = QPrinter()
+                printer.setPaperSize(attr)
+                self._knownPageHeights.append(printer.pageRect().height())
         self._pageHeight = printer.paperRect().height()
+        self.paperBox.blockSignals(False)
         settings = self._makeQSettings()
         self.recentFiles = [unicode(fname) for fname in
                             settings.value("RecentFiles").toStringList()
@@ -445,6 +452,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionPrint_triggered(self):
+        if self._printer is None:
+            self._printer = QPrinter()
         self._printer = QPrinter(QPrinterInfo(self._printer),
                                  QPrinter.HighResolution)
         self._printer.setPaperSize(self._getPaperSize())
@@ -666,10 +675,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("int")
     def on_paperBox_currentIndexChanged(self, index):
-        printer = QPrinter()
-        printer.setOutputFileName("invalid.pdf")
-        printer.setPaperSize(self._getPaperSize())
-        self._pageHeight = printer.pageRect().height()
+        self._pageHeight = self._knownPageHeights[index]
         self.setNumPages()
 
     def setNumPages(self):
