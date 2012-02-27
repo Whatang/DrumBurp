@@ -39,6 +39,7 @@ from DBCommands import (MetaDataCommand, ScoreWidthCommand,
                         SetVisibilityCommand)
 import DBMidi
 import functools
+from DBFSM import *
 _SCORE_FACTORY = ScoreFactory()
 
 def delayCall(method):
@@ -106,6 +107,7 @@ class QScore(QtGui.QGraphicsScene):
         self.spacingChanged.connect(parent.setSystemSpacing)
         self.sectionsChanged.connect(parent.setSections)
         self._properties.connectScore(self)
+        self._state = Waiting(self)
 
     canUndoChanged = QtCore.pyqtSignal(bool)
     canRedoChanged = QtCore.pyqtSignal(bool)
@@ -215,6 +217,7 @@ class QScore(QtGui.QGraphicsScene):
                 view.setWidth(self.scoreWidth)
             self.reBuild()
             self.dirty = False
+            self._state = Waiting(self)
 
     @property
     def score(self):
@@ -403,8 +406,7 @@ class QScore(QtGui.QGraphicsScene):
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Escape:
-            self.clearDragSelection()
-        event.ignore()
+            self.sendFsmEvent(Escape())
         return super(QScore, self).keyPressEvent(event)
 
     def copyMeasures(self, np = None):
@@ -649,7 +651,7 @@ class QScore(QtGui.QGraphicsScene):
         self.reBuild()
         self.dirty = True
 
-    def startDragging(self, qmeasure):
+    def _startDragging(self, qmeasure):
         self._dragStart = qmeasure
         self._lastDrag = qmeasure
         self._dragSelection = [qmeasure.makeNotePosition(None, None),
@@ -662,22 +664,22 @@ class QScore(QtGui.QGraphicsScene):
         if not self.hasDragSelection():
             for index, position in self._dragged:
                 # Turn off
-                self.setDragHighlight(position, False)
+                self._setDragHighlight(position, False)
             self._dragged = []
             return
         newDragged = [(index, position) for (unused, index, position) in
                       self.score.iterMeasuresBetween(*self._dragSelection)]
         for index, position in newDragged:
             if all(x[0] != index for x in self._dragged): # Turn on
-                self.setDragHighlight(position, True)
+                self._setDragHighlight(position, True)
         for index, position in self._dragged:
             if all(x[0] != index for x in newDragged): # Turn off
-                self.setDragHighlight(position, False)
+                self._setDragHighlight(position, False)
         self._dragged = newDragged
 
     def dragging(self, qmeasure):
         if self._dragStart is None:
-            self.startDragging(qmeasure)
+            self._startDragging(qmeasure)
         elif self._lastDrag != qmeasure:
             self._lastDrag = qmeasure
             self._dragSelection[1] = self._lastDrag.makeNotePosition(None, None)
@@ -704,7 +706,7 @@ class QScore(QtGui.QGraphicsScene):
         self._updateDragged()
         self.dragHighlight.emit(False)
 
-    def setDragHighlight(self, position, onOff):
+    def _setDragHighlight(self, position, onOff):
         staff = self._qStaffs[position.staffIndex]
         qmeasure = staff.getQMeasure(position)
         qmeasure.setDragHighlight(onOff)
@@ -723,6 +725,11 @@ class QScore(QtGui.QGraphicsScene):
 
     def metaChange(self):
         return _metaChangeContext(self, self._metaData)
+
+    def sendFsmEvent(self, event):
+        print self._state, event
+        self._state = self._state.send(event)
+        print self._state
 
 class _metaChangeContext(object):
     def __init__(self, qScore, metaData):

@@ -636,6 +636,34 @@ class Score(object):
             measure = staff[pos.measureIndex]
         return pos
 
+    def tickDifference(self, second, first):
+        """Calculates the difference in ticks between NotePositions first and second.
+        """
+        current = copy.copy(first)
+        current.noteTime = None
+        current.drumIndex = None
+        end = copy.copy(second)
+        end.noteTime = None
+        end.drumIndex = None
+        ticks = 0
+        direction = 1
+        offset = first.noteTime
+        if end < current:
+            current, end = end, current
+            direction = -1
+            offset = second.noteTime
+        while current < end:
+            ticks += len(self.getItemAtPosition(current)) - offset
+            current = self.nextMeasure(current)
+            offset = 0
+        if direction == 1:
+            ticks += second.noteTime - offset
+        else:
+            ticks += first.noteTime - offset
+        ticks *= direction
+        return ticks
+
+
     def _getFormatState(self):
         return [(staff.numMeasures(), self.numVisibleLines(index))
                 for index, staff in enumerate(self.iterStaffs())]
@@ -691,6 +719,9 @@ class Score(object):
         for measure in self.iterMeasures():
             measure.changeKit(newKit, changes)
         self.drumKit = newKit
+
+    def getDefaultHead(self, drumIndex):
+        return self.drumKit.getDefaultHead(drumIndex)
 
     def numVisibleLines(self, index):
         if self.scoreData.emptyLinesVisible:

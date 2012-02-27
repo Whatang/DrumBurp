@@ -40,6 +40,7 @@ import DBIcons
 import os
 import DBMidi
 from Data.Score import InconsistentRepeats
+from DBFSMEvents import StartPlaying, StopPlaying
 
 APPNAME = "DrumBurp"
 DB_VERSION = "0.5"
@@ -571,7 +572,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 self.actionPlayScore.toggle()
                 return
             DBMidi.playScore(self.scoreScene.score)
+            self.musicStart()
         else:
+            self.musicDone()
             DBMidi.shutUp()
 
     def highlightPlayingMeasure(self, index):
@@ -625,7 +628,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 return
             DBMidi.loopBars(self.scoreScene.iterDragSelection(),
                             self.scoreScene.score)
+            self.musicStart()
         else:
+            self.musicDone()
             DBMidi.shutUp()
 
     @pyqtSignature("bool")
@@ -637,7 +642,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             DBMidi.loopBars(self.scoreScene.iterDragSelection(),
                             self.scoreScene.score,
                             loopCount = 1)
+            self.musicStart()
         else:
+            self.musicDone()
             DBMidi.shutUp()
 
     @pyqtSignature("")
@@ -666,12 +673,16 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def on_actionDeleteMeasures_triggered(self):
         self.scoreScene.deleteMeasures()
 
+    def musicStart(self):
+        self.scoreScene.sendFsmEvent(StartPlaying())
+
     def musicDone(self):
         players = [self.actionPlayScore, self.actionPlayOnce,
                    self.actionLoopBars]
         for playButton in players:
             if playButton.isChecked():
                 playButton.setChecked(False)
+        self.scoreScene.sendFsmEvent(StopPlaying())
 
     @pyqtSignature("int")
     def on_paperBox_currentIndexChanged(self, index):

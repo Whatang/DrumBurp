@@ -28,6 +28,7 @@ from Data.NotePosition import NotePosition
 from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 from DBCommands import (SetSectionEndCommand, SetLineBreakCommand,
                         SetRepeatStartCommand, SetRepeatEndCommand)
+from DBFSMEvents import MeasureLineContext
 
 class QMeasureLine(QtGui.QGraphicsItem):
     '''
@@ -102,75 +103,16 @@ class QMeasureLine(QtGui.QGraphicsItem):
         np = NotePosition(measureIndex = self._index)
         return self._qStaff.augmentNotePosition(np)
 
-    def _setSectionEnd(self, onOff):
-        command = SetSectionEndCommand(self._qScore,
-                                       self._getEndNotePosition(),
-                                       onOff)
-        self._qScore.addCommand(command)
-
-    def _setLineBreak(self, onOff):
-        command = SetLineBreakCommand(self._qScore,
-                                      self._getEndNotePosition(),
-                                      onOff)
-        self._qScore.addCommand(command)
-
-    def _setRepeatEnd(self, onOff):
-        command = SetRepeatEndCommand(self._qScore,
-                                      self._getEndNotePosition(),
-                                      onOff)
-        self._qScore.addCommand(command)
-
-    def _setRepeatStart(self, onOff):
-        command = SetRepeatStartCommand(self._qScore,
-                                        self._getStartNotePosition(),
-                                        onOff)
-        self._qScore.addCommand(command)
-
-    def _setRepeatCount(self):
-        self._qScore.changeRepeatCount(self._getEndNotePosition())
-
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.RightButton:
             event.accept()
-            menu = QMenuIgnoreCancelClick(self._qScore)
-            # Repeat Start
-            if self._nextMeasure is not None:
-                onOff = self._nextMeasure.isRepeatStart()
-                setIt = lambda v = onOff : self._setRepeatStart(not v)
-                repeatStartAction = menu.addAction("Repeat Start",
-                                                   setIt)
-                repeatStartAction.setCheckable(True)
-                repeatStartAction.setChecked(onOff)
-            if self._lastMeasure is not None:
-                # Repeat End
-                onOff = self._lastMeasure.isRepeatEnd()
-                setIt = lambda v = onOff:self._setRepeatEnd(not v)
-                repeatEndAction = menu.addAction("Repeat End",
-                                                 setIt)
-                repeatEndAction.setCheckable(True)
-                repeatEndAction.setChecked(onOff)
-                # Section Ending
-                onOff = self._lastMeasure.isSectionEnd()
-                setIt = lambda v = onOff:self._setSectionEnd(not v)
-                sectionEndAction = menu.addAction("Section End",
-                                                  setIt)
-                sectionEndAction.setCheckable(True)
-                sectionEndAction.setChecked(onOff)
-                # Line break
-                onOff = self._lastMeasure.isLineBreak()
-                setIt = lambda v = onOff:self._setLineBreak(not v)
-                lineBreakAction = menu.addAction("Line Break",
-                                                 setIt)
-                lineBreakAction.setCheckable(True)
-                lineBreakAction.setChecked(onOff)
-                menu.addSeparator()
-                # Repeat count
-                repeatCountAction = menu.addAction("Set repeat count",
-                                                   self._setRepeatCount)
-                repeatCountAction.setEnabled(self._lastMeasure.isRepeatEnd())
-            menu.exec_(event.screenPos())
+            self._qScore.sendFsmEvent(MeasureLineContext(self._lastMeasure, self._nextMeasure,
+                                                         self._getEndNotePosition(),
+                                                         self._getStartNotePosition(),
+                                                         event.screenPos()))
         else:
-            pass
+            event.ignore()
+
 #pylint:disable-msg=R0913
 class BarLinePainter(object):
     THICK_LINE_WIDTH = 3

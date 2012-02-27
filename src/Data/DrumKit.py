@@ -115,3 +115,6 @@ class DrumKit(object):
                 lastDrum.readHeadData(lineData)
             else:
                 raise IOError("Unrecognised line type.")
+
+    def getDefaultHead(self, index):
+        return self[index].head

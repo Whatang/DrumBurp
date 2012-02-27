@@ -24,6 +24,7 @@ Created on 19 Jan 2011
 '''
 
 from PyQt4.QtGui import QMenu
+from DBFSMEvents import MenuCancel
 
 class QMenuIgnoreCancelClick(QMenu):
     '''
@@ -42,4 +43,5 @@ class QMenuIgnoreCancelClick(QMenu):
     def _checkGoodSelection(self):
         if self.activeAction() == None:
             self._qScore.ignoreNextClick()
+            self._qScore.sendFsmEvent(MenuCancel())
 
