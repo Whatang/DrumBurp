@@ -25,9 +25,6 @@ Created on 5 Jan 2011
 
 from PyQt4 import QtGui, QtCore
 from Data.NotePosition import NotePosition
-from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
-from DBCommands import (SetSectionEndCommand, SetLineBreakCommand,
-                        SetRepeatStartCommand, SetRepeatEndCommand)
 from DBFSMEvents import MeasureLineContext
 
 class QMeasureLine(QtGui.QGraphicsItem):
