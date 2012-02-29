@@ -75,19 +75,22 @@ class StopPlaying(FsmEvent):
     pass
 
 class _MeasureEvents(FsmEvent):
-    def __init__(self, measure):
+    def __init__(self, measurePosition):
         super(_MeasureEvents, self).__init__()
-        self.measure = measure
+        self.measurePosition = measurePosition
 
 class EditMeasureProperties(FsmEvent):
     def __init__(self, counter, counterRegistry, measurePosition):
-        super(EditMeasureProperties, self).__init__()
+        super(EditMeasureProperties, self).__init__(measurePosition)
         self.counter = counter
         self.counterRegistry = counterRegistry
-        self.measurePosition = measurePosition
 
-class SetAlternate(_MeasureEvents):
-    pass
+class SetAlternateEvent(_MeasureEvents):
+    def __init__(self, alternateText, measurePosition):
+        super(SetAlternateEvent, self).__init__(measurePosition)
+        self.alternateText = alternateText
 
 class ChangeRepeatCount(_MeasureEvents):
-    pass
+    def __init__(self, repeatCount, measurePosition):
+        super(ChangeRepeatCount, self).__init__(measurePosition)
+        self.repeatCount = repeatCount

@@ -57,7 +57,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                            self._deleteAlternate)
         else:
             self.addAction("Add Alternate Ending",
-                           self._setAlternate)
+                           self._qmeasure.setAlternate)
 
     def _setupEditSection(self):
         if (self._noteText !=
@@ -232,10 +232,6 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         command = SetAlternateCommand(self._qScore, np,
                                       None)
         self._qScore.addCommand(command)
-        self._qScore.sendFsmEvent(MenuSelect())
-
-    def _setAlternate(self):
-        self._qmeasure.setAlternate()
         self._qScore.sendFsmEvent(MenuSelect())
 
     def _copyOneMeasure(self):

@@ -22,11 +22,15 @@
 '''
 from PyQt4 import QtCore
 
-from DBCommands import ToggleNote, RepeatNoteCommand, EditMeasurePropertiesCommand
+from DBCommands import (ToggleNote, RepeatNoteCommand,
+                        EditMeasurePropertiesCommand, SetRepeatCountCommand,
+                        SetAlternateCommand)
 from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 from QMeasureContextMenu import QMeasureContextMenu
 from QMeasureLineContextMenu import QMeasureLineContextMenu
 from QEditMeasureDialog import QEditMeasureDialog
+from QRepeatCountDialog import QRepeatCountDialog
+from QAlternateDialog import QAlternateDialog
 from DBFSMEvents import *
 
 class FsmState(object):
@@ -64,6 +68,12 @@ class Waiting(FsmState):
             return EditMeasurePropertiesState(self.qscore,
                                               event.counter, event.counterRegistry,
                                               event.measurePosition)
+        elif msgType == ChangeRepeatCount:
+            return RepeatCountState(self.qscore, event.repeatCount,
+                                    event.measurePosition)
+        elif msgType == SetAlternateEvent:
+            return SetAlternateState(self.qscore, event.alternateText,
+                                     event.measurePosition)
         else:
             return self
 
@@ -168,6 +178,9 @@ class ContextMenu(FsmState):
         elif msgType == StartPlaying:
             self.menu.close()
             return Playing(self.qscore)
+        elif msgType == SetAlternateEvent:
+            return SetAlternateState(self.qscore, event.alternateText,
+                                     event.measurePosition)
         else:
             return self
 
@@ -253,6 +266,9 @@ class MeasureLineContextMenuState(FsmState):
         elif msgType == StartPlaying:
             self.menu.close()
             return Playing(self.qscore)
+        elif msgType == ChangeRepeatCount:
+            return RepeatCountState(self.qscore, event.repeatCount,
+                                    event.measurePosition)
         else:
             return self
 
@@ -264,40 +280,83 @@ class Playing(FsmState):
         else:
             return self
 
-class EditMeasurePropertiesState(FsmState):
-    def __init__(self, qscore, counter, counterRegistry, measurePosition):
-        super(EditMeasurePropertiesState, self).__init__(qscore)
-        self.counter = counter
+class DialogState(FsmState):
+    def __init__(self, qscore, measurePosition):
+        super(DialogState, self).__init__(qscore)
         self.measurePosition = measurePosition
-        defCounter = qscore.defaultCount
-        self.editDialog = QEditMeasureDialog(counter,
-                                             defCounter,
-                                             counterRegistry,
-                                             qscore.parent())
-        self.editDialog.accepted.connect(self._accepted)
-        self.editDialog.rejected.connect(self._rejected)
-        QtCore.QTimer.singleShot(0, self.editDialog.exec_)
+        self.dialog = None
+
+    def setupDialog(self, dialog):
+        self.dialog = dialog
+        self.dialog.accepted.connect(self._accepted)
+        self.dialog.rejected.connect(self._rejected)
+        QtCore.QTimer.singleShot(0, self.dialog.exec_)
 
     def _accepted(self):
-        newCounter = self.editDialog.getValues()
+        self.qscore.sendFsmEvent(MenuSelect())
+
+    def _rejected(self):
+        self.qscore.sendFsmEvent(MenuCancel())
+
+    def send(self, event):
+        msgType = type(event)
+        if msgType == StartPlaying:
+            self.dialog.reject()
+            return Playing(self.qscore)
+        elif msgType == MenuSelect:
+            return Waiting(self.qscore)
+        elif msgType == MenuCancel:
+            return Waiting(self.qscore)
+        else:
+            return self
+
+class EditMeasurePropertiesState(DialogState):
+    def __init__(self, qscore, counter, counterRegistry, measurePosition):
+        super(EditMeasurePropertiesState, self).__init__(qscore,
+                                                         measurePosition)
+        self.counter = counter
+        defCounter = qscore.defaultCount
+        dialog = QEditMeasureDialog(counter, defCounter,
+                                    counterRegistry, qscore.parent())
+        self.setupDialog(dialog)
+
+    def _accepted(self):
+        newCounter = self.dialog.getValues()
         if (newCounter.countString() != self.counter.countString()):
             command = EditMeasurePropertiesCommand(self.qscore,
                                                    self.measurePosition,
                                                    newCounter)
             self.qscore.addCommand(command)
-        self.qscore.sendFsmEvent(MenuSelect())
+        super(EditMeasurePropertiesState, self)._accepted()
 
-    def _rejected(self):
-        self.qscore.sendFsmEvent(MenuSelect())
+class RepeatCountState(DialogState):
+    def __init__(self, qscore, repeatCount, position):
+        super(RepeatCountState, self).__init__(qscore, position)
+        self.oldCount = repeatCount
+        dialog = QRepeatCountDialog(self.oldCount, qscore.parent())
+        self.setupDialog(dialog)
 
-    def send(self, event):
-        msgType = type(event)
-        if msgType == StartPlaying:
-            self.editDialog.reject()
-            return Playing(self.qscore)
-        elif msgType == MenuSelect:
-            return Waiting(self.qscore)
-        else:
-            return self
+    def _accepted(self):
+        newCount = self.dialog.getValue()
+        if self.oldCount != newCount:
+            command = SetRepeatCountCommand(self.qscore,
+                                            self.measurePosition,
+                                            self.oldCount,
+                                            newCount)
+            self.qscore.addCommand(command)
+        super(RepeatCountState, self)._accepted()
 
+class SetAlternateState(DialogState):
+    def __init__(self, qscore, alternateText, position):
+        super(SetAlternateState, self).__init__(qscore, position)
+        self.oldText = alternateText
+        altDialog = QAlternateDialog(alternateText, qscore.parent())
+        self.setupDialog(altDialog)
 
+    def _accepted(self):
+        newText = self.dialog.getValue()
+        if self.oldText != newText:
+            command = SetAlternateCommand(self.qscore, self.measurePosition,
+                                          newText)
+            self.qscore.addCommand(command)
+        super(SetAlternateState, self)._accepted()

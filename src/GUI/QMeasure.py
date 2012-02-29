@@ -28,13 +28,12 @@ from PyQt4 import QtGui, QtCore
 from Data.NotePosition import NotePosition
 from Data import DBConstants
 
-from DBCommands import (SetRepeatCountCommand,
-                        SetAlternateCommand)
-from DBFSM import (LeftPress, MidPress, RightPress,
-                   EditMeasureProperties,
-                   MouseMove, MouseRelease)
-from QRepeatCountDialog import QRepeatCountDialog
-from QAlternateDialog import QAlternateDialog
+from DBFSMEvents import (LeftPress, MidPress, RightPress,
+                         EditMeasureProperties,
+                         MouseMove, MouseRelease,
+                         ChangeRepeatCount,
+                         SetAlternateEvent)
+
 
 class QMeasure(QtGui.QGraphicsItem):
     '''
@@ -225,17 +224,6 @@ class QMeasure(QtGui.QGraphicsItem):
         self._setDimensions()
         self.update()
 
-    def changeRepeatCount(self):
-        repDialog = QRepeatCountDialog(self._measure.repeatCount,
-                                       self._qScore.parent())
-        if (repDialog.exec_()
-            and self._measure.repeatCount != repDialog.getValue()):
-            command = SetRepeatCountCommand(self._qScore,
-                                            self._measurePosition(),
-                                            self._measure.repeatCount,
-                                            repDialog.getValue())
-            self._qScore.addCommand(command)
-
     def _isOverNotes(self, point):
         return (1 <= (point.y() / self._qScore.ySpacing)
                 < (1 + self.numLines()))
@@ -336,7 +324,8 @@ class QMeasure(QtGui.QGraphicsItem):
                                                             self._props.counterRegistry,
                                                             self._measurePosition()))
         elif self._isOverRepeatCount(point):
-            self.changeRepeatCount()
+            self._qScore.sendFsmEvent(ChangeRepeatCount(self._measure.repeatCount,
+                                                        self._measurePosition()))
         elif self._isOverAlternate(point):
             self.setAlternate()
         else:
@@ -353,13 +342,8 @@ class QMeasure(QtGui.QGraphicsItem):
         return self.parentItem().augmentNotePosition(np)
 
     def setAlternate(self):
-        altDialog = QAlternateDialog(self._measure.alternateText,
-                                     self._qScore.parent())
-        if (altDialog.exec_()
-            and self._measure.alternateText != altDialog.getValue()):
-            command = SetAlternateCommand(self._qScore, self._measurePosition(),
-                                          altDialog.getValue())
-            self._qScore.addCommand(command)
+        self._qScore.sendFsmEvent(SetAlternateEvent(self._measure.alternateText,
+                                                    self._measurePosition()))
 
     def setPlaying(self, onOff):
         self._playing = onOff

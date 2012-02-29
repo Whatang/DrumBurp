@@ -25,13 +25,14 @@ Created on Feb 26, 2012
 from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 from DBCommands import (SetSectionEndCommand, SetLineBreakCommand,
                         SetRepeatEndCommand, SetRepeatStartCommand)
-from DBFSMEvents import MenuSelect
+from DBFSMEvents import MenuSelect, ChangeRepeatCount
 
 class QMeasureLineContextMenu(QMenuIgnoreCancelClick):
     def __init__(self, qScore, lastMeasure, nextMeasure, endNotePosition, startNotePosition):
         super(QMeasureLineContextMenu, self).__init__(qScore)
         self._endNotePosition = endNotePosition
         self._startNotePosition = startNotePosition
+        self._lastMeasure = lastMeasure
         # Repeat Start
         if nextMeasure is not None:
             onOff = nextMeasure.isRepeatStart()
@@ -98,5 +99,5 @@ class QMeasureLineContextMenu(QMenuIgnoreCancelClick):
         self._qScore.sendFsmEvent(MenuSelect())
 
     def _setRepeatCount(self):
-        self._qScore.changeRepeatCount(self._endNotePosition)
-        self._qScore.sendFsmEvent(MenuSelect())
+        self._qScore.sendFsmEvent(ChangeRepeatCount(self._lastMeasure.repeatCount,
+                                                    self._endNotePosition))

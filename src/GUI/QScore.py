@@ -504,10 +504,6 @@ class QScore(QtGui.QGraphicsScene):
         self.addCommand(command)
         self.endMacro()
 
-    def changeRepeatCount(self, np):
-        qStaff = self._qStaffs[np.staffIndex]
-        qStaff.changeRepeatCount(np)
-
     def loadScore(self, filename, quiet = False):
         try:
             newScore = _SCORE_FACTORY(filename = filename)
