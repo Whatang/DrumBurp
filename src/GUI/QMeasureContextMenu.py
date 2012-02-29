@@ -135,6 +135,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         command = InsertMeasuresCommand(self._qScore, np, 1,
                                         mc)
         self._qScore.addCommand(command)
+        self._qScore.sendFsmEvent(MenuSelect())
 
     def _insertMeasureBefore(self):
         self._insertDefaultMeasure(self._np)
@@ -159,6 +160,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
             command = InsertMeasuresCommand(self._qScore, np, nMeasures,
                                             counter)
             self._qScore.addCommand(command)
+        self._qScore.sendFsmEvent(MenuSelect())
 
     def _copySection(self, sectionIndex):
         command = InsertSectionCommand(self._qScore, self._np, sectionIndex)
@@ -236,6 +238,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
 
     def _copyOneMeasure(self):
         self._qScore.copyMeasures(self._np)
+        self._qScore.sendFsmEvent(MenuSelect())
 
     def _copyMeasures(self):
         self._qScore.copyMeasures()
