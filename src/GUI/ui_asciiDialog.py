@@ -1,28 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Michael Thomas
+# Form implementation generated from reading ui file 'C:\Users\Mike\workspace\DrumBurp\src\GUI\asciiDialog.ui'
 #
-# See www.whatang.org for more information.
-#
-# This file is part of DrumBurp.
-#
-# DrumBurp is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# DrumBurp is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with DrumBurp.  If not, see <http://www.gnu.org/licenses/>
-
-# Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\asciiDialog.ui'
-#
-# Created: Sun Apr 17 16:05:19 2011
-#      by: PyQt4 UI code generator 4.8.1
+# Created: Sat Mar 03 22:59:53 2012
+#      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -42,11 +23,14 @@ class Ui_asciiDialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(asciiDialog.sizePolicy().hasHeightForWidth())
         asciiDialog.setSizePolicy(sizePolicy)
+        asciiDialog.setWindowTitle(QtGui.QApplication.translate("asciiDialog", "Export ASCII file", None, QtGui.QApplication.UnicodeUTF8))
         self.verticalLayout = QtGui.QVBoxLayout(asciiDialog)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.filenameButton = QtGui.QPushButton(asciiDialog)
+        self.filenameButton.setToolTip(QtGui.QApplication.translate("asciiDialog", "Click to select a new filename", None, QtGui.QApplication.UnicodeUTF8))
+        self.filenameButton.setText(QtGui.QApplication.translate("asciiDialog", "Filename:", None, QtGui.QApplication.UnicodeUTF8))
         self.filenameButton.setObjectName(_fromUtf8("filenameButton"))
         self.horizontalLayout.addWidget(self.filenameButton)
         self.filenameLabel = QtGui.QLabel(asciiDialog)
@@ -55,7 +39,9 @@ class Ui_asciiDialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.filenameLabel.sizePolicy().hasHeightForWidth())
         self.filenameLabel.setSizePolicy(sizePolicy)
+        self.filenameLabel.setToolTip(QtGui.QApplication.translate("asciiDialog", "The filename to export this score to", None, QtGui.QApplication.UnicodeUTF8))
         self.filenameLabel.setFrameShape(QtGui.QFrame.NoFrame)
+        self.filenameLabel.setText(QtGui.QApplication.translate("asciiDialog", "Filename", None, QtGui.QApplication.UnicodeUTF8))
         self.filenameLabel.setObjectName(_fromUtf8("filenameLabel"))
         self.horizontalLayout.addWidget(self.filenameLabel)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
@@ -64,39 +50,53 @@ class Ui_asciiDialog(object):
         self.gridLayout = QtGui.QGridLayout()
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.metadataCheck = QtGui.QCheckBox(asciiDialog)
+        self.metadataCheck.setToolTip(QtGui.QApplication.translate("asciiDialog", "Export the song information", None, QtGui.QApplication.UnicodeUTF8))
+        self.metadataCheck.setText(QtGui.QApplication.translate("asciiDialog", "Song info (Title, artist, etc.)", None, QtGui.QApplication.UnicodeUTF8))
         self.metadataCheck.setChecked(True)
         self.metadataCheck.setObjectName(_fromUtf8("metadataCheck"))
         self.gridLayout.addWidget(self.metadataCheck, 0, 0, 1, 1)
         self.underlineCheck = QtGui.QCheckBox(asciiDialog)
+        self.underlineCheck.setToolTip(QtGui.QApplication.translate("asciiDialog", "Underline each section title", None, QtGui.QApplication.UnicodeUTF8))
+        self.underlineCheck.setText(QtGui.QApplication.translate("asciiDialog", "Underline section titles with ~ characters", None, QtGui.QApplication.UnicodeUTF8))
         self.underlineCheck.setChecked(True)
         self.underlineCheck.setObjectName(_fromUtf8("underlineCheck"))
         self.gridLayout.addWidget(self.underlineCheck, 0, 1, 1, 1)
         self.kitKeyCheck = QtGui.QCheckBox(asciiDialog)
+        self.kitKeyCheck.setToolTip(QtGui.QApplication.translate("asciiDialog", "Export the drum kit key", None, QtGui.QApplication.UnicodeUTF8))
+        self.kitKeyCheck.setText(QtGui.QApplication.translate("asciiDialog", "Drum kit key", None, QtGui.QApplication.UnicodeUTF8))
         self.kitKeyCheck.setChecked(True)
         self.kitKeyCheck.setObjectName(_fromUtf8("kitKeyCheck"))
         self.gridLayout.addWidget(self.kitKeyCheck, 2, 0, 1, 1)
         self.omitEmptyCheck = QtGui.QCheckBox(asciiDialog)
+        self.omitEmptyCheck.setToolTip(QtGui.QApplication.translate("asciiDialog", "Empty lines for unlocked drums are not written to the ASCII tab", None, QtGui.QApplication.UnicodeUTF8))
+        self.omitEmptyCheck.setText(QtGui.QApplication.translate("asciiDialog", "Omit empty lines for unlocked drums", None, QtGui.QApplication.UnicodeUTF8))
         self.omitEmptyCheck.setChecked(True)
         self.omitEmptyCheck.setObjectName(_fromUtf8("omitEmptyCheck"))
         self.gridLayout.addWidget(self.omitEmptyCheck, 3, 0, 1, 1)
         self.printCountsCheck = QtGui.QCheckBox(asciiDialog)
+        self.printCountsCheck.setToolTip(QtGui.QApplication.translate("asciiDialog", "Export the beat count underneath each measure", None, QtGui.QApplication.UnicodeUTF8))
+        self.printCountsCheck.setText(QtGui.QApplication.translate("asciiDialog", "Beat count", None, QtGui.QApplication.UnicodeUTF8))
         self.printCountsCheck.setChecked(True)
         self.printCountsCheck.setObjectName(_fromUtf8("printCountsCheck"))
         self.gridLayout.addWidget(self.printCountsCheck, 4, 0, 1, 1)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem1, 2, 2, 1, 1)
         self.emptyLineAfterSectionCheck = QtGui.QCheckBox(asciiDialog)
+        self.emptyLineAfterSectionCheck.setToolTip(QtGui.QApplication.translate("asciiDialog", "Include a blank line after each section title", None, QtGui.QApplication.UnicodeUTF8))
+        self.emptyLineAfterSectionCheck.setText(QtGui.QApplication.translate("asciiDialog", "Empty line after section title", None, QtGui.QApplication.UnicodeUTF8))
         self.emptyLineAfterSectionCheck.setChecked(True)
         self.emptyLineAfterSectionCheck.setObjectName(_fromUtf8("emptyLineAfterSectionCheck"))
         self.gridLayout.addWidget(self.emptyLineAfterSectionCheck, 3, 1, 1, 1)
         self.emptyLineBeforeSectionCheck = QtGui.QCheckBox(asciiDialog)
+        self.emptyLineBeforeSectionCheck.setToolTip(QtGui.QApplication.translate("asciiDialog", "Include a blank line before each section title", None, QtGui.QApplication.UnicodeUTF8))
+        self.emptyLineBeforeSectionCheck.setText(QtGui.QApplication.translate("asciiDialog", "Empty line before section title", None, QtGui.QApplication.UnicodeUTF8))
         self.emptyLineBeforeSectionCheck.setChecked(True)
         self.emptyLineBeforeSectionCheck.setObjectName(_fromUtf8("emptyLineBeforeSectionCheck"))
         self.gridLayout.addWidget(self.emptyLineBeforeSectionCheck, 2, 1, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         self.buttonBox = QtGui.QDialogButtonBox(asciiDialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel | QtGui.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
         self.verticalLayout.addWidget(self.buttonBox)
 
@@ -106,14 +106,5 @@ class Ui_asciiDialog(object):
         QtCore.QMetaObject.connectSlotsByName(asciiDialog)
 
     def retranslateUi(self, asciiDialog):
-        asciiDialog.setWindowTitle(QtGui.QApplication.translate("asciiDialog", "Export ASCII file", None, QtGui.QApplication.UnicodeUTF8))
-        self.filenameButton.setText(QtGui.QApplication.translate("asciiDialog", "Filename:", None, QtGui.QApplication.UnicodeUTF8))
-        self.filenameLabel.setText(QtGui.QApplication.translate("asciiDialog", "Filename", None, QtGui.QApplication.UnicodeUTF8))
-        self.metadataCheck.setText(QtGui.QApplication.translate("asciiDialog", "Song metadata (Title, artist, etc.)", None, QtGui.QApplication.UnicodeUTF8))
-        self.underlineCheck.setText(QtGui.QApplication.translate("asciiDialog", "Underline section titles with ~ characters", None, QtGui.QApplication.UnicodeUTF8))
-        self.kitKeyCheck.setText(QtGui.QApplication.translate("asciiDialog", "Drum kit key", None, QtGui.QApplication.UnicodeUTF8))
-        self.omitEmptyCheck.setText(QtGui.QApplication.translate("asciiDialog", "Omit empty lines for unlocked drums", None, QtGui.QApplication.UnicodeUTF8))
-        self.printCountsCheck.setText(QtGui.QApplication.translate("asciiDialog", "Beat count", None, QtGui.QApplication.UnicodeUTF8))
-        self.emptyLineAfterSectionCheck.setText(QtGui.QApplication.translate("asciiDialog", "Empty line after section title", None, QtGui.QApplication.UnicodeUTF8))
-        self.emptyLineBeforeSectionCheck.setText(QtGui.QApplication.translate("asciiDialog", "Empty line before section title", None, QtGui.QApplication.UnicodeUTF8))
+        pass
 

@@ -72,6 +72,11 @@
          <property name="statusTip">
           <string>Select the page size</string>
          </property>
+         <property name="whatsThis">
+          <string>Set the page size.
+
+The page size determines the number of pages used by the current font size and score width settings, as well as affecting printing and PDF export.</string>
+         </property>
          <item>
           <property name="text">
            <string>A4</string>
@@ -106,7 +111,16 @@
           <string>Score width</string>
          </property>
          <property name="statusTip">
-          <string>The number of columns to display the Score on</string>
+          <string>The number of columns to display the score with</string>
+         </property>
+         <property name="whatsThis">
+          <string>The score width
+
+The score width is the number of columns used to display the current score. DrumBurp will try to add each measure to a staff until the score width is reached, then following measure will be added to the next staff. 
+
+The score width can be whatever you want it to be. When you're creating a score, you might want to use as much screen real estate as possible, so you could use the 'Fit to Window' option. 
+
+However, when you print, or export to PDF/ASCII, you might want the width to be something which fits on a page: use the 'Fit to Page' option then.</string>
          </property>
          <property name="minimum">
           <number>10</number>
@@ -171,7 +185,12 @@
                 <string>Inter-staff distance</string>
                </property>
                <property name="statusTip">
-                <string>The distance between each staff in the Score</string>
+                <string>The distance between each staff in the score</string>
+               </property>
+               <property name="whatsThis">
+                <string>Change the distance between each staff in the score.
+
+Each staff in the score is placed by DrumBurp with a certain amount of space separating them. You can adjust how much space is used with this slider.</string>
                </property>
                <property name="maximum">
                 <number>100</number>
@@ -232,6 +251,11 @@
             <property name="statusTip">
              <string>The default count to use for new measures</string>
             </property>
+            <property name="whatsThis">
+             <string>Display and edit the default measure count.
+
+A score has a default measure count: this is the count that is given to new measures by default. This count is displayed here. You can change the default count with the dialog that comes up when you click here.</string>
+            </property>
             <property name="text">
              <string>MeasureCount</string>
             </property>
@@ -258,6 +282,11 @@
          <property name="statusTip">
           <string>Adjust the fonts used by this score</string>
          </property>
+         <property name="whatsThis">
+          <string>Show/hide the font selection window.
+
+The font window is a floating dialog that you can use to adjust the fonts used to display the score. This button shows/hides it when you toggle it.</string>
+         </property>
          <property name="text">
           <string>Fonts...</string>
          </property>
@@ -280,6 +309,11 @@
          </property>
          <property name="statusTip">
           <string>Quickly jump to a section of the score</string>
+         </property>
+         <property name="whatsThis">
+          <string>Section navigator
+
+Sections in the score are defined by a section end barline, and the title that appears before it. You can quickly jump to the beginning of any section defined in the current score by selecting it from this drop down box.</string>
          </property>
          <property name="sizeAdjustPolicy">
           <enum>QComboBox::AdjustToContents</enum>
@@ -304,6 +338,14 @@
        </item>
        <item>
         <widget class="QLabel" name="pagesLabel">
+         <property name="toolTip">
+          <string>Number of pages in this score</string>
+         </property>
+         <property name="whatsThis">
+          <string>The number of pages in this score.
+
+The number of pages used by this score depends on the score width, the font size and the current page size selected. The number of pages being used with the current settings is displayed here.</string>
+         </property>
          <property name="text">
           <string>0 Pages</string>
          </property>
@@ -335,6 +377,17 @@
       </property>
       <property name="acceptDrops">
        <bool>false</bool>
+      </property>
+      <property name="whatsThis">
+       <string>The score editing window.
+
+This window displays the current score, and allows you to edit.
+
+To add a note, just click where you want it to appear. To add a note with a different symbol, middle-click and select from the menu. For other operations, right-click on notes, measures and measure lines: a context menu will tell you what you can do.
+
+To edit nearly anything else, double click on it: the count of a measure, repeat markers, score information, the drumkit.
+
+To select a measure/measures, click and drag: selected measures can be copy/pasted, deleted, cleared, and more.</string>
       </property>
       <property name="lineWidth">
        <number>1</number>
@@ -445,6 +498,7 @@
      <string>Help</string>
     </property>
     <addaction name="actionWhatsThis"/>
+    <addaction name="separator"/>
     <addaction name="actionAboutDrumBurp"/>
    </widget>
    <addaction name="menuFile"/>
@@ -598,6 +652,23 @@ p, li { white-space: pre-wrap; }
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
       <widget class="QGroupBox" name="groupBox_4">
+       <property name="toolTip">
+        <string>Change the font used to display notes</string>
+       </property>
+       <property name="statusTip">
+        <string>Change the font used to display notes</string>
+       </property>
+       <property name="whatsThis">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Change the font used to display notes&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;The score editing window uses this setting to display the notes in the score. Changing the font and/or size here will affect how these are displayed.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;This setting is also used to determine the font for: the drum key; the measure counts; and the drum name abbreviations at the left hand side of each staff.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="title">
         <string>Note Font</string>
        </property>
@@ -691,6 +762,17 @@ p, li { white-space: pre-wrap; }
      </item>
      <item>
       <widget class="QGroupBox" name="groupBox_5">
+       <property name="toolTip">
+        <string>Change the font used to display section titles</string>
+       </property>
+       <property name="statusTip">
+        <string>Change the font used to display section titles</string>
+       </property>
+       <property name="whatsThis">
+        <string>Change the font used to display section titles
+
+The score editing window uses the font selected here to display the section titles in the score.</string>
+       </property>
        <property name="title">
         <string>Section Title Font</string>
        </property>
@@ -784,8 +866,19 @@ p, li { white-space: pre-wrap; }
      </item>
      <item>
       <widget class="QGroupBox" name="groupBox_6">
+       <property name="toolTip">
+        <string>Change the font used to display the score information</string>
+       </property>
+       <property name="statusTip">
+        <string>Change the font used to display the score information</string>
+       </property>
+       <property name="whatsThis">
+        <string>Change the font used to display the score information
+
+The score editing window uses the font selected here to display the score information: the song title, artist name, tabber name and BPM.</string>
+       </property>
        <property name="title">
-        <string>Song Properties Font</string>
+        <string>Song Information Font</string>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
@@ -926,6 +1019,13 @@ p, li { white-space: pre-wrap; }
    <property name="statusTip">
     <string>Create a new blank score</string>
    </property>
+   <property name="whatsThis">
+    <string>Clicking this button will create a new blank score. 
+
+You'll get the option to save the current score if there are any unsaved changes, or to cancel this operation.
+
+You'll be asked how you want the new score set up, then it will appear in the editing window.</string>
+   </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
    </property>
@@ -944,6 +1044,13 @@ p, li { white-space: pre-wrap; }
    <property name="statusTip">
     <string>Load a saved DrumBurp score</string>
    </property>
+   <property name="whatsThis">
+    <string>Load a score from a .brp file.
+
+If you have any unsaved changes, you'll be asked if you want to cancel this operation, or if you want to save the changes and proceed.
+
+You'll then be asked to pick a .brp file from your hard drive. DrumBurp will try to load it and then display it in the editing window.</string>
+   </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
    </property>
@@ -958,6 +1065,11 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="statusTip">
     <string>Save this DrumBurp score</string>
+   </property>
+   <property name="whatsThis">
+    <string>Save the current score to a file on disk.
+
+If you've previously saved this score, any new changes will be written to the same file. If you haven't saved it before, you'll be asked to pick a file to save the score to. You'll then be able to open this score in DrumBurp again in the future for further editing.</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -974,6 +1086,11 @@ p, li { white-space: pre-wrap; }
    <property name="statusTip">
     <string>Save this DrumBurp score with a new name</string>
    </property>
+   <property name="whatsThis">
+    <string>Save this score to a new file.
+
+If you've saved this score before, and you now want to save it to a different file, use this option. You'll be asked to pick or create a new .brp file to save to.</string>
+   </property>
   </action>
   <action name="actionExportASCII">
    <property name="icon">
@@ -987,12 +1104,13 @@ p, li { white-space: pre-wrap; }
     <string>Write an ASCII representation of this score to a file</string>
    </property>
    <property name="whatsThis">
-    <string>Export this Score to an ASCII file.
-
-Writes this Score as a plain .txt file.</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+E</string>
+    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Export this Score to an ASCII file.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Writes this Score as a plain .txt file. You'll see a dialog with options regarding exactly how the score is exported.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </action>
   <action name="actionDisplayOptionsIsVisible">
@@ -1003,10 +1121,10 @@ Writes this Score as a plain .txt file.</string>
     <string>Choose Fonts...</string>
    </property>
    <property name="toolTip">
-    <string>Change visibility of display options</string>
+    <string>Toggle visibility of font window</string>
    </property>
    <property name="statusTip">
-    <string>Change visibility of display options</string>
+    <string>Toggle display of font window</string>
    </property>
   </action>
   <action name="actionFileToolbarIsVisible">
@@ -1020,7 +1138,7 @@ Writes this Score as a plain .txt file.</string>
     <string>Change visibility of File tool bar</string>
    </property>
    <property name="statusTip">
-    <string>Change visibility of tool bar</string>
+    <string>Change visibility of File tool bar</string>
    </property>
   </action>
   <action name="actionFitInWindow">
@@ -1031,8 +1149,18 @@ Writes this Score as a plain .txt file.</string>
    <property name="text">
     <string>Fit Window</string>
    </property>
+   <property name="toolTip">
+    <string>Fit score in window</string>
+   </property>
    <property name="statusTip">
     <string>Attempt to make the score as wide as possible within the current window.</string>
+   </property>
+   <property name="whatsThis">
+    <string>Try to make the score fit in the editing window.
+
+The score width defines how many columns are displayed in the editing window. Selecting this operation tries to set the score width to as many columns as possible so that they will all be visible in the editing window.
+
+Note: if you subsequently change the window size, you'll need to select this operation again to fit the score in the window.</string>
    </property>
   </action>
   <action name="actionToolbars">
@@ -1050,6 +1178,9 @@ Writes this Score as a plain .txt file.</string>
    <property name="toolTip">
     <string>Change visibility of Display tool bar</string>
    </property>
+   <property name="statusTip">
+    <string>Change visibility of Display tool bar</string>
+   </property>
   </action>
   <action name="actionPrint">
    <property name="enabled">
@@ -1063,7 +1194,15 @@ Writes this Score as a plain .txt file.</string>
     <string>Print</string>
    </property>
    <property name="toolTip">
-    <string>Print this Score</string>
+    <string>Print this score</string>
+   </property>
+   <property name="statusTip">
+    <string>Print this score</string>
+   </property>
+   <property name="whatsThis">
+    <string>Print the score.
+
+Selecting this option will try to print the score to whatever printer you choose. You'll see a print preview dialog before printing occurs; you can use this to check that you're going to get what you expect.</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
@@ -1080,6 +1219,14 @@ Writes this Score as a plain .txt file.</string>
    <property name="toolTip">
     <string>Get help on DrumBurp elements</string>
    </property>
+   <property name="statusTip">
+    <string>Get help on DrumBurp elements</string>
+   </property>
+   <property name="whatsThis">
+    <string>What's this?
+
+Get a little more help on any DrumBurp element. Select this option then click on something you want to know more about.</string>
+   </property>
    <property name="shortcut">
     <string>Shift+F1</string>
    </property>
@@ -1095,6 +1242,9 @@ Writes this Score as a plain .txt file.</string>
    <property name="toolTip">
     <string>Undo the last action</string>
    </property>
+   <property name="statusTip">
+    <string>Undo the last action</string>
+   </property>
    <property name="shortcut">
     <string>Ctrl+Z</string>
    </property>
@@ -1108,6 +1258,9 @@ Writes this Score as a plain .txt file.</string>
     <string>Redo</string>
    </property>
    <property name="toolTip">
+    <string>Redo the last undone action</string>
+   </property>
+   <property name="statusTip">
     <string>Redo the last undone action</string>
    </property>
    <property name="shortcut">
@@ -1128,6 +1281,11 @@ Writes this Score as a plain .txt file.</string>
    <property name="statusTip">
     <string>Export this score to a PDF file</string>
    </property>
+   <property name="whatsThis">
+    <string>Export this score to a PDF file.
+
+If you want to share the score you've written, it may be easier to do it as a PDF file. Select this option to write the score to a PDF: you'll see a print preview dialog before it exports, so you can check what you'll be getting.</string>
+   </property>
   </action>
   <action name="actionAboutDrumBurp">
    <property name="icon">
@@ -1136,6 +1294,14 @@ Writes this Score as a plain .txt file.</string>
    </property>
    <property name="text">
     <string>About DrumBurp</string>
+   </property>
+   <property name="statusTip">
+    <string>About DrumBurp</string>
+   </property>
+   <property name="whatsThis">
+    <string>More about DrumBurp.
+
+Tells you some info about where DrumBurp comes from and how it is made.</string>
    </property>
   </action>
   <action name="actionExportToolBarIsVisible">
@@ -1148,6 +1314,9 @@ Writes this Score as a plain .txt file.</string>
    <property name="toolTip">
     <string>Change visibility of Print &amp; Export Tool Bar</string>
    </property>
+   <property name="statusTip">
+    <string>Change visibility of Print &amp; Export Tool Bar</string>
+   </property>
   </action>
   <action name="actionHelpToolBarIsVisible">
    <property name="checkable">
@@ -1157,6 +1326,9 @@ Writes this Score as a plain .txt file.</string>
     <string>Help</string>
    </property>
    <property name="toolTip">
+    <string>Change the visibility of the Help Tool Bar</string>
+   </property>
+   <property name="statusTip">
     <string>Change the visibility of the Help Tool Bar</string>
    </property>
   </action>
@@ -1177,6 +1349,13 @@ Writes this Score as a plain .txt file.</string>
    <property name="statusTip">
     <string>Show or hide empty lines in the score.</string>
    </property>
+   <property name="whatsThis">
+    <string>Show/hide empty lines in the score.
+
+Some lines in the score won't have any notes on them. You may want to hide these lines in order to save space. Toggle this option to show/hide these empty lines.
+
+Drums which are &quot;locked&quot; in the drum kit definition are never hidden.</string>
+   </property>
   </action>
   <action name="actionShowDrumKey">
    <property name="checkable">
@@ -1190,7 +1369,15 @@ Writes this Score as a plain .txt file.</string>
     <string>Show Drum Key</string>
    </property>
    <property name="toolTip">
-    <string>Show Drum Key</string>
+    <string>Show/Hide Drum Key</string>
+   </property>
+   <property name="statusTip">
+    <string>Show/Hide Drum Key</string>
+   </property>
+   <property name="whatsThis">
+    <string>Show/hide the drum key.
+
+The drum key appears at the top of the score and shows the abbreviations and full names of each of the drums in the set. To edit the drums in the kit, double-click on the drum key, or on one of the drum name abbreviations at the left hand side of a system.</string>
    </property>
   </action>
   <action name="actionShowScoreInfo">
@@ -1207,6 +1394,19 @@ Writes this Score as a plain .txt file.</string>
    <property name="text">
     <string>Show Score Info</string>
    </property>
+   <property name="toolTip">
+    <string>Show/Hide score info</string>
+   </property>
+   <property name="statusTip">
+    <string>Show/Hide score information</string>
+   </property>
+   <property name="whatsThis">
+    <string>Toggle this option to show/hide the score information.
+
+The score information is the list of song name, artist name, tabber name and BPM shown at the top of the score. You can show/hide the whole thing with this option.
+
+If you just want to hide individual items in the score information, double-click on it, then tick/untick the items you want to show/hide in the dialog.</string>
+   </property>
   </action>
   <action name="actionShowBeatCount">
    <property name="checkable">
@@ -1222,6 +1422,14 @@ Writes this Score as a plain .txt file.</string>
    <property name="text">
     <string>Show Beat Count</string>
    </property>
+   <property name="statusTip">
+    <string>Show/hide the beat count below measures</string>
+   </property>
+   <property name="whatsThis">
+    <string>Show/hide the beat count.
+
+The beat count appears underneath each measure in the score. If you want to save space you may want to hide the count with this option.</string>
+   </property>
   </action>
   <action name="actionFitPage">
    <property name="icon">
@@ -1232,7 +1440,21 @@ Writes this Score as a plain .txt file.</string>
     <string>Fit Page...</string>
    </property>
    <property name="toolTip">
-    <string>Fit Score to Page</string>
+    <string>Fit score to page</string>
+   </property>
+   <property name="statusTip">
+    <string>Attempt to make the score as wide as possible within the current page size.</string>
+   </property>
+   <property name="whatsThis">
+    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Try to make the score fit in the currently selected page size.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;The score width defines how many columns are displayed in the editing window. Selecting this operation tries to set the score width to as many columns as possible so that they will fit in the page size currently selected. The number of columns that fits in a given page depends on the note font size.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Note: if you subsequently change the page size, you'll need to select this operation again to fit the score in the page.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </action>
   <action name="actionPlayScore">
@@ -1250,6 +1472,20 @@ Writes this Score as a plain .txt file.</string>
    <property name="toolTip">
     <string>Play this score through MIDI</string>
    </property>
+   <property name="statusTip">
+    <string>Play this score through MIDI</string>
+   </property>
+   <property name="whatsThis">
+    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Play this score through MIDI&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;The whole score is played through from start to finish through a MIDI interface. To stop playback, click this button again.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;To change the sound that each note makes, edit the MIDI settings for the drum kit by double-clicking on the drum key. Alternatively, double-click on the drum name abbreviations at the left hand side if each staff.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
   </action>
   <action name="actionMuteNotes">
    <property name="checkable">
@@ -1266,6 +1502,14 @@ Writes this Score as a plain .txt file.</string>
    <property name="toolTip">
     <string>Enable/disable note audio</string>
    </property>
+   <property name="statusTip">
+    <string>Enable/disable note audio</string>
+   </property>
+   <property name="whatsThis">
+    <string>Enable/disable note audio
+
+When a note is added to the score, a sound is played to indicate the note that was just added. This is useful to indicate when you may have hit a wrong note by mistake. If you want to turn this feedback off, click this option.</string>
+   </property>
   </action>
   <action name="actionExportMIDI">
    <property name="icon">
@@ -1278,6 +1522,14 @@ Writes this Score as a plain .txt file.</string>
    <property name="toolTip">
     <string>Export this score to a MIDI file</string>
    </property>
+   <property name="statusTip">
+    <string>Export this score to a MIDI file</string>
+   </property>
+   <property name="whatsThis">
+    <string>Export this score to a MIDI file
+
+The score you've created can be written out to a MIDI file. You can then use this as a standalone drum track with a MIDI player.</string>
+   </property>
   </action>
   <action name="actionMIDIToolBarIsVisible">
    <property name="checkable">
@@ -1289,6 +1541,9 @@ Writes this Score as a plain .txt file.</string>
    <property name="toolTip">
     <string>Change visibility of MIDI toolbar</string>
    </property>
+   <property name="statusTip">
+    <string>Change visibility of MIDI toolbar</string>
+   </property>
   </action>
   <action name="actionLoopBars">
    <property name="checkable">
@@ -1296,13 +1551,22 @@ Writes this Score as a plain .txt file.</string>
    </property>
    <property name="icon">
     <iconset resource="DrumBurp.qrc">
-     <normaloff>:/Icons/Icons/arrow-repeat.png</normaloff>:/Icons/Icons/arrow-repeat.png</iconset>
+     <normaloff>:/Icons/Icons/arrow-repeat.png</normaloff>
+     <normalon>:/Icons/Icons/media-playback-stop.png</normalon>:/Icons/Icons/arrow-repeat.png</iconset>
    </property>
    <property name="text">
     <string>Loop</string>
    </property>
    <property name="toolTip">
     <string>Play the selected bars in a constant loop</string>
+   </property>
+   <property name="statusTip">
+    <string>Play the selected bars in a constant loop</string>
+   </property>
+   <property name="whatsThis">
+    <string>Play the selected bars in a constant loop
+
+Plays back the currently selected measures in a constant loop: once the measures have finished playing back, playback is started again immediately. To stop playback, click this button again.</string>
    </property>
   </action>
   <action name="actionPlayOnce">
@@ -1311,13 +1575,22 @@ Writes this Score as a plain .txt file.</string>
    </property>
    <property name="icon">
     <iconset resource="DrumBurp.qrc">
-     <normaloff>:/Icons/Icons/arrow-repeat-once.png</normaloff>:/Icons/Icons/arrow-repeat-once.png</iconset>
+     <normaloff>:/Icons/Icons/arrow-repeat-once.png</normaloff>
+     <normalon>:/Icons/Icons/media-playback-stop.png</normalon>:/Icons/Icons/arrow-repeat-once.png</iconset>
    </property>
    <property name="text">
     <string>Play Once</string>
    </property>
    <property name="toolTip">
     <string>Play the selected measures once</string>
+   </property>
+   <property name="statusTip">
+    <string>Play the selected measures once</string>
+   </property>
+   <property name="whatsThis">
+    <string>Play the selected measures once
+
+Plays the currently selected measures back through MIDI. To stop playback, click this button again.</string>
    </property>
   </action>
   <action name="actionCopyMeasures">
@@ -1329,7 +1602,10 @@ Writes this Score as a plain .txt file.</string>
     <string>Copy Measures</string>
    </property>
    <property name="toolTip">
-    <string>Copy the currently selected measures</string>
+    <string>Copy the currently selected measures to the clipboard</string>
+   </property>
+   <property name="statusTip">
+    <string>Copy the currently selected measures to the clipboard</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
@@ -1355,7 +1631,10 @@ Writes this Score as a plain .txt file.</string>
     <string>Clear Measures</string>
    </property>
    <property name="toolTip">
-    <string>Clears the selected measures of all notes</string>
+    <string>Clear the selected measures of all notes</string>
+   </property>
+   <property name="statusTip">
+    <string>Clear the selected measures of all notes</string>
    </property>
    <property name="shortcut">
     <string>Del</string>
@@ -1370,7 +1649,10 @@ Writes this Score as a plain .txt file.</string>
     <string>Delete Measures</string>
    </property>
    <property name="toolTip">
-    <string>Deletes the currently selected measures</string>
+    <string>Delete the currently selected measures</string>
+   </property>
+   <property name="statusTip">
+    <string>Delete the currently selected measures</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Del</string>
@@ -1387,8 +1669,16 @@ Writes this Score as a plain .txt file.</string>
    <property name="toolTip">
     <string>Paste the copied measues enough times to fill the selected ones.</string>
    </property>
+   <property name="statusTip">
+    <string>Paste the copied measues enough times to fill the selected ones.</string>
+   </property>
    <property name="shortcut">
     <string>Ctrl+Shift+V</string>
+   </property>
+  </action>
+  <action name="actionOnline_Help">
+   <property name="text">
+    <string>Online Help</string>
    </property>
   </action>
  </widget>

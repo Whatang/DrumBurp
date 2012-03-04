@@ -25,6 +25,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="addButton">
+       <property name="toolTip">
+        <string>Add a new repeat</string>
+       </property>
        <property name="text">
         <string>Add</string>
        </property>

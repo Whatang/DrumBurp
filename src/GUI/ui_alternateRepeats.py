@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike\workspace\DrumBurp\src\GUI\alternateRepeats.ui'
 #
-# Created: Sat Feb 25 16:35:14 2012
+# Created: Sat Mar 03 22:59:53 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -28,6 +28,7 @@ class Ui_AlternateDialog(object):
         self.label.setObjectName(_fromUtf8("label"))
         self.horizontalLayout.addWidget(self.label)
         self.addButton = QtGui.QPushButton(AlternateDialog)
+        self.addButton.setToolTip(QtGui.QApplication.translate("AlternateDialog", "Add a new repeat", None, QtGui.QApplication.UnicodeUTF8))
         self.addButton.setText(QtGui.QApplication.translate("AlternateDialog", "Add", None, QtGui.QApplication.UnicodeUTF8))
         self.addButton.setObjectName(_fromUtf8("addButton"))
         self.horizontalLayout.addWidget(self.addButton)
