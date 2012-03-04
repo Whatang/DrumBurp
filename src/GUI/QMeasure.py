@@ -104,7 +104,8 @@ class QMeasure(QtGui.QGraphicsItem):
             lineHeight = baseline + (self._qScore.ySpacing / 2.0) - 1
             lineIndex = self.lineIndex(drumIndex)
             for noteTime, x in enumerate(xValues):
-                if drumIndex == self._potentialDrum and noteTime in self._potentialSet:
+                if (drumIndex == self._potentialDrum
+                    and noteTime in self._potentialSet):
                     text = self._potentialHead
                     potential = True
                     painter.setPen(QtGui.QColor(QtCore.Qt.blue))
@@ -333,12 +334,14 @@ class QMeasure(QtGui.QGraphicsItem):
         point = self.mapFromScene(event.scenePos())
         if self._isOverCount(point):
             counter = self._measure.counter
-            self._qScore.sendFsmEvent(EditMeasureProperties(counter,
-                                                            self._props.counterRegistry,
-                                                            self._measurePosition()))
+            fsmEvent = EditMeasureProperties(counter,
+                                             self._props.counterRegistry,
+                                             self._measurePosition())
+            self._qScore.sendFsmEvent(fsmEvent)
         elif self._isOverRepeatCount(point):
-            self._qScore.sendFsmEvent(ChangeRepeatCount(self._measure.repeatCount,
-                                                        self._measurePosition()))
+            fsmEvent = ChangeRepeatCount(self._measure.repeatCount,
+                                         self._measurePosition())
+            self._qScore.sendFsmEvent(fsmEvent)
         elif self._isOverAlternate(point):
             self.setAlternate()
         else:

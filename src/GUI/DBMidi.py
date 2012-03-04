@@ -29,7 +29,6 @@ import atexit
 import time
 import StringIO
 
-from PyQt4 import QtGui #IGNORE:W0611
 from PyQt4.QtCore import QTimer, pyqtSignal, QObject
 from Data.MeasureCount import MIDITICKSPERBEAT
 

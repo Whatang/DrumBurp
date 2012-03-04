@@ -103,10 +103,11 @@ class QMeasureLine(QtGui.QGraphicsItem):
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.RightButton:
             event.accept()
-            self._qScore.sendFsmEvent(MeasureLineContext(self._lastMeasure, self._nextMeasure,
-                                                         self._getEndNotePosition(),
-                                                         self._getStartNotePosition(),
-                                                         event.screenPos()))
+            fsmEvent = MeasureLineContext(self._lastMeasure, self._nextMeasure,
+                                          self._getEndNotePosition(),
+                                          self._getStartNotePosition(),
+                                          event.screenPos())
+            self._qScore.sendFsmEvent(fsmEvent)
         else:
             event.ignore()
 

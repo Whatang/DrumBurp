@@ -41,7 +41,7 @@ from DBCommands import (MetaDataCommand, ScoreWidthCommand,
                         SetVisibilityCommand)
 import DBMidi
 import functools
-from DBFSM import *
+from DBFSM import Waiting, Escape
 _SCORE_FACTORY = ScoreFactory()
 
 def delayCall(method):
@@ -732,10 +732,14 @@ class QScore(QtGui.QGraphicsScene):
 
     def setPotentialRepeatNotes(self, notes, head):
         newMeasures = [(np.staffIndex, np.measureIndex) for np in notes]
-        notesByMeasures = dict((x, list(y)) for x, y in itertools.groupby(notes, lambda np: (np.staffIndex, np.measureIndex)))
+        notesByMeasures = dict((x, list(y)) for x, y in
+                               itertools.groupby(notes,
+                                                 lambda np: (np.staffIndex,
+                                                             np.measureIndex)))
         for measure in self._potentials:
             if measure not in notesByMeasures:
-                qmeasure = self.getQMeasure(NotePosition(measure[0], measure[1]))
+                qmeasure = self.getQMeasure(NotePosition(measure[0],
+                                                         measure[1]))
                 qmeasure.setPotentials()
         for measure in newMeasures:
             qmeasure = self.getQMeasure(NotePosition(measure[0], measure[1]))

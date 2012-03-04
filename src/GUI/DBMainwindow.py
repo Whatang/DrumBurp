@@ -555,7 +555,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     def _canPlayback(self):
         try:
-            measures = list(self.scoreScene.score.iterMeasuresWithRepeats())
+            unused = list(self.scoreScene.score.iterMeasuresWithRepeats())
         except InconsistentRepeats, exc:
             QMessageBox.warning(self, "Playback error",
                                 "There are inconsistent repeat markings.")

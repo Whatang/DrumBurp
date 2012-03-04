@@ -22,8 +22,6 @@ Created on 12 Mar 2011
 @author: Mike Thomas
 
 '''
-from PyQt4.QtGui import QApplication
-
 from QMetaDataDialog import QMetadataDialog
 from QGraphicsListData import QGraphicsListData
 

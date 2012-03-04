@@ -165,16 +165,16 @@ class Score(object):
 
     def iterMeasuresWithRepeats(self):
         measures = list(self.iterMeasures())
-        alternateIndexes = {}
+        alternates = {}
         repeatData = {}
         repeatStart = -1
         for index, measure in enumerate(measures):
             if measure.alternateText:
-                alternateIndexes[index] = self._readAlternates(measure.alternateText)
+                alternates[index] = self._readAlternates(measure.alternateText)
         for index, measure in enumerate(measures):
             if measure.isRepeatStart():
                 repeatData[index] = self._findRepeatData(measures, index,
-                                                         alternateIndexes)
+                                                         alternates)
         index = 0
         repeatStart = 0
         repeatNum = -1
@@ -188,8 +188,8 @@ class Score(object):
                 repeatStart = index
                 afterRepeat, numRepeats = repeatData[index]
                 repeatNum += 1
-            if index in alternateIndexes and repeatNum > -1:
-                theseAlternates = alternateIndexes[index]
+            if index in alternates and repeatNum > -1:
+                theseAlternates = alternates[index]
                 alternateStarts.update((aStart, index) for aStart
                                        in theseAlternates)
                 if repeatNum + 1 not in theseAlternates:
@@ -637,7 +637,8 @@ class Score(object):
         return pos
 
     def tickDifference(self, second, first):
-        """Calculates the difference in ticks between NotePositions first and second.
+        """Calculate the difference in ticks between NotePositions first and 
+        second.
         """
         current = copy.copy(first)
         current.noteTime = None

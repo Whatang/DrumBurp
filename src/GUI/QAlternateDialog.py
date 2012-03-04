@@ -59,10 +59,12 @@ class QAlternateDialog(QtGui.QDialog, Ui_AlternateDialog):
             self._checkButtons()
 
     def _addRepeat(self, startVal, endVal, isRange):
-        newWidget = QAlternateWidget(startVal, endVal, isRange, self.repeatsFrame)
+        newWidget = QAlternateWidget(startVal, endVal,
+                                     isRange, self.repeatsFrame)
         self._repeats.append(newWidget)
         self.repeatsLayout.addWidget(newWidget)
-        newWidget.deleteButton.clicked.connect(lambda value, widget = newWidget : self.deleteRepeat(widget))
+        callback = lambda value, widget = newWidget : self.deleteRepeat(widget)
+        newWidget.deleteButton.clicked.connect(callback)
 
     def deleteRepeat(self, widget):
         if widget not in self._repeats:

@@ -28,7 +28,8 @@ from DBCommands import (SetSectionEndCommand, SetLineBreakCommand,
 from DBFSMEvents import MenuSelect, ChangeRepeatCount
 
 class QMeasureLineContextMenu(QMenuIgnoreCancelClick):
-    def __init__(self, qScore, lastMeasure, nextMeasure, endNotePosition, startNotePosition):
+    def __init__(self, qScore, lastMeasure, nextMeasure,
+                 endNotePosition, startNotePosition):
         super(QMeasureLineContextMenu, self).__init__(qScore)
         self._endNotePosition = endNotePosition
         self._startNotePosition = startNotePosition
@@ -99,5 +100,6 @@ class QMeasureLineContextMenu(QMenuIgnoreCancelClick):
         self._qScore.sendFsmEvent(MenuSelect())
 
     def _setRepeatCount(self):
-        self._qScore.sendFsmEvent(ChangeRepeatCount(self._lastMeasure.repeatCount,
-                                                    self._endNotePosition))
+        fsmEvent = ChangeRepeatCount(self._lastMeasure.repeatCount,
+                                     self._endNotePosition)
+        self._qScore.sendFsmEvent(fsmEvent)
