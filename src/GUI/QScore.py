@@ -24,12 +24,14 @@ Created on 4 Jan 2011
 '''
 
 from PyQt4 import QtGui, QtCore
+import itertools
 from QStaff import QStaff
 from QSection import QSection
 from QMeasure import QMeasure
 from QMetaData import QMetaData
 from QKitData import QKitData
 from Data.Score import ScoreFactory
+from Data.NotePosition import NotePosition
 from DBCommands import (MetaDataCommand, ScoreWidthCommand,
                         DeleteMeasureCommand, InsertAndPasteMeasures,
                         ClearMeasureCommand, PasteMeasuresCommand,
@@ -107,6 +109,7 @@ class QScore(QtGui.QGraphicsScene):
         self.spacingChanged.connect(parent.setSystemSpacing)
         self.sectionsChanged.connect(parent.setSections)
         self._properties.connectScore(self)
+        self._potentials = []
         self._state = Waiting(self)
 
     canUndoChanged = QtCore.pyqtSignal(bool)
@@ -723,9 +726,23 @@ class QScore(QtGui.QGraphicsScene):
         return _metaChangeContext(self, self._metaData)
 
     def sendFsmEvent(self, event):
-        print self._state, event
+#        print self._state, event
         self._state = self._state.send(event)
-        print self._state
+#        print self._state
+
+    def setPotentialRepeatNotes(self, notes, head):
+        newMeasures = [(np.staffIndex, np.measureIndex) for np in notes]
+        notesByMeasures = dict((x, list(y)) for x, y in itertools.groupby(notes, lambda np: (np.staffIndex, np.measureIndex)))
+        for measure in self._potentials:
+            if measure not in notesByMeasures:
+                qmeasure = self.getQMeasure(NotePosition(measure[0], measure[1]))
+                qmeasure.setPotentials()
+        for measure in newMeasures:
+            qmeasure = self.getQMeasure(NotePosition(measure[0], measure[1]))
+            notes = notesByMeasures[measure]
+            qmeasure.setPotentials(notes, head)
+        self._potentials = newMeasures
+
 
 class _metaChangeContext(object):
     def __init__(self, qScore, metaData):

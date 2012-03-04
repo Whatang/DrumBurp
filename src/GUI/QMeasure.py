@@ -58,6 +58,10 @@ class QMeasure(QtGui.QGraphicsItem):
         self._alternate = None
         self._playing = False
         self._dragHighlight = False
+        self._potentials = []
+        self._potentialDrum = None
+        self._potentialHead = None
+        self._potentialSet = None
         self.setAcceptsHoverEvents(True)
         self.setMeasure(measure)
 
@@ -95,11 +99,17 @@ class QMeasure(QtGui.QGraphicsItem):
         fontMetric = QtGui.QFontMetrics(font)
         baseline = self.numLines() * self._qScore.ySpacing
         dot = self._qScore.scale
+        potential = False
         for drumIndex in range(0, self.numLines()):
             lineHeight = baseline + (self._qScore.ySpacing / 2.0) - 1
             lineIndex = self.lineIndex(drumIndex)
             for noteTime, x in enumerate(xValues):
-                text = self._measure.noteAt(noteTime, lineIndex)
+                if drumIndex == self._potentialDrum and noteTime in self._potentialSet:
+                    text = self._potentialHead
+                    potential = True
+                    painter.setPen(QtGui.QColor(QtCore.Qt.blue))
+                else:
+                    text = self._measure.noteAt(noteTime, lineIndex)
                 if text == DBConstants.EMPTY_NOTE:
                     painter.drawLine(x + dot, lineHeight,
                                      x + self._qScore.xSpacing - dot,
@@ -110,6 +120,9 @@ class QMeasure(QtGui.QGraphicsItem):
                     offset = br.y() - (self._qScore.ySpacing - br.height()) / 2
                     painter.drawText(QtCore.QPointF(left, baseline - offset),
                                      text)
+                if potential:
+                    painter.setPen(QtGui.QColor(QtCore.Qt.black))
+                    potential = False
             baseline -= self._qScore.ySpacing
 
     def _paintHighlight(self, painter, xValues):
@@ -358,3 +371,17 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def alternateText(self):
         return self._measure.alternateText
+
+    def setPotentials(self, notes = None, head = None):
+        if notes is None:
+            newNotes = []
+            self._potentialDrum = None
+        else:
+            newNotes = [np.noteTime for np in notes]
+            self._potentialDrum = notes[0].drumIndex
+        if newNotes != self._potentials:
+            self._potentials = newNotes
+            self._potentialSet = set(self._potentials)
+            self._potentialHead = head
+            self.update()
+

@@ -21,6 +21,7 @@
 @author: Mike
 '''
 from PyQt4 import QtCore
+import copy
 
 from DBCommands import (ToggleNote, RepeatNoteCommand,
                         EditMeasurePropertiesCommand, SetRepeatCountCommand,
@@ -187,14 +188,15 @@ class ContextMenu(FsmState):
 class Repeating(FsmState):
     def __init__(self, qscore, note):
         super(Repeating, self).__init__(qscore)
+        self.qscore.clearDragSelection()
         self.statusBar = qscore.parent().statusBar()
-        self.statusBar.showMessage("Place the first repeat of this note "
+        self.statusBar.showMessage("Drag from the first repeat of this note to the last "
                                    "(or press ESCAPE to cancel)", 0)
         self.note = note
 
     def send(self, event):
         msgType = type(event)
-        if msgType == MouseRelease:
+        if msgType == LeftPress:
             if event.note is None:
                 return self
             interval = self.qscore.score.tickDifference(event.note, self.note)
@@ -202,7 +204,8 @@ class Repeating(FsmState):
                 self.statusBar.showMessage("Cannot repeat notes backwards!",
                                            5000)
                 return Waiting(self.qscore)
-            return RepeatingSecond(self.qscore, self.note, interval)
+            head = self.qscore.score.getNote(self.note)
+            return RepeatingDragging(self.qscore, self.note, event.note, interval, head)
         elif msgType == Escape:
             self.statusBar.clearMessage()
             return Waiting(self.qscore)
@@ -212,39 +215,70 @@ class Repeating(FsmState):
         else:
             return self
 
-class RepeatingSecond(FsmState):
-    def __init__(self, qscore, firstNote, interval):
-        super(RepeatingSecond, self).__init__(qscore)
+class RepeatingDragging(FsmState):
+    def __init__(self, qscore, firstNote, secondNote, interval, head):
+        super(RepeatingDragging, self).__init__(qscore)
         self.statusBar = qscore.parent().statusBar()
-        self.statusBar.showMessage("Place the last repeat of this note "
+        self.statusBar.showMessage("Drag to the last repeat of this note "
                                    "(or press ESCAPE to cancel)", 0)
         self.firstNote = firstNote
+        self.secondNote = secondNote
+        self._lastNote = secondNote
         self.interval = interval
+        self._notes = []
+        self.score = self.qscore.score
+        self._head = head
+        self._makeNotePositions()
 
     def send(self, event):
         msgType = type(event)
         if msgType == MouseRelease:
-            if event.note is None:
-                return self
-            totalTicks = self.qscore.score.tickDifference(event.note, self.firstNote)
-            numRepeats = totalTicks / self.interval
-            if numRepeats <= 0:
-                self.statusBar.showMessage("Must repeat note at least once!",
-                                           5000)
-                return Waiting(self.qscore)
-            command = RepeatNoteCommand(self.qscore, self.firstNote,
-                                        numRepeats, self.interval)
-            self.qscore.addCommand(command)
+            self.qscore.setPotentialRepeatNotes([], None)
+            if self._lastNote is not None:
+                totalTicks = self.qscore.score.tickDifference(self._lastNote, self.firstNote)
+                numRepeats = totalTicks / self.interval
+                if numRepeats <= 0:
+                    self.statusBar.showMessage("Must repeat note at least once!",
+                                               5000)
+                    return Waiting(self.qscore)
+                command = RepeatNoteCommand(self.qscore, self.firstNote,
+                                            numRepeats, self.interval)
+                self.qscore.addCommand(command)
             self.statusBar.clearMessage()
             return Waiting(self.qscore)
+        elif msgType == MouseMove:
+            if event.note is not None and event.note != self._lastNote:
+                self._lastNote = event.note
+                self._makeNotePositions()
+            return self
         elif msgType == Escape:
             self.statusBar.clearMessage()
+            self.qscore.setPotentialRepeatNotes([], None)
             return Waiting(self.qscore)
         elif msgType == StartPlaying:
             self.statusBar.clearMessage()
+            self.qscore.setPotentialRepeatNotes([], None)
             return Playing(self.qscore)
         else:
             return self
+
+    def _makeNotePositions(self):
+        note = copy.copy(self.secondNote)
+        notes = [note]
+        more = True
+        while more:
+            note = copy.copy(note)
+            note = self.score.notePlus(note, self.interval)
+            more = ((note.staffIndex < self._lastNote.staffIndex) or
+                    (note.staffIndex == self._lastNote.staffIndex and note.measureIndex < self._lastNote.measureIndex) or
+                    ((note.staffIndex == self._lastNote.staffIndex and note.measureIndex == self._lastNote.measureIndex and note.noteTime <= self._lastNote.noteTime)))
+            if more:
+                notes.append(note)
+
+
+        if len(notes) != len(self._notes):
+            self.qscore.setPotentialRepeatNotes(notes, self._head)
+            self._notes = notes
 
 class MeasureLineContextMenuState(FsmState):
     def __init__(self, qscore, prevMeasure, nextMeasure,
