@@ -395,6 +395,9 @@ To select a measure/measures, click and drag: selected measures can be copy/past
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
       </property>
+      <property name="renderHints">
+       <set>QPainter::HighQualityAntialiasing|QPainter::TextAntialiasing</set>
+      </property>
       <property name="dragMode">
        <enum>QGraphicsView::NoDrag</enum>
       </property>
@@ -1829,8 +1832,8 @@ Plays the currently selected measures back through MIDI. To stop playback, click
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>714</x>
-     <y>41</y>
+     <x>638</x>
+     <y>62</y>
     </hint>
    </hints>
   </connection>
@@ -1841,8 +1844,8 @@ Plays the currently selected measures back through MIDI. To stop playback, click
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>714</x>
-     <y>41</y>
+     <x>638</x>
+     <y>62</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -1905,7 +1908,7 @@ Plays the currently selected measures back through MIDI. To stop playback, click
    <slot>setNoteFontSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>126</x>
+     <x>253</x>
      <y>215</y>
     </hint>
     <hint type="destinationlabel">
@@ -1921,7 +1924,7 @@ Plays the currently selected measures back through MIDI. To stop playback, click
    <slot>setSectionFontSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>126</x>
+     <x>253</x>
      <y>432</y>
     </hint>
     <hint type="destinationlabel">
@@ -1969,7 +1972,7 @@ Plays the currently selected measures back through MIDI. To stop playback, click
    <slot>setMetadataFontSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>126</x>
+     <x>253</x>
      <y>650</y>
     </hint>
     <hint type="destinationlabel">
@@ -2069,7 +2072,7 @@ Plays the currently selected measures back through MIDI. To stop playback, click
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>126</x>
+     <x>253</x>
      <y>650</y>
     </hint>
    </hints>
@@ -2097,7 +2100,7 @@ Plays the currently selected measures back through MIDI. To stop playback, click
    <slot>systemSpacingChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>553</x>
+     <x>509</x>
      <y>107</y>
     </hint>
     <hint type="destinationlabel">
@@ -2129,7 +2132,7 @@ Plays the currently selected measures back through MIDI. To stop playback, click
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>824</x>
+     <x>698</x>
      <y>106</y>
     </hint>
     <hint type="destinationlabel">
@@ -2161,8 +2164,8 @@ Plays the currently selected measures back through MIDI. To stop playback, click
    <slot>showSection(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>884</x>
-     <y>98</y>
+     <x>782</x>
+     <y>105</y>
     </hint>
     <hint type="destinationlabel">
      <x>876</x>

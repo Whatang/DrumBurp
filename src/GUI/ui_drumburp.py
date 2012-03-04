@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike\workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sat Mar 03 22:59:54 2012
+# Created: Sat Mar 03 23:20:11 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -204,6 +204,7 @@ class Ui_DrumBurpWindow(object):
 "To select a measure/measures, click and drag: selected measures can be copy/pasted, deleted, cleared, and more.", None, QtGui.QApplication.UnicodeUTF8))
         self.scoreView.setLineWidth(1)
         self.scoreView.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.scoreView.setRenderHints(QtGui.QPainter.HighQualityAntialiasing|QtGui.QPainter.TextAntialiasing)
         self.scoreView.setDragMode(QtGui.QGraphicsView.NoDrag)
         self.scoreView.setTransformationAnchor(QtGui.QGraphicsView.NoAnchor)
         self.scoreView.setRubberBandSelectionMode(QtCore.Qt.IntersectsItemBoundingRect)
