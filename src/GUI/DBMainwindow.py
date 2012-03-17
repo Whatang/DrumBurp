@@ -43,7 +43,7 @@ from Data.Score import InconsistentRepeats
 from DBFSMEvents import StartPlaying, StopPlaying
 
 APPNAME = "DrumBurp"
-DB_VERSION = "0.5"
+DB_VERSION = "0.6"
 #pylint:disable-msg=R0904
 
 class FakeQSettings(object):
