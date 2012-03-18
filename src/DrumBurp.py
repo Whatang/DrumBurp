@@ -27,6 +27,7 @@ from PyQt4.QtGui import QApplication
 import GUI.DBMainwindow
 import GUI.DBIcons
 import GUI.DBStartupDialog
+from DBVersion import APPNAME, DB_VERSION
 
 def main():
     import ctypes
@@ -44,14 +45,14 @@ def main():
     app = QApplication(sys.argv)
     app.setOrganizationName("Whatang Software")
     app.setOrganizationDomain("whatang.org")
-    app.setApplicationName(GUI.DBMainwindow.APPNAME)
-    splash = GUI.DBStartupDialog.DBStartupDialog(GUI.DBMainwindow.DB_VERSION)
+    app.setApplicationName(APPNAME)
+    splash = GUI.DBStartupDialog.DBStartupDialog(DB_VERSION)
     GUI.DBIcons.initialiseIcons()
     app.setWindowIcon(GUI.DBIcons.getIcon("drumburp"))
     splash.exec_()
     mainWindow = GUI.DBMainwindow.DrumBurp(fakeStartup = opts.virgin,
                                            filename = filename)
-    mainWindow.setWindowTitle("DrumBurp v" + GUI.DBMainwindow.DB_VERSION)
+    mainWindow.setWindowTitle("DrumBurp v" + DB_VERSION)
     mainWindow.show()
     app.exec_()
 
