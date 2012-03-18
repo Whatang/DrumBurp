@@ -79,7 +79,7 @@ class _MeasureEvents(FsmEvent):
         super(_MeasureEvents, self).__init__()
         self.measurePosition = measurePosition
 
-class EditMeasureProperties(FsmEvent):
+class EditMeasureProperties(_MeasureEvents):
     def __init__(self, counter, counterRegistry, measurePosition):
         super(EditMeasureProperties, self).__init__(measurePosition)
         self.counter = counter
