@@ -41,7 +41,7 @@ import os
 import DBMidi
 from Data.Score import InconsistentRepeats
 from DBFSMEvents import StartPlaying, StopPlaying
-from DBMainwindow import APPNAME, DB_VERSION
+from DBVersion import APPNAME, DB_VERSION
 #pylint:disable-msg=R0904
 
 class FakeQSettings(object):
@@ -279,6 +279,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             settings.setValue("MainWindow/State",
                               QVariant(self.saveState()))
             self.songProperties.save(settings)
+            DBMidi.cleanup()
         else:
             event.ignore()
 
