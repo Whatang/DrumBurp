@@ -62,7 +62,7 @@ class DebugScoreCommand(ScoreCommand): #pylint:disable-msg=W0223
         print newHash.encode('hex'), self._hash.encode('hex')
         assert(newHash == self._hash)
 
-_COMMAND_CLASS = DebugScoreCommand
+_COMMAND_CLASS = ScoreCommand
 
 class NoteCommand(_COMMAND_CLASS): #pylint:disable-msg=W0223
     def __init__(self, qScore, notePosition, head = None):
