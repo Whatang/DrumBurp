@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\dbInfo.ui'
 #
-# Created: Sat Feb 18 12:40:46 2012
-#      by: PyQt4 UI code generator 4.8.1
+# Created: Sat Mar 31 13:52:20 2012
+#      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -37,8 +37,8 @@ class Ui_InfoDialog(object):
         self.gridLayout.addWidget(self.copyrightLabel, 0, 2, 1, 1)
         self.label_6 = QtGui.QLabel(InfoDialog)
         font = QtGui.QFont()
-        font.setWeight(75)
         font.setBold(True)
+        font.setWeight(75)
         self.label_6.setFont(font)
         self.label_6.setAlignment(QtCore.Qt.AlignCenter)
         self.label_6.setObjectName(_fromUtf8("label_6"))
@@ -56,8 +56,8 @@ class Ui_InfoDialog(object):
         self.gridLayout.addWidget(self.label_3, 2, 2, 1, 1)
         self.label_7 = QtGui.QLabel(InfoDialog)
         font = QtGui.QFont()
-        font.setWeight(75)
         font.setBold(True)
+        font.setWeight(75)
         self.label_7.setFont(font)
         self.label_7.setAlignment(QtCore.Qt.AlignCenter)
         self.label_7.setOpenExternalLinks(False)
@@ -74,8 +74,8 @@ class Ui_InfoDialog(object):
         self.gridLayout.addWidget(self.label_4, 6, 2, 1, 1)
         self.licenseButton = QtGui.QPushButton(InfoDialog)
         font = QtGui.QFont()
-        font.setWeight(75)
         font.setBold(True)
+        font.setWeight(75)
         self.licenseButton.setFont(font)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/gplv3-88x31.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -109,8 +109,8 @@ class Ui_InfoDialog(object):
         self.gridLayout.addItem(spacerItem4, 0, 1, 1, 1)
         self.label_8 = QtGui.QLabel(InfoDialog)
         font = QtGui.QFont()
-        font.setWeight(75)
         font.setBold(True)
+        font.setWeight(75)
         self.label_8.setFont(font)
         self.label_8.setAlignment(QtCore.Qt.AlignCenter)
         self.label_8.setObjectName(_fromUtf8("label_8"))

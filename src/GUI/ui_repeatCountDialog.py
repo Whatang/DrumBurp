@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\Mike\workspace\DrumBurp\src\GUI\repeatCountDialog.ui'
+# Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\repeatCountDialog.ui'
 #
-# Created: Sat Mar 03 22:59:56 2012
-#      by: PyQt4 UI code generator 4.8.5
+# Created: Sat Mar 31 13:52:25 2012
+#      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -18,7 +18,6 @@ class Ui_repeatCountDialog(object):
     def setupUi(self, repeatCountDialog):
         repeatCountDialog.setObjectName(_fromUtf8("repeatCountDialog"))
         repeatCountDialog.resize(174, 81)
-        repeatCountDialog.setWindowTitle(QtGui.QApplication.translate("repeatCountDialog", "Set repeat count", None, QtGui.QApplication.UnicodeUTF8))
         self.verticalLayout = QtGui.QVBoxLayout(repeatCountDialog)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         spacerItem = QtGui.QSpacerItem(20, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
@@ -28,13 +27,10 @@ class Ui_repeatCountDialog(object):
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem1)
         self.label = QtGui.QLabel(repeatCountDialog)
-        self.label.setToolTip(QtGui.QApplication.translate("repeatCountDialog", "Select the number of repeats", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("repeatCountDialog", "Repeat count", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label.setObjectName(_fromUtf8("label"))
         self.horizontalLayout.addWidget(self.label)
         self.countBox = QtGui.QSpinBox(repeatCountDialog)
-        self.countBox.setToolTip(QtGui.QApplication.translate("repeatCountDialog", "Select the number of repeats", None, QtGui.QApplication.UnicodeUTF8))
         self.countBox.setMinimum(2)
         self.countBox.setMaximum(128)
         self.countBox.setObjectName(_fromUtf8("countBox"))
@@ -56,5 +52,8 @@ class Ui_repeatCountDialog(object):
         QtCore.QMetaObject.connectSlotsByName(repeatCountDialog)
 
     def retranslateUi(self, repeatCountDialog):
-        pass
+        repeatCountDialog.setWindowTitle(QtGui.QApplication.translate("repeatCountDialog", "Set repeat count", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setToolTip(QtGui.QApplication.translate("repeatCountDialog", "Select the number of repeats", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("repeatCountDialog", "Repeat count", None, QtGui.QApplication.UnicodeUTF8))
+        self.countBox.setToolTip(QtGui.QApplication.translate("repeatCountDialog", "Select the number of repeats", None, QtGui.QApplication.UnicodeUTF8))
 

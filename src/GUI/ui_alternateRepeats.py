@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\Mike\workspace\DrumBurp\src\GUI\alternateRepeats.ui'
+# Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\alternateRepeats.ui'
 #
-# Created: Sat Mar 03 22:59:53 2012
-#      by: PyQt4 UI code generator 4.8.5
+# Created: Sat Mar 31 13:52:18 2012
+#      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -18,18 +18,14 @@ class Ui_AlternateDialog(object):
     def setupUi(self, AlternateDialog):
         AlternateDialog.setObjectName(_fromUtf8("AlternateDialog"))
         AlternateDialog.resize(502, 214)
-        AlternateDialog.setWindowTitle(QtGui.QApplication.translate("AlternateDialog", "Alternate Repeats", None, QtGui.QApplication.UnicodeUTF8))
         self.verticalLayout = QtGui.QVBoxLayout(AlternateDialog)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.label = QtGui.QLabel(AlternateDialog)
-        self.label.setText(QtGui.QApplication.translate("AlternateDialog", "Enter alternate repeat information:", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setObjectName(_fromUtf8("label"))
         self.horizontalLayout.addWidget(self.label)
         self.addButton = QtGui.QPushButton(AlternateDialog)
-        self.addButton.setToolTip(QtGui.QApplication.translate("AlternateDialog", "Add a new repeat", None, QtGui.QApplication.UnicodeUTF8))
-        self.addButton.setText(QtGui.QApplication.translate("AlternateDialog", "Add", None, QtGui.QApplication.UnicodeUTF8))
         self.addButton.setObjectName(_fromUtf8("addButton"))
         self.horizontalLayout.addWidget(self.addButton)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
@@ -71,5 +67,8 @@ class Ui_AlternateDialog(object):
         QtCore.QMetaObject.connectSlotsByName(AlternateDialog)
 
     def retranslateUi(self, AlternateDialog):
-        pass
+        AlternateDialog.setWindowTitle(QtGui.QApplication.translate("AlternateDialog", "Alternate Repeats", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("AlternateDialog", "Enter alternate repeat information:", None, QtGui.QApplication.UnicodeUTF8))
+        self.addButton.setToolTip(QtGui.QApplication.translate("AlternateDialog", "Add a new repeat", None, QtGui.QApplication.UnicodeUTF8))
+        self.addButton.setText(QtGui.QApplication.translate("AlternateDialog", "Add", None, QtGui.QApplication.UnicodeUTF8))
 
