@@ -501,6 +501,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
      <string>Help</string>
     </property>
     <addaction name="actionWhatsThis"/>
+    <addaction name="actionOnlineManual"/>
     <addaction name="separator"/>
     <addaction name="actionAboutDrumBurp"/>
    </widget>
@@ -521,7 +522,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <bool>true</bool>
    </property>
    <property name="allowedAreas">
-    <set>Qt::TopToolBarArea</set>
+    <set>Qt::AllToolBarAreas</set>
    </property>
    <property name="iconSize">
     <size>
@@ -548,7 +549,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <bool>true</bool>
    </property>
    <property name="allowedAreas">
-    <set>Qt::TopToolBarArea</set>
+    <set>Qt::AllToolBarAreas</set>
    </property>
    <property name="iconSize">
     <size>
@@ -607,6 +608,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <bool>false</bool>
    </attribute>
    <addaction name="actionWhatsThis"/>
+   <addaction name="actionOnlineManual"/>
    <addaction name="actionAboutDrumBurp"/>
   </widget>
   <widget class="QDockWidget" name="fontDock">
@@ -1679,9 +1681,19 @@ Plays the currently selected measures back through MIDI. To stop playback, click
     <string>Ctrl+Shift+V</string>
    </property>
   </action>
-  <action name="actionOnline_Help">
+  <action name="actionOnlineManual">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/book.png</normaloff>:/Icons/Icons/book.png</iconset>
+   </property>
    <property name="text">
-    <string>Online Help</string>
+    <string>Online Manual</string>
+   </property>
+   <property name="toolTip">
+    <string>Open the Online Manual in a web browser</string>
+   </property>
+   <property name="statusTip">
+    <string>Open the Online Manual in a web browser</string>
    </property>
   </action>
  </widget>

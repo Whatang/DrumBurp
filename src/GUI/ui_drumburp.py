@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sat Mar 31 13:52:22 2012
+# Created: Sat Mar 31 14:25:01 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -182,13 +182,13 @@ class Ui_DrumBurpWindow(object):
         self.fileToolBar = QtGui.QToolBar(DrumBurpWindow)
         self.fileToolBar.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
         self.fileToolBar.setMovable(True)
-        self.fileToolBar.setAllowedAreas(QtCore.Qt.TopToolBarArea)
+        self.fileToolBar.setAllowedAreas(QtCore.Qt.AllToolBarAreas)
         self.fileToolBar.setIconSize(QtCore.QSize(32, 32))
         self.fileToolBar.setObjectName(_fromUtf8("fileToolBar"))
         DrumBurpWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.fileToolBar)
         self.displayToolBar = QtGui.QToolBar(DrumBurpWindow)
         self.displayToolBar.setMovable(True)
-        self.displayToolBar.setAllowedAreas(QtCore.Qt.TopToolBarArea)
+        self.displayToolBar.setAllowedAreas(QtCore.Qt.AllToolBarAreas)
         self.displayToolBar.setIconSize(QtCore.QSize(32, 32))
         self.displayToolBar.setObjectName(_fromUtf8("displayToolBar"))
         DrumBurpWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.displayToolBar)
@@ -490,8 +490,11 @@ class Ui_DrumBurpWindow(object):
         self.actionFillPasteMeasures = QtGui.QAction(DrumBurpWindow)
         self.actionFillPasteMeasures.setIcon(icon25)
         self.actionFillPasteMeasures.setObjectName(_fromUtf8("actionFillPasteMeasures"))
-        self.actionOnline_Help = QtGui.QAction(DrumBurpWindow)
-        self.actionOnline_Help.setObjectName(_fromUtf8("actionOnline_Help"))
+        self.actionOnlineManual = QtGui.QAction(DrumBurpWindow)
+        icon27 = QtGui.QIcon()
+        icon27.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/book.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionOnlineManual.setIcon(icon27)
+        self.actionOnlineManual.setObjectName(_fromUtf8("actionOnlineManual"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.menuRecentScores.menuAction())
@@ -528,6 +531,7 @@ class Ui_DrumBurpWindow(object):
         self.menuEdit.addAction(self.actionClearMeasures)
         self.menuEdit.addAction(self.actionDeleteMeasures)
         self.menuHelp.addAction(self.actionWhatsThis)
+        self.menuHelp.addAction(self.actionOnlineManual)
         self.menuHelp.addSeparator()
         self.menuHelp.addAction(self.actionAboutDrumBurp)
         self.menubar.addAction(self.menuFile.menuAction())
@@ -549,6 +553,7 @@ class Ui_DrumBurpWindow(object):
         self.exportToolBar.addAction(self.actionExportASCII)
         self.exportToolBar.addAction(self.actionExportPDF)
         self.helpToolBar.addAction(self.actionWhatsThis)
+        self.helpToolBar.addAction(self.actionOnlineManual)
         self.helpToolBar.addAction(self.actionAboutDrumBurp)
         self.MIDIToolBar.addAction(self.actionPlayScore)
         self.MIDIToolBar.addAction(self.actionPlayOnce)
@@ -910,7 +915,9 @@ class Ui_DrumBurpWindow(object):
         self.actionFillPasteMeasures.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Paste the copied measues enough times to fill the selected ones.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFillPasteMeasures.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Paste the copied measues enough times to fill the selected ones.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFillPasteMeasures.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+Shift+V", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionOnline_Help.setText(QtGui.QApplication.translate("DrumBurpWindow", "Online Help", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionOnlineManual.setText(QtGui.QApplication.translate("DrumBurpWindow", "Online Manual", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionOnlineManual.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Open the Online Manual in a web browser", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionOnlineManual.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Open the Online Manual in a web browser", None, QtGui.QApplication.UnicodeUTF8))
 
 from Widgets.ScoreView_plugin import ScoreView
 import DrumBurp_rc

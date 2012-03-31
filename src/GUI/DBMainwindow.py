@@ -22,7 +22,7 @@ Created on 31 Jul 2010
 @author: Mike Thomas
 
 '''
-
+import webbrowser
 from ui_drumburp import Ui_DrumBurpWindow
 from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QFileDialog, QMessageBox,
@@ -504,6 +504,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def on_actionAboutDrumBurp_triggered(self):
         dlg = DBInfoDialog(DB_VERSION, self)
         dlg.exec_()
+
+    @pyqtSignature("")
+    def on_actionOnlineManual_triggered(self):
+        webbrowser.open_new_tab("www.whatang.org/drumburp-manual")
 
     def _getPaperSize(self):
         try:
