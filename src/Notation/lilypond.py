@@ -47,8 +47,15 @@ def lilyString(inString):
     return '"%s"' % inString
 
 class LilyMeasure(object):
-    def __init__(self, measure):
+    def __init__(self, score, measure):
         self.measure = measure
+        self.score = score
+
+    def voiceOne(self, indenter):
+        indenter("bd1")
+
+    def voiceTwo(self, indenter):
+        indenter("sn1")
 
 class LilypondScore(object):
     def __init__(self, score):
@@ -90,6 +97,7 @@ class LilypondScore(object):
         measureIterator = self.score.iterMeasures()
         sectionTitle = self.score.getSectionTitle(0)
         sectionIndex = 0
+        repeatCommands = []
         try:
             measure = measureIterator.next()
             hasAlternate = False
@@ -97,19 +105,22 @@ class LilypondScore(object):
                 if sectionTitle:
                     self.indenter(r'\mark %s' % lilyString(sectionTitle))
                 if measure.isRepeatStart():
-                    self.indenter(r"\set Score.repeatCommands = #'(start-repeat)")
+                    repeatCommands.append("start-repeat")
                 if measure.alternateText is not None:
                     if hasAlternate:
-                        self.indenter(r"\set Score.repeatCommands = #'((volta #f))")
-                    self.indenter(r"\set Score.repeatCommands = #'((volta %s))" % lilyString(measure.alternateText))
+                        repeatCommands.append("(volta #f)")
+                    repeatCommands.append("(volta %s)" % lilyString(measure.alternateText))
                     hasAlternate = True
+                if repeatCommands:
+                    self.indenter(r"\set Score.repeatCommands = #'(%s)" % " ".join(repeatCommands))
+                    repeatCommands = []
                 with VoiceContext(self.indenter, ""):
-                    self._writeMeasure(LilyMeasure(measure))
+                    self._writeMeasure(measure)
                 if measure.isRepeatEnd():
                     if measure.repeatCount > 2:
                         self.indenter(r"\once \override Score.RehearsalMark #'self-alignment-X = #right")
                         self.indenter(r'\mark %s' % lilyString("x%d" % measure.repeatCount))
-                    self.indenter(r"\set Score.repeatCommands = #'(end-repeat)")
+                    repeatCommands.append("end-repeat")
                 if measure.isSectionEnd():
                     sectionIndex += 1
                     if sectionIndex < self.score.numSections():
@@ -117,21 +128,23 @@ class LilypondScore(object):
                 else:
                     sectionTitle = None
                 if hasAlternate and (measure.isSectionEnd() or measure.isRepeatEnd()):
-                    self.indenter(r"\set Score.repeatCommands = #'((volta #f))")
+                    repeatCommands.append("(volta #f)")
                     hasAlternate = False
                 if measure.isLineEnd() or measure.isSectionEnd():
                     self.indenter(r'\break')
                 measure = measureIterator.next()
         except StopIteration:
-            pass
+            if repeatCommands:
+                self.indenter(r"\set Score.repeatCommands = #'(%s)" % " ".join(repeatCommands))
 
     def _writeMeasure(self, measure):
+        parsed = LilyMeasure(self.score, measure)
         with LilyContext(self.indenter, r'\new DrumVoice'):
             self.indenter(r'\voiceOne')
-            self.indenter(r'bd1')
+            parsed.voiceOne(self.indenter)
         with LilyContext(self.indenter, r'\new DrumVoice'):
             self.indenter(r'\voiceTwo')
-            self.indenter(r'sn1')
+            parsed.voiceTwo(self.indenter)
 
 
 def test():
