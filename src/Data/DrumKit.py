@@ -128,7 +128,15 @@ class DrumKit(object):
         else:
             return self.DOWN
 
-    def getLilyNote(self, notePos, head):
+    def _getLilyHead(self, notePos, head):
         # TODO: Make this user configurable
         # TODO: Make this depend on the note head
         return DEFAULT_LILYPOND[self[notePos.drumIndex].abbr]
+
+    def getLilyNote(self, notePos, head):
+        # TODO: Make this user configurable
+        # TODO: Make this depend on the note head
+        lilyHead = self._getLilyHead(notePos, head)
+        headData = self[notePos.drumIndex].headData(head)
+        effect = headData.effect
+        return lilyHead, effect

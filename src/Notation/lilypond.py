@@ -77,24 +77,42 @@ class LilyMeasure(object):
                 numTicks = nextTime - thisTime
                 durationDict[thisTime] = beat.lilyDuration(numTicks)
         lilyNotes = {self.kit.UP:{}, self.kit.DOWN:{}}
+        effects = {self.kit.UP:{}, self.kit.DOWN:{}}
         for direction, lilyDict in lilyNotes.iteritems():
             for (notePos, head) in notes[direction]:
                 if notePos.noteTime not in lilyDict:
                     lilyDict[notePos.noteTime] = []
-                noteIndicator = self.kit.getLilyNote(notePos, head)
+                noteIndicator, effect = self.kit.getLilyNote(notePos, head)
                 lilyDict[notePos.noteTime].append(noteIndicator)
+                effects[direction].setdefault(notePos.noteTime, []).append((noteIndicator, effect))
         wholeRests = {self.kit.UP: {}, self.kit.DOWN: {}}
         for direction, timeList in noteTimes.iteritems():
             lNotes = lilyNotes[direction]
+            lEffects = effects[direction]
             voice = self._voices[direction]
             for noteTime in timeList[:-1]:
                 dur = durations[direction][noteTime]
+                accent = ""
+                if noteTime in lEffects:
+                    for noteIndicator, effect in lEffects[noteTime]:
+                        if effect == "flam":
+                            voice.append(r"\override Stem #'length = #4 \acciaccatura{%s8} \revert Stem #'length" % noteIndicator)
+                        elif effect == "accent":
+                            accent += r"\accent"
+                        elif effect == "choke":
+                            accent += r"\staccatissimo"
+                        elif effect == "drag":
+                            tremolo = ":%d" % (int(dur) * 2)
+                            accent = tremolo + accent
+                        elif effect == "ghost":
+                            noteIndex = lNotes[noteTime].index(noteIndicator)
+                            lNotes[noteTime][noteIndex] = r"< \parenthesize " + noteIndicator + ">"
                 if noteTime not in lNotes:
                     lNotes[noteTime] = ["r"]
                 if len(lNotes[noteTime]) > 1:
-                    voice.append("<" + " ".join(lNotes[noteTime]) + ">" + dur)
+                    voice.append("<" + " ".join(lNotes[noteTime]) + ">" + dur + accent)
                 else:
-                    voice.append(lNotes[noteTime][0] + dur)
+                    voice.append(lNotes[noteTime][0] + dur + accent)
                     if lNotes[noteTime] == ["r"] and dur == "4":
                         wholeRests[direction][noteTime] = len(voice) - 1
         for direction, restTimes in wholeRests.iteritems():
