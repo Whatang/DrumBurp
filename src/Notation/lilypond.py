@@ -50,12 +50,100 @@ class LilyMeasure(object):
     def __init__(self, score, measure):
         self.measure = measure
         self.score = score
+        self.kit = score.drumKit
+        self._beats = list(self.measure.counter.iterBeatTicks())
+        self._voices = {self.kit.UP:[], self.kit.DOWN:[]}
+        self._build()
+
+    def _build(self):
+        notes = {self.kit.UP : [], self.kit.DOWN : []}
+        for notePos, head in self.measure:
+            direction = self.kit.getDirection(notePos.drumIndex)
+            notes[direction].append((notePos, head))
+        noteTimes = {}
+        for direction in notes:
+            timeSet = set(notePos.noteTime  for (notePos, head)
+                           in notes[direction])
+            for tick in self.measure.counter.iterBeatTimes():
+                timeSet.add(tick)
+            timeSet.add(len(self._beats))
+            noteTimes[direction] = list(timeSet)
+            noteTimes[direction].sort()
+        durations = {self.kit.UP: {}, self.kit.DOWN:{}}
+        for direction, durationDict in durations.iteritems():
+            for thisTime, nextTime in zip(noteTimes[direction][:-1],
+                                          noteTimes[direction][1:]):
+                unusedBeatNum, beat, tick = self._beats[thisTime]
+                numTicks = nextTime - thisTime
+                durationDict[thisTime] = beat.lilyDuration(numTicks)
+        lilyNotes = {self.kit.UP:{}, self.kit.DOWN:{}}
+        for direction, lilyDict in lilyNotes.iteritems():
+            for (notePos, head) in notes[direction]:
+                if notePos.noteTime not in lilyDict:
+                    lilyDict[notePos.noteTime] = []
+                noteIndicator = self.kit.getLilyNote(notePos, head)
+                lilyDict[notePos.noteTime].append(noteIndicator)
+        wholeRests = {self.kit.UP: {}, self.kit.DOWN: {}}
+        for direction, timeList in noteTimes.iteritems():
+            lNotes = lilyNotes[direction]
+            voice = self._voices[direction]
+            for noteTime in timeList[:-1]:
+                dur = durations[direction][noteTime]
+                if noteTime not in lNotes:
+                    lNotes[noteTime] = ["r"]
+                if len(lNotes[noteTime]) > 1:
+                    voice.append("<" + " ".join(lNotes[noteTime]) + ">" + dur)
+                else:
+                    voice.append(lNotes[noteTime][0] + dur)
+                    if lNotes[noteTime] == ["r"] and dur == "4":
+                        wholeRests[direction][noteTime] = len(voice) - 1
+        for direction, restTimes in wholeRests.iteritems():
+            otherDirection = 1 - direction
+            for (rest, index) in restTimes.iteritems():
+                if rest not in wholeRests[otherDirection]:
+                    self._voices[direction][index] = "s4"
+        self._mergeRests(self.kit.UP)
+        self._mergeRests(self.kit.DOWN)
+
+    def _mergeRests(self, direction):
+        resting = False
+        start = None
+        newRestLengths = {1: "4", 2: "2", 3:"2.", 4:"1"}
+        newVoice = []
+        for index, info in enumerate(self._voices[direction]):
+            if info == "r4":
+                if not resting:
+                    resting = True
+                    start = index
+                elif index - start == 4:
+                    newVoice.append("r1")
+                    start = index
+            elif resting:
+                end = index
+                restLength = end - start
+                newLength = newRestLengths[restLength]
+                newVoice.append("r" + newLength)
+                newVoice.append(info)
+                resting = False
+            else:
+                newVoice.append(info)
+        if resting:
+            end = len(self._voices[direction])
+            restLength = end - start
+            newLength = newRestLengths[restLength]
+            newVoice.append("r" + newLength)
+        self._voices[direction] = newVoice
+
+
+
 
     def voiceOne(self, indenter):
-        indenter("bd1")
+        voice = self._voices[self.kit.UP]
+        indenter(" ".join(voice))
 
     def voiceTwo(self, indenter):
-        indenter("sn1")
+        voice = self._voices[self.kit.DOWN]
+        indenter(" ".join(voice))
 
 class LilypondScore(object):
     def __init__(self, score):
@@ -69,6 +157,7 @@ class LilypondScore(object):
         self.indenter(r'\version "2.12.3"')
         with LilyContext(self.indenter, '\header'):
             self._writeHeader()
+        self._writeMacros(handle)
         with LilyContext(self.indenter, '\score'):
             self._writeScore()
 
@@ -84,7 +173,9 @@ class LilypondScore(object):
             self._writeDrumStaffInfo()
             with LilyContext(self.indenter, r'\drummode'):
                 self._writeMusic()
-        self.indenter(r'\layout {}')
+        with LilyContext(self.indenter, r'\layout'):
+            with LilyContext(self.indenter, r'\context'):
+                self.indenter(r"\DrumStaff \override RestCollision #'positioning-done = #merge-rests-on-positioning")
 
     def _writeDrumStaffInfo(self):
         self.indenter(r'\set Staff.instrumentName = #"Drums"')
@@ -145,6 +236,70 @@ class LilypondScore(object):
         with LilyContext(self.indenter, r'\new DrumVoice'):
             self.indenter(r'\voiceTwo')
             parsed.voiceTwo(self.indenter)
+
+    def _writeMacros(self, handle):
+        handle.write("""
+#(define (rest-score r)
+  (let ((score 0)
+    (yoff (ly:grob-property-data r 'Y-offset))
+    (sp (ly:grob-property-data r 'staff-position)))
+    (if (number? yoff)
+    (set! score (+ score 2))
+    (if (eq? yoff 'calculation-in-progress)
+        (set! score (- score 3))))
+    (and (number? sp)
+     (<= 0 2 sp)
+     (set! score (+ score 2))
+     (set! score (- score (abs (- 1 sp)))))
+    score))
+
+#(define (merge-rests-on-positioning grob)
+  (let* ((can-merge #f)
+     (elts (ly:grob-object grob 'elements))
+     (num-elts (and (ly:grob-array? elts)
+            (ly:grob-array-length elts)))
+     (two-voice? (= num-elts 2)))
+    (if two-voice?
+    (let* ((v1-grob (ly:grob-array-ref elts 0))
+           (v2-grob (ly:grob-array-ref elts 1))
+           (v1-rest (ly:grob-object v1-grob 'rest))
+           (v2-rest (ly:grob-object v2-grob 'rest)))
+      (and
+       (ly:grob? v1-rest)
+       (ly:grob? v2-rest)                
+       (let* ((v1-duration-log (ly:grob-property v1-rest 'duration-log))
+          (v2-duration-log (ly:grob-property v2-rest 'duration-log))
+          (v1-dot (ly:grob-object v1-rest 'dot))
+          (v2-dot (ly:grob-object v2-rest 'dot))
+          (v1-dot-count (and (ly:grob? v1-dot)
+                     (ly:grob-property v1-dot 'dot-count -1)))
+          (v2-dot-count (and (ly:grob? v2-dot)
+                     (ly:grob-property v2-dot 'dot-count -1))))
+         (set! can-merge
+           (and 
+            (number? v1-duration-log)
+            (number? v2-duration-log)
+            (= v1-duration-log v2-duration-log)
+            (eq? v1-dot-count v2-dot-count)))
+         (if can-merge
+         ;; keep the rest that looks best:
+         (let* ((keep-v1? (>= (rest-score v1-rest)
+                      (rest-score v2-rest)))
+            (rest-to-keep (if keep-v1? v1-rest v2-rest))
+            (dot-to-kill (if keep-v1? v2-dot v1-dot)))
+           ;; uncomment if you're curious of which rest was chosen:
+           ;;(ly:grob-set-property! v1-rest 'color green)
+           ;;(ly:grob-set-property! v2-rest 'color blue)
+           (ly:grob-suicide! (if keep-v1? v2-rest v1-rest))
+           (if (ly:grob? dot-to-kill)
+               (ly:grob-suicide! dot-to-kill))
+           (ly:grob-set-property! rest-to-keep 'direction 0)
+           (ly:rest::y-offset-callback rest-to-keep)))))))
+    (if can-merge
+    #t
+    (ly:rest-collision::calc-positioning-done grob))))
+    
+""")
 
 
 def test():

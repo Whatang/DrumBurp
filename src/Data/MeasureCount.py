@@ -49,6 +49,17 @@ class MeasureCount(object):
         return ((len(self.beats) - 1) +
                 float(lastBeat.numTicks) / beatTicks)
 
+    def iterBeatTicks(self):
+        for (beatNum, beat) in enumerate(self.beats):
+            for tick in beat.iterTicks():
+                yield(beatNum, beat, tick)
+
+    def iterBeatTimes(self):
+        tick = 0
+        for beat in self.beats:
+            yield tick
+            tick += beat.numTicks
+
     def iterMidiTicks(self):
         total = 0
         for beat in self.beats:

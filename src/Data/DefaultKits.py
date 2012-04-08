@@ -65,3 +65,13 @@ DEFAULT_EXTRA_HEADS = {"FT": [("O", None, ACCENT_VOLUME, "accent"),
                        "Bd": [("O", None, ACCENT_VOLUME, "accent"),
                               ("g", None, GHOST_VOLUME, "ghost"),
                               ("d", None, None, "drag")]}
+
+DEFAULT_LILYPOND = {"Hf":"hhp",
+                    "Bd": "bd",
+                    "FT": "toml",
+                    "Sn":"sn",
+                    "MT":"tomml",
+                    "HT": "tomh",
+                    "Ri": "cymr",
+                    "Hh":"hh",
+                    "Cr":"cymc"}

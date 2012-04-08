@@ -24,13 +24,15 @@ Created on 12 Dec 2010
 '''
 
 from Drum import Drum, HeadData
-from DefaultKits import DEFAULT_KIT, DEFAULT_EXTRA_HEADS
+from DefaultKits import DEFAULT_KIT, DEFAULT_EXTRA_HEADS, DEFAULT_LILYPOND
 from DBErrors import DuplicateDrumError, NoSuchDrumError
 
 class DrumKit(object):
     '''
     classdocs
     '''
+    UP = 0
+    DOWN = 1
 
     def __init__(self):
         self._drums = []
@@ -118,3 +120,15 @@ class DrumKit(object):
 
     def getDefaultHead(self, index):
         return self[index].head
+
+    def getDirection(self, drumIndex):
+        # TODO: Make this user configurable
+        if drumIndex > len(self) / 2:
+            return self.UP
+        else:
+            return self.DOWN
+
+    def getLilyNote(self, notePos, head):
+        # TODO: Make this user configurable
+        # TODO: Make this depend on the note head
+        return DEFAULT_LILYPOND[self[notePos.drumIndex].abbr]
