@@ -102,7 +102,10 @@ class LilyMeasure(object):
                         elif effect == "choke":
                             accent += r"\staccatissimo"
                         elif effect == "drag":
-                            tremolo = ":%d" % (int(dur) * 2)
+                            durString = str(int(dur.rstrip(".")) * 2)
+                            if dur[-1] == ".":
+                                durString += "."
+                            tremolo = ":" + durString
                             accent = tremolo + accent
                         elif effect == "ghost":
                             noteIndex = lNotes[noteTime].index(noteIndicator)
