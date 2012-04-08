@@ -100,7 +100,7 @@ class LilyMeasure(object):
                         elif effect == "accent":
                             accent += r"\accent"
                         elif effect == "choke":
-                            accent += r"\staccatissimo"
+                            accent += r"\stopped"
                         elif effect == "drag":
                             durString = str(int(dur.rstrip(".")) * 2)
                             if dur[-1] == ".":
