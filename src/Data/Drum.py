@@ -25,7 +25,7 @@ Created on 12 Dec 2010
 import copy
 
 from DBConstants import DRUM_ABBR_WIDTH
-from DefaultKits import DEFAULT_KIT, DEFAULT_EXTRA_HEADS
+from DefaultKits import DEFAULT_KIT, DEFAULT_EXTRA_HEADS, STEM_DOWN, STEM_UP
 
 _DEFAULTNOTE = 71
 _DEFAULTVOLUME = 96
@@ -33,24 +33,57 @@ _DEFAULTVOLUME = 96
 class HeadData(object):
     def __init__(self, midiNote = _DEFAULTNOTE,
                  midiVolume = _DEFAULTVOLUME,
-                 effect = "normal"):
+                 effect = "normal",
+                 notationHead = "default",
+                 notationLine = 0,
+                 notationEffect = "none",
+                 stemDirection = STEM_UP):
         self.midiNote = midiNote
         self.midiVolume = midiVolume
         self.effect = effect
+        self.notationHead = notationHead
+        self.notationLine = notationLine
+        self.notationEffect = notationEffect
+        self.stemDirection = stemDirection
 
     def write(self, noteHead, handle, indenter):
-        dataString = "%s %d,%d,%s" % (noteHead, self.midiNote,
-                                      self.midiVolume,
-                                      self.effect)
+        dataString = "%s %d,%d,%s,%s,%d,%s,%d" % (noteHead, self.midiNote,
+                                                  self.midiVolume,
+                                                  self.effect,
+                                                  self.notationHead,
+                                                  self.notationLine,
+                                                  self.notationEffect,
+                                                  self.stemDirection)
         print >> handle, indenter("NOTEHEAD", dataString)
 
     @staticmethod
-    def read(dataString):
+    def read(abbr, dataString):
         head, data = dataString.split()
-        note, volume, effect = data.split(",")
+        fields = data.split(",")
+        note, volume, effect = fields[:3]
         note = int(note)
         volume = int(volume)
-        return head, HeadData(note, volume, effect)
+        if len(fields) > 3:
+            nHead, nLine, nEffect, sDir = fields[3:]
+            nLine = int(nLine)
+            sDir = int(sDir)
+        else:
+            nHead, nLine, nEffect, sDir = _guessNotation(abbr, head)
+        return head, HeadData(note, volume, effect, nHead, nLine, nEffect, sDir)
+
+def _guessNotation(abbr, head):
+    for drumInfo in DEFAULT_KIT:
+        if drumInfo[0][1] == abbr:
+            nHead, nLine, sDir = drumInfo[-3:]
+            nEffect = "none"
+            break
+    else:
+        return ["default", 0, "none", STEM_UP]
+    for headInfo in DEFAULT_EXTRA_HEADS[abbr]:
+        if headInfo[0] == head:
+            nHead, nEffect = headInfo[-2:]
+    return nHead, nLine, nEffect, sDir
+
 
 
 _DEFAULTEFFECT = {"x":"normal",
@@ -140,22 +173,38 @@ class Drum(object):
     def guessHeadData(self):
         self._noteHeads = [self._head]
         midiNote = _guessMidiNote(self.abbr)
-        headData = HeadData(midiNote)
+        for drumInfo in DEFAULT_KIT:
+            if drumInfo[0][1] == self.abbr:
+                notationHead, notationLine, stemDir = drumInfo[-3:]
+                break
+        else:
+            notationHead = "default"
+            notationLine = 0
+            stemDir = STEM_UP
+        headData = HeadData(midiNote, notationHead = notationHead,
+                            notationLine = notationLine,
+                            stemDirection = stemDir)
         self._headData = {self._head: headData}
         self._guessEffect(self._head)
         for (extraHead,
              newMidi,
              newMidiVolume,
-             newEffect) in DEFAULT_EXTRA_HEADS.get(self.abbr, []):
+             newEffect,
+             newNotationHead,
+             newNotationEffect) in DEFAULT_EXTRA_HEADS.get(self.abbr, []):
             if newMidi is None:
                 newMidi = midiNote
             if newMidiVolume is None:
                 newMidiVolume = headData.midiVolume
-            newData = HeadData(newMidi, newMidiVolume, newEffect)
+            newData = HeadData(newMidi, newMidiVolume, newEffect,
+                               notationHead = newNotationHead,
+                               notationLine = notationLine,
+                               notationEffect = newNotationEffect,
+                               stemDirection = stemDir)
             self.addNoteHead(extraHead, newData)
 
     def readHeadData(self, dataString):
-        head, data = HeadData.read(dataString)
+        head, data = HeadData.read(self.abbr, dataString)
         self._noteHeads.append(head)
         self._headData[head] = data
 
