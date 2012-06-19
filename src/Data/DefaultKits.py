@@ -67,7 +67,8 @@ DEFAULT_EXTRA_HEADS = {"FT": [("O", None, ACCENT_VOLUME, "accent", "default", "a
                               ("#", None, None, "choke", "cross", "stopped")],
                        "Bd": [("O", None, ACCENT_VOLUME, "accent", "default", "accent"),
                               ("g", None, GHOST_VOLUME, "ghost", "default", "ghost"),
-                              ("d", None, None, "drag", "default", "drag")]}
+                              ("d", None, None, "drag", "default", "drag")],
+                       "Hf" : []}
 
 DEFAULT_LILYPOND = {"Hf":"hhp",
                     "Bd": "bd",
