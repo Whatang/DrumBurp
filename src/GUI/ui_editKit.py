@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\editKit.ui'
 #
-# Created: Sun Apr 08 22:43:20 2012
+# Created: Tue Jun 19 00:11:17 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_editKitDialog(object):
     def setupUi(self, editKitDialog):
         editKitDialog.setObjectName(_fromUtf8("editKitDialog"))
-        editKitDialog.resize(848, 517)
+        editKitDialog.resize(848, 566)
         self.verticalLayout_10 = QtGui.QVBoxLayout(editKitDialog)
         self.verticalLayout_10.setObjectName(_fromUtf8("verticalLayout_10"))
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
@@ -257,6 +257,11 @@ class Ui_editKitDialog(object):
         self.verticalLayout_7 = QtGui.QVBoxLayout()
         self.verticalLayout_7.setObjectName(_fromUtf8("verticalLayout_7"))
         self.groupBox = QtGui.QGroupBox(editKitDialog)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.groupBox.sizePolicy().hasHeightForWidth())
+        self.groupBox.setSizePolicy(sizePolicy)
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
         self.verticalLayout = QtGui.QVBoxLayout(self.groupBox)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
@@ -279,7 +284,13 @@ class Ui_editKitDialog(object):
         self.horizontalLayout_4.addItem(spacerItem5)
         self.verticalLayout.addLayout(self.horizontalLayout_4)
         self.noteHeadTable = QtGui.QListWidget(self.groupBox)
-        self.noteHeadTable.setMinimumSize(QtCore.QSize(214, 177))
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.noteHeadTable.sizePolicy().hasHeightForWidth())
+        self.noteHeadTable.setSizePolicy(sizePolicy)
+        self.noteHeadTable.setMinimumSize(QtCore.QSize(214, 100))
+        self.noteHeadTable.setMaximumSize(QtCore.QSize(16777215, 150))
         self.noteHeadTable.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.noteHeadTable.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         self.noteHeadTable.setProperty("showDropIndicator", False)
@@ -351,10 +362,20 @@ class Ui_editKitDialog(object):
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.verticalLayout_7.addWidget(self.groupBox)
         self.groupBox_7 = QtGui.QGroupBox(editKitDialog)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.groupBox_7.sizePolicy().hasHeightForWidth())
+        self.groupBox_7.setSizePolicy(sizePolicy)
         self.groupBox_7.setObjectName(_fromUtf8("groupBox_7"))
         self.verticalLayout_3 = QtGui.QVBoxLayout(self.groupBox_7)
         self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
         self.frame = QtGui.QFrame(self.groupBox_7)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
+        self.frame.setSizePolicy(sizePolicy)
         self.frame.setFrameShape(QtGui.QFrame.StyledPanel)
         self.frame.setFrameShadow(QtGui.QFrame.Raised)
         self.frame.setObjectName(_fromUtf8("frame"))
@@ -363,12 +384,13 @@ class Ui_editKitDialog(object):
         self.horizontalLayout_8.setMargin(0)
         self.horizontalLayout_8.setObjectName(_fromUtf8("horizontalLayout_8"))
         self.noteView = QtGui.QGraphicsView(self.frame)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.noteView.sizePolicy().hasHeightForWidth())
         self.noteView.setSizePolicy(sizePolicy)
-        self.noteView.setMaximumSize(QtCore.QSize(16777215, 100))
+        self.noteView.setMinimumSize(QtCore.QSize(0, 150))
+        self.noteView.setMaximumSize(QtCore.QSize(16777215, 150))
         self.noteView.setObjectName(_fromUtf8("noteView"))
         self.horizontalLayout_8.addWidget(self.noteView)
         self.frame_2 = QtGui.QFrame(self.frame)
