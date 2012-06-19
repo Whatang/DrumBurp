@@ -387,6 +387,13 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         for midiNote, midiName in _MIDIDATA:
             self.midiNoteCombo.addItem(midiName, userData = QVariant(midiNote))
 
+    def _checkNotationButtons(self):
+        headData = self._currentHeadData
+        line = headData.notationLine
+        self.noteUpButton.setDisabled(line >= 9)
+        self.noteDownButton.setDisabled(line <= -7)
+
+
     def _setNotation(self):
         headData = self._currentHeadData
         self.stemUpDownBox.setChecked(headData.stemDirection == DrumKit.UP)
@@ -395,6 +402,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         headIndex = self.noteHeadBox.findText(headData.notationHead)
         self.noteHeadBox.setCurrentIndex(headIndex)
         self._notationScene.setHeadData(headData)
+        self._checkNotationButtons()
 
     def _notationEffectChanged(self):
         self._currentHeadData.notationEffect = str(self.effectBox.currentText())
@@ -414,10 +422,12 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
     def _moveNotationUp(self):
         self._currentHeadData.notationLine += 1
         self._notationScene.setHeadData(self._currentHeadData)
+        self._checkNotationButtons()
 
     def _moveNotationDown(self):
         self._currentHeadData.notationLine -= 1
         self._notationScene.setHeadData(self._currentHeadData)
+        self._checkNotationButtons()
 
     def getNewKit(self):
         newKit = DrumKit()
