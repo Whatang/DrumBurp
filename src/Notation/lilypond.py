@@ -48,6 +48,7 @@ class Indenter(object):
 
     def write(self, *args, **kwargs):
         print(" " * self._level, end = '', file = self._handle)
+        kwargs['file'] = self._handle
         print(*args, **kwargs)
 
 def makeLilyContext(opener, closer):

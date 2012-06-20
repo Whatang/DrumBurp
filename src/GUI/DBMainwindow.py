@@ -42,6 +42,7 @@ import DBMidi
 from Data.Score import InconsistentRepeats
 from DBFSMEvents import StartPlaying, StopPlaying
 from DBVersion import APPNAME, DB_VERSION
+from Notation.lilypond import LilypondScore
 #pylint:disable-msg=R0904
 
 class FakeQSettings(object):
@@ -325,7 +326,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 directory = os.path.dirname(self.recentFiles[-1])
             else:
                 home = QDesktopServices.HomeLocation
-                directory = str(QDesktopServices.storageLocation(home))
+                directory = unicode(QDesktopServices.storageLocation(home))
             directory = os.path.join(directory,
                                      suggestion)
         if os.path.splitext(directory)[-1] == os.extsep + 'brp':
@@ -486,7 +487,34 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             QMessageBox.warning(self.parent(), "Export failed!",
                                 "Could not export PDF to " + outfileName)
 
-
+    @pyqtSignature("")
+    def on_actionExportLilypond_triggered(self):
+        try:
+            if self.filename:
+                outfileName = os.path.extsep.join(os.path.splitext(self.filename)[:-1])
+                directory = os.path.abspath(outfileName)
+            else:
+                outfileName = "Untitled.ly"
+                loc = QDesktopServices.HomeLocation
+                home = unicode(QDesktopServices.storageLocation(loc))
+                directory = os.path.join(home, outfileName)
+            caption = "Choose a Lilypond input file to write to"
+            fname = QFileDialog.getSaveFileName(parent = self,
+                                                caption = caption,
+                                                directory = directory,
+                                                filter = "(*.ly)")
+            if len(fname) == 0:
+                return
+            fname = unicode(fname)
+            with open(fname, 'w') as handle:
+                lyScore = LilypondScore(self.scoreScene.score)
+                lyScore.write(handle)
+        except StandardError:
+            QMessageBox.warning(self.parent(), "Export failed!",
+                                "Could not export Lilypond")
+            raise
+        else:
+            self.updateStatus("Successfully exported Lilypond to " + fname)
     @staticmethod
     @pyqtSignature("")
     def on_actionWhatsThis_triggered():
