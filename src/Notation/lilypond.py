@@ -425,14 +425,3 @@ class LilypondScore(object):
     (ly:rest-collision::calc-positioning-done grob))))
     
 """)
-
-
-def test():
-    import Data.Score
-    score = Data.Score.ScoreFactory.loadScore('C:\Users\Mike\Dropbox\Drum music\Breakout_new.brp')
-    lyScore = LilypondScore(score)
-    lyScore.write(sys.stdout)
-
-if __name__ == "__main__":
-    test()
-
