@@ -58,7 +58,7 @@ class HeadData(object):
 
     @staticmethod
     def read(abbr, dataString):
-        head, data = dataString.split()
+        head, data = dataString.split(None, 1)
         fields = data.split(",")
         note, volume, effect = fields[:3]
         note = int(note)
