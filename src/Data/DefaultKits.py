@@ -62,7 +62,7 @@ DEFAULT_EXTRA_HEADS = {"FT": [("O", None, ACCENT_VOLUME, "accent", "default", "a
                               ("O", 46, ACCENT_VOLUME, "accent", "cross", "accent"),
                               ("d", None, None, "drag", "cross", "drag"),
                               ("+", None, None, "choke", "cross", "stopped"),
-                              ("#", None, None, "choke", "cross", "stopped")],
+                              ("#", None, None, "choke", "cross", "choke")],
                        "Cr": [("X", None, ACCENT_VOLUME, "accent", "cross", "accent"),
                               ("#", None, None, "choke", "cross", "stopped")],
                        "Bd": [("O", None, ACCENT_VOLUME, "accent", "default", "accent"),

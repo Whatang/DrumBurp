@@ -101,7 +101,7 @@ class LilyMeasure(object):
                         elif effect == "accent":
                             accent += r"\accent"
                         elif effect == "choke":
-                            accent += r"\stopped"
+                            accent += r"\staccatissimo"
                         elif effect == "drag":
                             durString = str(int(dur.rstrip(".")) * 2)
                             if dur[-1] == ".":
@@ -168,21 +168,40 @@ class LilyMeasure(object):
         indenter(" ".join(voice))
 
 class LilyKit(object):
+    _HEADS = {"default": "()",
+              "harmonic black": "harmonic-black"}
+    _EFFECTS = {"open":'"open"',
+                "stopped":'"stopped"'}
     def __init__(self, kit):
         self._kit = kit
         self._lilyHeads = []
         self._lilyNames = []
+        allLilyHeads = set()
+        allLilyNames = set()
         headCount = 0
         for drum in kit:
             sanitized = "".join(ch.lower() for ch in drum.name if ch.isalpha())
             sanAbbr = "".join(ch.lower() for ch in drum.abbr if ch.isalpha())
             lilyHeads = {}
             lilyNames = {}
+            headCount = 0
             for head in drum:
-                lily = chr(0x61 + headCount / 26) + chr(0x61 + headCount % 26)
-                headCount += 1
-                lilyHeads[head] = sanAbbr + lily
-                lilyNames[head] = sanitized + lily
+                ok = False
+                headCount = -1
+                lily = ""
+                while not ok:
+                    if headCount >= 0:
+                        lily = chr(0x61 + headCount % 26)
+                    elif headCount >= 26:
+                        lily = chr(0x61 + headCount / 26) + chr(0x61 + headCount % 26)
+                    headCount += 1
+                    lHead = sanAbbr + lily
+                    lName = sanitized + lily
+                    ok = not(lHead in allLilyHeads or lName in allLilyNames)
+                lilyHeads[head] = lHead
+                lilyNames[head] = lName
+                allLilyHeads.add(lHead)
+                allLilyNames.add(lName)
             self._lilyHeads.append(lilyHeads)
             self._lilyNames.append(lilyNames)
 
@@ -192,7 +211,7 @@ class LilyKit(object):
     def getLilyNote(self, notePos, head):
         lilyHead = self._getLilyHead(notePos, head)
         headData = self._kit[notePos.drumIndex].headData(head)
-        effect = headData.effect
+        effect = headData.notationEffect
         return lilyHead, effect
 
     def getDirection(self, drumIndex, head = None):
@@ -200,7 +219,7 @@ class LilyKit(object):
         return headData.stemDirection
 
     def write(self, handle):
-        print("drumPitchName = #'(", end = '', file = handle)
+        print("drumPitchNames = #'(", end = '', file = handle)
         for drumIndex, drum in enumerate(self._kit):
             for head in drum:
                 name = self._lilyNames[drumIndex][head]
@@ -217,7 +236,16 @@ class LilyKit(object):
             for head in drum:
                 name = self._lilyNames[drumIndex][head]
                 abbr = self._lilyHeads[drumIndex][head]
-                print("   (%s () #f %d)" % (name, 0), file = handle)
+                headData = drum.headData(head)
+                lilyNoteHead = self._HEADS.get(headData.notationHead,
+                                               headData.notationHead)
+                lilyEffect = self._EFFECTS.get(headData.notationEffect,
+                                               "#f")
+                print("   (%s %s %s %d)" % (name,
+                                            lilyNoteHead,
+                                            lilyEffect,
+                                            headData.notationLine),
+                      file = handle)
         print("))", file = handle)
         print ("", file = handle)
 
@@ -383,7 +411,7 @@ class LilypondScore(object):
 
 def test():
     import Data.Score
-    score = Data.Score.ScoreFactory.loadScore('C:\Users\Mike\Dropbox\Drum music\Breakout.brp')
+    score = Data.Score.ScoreFactory.loadScore('C:\Users\Mike\Dropbox\Drum music\Breakout_new.brp')
     lyScore = LilypondScore(score)
     lyScore.write(sys.stdout)
 
