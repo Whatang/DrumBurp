@@ -494,9 +494,6 @@ _MIDIDATA = [(35, "Acoustic Bass Drum"),
 def main():
     from PyQt4.QtGui import QApplication
     import sys
-    import os
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    os.chdir("..")
     app = QApplication(sys.argv)
     kit = DrumKit()
     kit.loadDefaultKit()

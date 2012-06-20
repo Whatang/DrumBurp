@@ -70,25 +70,25 @@ class QNotationScene(QGraphicsScene):
         self._head.setZValue(-1)
 
     def _loadHeads(self):
-        defaultHead = QPixmap("GUI/defaultHead.png")
+        defaultHead = QPixmap(":/heads/GUI/defaultHead.png")
         defaultHead.setMask(defaultHead.createHeuristicMask())
         self._heads["default"] = defaultHead
-        crossHead = QPixmap("GUI/crossHead.png")
+        crossHead = QPixmap(":/heads/GUI/crossHead.png")
         crossHead.setMask(crossHead.createHeuristicMask())
         self._heads["cross"] = crossHead
-        diamondHead = QPixmap("GUI/diamondHead.png")
+        diamondHead = QPixmap(":/heads/GUI/diamondHead.png")
         diamondHead.setMask(diamondHead.createHeuristicMask())
         self._heads["diamond"] = diamondHead
-        harmonicBlackHead = QPixmap("GUI/harmonicBlackHead.png")
+        harmonicBlackHead = QPixmap(":/heads/GUI/harmonicBlackHead.png")
         harmonicBlackHead.setMask(harmonicBlackHead.createHeuristicMask())
         self._heads["harmonic black"] = harmonicBlackHead
-        harmonicHead = QPixmap("GUI/harmonicHead.png")
+        harmonicHead = QPixmap(":/heads/GUI/harmonicHead.png")
         harmonicHead.setMask(harmonicHead.createHeuristicMask())
         self._heads["harmonic"] = harmonicHead
-        triangleHead = QPixmap("GUI/triangleHead.png")
+        triangleHead = QPixmap(":/heads/GUI/triangleHead.png")
         triangleHead.setMask(triangleHead.createHeuristicMask())
         self._heads["triangle"] = triangleHead
-        xcircleHead = QPixmap("GUI/xcircleHead.png")
+        xcircleHead = QPixmap(":/heads/GUI/xcircleHead.png")
         xcircleHead.setMask(xcircleHead.createHeuristicMask())
         self._heads["xcircle"] = xcircleHead
 
