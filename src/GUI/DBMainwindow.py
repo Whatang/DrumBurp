@@ -42,7 +42,7 @@ import DBMidi
 from Data.Score import InconsistentRepeats
 from DBFSMEvents import StartPlaying, StopPlaying
 from DBVersion import APPNAME, DB_VERSION
-from Notation.lilypond import LilypondScore
+from Notation.lilypond import LilypondScore, LilypondProblem
 #pylint:disable-msg=R0904
 
 class FakeQSettings(object):
@@ -509,6 +509,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             with open(fname, 'w') as handle:
                 lyScore = LilypondScore(self.scoreScene.score)
                 lyScore.write(handle)
+        except LilypondProblem, exc:
+            QMessageBox.warning(self.parent(), "Export failed!",
+                                "Could not export Lilypond: %s" % exc.__doc__)
         except StandardError:
             QMessageBox.warning(self.parent(), "Export failed!",
                                 "Could not export Lilypond")

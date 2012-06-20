@@ -72,18 +72,6 @@ class Beat(object):
     def numTicks(self):
         return self._numTicks
 
-    def lilyDuration(self, ticks):
-        if self.ticksPerBeat % 3 == 0:
-            raise RuntimeError("Cannot handle triplets")
-        if ticks == self.numTicks:
-            return "4"
-        elif ticks == self.numTicks / 2:
-            return "8"
-        elif ticks == self.numTicks / 4:
-            return "16"
-        else:
-            return "8."
-
     def write(self, handle, indenter):
         print >> handle, indenter("BEAT_START")
         indenter.increase()

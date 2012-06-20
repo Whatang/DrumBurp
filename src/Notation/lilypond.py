@@ -63,6 +63,24 @@ def makeLilyContext(opener, closer):
 LilyContext = contextmanager(makeLilyContext("{", "}"))
 VoiceContext = contextmanager(makeLilyContext("<<", ">>"))
 
+class LilypondProblem(RuntimeError):
+    pass
+
+class TripletsProblem(LilypondProblem):
+    "DrumBurp cannot yet set triplets in Lilypond"
+
+def lilyDuration(beat, ticks):
+    if beat.ticksPerBeat % 3 == 0:
+        raise TripletsProblem()
+    if ticks == beat.numTicks:
+        return "4"
+    elif ticks == beat.numTicks / 2:
+        return "8"
+    elif ticks == beat.numTicks / 4:
+        return "16"
+    else:
+        return "8."
+
 def lilyString(inString):
     return '"%s"' % inString
 
@@ -95,7 +113,7 @@ class LilyMeasure(object):
                                           noteTimes[direction][1:]):
                 unusedBeatNum, beat, tick = self._beats[thisTime]
                 numTicks = nextTime - thisTime
-                durationDict[thisTime] = beat.lilyDuration(numTicks)
+                durationDict[thisTime] = lilyDuration(beat, numTicks)
         lilyNotes = {DrumKit.UP:{}, DrumKit.DOWN:{}}
         effects = {DrumKit.UP:{}, DrumKit.DOWN:{}}
         for direction, lilyDict in lilyNotes.iteritems():
