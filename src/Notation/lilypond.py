@@ -6,6 +6,7 @@ Created on 4 Apr 2012
 '''
 from __future__ import print_function
 from contextlib import contextmanager
+from Data.DrumKit import DrumKit
 
 import sys
 
@@ -47,18 +48,18 @@ def lilyString(inString):
     return '"%s"' % inString
 
 class LilyMeasure(object):
-    def __init__(self, score, measure):
+    def __init__(self, score, measure, kit):
         self.measure = measure
         self.score = score
-        self.kit = score.drumKit
+        self.kit = kit
         self._beats = list(self.measure.counter.iterBeatTicks())
-        self._voices = {self.kit.UP:[], self.kit.DOWN:[]}
+        self._voices = {DrumKit.UP:[], DrumKit.DOWN:[]}
         self._build()
 
     def _build(self):
-        notes = {self.kit.UP : [], self.kit.DOWN : []}
+        notes = {DrumKit.UP : [], DrumKit.DOWN : []}
         for notePos, head in self.measure:
-            direction = self.kit.getDirection(notePos.drumIndex)
+            direction = self.kit.getDirection(notePos.drumIndex, head)
             notes[direction].append((notePos, head))
         noteTimes = {}
         for direction in notes:
@@ -69,15 +70,15 @@ class LilyMeasure(object):
             timeSet.add(len(self._beats))
             noteTimes[direction] = list(timeSet)
             noteTimes[direction].sort()
-        durations = {self.kit.UP: {}, self.kit.DOWN:{}}
+        durations = {DrumKit.UP: {}, DrumKit.DOWN:{}}
         for direction, durationDict in durations.iteritems():
             for thisTime, nextTime in zip(noteTimes[direction][:-1],
                                           noteTimes[direction][1:]):
                 unusedBeatNum, beat, tick = self._beats[thisTime]
                 numTicks = nextTime - thisTime
                 durationDict[thisTime] = beat.lilyDuration(numTicks)
-        lilyNotes = {self.kit.UP:{}, self.kit.DOWN:{}}
-        effects = {self.kit.UP:{}, self.kit.DOWN:{}}
+        lilyNotes = {DrumKit.UP:{}, DrumKit.DOWN:{}}
+        effects = {DrumKit.UP:{}, DrumKit.DOWN:{}}
         for direction, lilyDict in lilyNotes.iteritems():
             for (notePos, head) in notes[direction]:
                 if notePos.noteTime not in lilyDict:
@@ -85,7 +86,7 @@ class LilyMeasure(object):
                 noteIndicator, effect = self.kit.getLilyNote(notePos, head)
                 lilyDict[notePos.noteTime].append(noteIndicator)
                 effects[direction].setdefault(notePos.noteTime, []).append((noteIndicator, effect))
-        wholeRests = {self.kit.UP: {}, self.kit.DOWN: {}}
+        wholeRests = {DrumKit.UP: {}, DrumKit.DOWN: {}}
         for direction, timeList in noteTimes.iteritems():
             lNotes = lilyNotes[direction]
             lEffects = effects[direction]
@@ -123,8 +124,8 @@ class LilyMeasure(object):
             for (rest, index) in restTimes.iteritems():
                 if rest not in wholeRests[otherDirection]:
                     self._voices[direction][index] = "s4"
-        self._mergeRests(self.kit.UP)
-        self._mergeRests(self.kit.DOWN)
+        self._mergeRests(DrumKit.UP)
+        self._mergeRests(DrumKit.DOWN)
 
     def _mergeRests(self, direction):
         resting = False
@@ -159,17 +160,72 @@ class LilyMeasure(object):
 
 
     def voiceOne(self, indenter):
-        voice = self._voices[self.kit.UP]
+        voice = self._voices[DrumKit.UP]
         indenter(" ".join(voice))
 
     def voiceTwo(self, indenter):
-        voice = self._voices[self.kit.DOWN]
+        voice = self._voices[DrumKit.DOWN]
         indenter(" ".join(voice))
+
+class LilyKit(object):
+    def __init__(self, kit):
+        self._kit = kit
+        self._lilyHeads = []
+        self._lilyNames = []
+        headCount = 0
+        for drum in kit:
+            sanitized = "".join(ch.lower() for ch in drum.name if ch.isalpha())
+            sanAbbr = "".join(ch.lower() for ch in drum.abbr if ch.isalpha())
+            lilyHeads = {}
+            lilyNames = {}
+            for head in drum:
+                lily = chr(0x61 + headCount / 26) + chr(0x61 + headCount % 26)
+                headCount += 1
+                lilyHeads[head] = sanAbbr + lily
+                lilyNames[head] = sanitized + lily
+            self._lilyHeads.append(lilyHeads)
+            self._lilyNames.append(lilyNames)
+
+    def _getLilyHead(self, notePos, head):
+        return self._lilyHeads[notePos.drumIndex][head]
+
+    def getLilyNote(self, notePos, head):
+        lilyHead = self._getLilyHead(notePos, head)
+        headData = self._kit[notePos.drumIndex].headData(head)
+        effect = headData.effect
+        return lilyHead, effect
+
+    def getDirection(self, drumIndex, head = None):
+        headData = self._kit[drumIndex].headData(head)
+        return headData.stemDirection
+
+    def write(self, handle):
+        print("drumPitchName = #'(", end = '', file = handle)
+        for drumIndex, drum in enumerate(self._kit):
+            for head in drum:
+                name = self._lilyNames[drumIndex][head]
+                print("   (%s . %s)" % (name, name), file = handle)
+        for drumIndex, drum in enumerate(self._kit):
+            for head in drum:
+                name = self._lilyNames[drumIndex][head]
+                abbr = self._lilyHeads[drumIndex][head]
+                print("   (%s . %s)" % (abbr, name), file = handle)
+        print (")", file = handle)
+        print("", file = handle)
+        print("#(define dbdrums '(", file = handle)
+        for drumIndex, drum in enumerate(self._kit):
+            for head in drum:
+                name = self._lilyNames[drumIndex][head]
+                abbr = self._lilyHeads[drumIndex][head]
+                print("   (%s () #f %d)" % (name, 0), file = handle)
+        print("))", file = handle)
+        print ("", file = handle)
+
 
 class LilypondScore(object):
     def __init__(self, score):
         self.score = score
-        self.kit = score.drumKit
+        self._lilyKit = LilyKit(score.drumKit)
         self.scoreData = score.scoreData
         self.indenter = Indenter()
 
@@ -179,6 +235,7 @@ class LilypondScore(object):
         with LilyContext(self.indenter, '\header'):
             self._writeHeader()
         self._writeMacros(handle)
+        self._lilyKit.write(handle)
         with LilyContext(self.indenter, '\score'):
             self._writeScore()
 
@@ -199,6 +256,7 @@ class LilypondScore(object):
                 self.indenter(r"\DrumStaff \override RestCollision #'positioning-done = #merge-rests-on-positioning")
 
     def _writeDrumStaffInfo(self):
+        self.indenter(r'\set DrumStaff.drumStyleTable = #(alist->hash-table dbdrums)')
         self.indenter(r'\set Staff.instrumentName = #"Drums"')
         if self.scoreData.bpmVisible:
             self.indenter(r'\tempo 4 = %d' % self.scoreData.bpm)
@@ -250,7 +308,7 @@ class LilypondScore(object):
                 self.indenter(r"\set Score.repeatCommands = #'(%s)" % " ".join(repeatCommands))
 
     def _writeMeasure(self, measure):
-        parsed = LilyMeasure(self.score, measure)
+        parsed = LilyMeasure(self.score, measure, self._lilyKit)
         with LilyContext(self.indenter, r'\new DrumVoice'):
             self.indenter(r'\voiceOne')
             parsed.voiceOne(self.indenter)
@@ -325,7 +383,7 @@ class LilypondScore(object):
 
 def test():
     import Data.Score
-    score = Data.Score.ScoreFactory.loadScore('C:\Users\Mike_2\Dropbox\Drum music\Breakout.brp')
+    score = Data.Score.ScoreFactory.loadScore('C:\Users\Mike\Dropbox\Drum music\Breakout.brp')
     lyScore = LilypondScore(score)
     lyScore.write(sys.stdout)
 

@@ -36,6 +36,7 @@ class DrumKit(object):
 
     def __init__(self):
         self._drums = []
+        self._lily = {}
 
     def __len__(self):
         return len(self._drums)
@@ -129,23 +130,3 @@ class DrumKit(object):
 
     def getDefaultHead(self, index):
         return self[index].head
-
-    def getDirection(self, drumIndex):
-        # TODO: Make this user configurable
-        if drumIndex > len(self) / 2:
-            return self.UP
-        else:
-            return self.DOWN
-
-    def _getLilyHead(self, notePos, head):
-        # TODO: Make this user configurable
-        # TODO: Make this depend on the note head
-        return DEFAULT_LILYPOND[self[notePos.drumIndex].abbr]
-
-    def getLilyNote(self, notePos, head):
-        # TODO: Make this user configurable
-        # TODO: Make this depend on the note head
-        lilyHead = self._getLilyHead(notePos, head)
-        headData = self[notePos.drumIndex].headData(head)
-        effect = headData.effect
-        return lilyHead, effect
