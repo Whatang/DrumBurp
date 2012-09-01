@@ -24,6 +24,7 @@ Created on 4 Apr 2012
 '''
 from __future__ import print_function
 from contextlib import contextmanager
+import collections
 from Data.DrumKit import DrumKit
 
 import sys
@@ -85,6 +86,11 @@ def lilyString(inString):
     return '"%s"' % inString
 
 class LilyMeasure(object):
+    _FLAM_STRING = (r"\override Stem #'length = #4 \acciaccatura{%s8} "
+                    + r"\revert Stem #'length")
+    _ACCENT_STRING = r"\accent"
+    _CHOKE_STRING = r"\staccatissimo"
+
     def __init__(self, score, measure, kit):
         self.measure = measure
         self.score = score
@@ -93,37 +99,76 @@ class LilyMeasure(object):
         self._voices = {DrumKit.UP:[], DrumKit.DOWN:[]}
         self._build()
 
-    def _build(self):
-        notes = {DrumKit.UP : [], DrumKit.DOWN : []}
+
+    def _separateNotesByDirection(self):
+        notes = {DrumKit.UP:[], DrumKit.DOWN:[]}
         for notePos, head in self.measure:
             direction = self.kit.getDirection(notePos.drumIndex, head)
             notes[direction].append((notePos, head))
+        return notes
+
+
+    def _calculateNoteTimes(self, notes):
         noteTimes = {}
         for direction in notes:
-            timeSet = set(notePos.noteTime  for (notePos, head)
-                           in notes[direction])
+            timeSet = set(notePos.noteTime for (notePos, head) in
+                notes[direction])
             for tick in self.measure.counter.iterBeatTimes():
                 timeSet.add(tick)
+
             timeSet.add(len(self._beats))
             noteTimes[direction] = list(timeSet)
             noteTimes[direction].sort()
-        durations = {DrumKit.UP: {}, DrumKit.DOWN:{}}
-        for direction, durationDict in durations.iteritems():
-            for thisTime, nextTime in zip(noteTimes[direction][:-1],
-                                          noteTimes[direction][1:]):
-                unusedBeatNum, beat, tick = self._beats[thisTime]
+        return noteTimes
+
+    def _calculateDurations(self, noteTimes):
+        durations = {}
+        for direction, timeList in noteTimes.iteritems():
+            durationDict = {}
+            for thisTime, nextTime in zip(timeList[:-1],
+                timeList[1:]):
+                unusedBeatNum, beat, tick_ = self._beats[thisTime]
                 numTicks = nextTime - thisTime
                 durationDict[thisTime] = lilyDuration(beat, numTicks)
-        lilyNotes = {DrumKit.UP:{}, DrumKit.DOWN:{}}
+            durations[direction] = durationDict
+        return durations
+
+
+    def _getLilyNotesAndEffects(self, notes):
+        lilyNotes = {}
         effects = {DrumKit.UP:{}, DrumKit.DOWN:{}}
-        for direction, lilyDict in lilyNotes.iteritems():
-            for (notePos, head) in notes[direction]:
+        for direction, timeList in notes.iteritems():
+            lilyDict = {}
+            effectsDict = collections.defaultdict(list)
+            for notePos, head in timeList:
                 if notePos.noteTime not in lilyDict:
                     lilyDict[notePos.noteTime] = []
                 noteIndicator, effect = self.kit.getLilyNote(notePos, head)
                 lilyDict[notePos.noteTime].append(noteIndicator)
-                effects[direction].setdefault(notePos.noteTime, []).append((noteIndicator, effect))
-        wholeRests = {DrumKit.UP: {}, DrumKit.DOWN: {}}
+                effectsDict[notePos.noteTime].append((noteIndicator, effect))
+            lilyNotes[direction] = lilyDict
+            effects[direction] = effectsDict
+        return lilyNotes, effects
+
+
+    @staticmethod
+    def _makeDrag(dur):
+        durString = str(int(dur.rstrip(".")) * 2)
+        if dur[-1] == ".":
+            durString += "."
+        return ":" + durString
+
+    @staticmethod
+    def _makeNoteString(lNotes):
+        if len(lNotes) > 1:
+            noteString = "<" + " ".join(lNotes) + ">"
+        else:
+            noteString = lNotes[0]
+        return noteString
+
+
+    def _buildVoices(self, noteTimes, durations, lilyNotes, effects):
+        wholeRests = collections.defaultdict(dict)
         for direction, timeList in noteTimes.iteritems():
             lNotes = lilyNotes[direction]
             lEffects = effects[direction]
@@ -134,32 +179,36 @@ class LilyMeasure(object):
                 if noteTime in lEffects:
                     for noteIndicator, effect in lEffects[noteTime]:
                         if effect == "flam":
-                            voice.append(r"\override Stem #'length = #4 \acciaccatura{%s8} \revert Stem #'length" % noteIndicator)
+                            voice.append(self._FLAM_STRING % noteIndicator)
                         elif effect == "accent":
-                            accent += r"\accent"
+                            accent += self._ACCENT_STRING
                         elif effect == "choke":
-                            accent += r"\staccatissimo"
+                            accent += self._CHOKE_STRING
                         elif effect == "drag":
-                            durString = str(int(dur.rstrip(".")) * 2)
-                            if dur[-1] == ".":
-                                durString += "."
-                            tremolo = ":" + durString
-                            accent = tremolo + accent
+                            accent = self._makeDrag(dur) + accent
                         elif effect == "ghost":
                             noteIndex = lNotes[noteTime].index(noteIndicator)
-                            lNotes[noteTime][noteIndex] = r"< \parenthesize " + noteIndicator + ">"
+                            lNotes[noteTime][noteIndex] = (r"< \parenthesize " +
+                                                           noteIndicator + ">")
                 if noteTime not in lNotes:
                     lNotes[noteTime] = ["r"]
-                if len(lNotes[noteTime]) > 1:
-                    voice.append("<" + " ".join(lNotes[noteTime]) + ">" + dur + accent)
-                else:
-                    voice.append(lNotes[noteTime][0] + dur + accent)
-                    if lNotes[noteTime] == ["r"] and dur == "4":
-                        wholeRests[direction][noteTime] = len(voice) - 1
+                if lNotes[noteTime] == ["r"] and dur == "4":
+                    wholeRests[direction][noteTime] = len(voice)
+                voice.append(self._makeNoteString(lNotes[noteTime])
+                             + dur + accent)
+        return wholeRests
+
+    def _build(self):
+        notes = self._separateNotesByDirection()
+        noteTimes = self._calculateNoteTimes(notes)
+        durations = self._calculateDurations(noteTimes)
+        lilyNotes, effects = self._getLilyNotesAndEffects(notes)
+        wholeRests = self._buildVoices(noteTimes, durations, lilyNotes, effects)
         for direction, restTimes in wholeRests.iteritems():
             otherDirection = 1 - direction
             for (rest, index) in restTimes.iteritems():
-                if rest not in wholeRests[otherDirection]:
+                if (otherDirection not in wholeRests
+                    or rest not in wholeRests[otherDirection]):
                     self._voices[direction][index] = "s4"
         self._mergeRests(DrumKit.UP)
         self._mergeRests(DrumKit.DOWN)
@@ -230,7 +279,8 @@ class LilyKit(object):
                     if headCount >= 0:
                         lily = chr(0x61 + headCount % 26)
                     elif headCount >= 26:
-                        lily = chr(0x61 + headCount / 26) + chr(0x61 + headCount % 26)
+                        lily = (chr(0x61 + headCount / 26)
+                                + chr(0x61 + headCount % 26))
                     headCount += 1
                     lHead = sanAbbr + lily
                     lName = sanitized + lily
@@ -318,59 +368,85 @@ class LilypondScore(object):
                 self._writeMusic()
         with LILY_CONTEXT(self.indenter, r'\layout'):
             with LILY_CONTEXT(self.indenter, r'\context'):
-                self.indenter(r"\DrumStaff \override RestCollision #'positioning-done = #merge-rests-on-positioning")
+                self.indenter(r"\DrumStaff \override RestCollision " +
+                              r"#'positioning-done = " +
+                              r"#merge-rests-on-positioning")
 
     def _writeDrumStaffInfo(self):
-        self.indenter(r'\set DrumStaff.drumStyleTable = #(alist->hash-table dbdrums)')
+        self.indenter(r'\set DrumStaff.drumStyleTable ' +
+                      r'= #(alist->hash-table dbdrums)')
         self.indenter(r'\set Staff.instrumentName = #"Drums"')
         if self.scoreData.bpmVisible:
             self.indenter(r'\tempo 4 = %d' % self.scoreData.bpm)
-        #self.indenter(r'\set DrumStaff.drumStyleTable = #(alist->hash-table mydrums)')
-        self.indenter(r"\override Score.RehearsalMark #'self-alignment-X = #LEFT")
+        self.indenter(r"\override Score.RehearsalMark " +
+                      r"#'self-alignment-X = #LEFT")
+
+
+    @staticmethod
+    def _getNextRepeats(repeatCommands, hasAlternate, measure):
+        if measure.isRepeatStart():
+            repeatCommands.append("start-repeat")
+        if measure.alternateText is not None:
+            if hasAlternate:
+                repeatCommands.append("(volta #f)")
+            repeatCommands.append("(volta %s)" %
+                                  lilyString(measure.alternateText))
+            hasAlternate = True
+        return hasAlternate
+
+
+    def _writeSectionTitle(self, sectionTitle):
+        if sectionTitle:
+            self.indenter(r'\mark %s' % lilyString(sectionTitle))
+            sectionTitle = None
+        return sectionTitle
+
+
+    def _getLastRepeats(self, repeatCommands, hasAlternate, measure):
+        if measure.isRepeatEnd():
+            if measure.repeatCount > 2:
+                self.indenter(r"\once \override Score.RehearsalMark " +
+                              r"#'self-alignment-X = #right")
+                self.indenter(r'\mark %s'
+                              % lilyString("x%d" % measure.repeatCount))
+            repeatCommands.append("end-repeat")
+        if hasAlternate and (measure.isSectionEnd() or
+            measure.isRepeatEnd()):
+            repeatCommands.append("(volta #f)")
+            hasAlternate = False
+        return hasAlternate
+
+
+    def _getNextSectionTitle(self, sectionIndex):
+        sectionIndex += 1
+        sectionTitle = None
+        if sectionIndex < self.score.numSections():
+            sectionTitle = self.score.getSectionTitle(sectionIndex)
+        return sectionIndex, sectionTitle
 
     def _writeMusic(self):
-        measureIterator = self.score.iterMeasures()
-        sectionTitle = self.score.getSectionTitle(0)
-        sectionIndex = 0
+        secIndex, secTitle = self._getNextSectionTitle(-1)
         repeatCommands = []
-        try:
-            measure = measureIterator.next()
-            hasAlternate = False
-            while True:
-                if sectionTitle:
-                    self.indenter(r'\mark %s' % lilyString(sectionTitle))
-                if measure.isRepeatStart():
-                    repeatCommands.append("start-repeat")
-                if measure.alternateText is not None:
-                    if hasAlternate:
-                        repeatCommands.append("(volta #f)")
-                    repeatCommands.append("(volta %s)" % lilyString(measure.alternateText))
-                    hasAlternate = True
-                if repeatCommands:
-                    self.indenter(r"\set Score.repeatCommands = #'(%s)" % " ".join(repeatCommands))
-                    repeatCommands = []
-                with VOICE_CONTEXT(self.indenter, ""):
-                    self._writeMeasure(measure)
-                if measure.isRepeatEnd():
-                    if measure.repeatCount > 2:
-                        self.indenter(r"\once \override Score.RehearsalMark #'self-alignment-X = #right")
-                        self.indenter(r'\mark %s' % lilyString("x%d" % measure.repeatCount))
-                    repeatCommands.append("end-repeat")
-                if measure.isSectionEnd():
-                    sectionIndex += 1
-                    if sectionIndex < self.score.numSections():
-                        sectionTitle = self.score.getSectionTitle(sectionIndex)
-                else:
-                    sectionTitle = None
-                if hasAlternate and (measure.isSectionEnd() or measure.isRepeatEnd()):
-                    repeatCommands.append("(volta #f)")
-                    hasAlternate = False
-                if measure.isLineEnd() or measure.isSectionEnd():
-                    self.indenter(r'\break')
-                measure = measureIterator.next()
-        except StopIteration:
+        hasAlternate = False
+        for measure in self.score.iterMeasures():
+            secTitle = self._writeSectionTitle(secTitle)
+            hasAlternate = self._getNextRepeats(repeatCommands,
+                                                hasAlternate, measure)
             if repeatCommands:
-                self.indenter(r"\set Score.repeatCommands = #'(%s)" % " ".join(repeatCommands))
+                self.indenter(r"\set Score.repeatCommands = #'(%s)" %
+                              " ".join(repeatCommands))
+                repeatCommands = []
+            with VOICE_CONTEXT(self.indenter, ""):
+                self._writeMeasure(measure)
+            hasAlternate = self._getLastRepeats(repeatCommands,
+                                                hasAlternate, measure)
+            if measure.isSectionEnd():
+                secIndex, secTitle = self._getNextSectionTitle(secIndex)
+            if measure.isLineEnd() or measure.isSectionEnd():
+                self.indenter(r'\break')
+        if repeatCommands:
+            self.indenter(r"\set Score.repeatCommands = #'(%s)"
+                          % " ".join(repeatCommands))
 
     def _writeMeasure(self, measure):
         parsed = LilyMeasure(self.score, measure, self._lilyKit)
@@ -381,7 +457,8 @@ class LilypondScore(object):
             self.indenter(r'\voiceTwo')
             parsed.voiceTwo(self.indenter)
 
-    def _writeMacros(self, handle):
+    @staticmethod
+    def _writeMacros(handle):
         handle.write("""
 #(define (rest-score r)
   (let ((score 0)
