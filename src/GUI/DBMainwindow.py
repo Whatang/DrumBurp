@@ -28,8 +28,8 @@ from ui_drumburp import Ui_DrumBurpWindow
 from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QFileDialog, QMessageBox,
                          QPrintPreviewDialog, QWhatsThis,
-                         QPrinterInfo,
-                         QPrinter, QDesktopServices)
+                         QPrinterInfo, QLabel, QFrame,
+                         QPrinter, QDesktopServices, QSizePolicy)
 from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer
 from QScore import QScore
 from QDisplayProperties import QDisplayProperties
@@ -102,6 +102,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.restoreState(settings.value("MainWindow/State").toByteArray())
         self._initializeState()
         self.setSections()
+        self._infoBar = QLabel()
+        self._infoBar.setFrameShape(self._infoBar.Panel)
+        self._infoBar.setFrameShadow(self._infoBar.Sunken)
+        self.statusbar.addPermanentWidget(self._infoBar)
         QTimer.singleShot(0, self._startUp)
 
 
@@ -120,7 +124,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         scene.dragHighlight.connect(self.checkPasteMeasure)
         scene.dragHighlight.connect(self.actionClearMeasures.setEnabled)
         scene.dragHighlight.connect(self.actionDeleteMeasures.setEnabled)
-        scene.setNumPages.connect(self.setNumPages)
+        scene.sceneFormatted.connect(self.sceneFormatted)
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
@@ -755,12 +759,20 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     @pyqtSignature("int")
     def on_paperBox_currentIndexChanged(self, index):
         self._pageHeight = self._knownPageHeights[index]
-        self.setNumPages()
+        self.sceneFormatted()
 
-    def setNumPages(self):
+    def sceneFormatted(self):
         if self.scoreScene:
+            numMeasures = self.scoreScene.score.numMeasures()
+            measureText = "%d Measure" % numMeasures
+            if numMeasures > 1:
+                measureText += "s"
+            numStaffs = self.scoreScene.score.numStaffs()
+            staffText = "%d Staff" % numStaffs
+            if numStaffs > 1:
+                staffText += "s"
             numPages = self.scoreScene.numPages(self._pageHeight)
+            pagetext = "%d Page" % numPages
             if numPages > 1:
-                self.pagesLabel.setText("%d Pages" % numPages)
-            else:
-                self.pagesLabel.setText("1 Page")
+                pagetext += "s"
+            self._infoBar.setText(", ".join([measureText, staffText, pagetext]))

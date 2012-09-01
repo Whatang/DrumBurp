@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike\workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Tue Jun 19 22:09:25 2012
+# Created: Sat Sep 01 19:20:10 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -178,14 +178,6 @@ class Ui_DrumBurpWindow(object):
         self.frame_10.setFrameShadow(QtGui.QFrame.Raised)
         self.frame_10.setObjectName(_fromUtf8("frame_10"))
         self.horizontalLayout_8.addWidget(self.frame_10)
-        self.pagesLabel = QtGui.QLabel(self.groupBox)
-        self.pagesLabel.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Number of pages in this score", None, QtGui.QApplication.UnicodeUTF8))
-        self.pagesLabel.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "The number of pages in this score.\n"
-"\n"
-"The number of pages used by this score depends on the score width, the font size and the current page size selected. The number of pages being used with the current settings is displayed here.", None, QtGui.QApplication.UnicodeUTF8))
-        self.pagesLabel.setText(QtGui.QApplication.translate("DrumBurpWindow", "0 Pages", None, QtGui.QApplication.UnicodeUTF8))
-        self.pagesLabel.setObjectName(_fromUtf8("pagesLabel"))
-        self.horizontalLayout_8.addWidget(self.pagesLabel)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_8.addItem(spacerItem)
         self.verticalLayout.addWidget(self.groupBox)

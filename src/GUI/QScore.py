@@ -122,7 +122,7 @@ class QScore(QtGui.QGraphicsScene):
     spacingChanged = QtCore.pyqtSignal(int)
     sectionsChanged = QtCore.pyqtSignal()
     dragHighlight = QtCore.pyqtSignal(bool)
-    setNumPages = QtCore.pyqtSignal()
+    sceneFormatted = QtCore.pyqtSignal()
 
     def addCommand(self, command):
         self._undoStack.push(command)
@@ -361,7 +361,7 @@ class QScore(QtGui.QGraphicsScene):
         self.setSceneRect(0, 0,
                           maxWidth + 2 * xMargins,
                           yOffset - lineSpacing + yMargins)
-        self.setNumPages.emit()
+        self.sceneFormatted.emit()
 
     def xSpacingChanged(self):
         self.placeStaffs(QStaff.xSpacingChanged)
