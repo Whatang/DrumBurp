@@ -70,17 +70,33 @@ class LilypondProblem(RuntimeError):
 class TripletsProblem(LilypondProblem):
     "DrumBurp cannot yet set triplets in Lilypond"
 
+class FiveSixthsProblem(LilypondProblem):
+    "DrumBurp cannot set notes of length 5/6 beat."
+
 def lilyDuration(beat, ticks):
-    if beat.ticksPerBeat % 3 == 0:
-        raise TripletsProblem()
+    dur = None
     if ticks == beat.numTicks:
-        return "4"
-    elif ticks == beat.numTicks / 2:
-        return "8"
-    elif ticks == beat.numTicks / 4:
-        return "16"
+        dur = "4"
+    elif beat.numTicks % 3 == 0:
+        if ticks * 6 == 5 * beat.numTicks:
+            raise FiveSixthsProblem()
+        elif ticks * 3 == 2 * beat.numTicks:
+            dur = "@4"
+        elif ticks * 2 == beat.numTicks:
+            dur = "@8."
+        elif ticks * 3 == beat.numTicks:
+            dur = "@8"
+        elif ticks * 6 == beat.numTicks:
+            dur = "@16"
     else:
-        return "8."
+        if 2 * ticks == beat.numTicks:
+            dur = "8"
+        elif 4 * ticks == beat.numTicks:
+            dur = "16"
+        elif 4 * ticks == 3 * beat.numTicks:
+            dur = "8."
+    return dur
+
 
 def lilyString(inString):
     return '"%s"' % inString
@@ -160,7 +176,7 @@ class LilyMeasure(object):
 
     @staticmethod
     def _makeNoteString(lNotes):
-        if len(lNotes) > 1:
+        if len(lNotes) > 1 or lNotes[0].startswith(r"\paren"):
             noteString = "<" + " ".join(lNotes) + ">"
         else:
             noteString = lNotes[0]
@@ -173,8 +189,20 @@ class LilyMeasure(object):
             lNotes = lilyNotes[direction]
             lEffects = effects[direction]
             voice = self._voices[direction]
+            isTriplet = False
             for noteTime in timeList[:-1]:
                 dur = durations[direction][noteTime]
+                if dur.startswith("@"):
+                    dur = dur[1:]
+                    if not isTriplet:
+                        if dur == "8.":
+                            dur = "8"
+                        else:
+                            isTriplet = True
+                            voice.append(r"\times 2/3 {")
+                elif isTriplet:
+                    voice.append("}")
+                    isTriplet = False
                 accent = ""
                 if noteTime in lEffects:
                     for noteIndicator, effect in lEffects[noteTime]:
@@ -188,14 +216,16 @@ class LilyMeasure(object):
                             accent = self._makeDrag(dur) + accent
                         elif effect == "ghost":
                             noteIndex = lNotes[noteTime].index(noteIndicator)
-                            lNotes[noteTime][noteIndex] = (r"< \parenthesize " +
-                                                           noteIndicator + ">")
+                            lNotes[noteTime][noteIndex] = (r"\parenthesize " +
+                                                           noteIndicator)
                 if noteTime not in lNotes:
                     lNotes[noteTime] = ["r"]
                 if lNotes[noteTime] == ["r"] and dur == "4":
                     wholeRests[direction][noteTime] = len(voice)
                 voice.append(self._makeNoteString(lNotes[noteTime])
                              + dur + accent)
+            if isTriplet:
+                voice.append("}")
         return wholeRests
 
     def _build(self):
@@ -210,10 +240,10 @@ class LilyMeasure(object):
                 if (otherDirection not in wholeRests
                     or rest not in wholeRests[otherDirection]):
                     self._voices[direction][index] = "s4"
-        self._mergeRests(DrumKit.UP)
-        self._mergeRests(DrumKit.DOWN)
+        self._mergeWholeRests(DrumKit.UP)
+        self._mergeWholeRests(DrumKit.DOWN)
 
-    def _mergeRests(self, direction):
+    def _mergeWholeRests(self, direction):
         resting = False
         start = None
         newRestLengths = {1: "4", 2: "2", 3:"2.", 4:"1"}
@@ -241,9 +271,6 @@ class LilyMeasure(object):
             newLength = newRestLengths[restLength]
             newVoice.append("r" + newLength)
         self._voices[direction] = newVoice
-
-
-
 
     def voiceOne(self, indenter):
         voice = self._voices[DrumKit.UP]
