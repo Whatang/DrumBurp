@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="Icons">
+    <file>Icons/lilypond-icon.png</file>
     <file>Icons/book.png</file>
     <file>Icons/arrow-repeat.png</file>
     <file>Icons/arrow-repeat-once.png</file>

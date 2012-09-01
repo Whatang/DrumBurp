@@ -30,6 +30,7 @@ from Data.Drum import Drum
 import copy
 import string #IGNORE:W0402
 import DBMidi
+from QNotationScene import QNotationScene
 
 class QEditKitDialog(QDialog, Ui_editKitDialog):
     '''
@@ -70,6 +71,11 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.setDefaultHeadButton.clicked.connect(self._setDefaultHead)
         self.headDownButton.clicked.connect(self._moveNoteHeadDown)
         self.deleteHeadButton.clicked.connect(self._removeNoteHead)
+        self.noteHeadBox.currentIndexChanged.connect(self._notationHeadChanged)
+        self.effectBox.currentIndexChanged.connect(self._effectChanged)
+        self.stemUpDownBox.stateChanged.connect(self._stemDirectionChanged)
+        self.noteUpButton.clicked.connect(self._moveNotationUp)
+        self.noteDownButton.clicked.connect(self._moveNotationDown)
         self._populateMidiCombo()
         self.midiNoteCombo.currentIndexChanged.connect(self._midiNoteChanged)
         self.volumeSlider.valueChanged.connect(self._midiVolumeChanged)
@@ -77,6 +83,9 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             if isinstance(effect, QRadioButton):
                 effect.toggled.connect(self._effectChanged)
         self.lockedCheckBox.stateChanged.connect(self._lockChanged)
+        self._notationScene = QNotationScene(self)
+        self.noteView.setScene(self._notationScene)
+        self.noteView.centerOn(*self._notationScene.getCenter())
         self._populate()
 
 
@@ -265,6 +274,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         if not self.muteButton.isChecked():
             DBMidi.playHeadData(self._currentHeadData)
         self._checkHeadButtons()
+        self._setNotation()
 
     def _populateCurrentNoteHead(self):
         self.currentNoteHead.blockSignals(True)
@@ -377,6 +387,48 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         for midiNote, midiName in _MIDIDATA:
             self.midiNoteCombo.addItem(midiName, userData = QVariant(midiNote))
 
+    def _checkNotationButtons(self):
+        headData = self._currentHeadData
+        line = headData.notationLine
+        self.noteUpButton.setDisabled(line >= 9)
+        self.noteDownButton.setDisabled(line <= -7)
+
+
+    def _setNotation(self):
+        headData = self._currentHeadData
+        self.stemUpDownBox.setChecked(headData.stemDirection == DrumKit.UP)
+        effectIndex = self.effectBox.findText(headData.notationEffect)
+        self.effectBox.setCurrentIndex(effectIndex)
+        headIndex = self.noteHeadBox.findText(headData.notationHead)
+        self.noteHeadBox.setCurrentIndex(headIndex)
+        self._notationScene.setHeadData(headData)
+        self._checkNotationButtons()
+
+    def _notationEffectChanged(self):
+        self._currentHeadData.notationEffect = str(self.effectBox.currentText())
+        self._notationScene.setHeadData(self._currentHeadData)
+
+    def _notationHeadChanged(self):
+        self._currentHeadData.notationHead = str(self.noteHeadBox.currentText())
+        self._notationScene.setHeadData(self._currentHeadData)
+
+    def _stemDirectionChanged(self):
+        if self.stemUpDownBox.isChecked():
+            self._currentHeadData.stemDirection = DrumKit.UP
+        else:
+            self._currentHeadData.stemDirection = DrumKit.DOWN
+        self._notationScene.setHeadData(self._currentHeadData)
+
+    def _moveNotationUp(self):
+        self._currentHeadData.notationLine += 1
+        self._notationScene.setHeadData(self._currentHeadData)
+        self._checkNotationButtons()
+
+    def _moveNotationDown(self):
+        self._currentHeadData.notationLine -= 1
+        self._notationScene.setHeadData(self._currentHeadData)
+        self._checkNotationButtons()
+
     def getNewKit(self):
         newKit = DrumKit()
         oldLines = []
@@ -439,7 +491,6 @@ _MIDIDATA = [(35, "Acoustic Bass Drum"),
 
 
 
-
 def main():
     from PyQt4.QtGui import QApplication
     import sys
@@ -448,7 +499,6 @@ def main():
     kit.loadDefaultKit()
     dialog = QEditKitDialog(kit, [kit[0]])
     dialog.show()
-    print kit
     app.exec_()
     if dialog.result():
         newKit, changes = dialog.getNewKit()

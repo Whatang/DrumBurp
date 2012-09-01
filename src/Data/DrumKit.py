@@ -24,16 +24,19 @@ Created on 12 Dec 2010
 '''
 
 from Drum import Drum, HeadData
-from DefaultKits import DEFAULT_KIT, DEFAULT_EXTRA_HEADS
+from DefaultKits import DEFAULT_KIT, DEFAULT_EXTRA_HEADS, STEM_DOWN, STEM_UP
 from DBErrors import DuplicateDrumError, NoSuchDrumError
 
 class DrumKit(object):
     '''
     classdocs
     '''
+    UP = STEM_UP
+    DOWN = STEM_DOWN
 
     def __init__(self):
         self._drums = []
+        self._lily = {}
 
     def __len__(self):
         return len(self._drums)
@@ -48,19 +51,28 @@ class DrumKit(object):
         self._drums = []
 
     def loadDefaultKit(self):
-        for drumData, midiNote in DEFAULT_KIT:
+        for drumData, midiNote, notationHead, notationLine, stemDirection in DEFAULT_KIT:
             drum = Drum(*drumData)
-            headData = HeadData(midiNote = midiNote)
+            headData = HeadData(midiNote = midiNote,
+                                notationHead = notationHead,
+                                notationLine = notationLine,
+                                stemDirection = stemDirection)
             drum.addNoteHead(drum.head, headData)
             for (extraHead,
                  newMidi,
                  newMidiVolume,
-                 newEffect) in DEFAULT_EXTRA_HEADS.get(drum.abbr, []):
+                 newEffect,
+                 newNotationHead,
+                 newNotationEffect) in DEFAULT_EXTRA_HEADS.get(drum.abbr, []):
                 if newMidi is None:
                     newMidi = midiNote
                 if newMidiVolume is None:
                     newMidiVolume = headData.midiVolume
-                newData = HeadData(newMidi, newMidiVolume, newEffect)
+                newData = HeadData(newMidi, newMidiVolume, newEffect,
+                                   notationLine = notationLine,
+                                   notationHead = newNotationHead,
+                                   notationEffect = newNotationEffect,
+                                   stemDirection = stemDirection)
                 drum.addNoteHead(extraHead, newData)
             self.addDrum(drum)
 
