@@ -245,7 +245,7 @@ class Drum(object):
 
 
 def _guessMidiNote(abbr):
-    for drumData, midiNote in DEFAULT_KIT:
+    for drumData, midiNote, x_, y_, z_ in DEFAULT_KIT:
         if abbr == drumData[1]:
             return midiNote
     return _DEFAULTNOTE

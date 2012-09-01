@@ -46,7 +46,7 @@ class NoteDictionary(object):
         return iter(self._noteTimes)
 
     def iterNotesAtTime(self, noteTime):
-        for index, head in self._notes[noteTime].iterkeys():
+        for index, head in self._notes[noteTime].iteritems():
             yield (NotePosition(noteTime = noteTime,
                                 drumIndex = index),
                        head)
@@ -103,6 +103,14 @@ class NoteDictionary(object):
         self._noteTimes = []
         self._notesOnLine.clear()
 
+class MeasureInfo(object):
+    def __init__(self):
+        self.isRepeatEnd = False
+        self.isRepeatStart = False
+        self.isSectionEnd = False
+        self.isLineBreak = False
+        self.repeatCount = 1
+
 class Measure(object):
     '''
     classdocs
@@ -114,11 +122,7 @@ class Measure(object):
         self.startBar = BAR_TYPES["NORMAL_BAR"]
         self.endBar = BAR_TYPES["NORMAL_BAR"]
         self._callBack = None
-        self._isRepeatEnd = False
-        self._isRepeatStart = False
-        self._isSectionEnd = False
-        self._isLineBreak = False
-        self._repeatCount = 1
+        self._info = MeasureInfo()
         self.counter = None
         self.alternateText = None
 
@@ -130,13 +134,13 @@ class Measure(object):
             return BARLINE
 
     def _getrepeatCount(self):
-        return self._repeatCount
+        return self._info.repeatCount
     def _setrepeatCount(self, value):
-        if value != self._repeatCount:
+        if value != self._info.repeatCount:
             if self.isRepeatEnd():
-                self._repeatCount = max(value, 2)
+                self._info.repeatCount = max(value, 2)
             else:
-                self._repeatCount = 1
+                self._info.repeatCount = 1
             self._runCallBack(NotePosition())
     repeatCount = property(fget = _getrepeatCount,
                          fset = _setrepeatCount)
@@ -166,21 +170,21 @@ class Measure(object):
                          self.isSectionEnd()))
 
     def setSectionEnd(self, boolean):
-        self._isSectionEnd = boolean
+        self._info.isSectionEnd = boolean
         if boolean:
             self.endBar |= BAR_TYPES["SECTION_END"]
         else:
             self.endBar &= ~BAR_TYPES["SECTION_END"]
 
     def setRepeatStart(self, boolean):
-        self._isRepeatStart = boolean
+        self._info.isRepeatStart = boolean
         if boolean:
             self.startBar |= BAR_TYPES["REPEAT_START"]
         else:
             self.startBar &= ~BAR_TYPES["REPEAT_START"]
 
     def setRepeatEnd(self, boolean):
-        self._isRepeatEnd = boolean
+        self._info.isRepeatEnd = boolean
         if boolean:
             self.endBar |= BAR_TYPES["REPEAT_END"]
             self.repeatCount = max(self.repeatCount, 2)
@@ -189,23 +193,23 @@ class Measure(object):
             self.endBar &= ~BAR_TYPES["REPEAT_END"]
 
     def setLineBreak(self, boolean):
-        self._isLineBreak = boolean
+        self._info.isLineBreak = boolean
         if boolean:
             self.endBar |= BAR_TYPES["LINE_BREAK"]
         else:
             self.endBar &= ~BAR_TYPES["LINE_BREAK"]
 
     def isSectionEnd(self):
-        return self._isSectionEnd
+        return self._info.isSectionEnd
 
     def isRepeatStart(self):
-        return self._isRepeatStart
+        return self._info.isRepeatStart
 
     def isRepeatEnd(self):
-        return self._isRepeatEnd
+        return self._info.isRepeatEnd
 
     def isLineBreak(self):
-        return self._isLineBreak
+        return self._info.isLineBreak
 
     def isLineEnd(self):
         return self.isLineBreak() or self.isSectionEnd()
