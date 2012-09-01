@@ -23,6 +23,7 @@ Created on 31 Jul 2010
 
 '''
 import webbrowser
+from StringIO import StringIO
 from ui_drumburp import Ui_DrumBurpWindow
 from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QFileDialog, QMessageBox,
@@ -441,9 +442,16 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         fname = asciiDialog.getFilename()
         self._asciiSettings = asciiDialog.getOptions()
         try:
+            asciiBuffer = StringIO()
+            self.scoreScene.score.exportASCII(asciiBuffer,
+                                              self._asciiSettings)
+        except StandardError:
+            QMessageBox.warning(self.parent(), "ASCII generation failed!",
+                                "Could not generate ASCII for this score!")
+            raise
+        try:
             with open(fname, 'w') as txtHandle:
-                self.scoreScene.score.exportASCII(txtHandle,
-                                                  self._asciiSettings)
+                txtHandle.write(asciiBuffer.getvalue())
         except StandardError:
             QMessageBox.warning(self.parent(), "Export failed!",
                                 "Could not export to " + fname)
@@ -489,35 +497,47 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionExportLilypond_triggered(self):
+        lilyBuffer = StringIO()
         try:
-            if self.filename:
-                outfileName = os.path.extsep.join(os.path.splitext(self.filename)[:-1])
-                directory = os.path.abspath(outfileName)
-            else:
-                outfileName = "Untitled.ly"
-                loc = QDesktopServices.HomeLocation
-                home = unicode(QDesktopServices.storageLocation(loc))
-                directory = os.path.join(home, outfileName)
-            caption = "Choose a Lilypond input file to write to"
-            fname = QFileDialog.getSaveFileName(parent = self,
-                                                caption = caption,
-                                                directory = directory,
-                                                filter = "(*.ly)")
-            if len(fname) == 0:
-                return
-            fname = unicode(fname)
-            with open(fname, 'w') as handle:
-                lyScore = LilypondScore(self.scoreScene.score)
-                lyScore.write(handle)
+            lyScore = LilypondScore(self.scoreScene.score)
+            lyScore.write(lilyBuffer)
         except LilypondProblem, exc:
+            QMessageBox.warning(self.parent(), "Lilypond impossible",
+                                "Cannot export Lilypond for this score: %s"
+                                % exc.__doc__)
+        except StandardError, exc:
             QMessageBox.warning(self.parent(), "Export failed!",
-                                "Could not export Lilypond: %s" % exc.__doc__)
-        except StandardError:
-            QMessageBox.warning(self.parent(), "Export failed!",
-                                "Could not export Lilypond")
+                                "Error generating Lilypond for this score: %s"
+                                % exc.__doc__)
             raise
         else:
-            self.updateStatus("Successfully exported Lilypond to " + fname)
+            try:
+                if self.filename:
+                    filestem = os.path.splitext(self.filename)[:-1]
+                    outfileName = os.path.extsep.join(filestem)
+                    directory = os.path.abspath(outfileName)
+                else:
+                    outfileName = "Untitled.ly"
+                    loc = QDesktopServices.HomeLocation
+                    home = unicode(QDesktopServices.storageLocation(loc))
+                    directory = os.path.join(home, outfileName)
+                caption = "Choose a Lilypond input file to write to"
+                fname = QFileDialog.getSaveFileName(parent = self,
+                                                    caption = caption,
+                                                    directory = directory,
+                                                    filter = "(*.ly)")
+                if len(fname) == 0:
+                    return
+                fname = unicode(fname)
+                with open(fname, 'w') as handle:
+                    handle.write(lilyBuffer.getvalue())
+            except StandardError:
+                QMessageBox.warning(self.parent(), "Export failed!",
+                                    "Could not export Lilypond")
+                raise
+            else:
+                self.updateStatus("Successfully exported Lilypond to " + fname)
+
     @staticmethod
     @pyqtSignature("")
     def on_actionWhatsThis_triggered():
@@ -628,6 +648,15 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def on_actionExportMIDI_triggered(self):
         if not self._canPlayback():
             return
+        try:
+            midiBuffer = StringIO()
+            DBMidi.exportMidi(self.scoreScene.score.iterMeasuresWithRepeats(),
+                              self.scoreScene.score, midiBuffer)
+        except StandardError, exc:
+            QMessageBox.warning(self.parent(), "Error generating MIDI!",
+                                "Failed to generate MIDI for this score: %s"
+                                % exc.__doc__)
+            raise
         directory = self.filename
         if directory is None:
             suggestion = unicode(self.scoreScene.title)
@@ -650,9 +679,12 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                                             filter = "DrumBurp files (*.mid)")
         if len(fname) == 0 :
             return
-        with open(fname, 'wb') as handle:
-            DBMidi.exportMidi(self.scoreScene.score.iterMeasuresWithRepeats(),
-                              self.scoreScene.score, handle)
+        try:
+            with open(fname, 'wb') as handle:
+                handle.write(midiBuffer.getvalue())
+        except StandardError:
+            QMessageBox.warning(self.parent(), "File error",
+                                "Error writing MIDI to file %s" % fname)
 
     @pyqtSignature("bool")
     def on_actionLoopBars_toggled(self, onOff):

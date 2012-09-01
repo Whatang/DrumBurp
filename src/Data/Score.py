@@ -908,8 +908,10 @@ class ScoreFactory(object):
 
     @classmethod
     def saveScore(cls, score, filename):
+        scoreBuffer = StringIO()
+        score.write(scoreBuffer)
         with open(filename, 'w') as handle:
-            score.write(handle)
+            handle.write(scoreBuffer.getvalue())
 
 class Indenter(object):
     def __init__(self, indent = "  "):
