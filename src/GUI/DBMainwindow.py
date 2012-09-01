@@ -556,8 +556,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         dlg = DBInfoDialog(DB_VERSION, self)
         dlg.exec_()
 
+    @staticmethod
     @pyqtSignature("")
-    def on_actionOnlineManual_triggered(self):
+    def on_actionOnlineManual_triggered():
         webbrowser.open_new_tab("www.whatang.org/drumburp-manual")
 
     def _getPaperSize(self):
@@ -640,8 +641,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             measure = self.scoreScene.getQMeasure(position)
             self.scoreView.ensureVisible(measure)
 
+    @staticmethod
     @pyqtSignature("bool")
-    def on_actionMuteNotes_toggled(self, onOff):
+    def on_actionMuteNotes_toggled(onOff):
         DBMidi.setMute(onOff)
 
     @pyqtSignature("")

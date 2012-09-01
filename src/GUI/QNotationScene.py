@@ -128,5 +128,6 @@ class QNotationScene(QGraphicsScene):
             self._stem.setY(middle - STEM_LENGTH + pixHeight / 2)
         # TODO: Draw effects
 
-    def getCenter(self):
+    @staticmethod
+    def getCenter():
         return LEFT + WIDTH / 2, TOP_LINE + (ZERO * PIXELS_PER_LINE) / 2

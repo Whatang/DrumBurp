@@ -36,7 +36,7 @@ DEFAULT_KIT = [(("Foot pedal", "Hf", "x", False), 44, "cross", -5 , STEM_DOWN),
 
 ACCENT_VOLUME = 127
 GHOST_VOLUME = 50
-
+#pylint:disable-msg=C0301
 DEFAULT_EXTRA_HEADS = {"FT": [("O", None, ACCENT_VOLUME, "accent", "default", "accent"),
                               ("g", None, GHOST_VOLUME, "ghost", "default", "ghost"),
                               ("f", None, None, "flam", "default", "flam"),

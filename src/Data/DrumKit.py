@@ -51,7 +51,8 @@ class DrumKit(object):
         self._drums = []
 
     def loadDefaultKit(self):
-        for drumData, midiNote, notationHead, notationLine, stemDirection in DEFAULT_KIT:
+        for (drumData, midiNote, notationHead,
+             notationLine, stemDirection) in DEFAULT_KIT:
             drum = Drum(*drumData)
             headData = HeadData(midiNote = midiNote,
                                 notationHead = notationHead,

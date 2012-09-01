@@ -217,19 +217,19 @@ class Drum(object):
 
     def moveHeadUp(self, head):
         try:
-            index = self._noteHeads.index(head)
+            idx = self._noteHeads.index(head)
         except IndexError:
             return
-        assert(index > 1)
-        self._noteHeads[index - 1:index + 1] = reversed(self._noteHeads[index - 1:index + 1])
+        assert(idx > 1)
+        self._noteHeads[idx - 1:idx + 1] = self._noteHeads[idx:idx - 2:-1]
 
     def moveHeadDown(self, head):
         try:
-            index = self._noteHeads.index(head)
+            idx = self._noteHeads.index(head)
         except IndexError:
             return
-        assert(index < len(self) - 1)
-        self._noteHeads[index:index + 2] = reversed(self._noteHeads[index:index + 2])
+        assert(idx < len(self) - 1)
+        self._noteHeads[idx:idx + 2] = self._noteHeads[idx + 1:idx - 1:-1]
 
     def write(self, handle, indenter):
         print >> handle, indenter("DRUM %s,%s,%s,%s" % (self.name,

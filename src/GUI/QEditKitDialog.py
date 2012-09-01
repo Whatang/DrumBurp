@@ -154,18 +154,18 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self._checkDrumButtons()
 
     def _moveDrumUp(self):
-        index = self._currentDrumIndex
-        self._currentKit[index - 1:index + 1] = reversed(self._currentKit[index - 1:index + 1])
-        self.kitTable.item(index).setText(self._currentKit[index].name)
-        self.kitTable.item(index - 1).setText(self._currentKit[index - 1].name)
-        self.kitTable.setCurrentRow(index - 1)
+        idx = self._currentDrumIndex
+        self._currentKit[idx - 1:idx + 1] = self._currentKit[idx:idx - 2:-1]
+        self.kitTable.item(idx).setText(self._currentKit[idx].name)
+        self.kitTable.item(idx - 1).setText(self._currentKit[idx - 1].name)
+        self.kitTable.setCurrentRow(idx - 1)
 
     def _moveDrumDown(self):
-        index = self._currentDrumIndex
-        self._currentKit[index:index + 2] = reversed(self._currentKit[index:index + 2])
-        self.kitTable.item(index).setText(self._currentKit[index].name)
-        self.kitTable.item(index + 1).setText(self._currentKit[index + 1].name)
-        self.kitTable.setCurrentRow(index + 1)
+        idx = self._currentDrumIndex
+        self._currentKit[idx:idx + 2] = self._currentKit[idx + 1:idx - 1:-1]
+        self.kitTable.item(idx).setText(self._currentKit[idx].name)
+        self.kitTable.item(idx + 1).setText(self._currentKit[idx + 1].name)
+        self.kitTable.setCurrentRow(idx + 1)
 
     def _clearKit(self):
         self._currentKit = []
