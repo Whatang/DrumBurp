@@ -24,7 +24,7 @@ Created on 12 Dec 2010
 '''
 
 from Drum import Drum, HeadData
-from DefaultKits import DEFAULT_KIT, DEFAULT_EXTRA_HEADS, DEFAULT_LILYPOND, STEM_DOWN, STEM_UP
+from DefaultKits import DEFAULT_KIT, DEFAULT_EXTRA_HEADS, STEM_DOWN, STEM_UP
 from DBErrors import DuplicateDrumError, NoSuchDrumError
 
 class DrumKit(object):

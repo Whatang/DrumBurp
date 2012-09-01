@@ -39,7 +39,6 @@ import copy
 import hashlib
 from StringIO import StringIO
 
-#pylint: disable-msg=R0904
 
 class InconsistentRepeats(StandardError):
     "Bad repeat data"

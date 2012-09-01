@@ -60,8 +60,8 @@ def makeLilyContext(opener, closer):
         indenter.write(closer)
     return myLilyContext
 
-LilyContext = contextmanager(makeLilyContext("{", "}"))
-VoiceContext = contextmanager(makeLilyContext("<<", ">>"))
+LILY_CONTEXT = contextmanager(makeLilyContext("{", "}"))
+VOICE_CONTEXT = contextmanager(makeLilyContext("<<", ">>"))
 
 class LilypondProblem(RuntimeError):
     pass
@@ -297,11 +297,11 @@ class LilypondScore(object):
     def write(self, handle):
         self.indenter.setHandle(handle)
         self.indenter(r'\version "2.12.3"')
-        with LilyContext(self.indenter, '\header'):
+        with LILY_CONTEXT(self.indenter, '\header'):
             self._writeHeader()
         self._writeMacros(handle)
         self._lilyKit.write(handle)
-        with LilyContext(self.indenter, '\score'):
+        with LILY_CONTEXT(self.indenter, '\score'):
             self._writeScore()
 
     def _writeHeader(self):
@@ -312,12 +312,12 @@ class LilypondScore(object):
             self.indenter('arranger = %s' % lilyString(self.scoreData.creator))
 
     def _writeScore(self):
-        with VoiceContext(self.indenter, r'\new DrumStaff'):
+        with VOICE_CONTEXT(self.indenter, r'\new DrumStaff'):
             self._writeDrumStaffInfo()
-            with LilyContext(self.indenter, r'\drummode'):
+            with LILY_CONTEXT(self.indenter, r'\drummode'):
                 self._writeMusic()
-        with LilyContext(self.indenter, r'\layout'):
-            with LilyContext(self.indenter, r'\context'):
+        with LILY_CONTEXT(self.indenter, r'\layout'):
+            with LILY_CONTEXT(self.indenter, r'\context'):
                 self.indenter(r"\DrumStaff \override RestCollision #'positioning-done = #merge-rests-on-positioning")
 
     def _writeDrumStaffInfo(self):
@@ -349,7 +349,7 @@ class LilypondScore(object):
                 if repeatCommands:
                     self.indenter(r"\set Score.repeatCommands = #'(%s)" % " ".join(repeatCommands))
                     repeatCommands = []
-                with VoiceContext(self.indenter, ""):
+                with VOICE_CONTEXT(self.indenter, ""):
                     self._writeMeasure(measure)
                 if measure.isRepeatEnd():
                     if measure.repeatCount > 2:
@@ -374,10 +374,10 @@ class LilypondScore(object):
 
     def _writeMeasure(self, measure):
         parsed = LilyMeasure(self.score, measure, self._lilyKit)
-        with LilyContext(self.indenter, r'\new DrumVoice'):
+        with LILY_CONTEXT(self.indenter, r'\new DrumVoice'):
             self.indenter(r'\voiceOne')
             parsed.voiceOne(self.indenter)
-        with LilyContext(self.indenter, r'\new DrumVoice'):
+        with LILY_CONTEXT(self.indenter, r'\new DrumVoice'):
             self.indenter(r'\voiceTwo')
             parsed.voiceTwo(self.indenter)
 

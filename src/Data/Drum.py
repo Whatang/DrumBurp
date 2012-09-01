@@ -25,7 +25,7 @@ Created on 12 Dec 2010
 import copy
 
 from DBConstants import DRUM_ABBR_WIDTH
-from DefaultKits import DEFAULT_KIT, DEFAULT_EXTRA_HEADS, STEM_DOWN, STEM_UP
+from DefaultKits import DEFAULT_KIT, DEFAULT_EXTRA_HEADS, STEM_UP
 
 _DEFAULTNOTE = 71
 _DEFAULTVOLUME = 96
