@@ -336,7 +336,6 @@ class LilyKit(object):
         print("))", file = handle)
         print ("", file = handle)
 
-
 class LilypondScore(object):
     def __init__(self, score):
         self.score = score
@@ -424,10 +423,16 @@ class LilypondScore(object):
             sectionTitle = self.score.getSectionTitle(sectionIndex)
         return sectionIndex, sectionTitle
 
+    @staticmethod
+    def _getTimeSig(measure):
+        counter = measure.counter
+        return "%d/%d" % counter.timeSig()
+
     def _writeMusic(self):
         secIndex, secTitle = self._getNextSectionTitle(-1)
         repeatCommands = []
         hasAlternate = False
+        lastTimeSig = None
         for measure in self.score.iterMeasures():
             secTitle = self._writeSectionTitle(secTitle)
             hasAlternate = self._getNextRepeats(repeatCommands,
@@ -436,6 +441,10 @@ class LilypondScore(object):
                 self.indenter(r"\set Score.repeatCommands = #'(%s)" %
                               " ".join(repeatCommands))
                 repeatCommands = []
+            timeSig = self._getTimeSig(measure)
+            if timeSig != lastTimeSig:
+                self.indenter(r"\time %s" % timeSig)
+                lastTimeSig = timeSig
             with VOICE_CONTEXT(self.indenter, ""):
                 self._writeMeasure(measure)
             hasAlternate = self._getLastRepeats(repeatCommands,
