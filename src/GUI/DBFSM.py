@@ -20,7 +20,6 @@
 
 @author: Mike
 '''
-from PyQt4 import QtCore
 import copy
 
 from DBCommands import (ToggleNote, RepeatNoteCommand,
@@ -33,6 +32,7 @@ from QEditMeasureDialog import QEditMeasureDialog
 from QRepeatCountDialog import QRepeatCountDialog
 from QAlternateDialog import QAlternateDialog
 from DBFSMEvents import *
+from PyQt4 import QtCore
 
 class FsmState(object):
     def __init__(self, qscore):
@@ -45,38 +45,39 @@ class FsmState(object):
 class Waiting(FsmState):
     def send(self, event):
         msgType = type(event)
+        newState = self
         if msgType == Escape:
             self.qscore.clearDragSelection()
-            return self
         elif msgType == LeftPress:
             self.qscore.clearDragSelection()
             if event.note is not None:
-                return ButtonDown(self.qscore, event.measure, event.note)
-            else:
-                return self
+                newState = ButtonDown(self.qscore, event.measure, event.note)
         elif msgType == MidPress:
-            return NotesMenu(self.qscore, event.note, event.screenPos)
+            newState = NotesMenu(self.qscore, event.note, event.screenPos)
         elif msgType == RightPress:
-            return ContextMenu(self.qscore, event.measure, event.note, event.screenPos)
+            newState = ContextMenu(self.qscore, event.measure,
+                                   event.note, event.screenPos)
         elif msgType == MeasureLineContext:
-            return MeasureLineContextMenuState(self.qscore,
-                                               event.prevMeasure, event.nextMeasure,
-                                               event.endNote, event.startNote,
-                                               event.screenPos)
+            newState = MeasureLineContextMenuState(self.qscore,
+                                                   event.prevMeasure,
+                                                   event.nextMeasure,
+                                                   event.endNote,
+                                                   event.startNote,
+                                                   event.screenPos)
         elif msgType == StartPlaying:
-            return Playing(self.qscore)
+            newState = Playing(self.qscore)
         elif msgType == EditMeasureProperties:
-            return EditMeasurePropertiesState(self.qscore,
-                                              event.counter, event.counterRegistry,
+            newState = EditMeasurePropertiesState(self.qscore,
+                                              event.counter,
+                                              event.counterRegistry,
                                               event.measurePosition)
         elif msgType == ChangeRepeatCount:
-            return RepeatCountState(self.qscore, event.repeatCount,
-                                    event.measurePosition)
+            newState = RepeatCountState(self.qscore, event.repeatCount,
+                                        event.measurePosition)
         elif msgType == SetAlternateEvent:
-            return SetAlternateState(self.qscore, event.alternateText,
-                                     event.measurePosition)
-        else:
-            return self
+            newState = SetAlternateState(self.qscore, event.alternateText,
+                                         event.measurePosition)
+        return newState
 
 class ButtonDown(FsmState):
     def __init__(self, qscore, measure, note):
@@ -167,30 +168,31 @@ class ContextMenu(FsmState):
 
     def send(self, event):
         msgType = type(event)
+        newState = self
         if msgType == MenuSelect:
-            return Waiting(self.qscore)
+            newState = Waiting(self.qscore)
         elif msgType == MenuCancel:
-            return Waiting(self.qscore)
+            newState = Waiting(self.qscore)
         elif msgType == Escape:
             self.menu.close()
-            return Waiting(self.qscore)
+            newState = Waiting(self.qscore)
         elif msgType == RepeatNotes:
-            return Repeating(self.qscore, self.note)
+            newState = Repeating(self.qscore, self.note)
         elif msgType == StartPlaying:
             self.menu.close()
-            return Playing(self.qscore)
+            newState = Playing(self.qscore)
         elif msgType == SetAlternateEvent:
-            return SetAlternateState(self.qscore, event.alternateText,
+            newState = SetAlternateState(self.qscore, event.alternateText,
                                      event.measurePosition)
-        else:
-            return self
+        return newState
 
 class Repeating(FsmState):
     def __init__(self, qscore, note):
         super(Repeating, self).__init__(qscore)
         self.qscore.clearDragSelection()
         self.statusBar = qscore.parent().statusBar()
-        self.statusBar.showMessage("Drag from the first repeat of this note to the last "
+        self.statusBar.showMessage("Drag from the first repeat "
+                                   "of this note to the last "
                                    "(or press ESCAPE to cancel)", 0)
         self.note = note
 
@@ -205,7 +207,8 @@ class Repeating(FsmState):
                                            5000)
                 return Waiting(self.qscore)
             head = self.qscore.score.getNote(self.note)
-            return RepeatingDragging(self.qscore, self.note, event.note, interval, head)
+            return RepeatingDragging(self.qscore, self.note,
+                                     event.note, interval, head)
         elif msgType == Escape:
             self.statusBar.clearMessage()
             return Waiting(self.qscore)
@@ -235,10 +238,12 @@ class RepeatingDragging(FsmState):
         if msgType == MouseRelease:
             self.qscore.setPotentialRepeatNotes([], None)
             if self._lastNote is not None:
-                totalTicks = self.qscore.score.tickDifference(self._lastNote, self.firstNote)
+                totalTicks = self.qscore.score.tickDifference(self._lastNote,
+                                                              self.firstNote)
                 numRepeats = totalTicks / self.interval
                 if numRepeats <= 0:
-                    self.statusBar.showMessage("Must repeat note at least once!",
+                    self.statusBar.showMessage("Must repeat note "
+                                               "at least once!",
                                                5000)
                     return Waiting(self.qscore)
                 command = RepeatNoteCommand(self.qscore, self.firstNote,
@@ -270,8 +275,11 @@ class RepeatingDragging(FsmState):
             note = copy.copy(note)
             note = self.score.notePlus(note, self.interval)
             more = ((note.staffIndex < self._lastNote.staffIndex) or
-                    (note.staffIndex == self._lastNote.staffIndex and note.measureIndex < self._lastNote.measureIndex) or
-                    ((note.staffIndex == self._lastNote.staffIndex and note.measureIndex == self._lastNote.measureIndex and note.noteTime <= self._lastNote.noteTime)))
+                    (note.staffIndex == self._lastNote.staffIndex
+                     and note.measureIndex < self._lastNote.measureIndex) or
+                    ((note.staffIndex == self._lastNote.staffIndex
+                      and note.measureIndex == self._lastNote.measureIndex
+                      and note.noteTime <= self._lastNote.noteTime)))
             if more:
                 notes.append(note)
 
@@ -361,7 +369,7 @@ class EditMeasurePropertiesState(DialogState):
                                                    self.measurePosition,
                                                    newCounter)
             self.qscore.addCommand(command)
-        super(EditMeasurePropertiesState, self)._accepted()
+        super(EditMeasurePropertiesState, self)._accepted() #IGNORE:W0212
 
 class RepeatCountState(DialogState):
     def __init__(self, qscore, repeatCount, position):
@@ -378,7 +386,7 @@ class RepeatCountState(DialogState):
                                             self.oldCount,
                                             newCount)
             self.qscore.addCommand(command)
-        super(RepeatCountState, self)._accepted()
+        super(RepeatCountState, self)._accepted() #IGNORE:W0212
 
 class SetAlternateState(DialogState):
     def __init__(self, qscore, alternateText, position):
@@ -393,4 +401,4 @@ class SetAlternateState(DialogState):
             command = SetAlternateCommand(self.qscore, self.measurePosition,
                                           newText)
             self.qscore.addCommand(command)
-        super(SetAlternateState, self)._accepted()
+        super(SetAlternateState, self)._accepted() #IGNORE:W0212
