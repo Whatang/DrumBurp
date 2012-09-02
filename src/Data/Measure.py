@@ -52,7 +52,8 @@ class NoteDictionary(object):
                        head)
 
     def iterNotesAndHeads(self):
-        for noteTime, drumDict in self._notes.iteritems():
+        for noteTime in self.iterTimes():
+            drumDict = self._notes[noteTime]
             for drumIndex, drumHead in drumDict.iteritems():
                 yield (NotePosition(noteTime = noteTime,
                                    drumIndex = drumIndex),
