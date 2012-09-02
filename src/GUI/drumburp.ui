@@ -38,7 +38,7 @@
      <number>3</number>
     </property>
     <item>
-     <widget class="QGroupBox" name="groupBox">
+     <widget class="QGroupBox" name="scorePropertiesGroup">
       <property name="title">
        <string>Score Properties</string>
       </property>

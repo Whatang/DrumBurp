@@ -315,9 +315,13 @@ class MeasureLineContextMenuState(FsmState):
             return self
 
 class Playing(FsmState):
+    def __init__(self, qscore):
+        super(Playing, self).__init__(qscore)
+        self.qscore.playing.emit(True)
     def send(self, event):
         msgType = type(event)
         if msgType == Event.StopPlaying:
+            self.qscore.playing.emit(False)
             return Waiting(self.qscore)
         else:
             return self

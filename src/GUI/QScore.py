@@ -124,6 +124,7 @@ class QScore(QtGui.QGraphicsScene):
     sectionsChanged = QtCore.pyqtSignal()
     dragHighlight = QtCore.pyqtSignal(bool)
     sceneFormatted = QtCore.pyqtSignal()
+    playing = QtCore.pyqtSignal(bool)
 
     def addCommand(self, command):
         self._undoStack.push(command)

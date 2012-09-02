@@ -125,6 +125,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         scene.dragHighlight.connect(self.actionClearMeasures.setEnabled)
         scene.dragHighlight.connect(self.actionDeleteMeasures.setEnabled)
         scene.sceneFormatted.connect(self.sceneFormatted)
+        scene.playing.connect(self._scorePlaying)
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
@@ -755,6 +756,17 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             if playButton.isChecked():
                 playButton.setChecked(False)
         self.scoreScene.sendFsmEvent(StopPlaying())
+
+    def _scorePlaying(self, playing):
+        self.fileToolBar.setDisabled(playing)
+        self.exportToolBar.setDisabled(playing)
+        self.displayToolBar.setDisabled(playing)
+        self.helpToolBar.setDisabled(playing)
+        self.fontDock.setDisabled(playing)
+        self.scorePropertiesGroup.setDisabled(playing)
+        self.menubar.setDisabled(playing)
+        self.actionExportMIDI.setDisabled(playing)
+        self.actionMuteNotes.setDisabled(playing)
 
     @pyqtSignature("int")
     def on_paperBox_currentIndexChanged(self, index):
