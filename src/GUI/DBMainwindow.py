@@ -29,7 +29,7 @@ from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QFileDialog, QMessageBox,
                          QPrintPreviewDialog, QWhatsThis,
                          QPrinterInfo, QLabel, QFrame,
-                         QPrinter, QDesktopServices, QSizePolicy)
+                         QPrinter, QDesktopServices)
 from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer
 from QScore import QScore
 from QDisplayProperties import QDisplayProperties
@@ -100,12 +100,14 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreScene = QScore(self)
         self.restoreGeometry(settings.value("Geometry").toByteArray())
         self.restoreState(settings.value("MainWindow/State").toByteArray())
+        self.statusbar.addPermanentWidget(QFrame())
+        self.availableNotesLabel = QLabel()
+        self.availableNotesLabel.setMinimumWidth(250)
+        self.statusbar.addPermanentWidget(self.availableNotesLabel)
+        self._infoBar = QLabel()
+        self.statusbar.addPermanentWidget(self._infoBar)
         self._initializeState()
         self.setSections()
-        self._infoBar = QLabel()
-        self._infoBar.setFrameShape(self._infoBar.Panel)
-        self._infoBar.setFrameShadow(self._infoBar.Sunken)
-        self.statusbar.addPermanentWidget(self._infoBar)
         QTimer.singleShot(0, self._startUp)
 
 
@@ -126,6 +128,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         scene.dragHighlight.connect(self.actionDeleteMeasures.setEnabled)
         scene.sceneFormatted.connect(self.sceneFormatted)
         scene.playing.connect(self._scorePlaying)
+        scene.currentHeadsChanged.connect(self.availableNotesLabel.setText)
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
@@ -192,6 +195,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def _startUp(self):
         self.scoreView.startUp()
         self.updateStatus("Welcome to %s v%s" % (APPNAME, DB_VERSION))
+        self.scoreView.setFocus()
 
 
     def _makeQSettings(self):

@@ -76,6 +76,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.stemUpDownBox.stateChanged.connect(self._stemDirectionChanged)
         self.noteUpButton.clicked.connect(self._moveNotationUp)
         self.noteDownButton.clicked.connect(self._moveNotationDown)
+        self.shortcutCombo.currentIndexChanged.connect(self._shortcutEdited)
         self._populateMidiCombo()
         self.midiNoteCombo.currentIndexChanged.connect(self._midiNoteChanged)
         self.volumeSlider.valueChanged.connect(self._midiVolumeChanged)
@@ -276,8 +277,13 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self._checkHeadButtons()
         self._setNotation()
 
+    def _shortcutEdited(self):
+        shortcut = str(self.shortcutCombo.currentText())
+        self._currentHeadData.shortcut = shortcut
+
     def _populateCurrentNoteHead(self):
         self.currentNoteHead.blockSignals(True)
+        self.shortcutCombo.blockSignals(True)
         try:
             self.currentNoteHead.clear()
             badNotes = set(self._currentDrum)
@@ -290,7 +296,18 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
                 self.currentNoteHead.addItem(head)
             headIndex = self.currentNoteHead.findText(self._currentHead)
             self.currentNoteHead.setCurrentIndex(headIndex)
+            self.shortcutCombo.clear()
+            availableShortcuts = set('abcdefghijklmnopqrstuvwxyz')
+            for head in self._currentDrum:
+                if head != self._currentHead:
+                    availableShortcuts.remove(self._currentDrum.headData(head).shortcut)
+            for okShortcut in sorted(list(availableShortcuts)):
+                self.shortcutCombo.addItem(okShortcut)
+            shortIndex = self.shortcutCombo.findText(self._currentHeadData.shortcut)
+            print shortIndex, self._currentHeadData.shortcut
+            self.shortcutCombo.setCurrentIndex(shortIndex)
         finally:
+            self.shortcutCombo.blockSignals(False)
             self.currentNoteHead.blockSignals(False)
 
     def _addNoteHead(self):

@@ -94,7 +94,8 @@ class ButtonDown(FsmState):
             else:
                 return self
         elif msgType == Event.MouseRelease:
-            command = ToggleNote(self.qscore, self.note)
+            head = self.qscore.getCurrentHead()
+            command = ToggleNote(self.qscore, self.note, head)
             self.qscore.addCommand(command)
             return Waiting(self.qscore)
         elif msgType == Event.StartPlaying:

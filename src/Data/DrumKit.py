@@ -98,6 +98,14 @@ class DrumKit(object):
     def allowedNoteHeads(self, drumIndex):
         return list(self._drums[drumIndex])
 
+    def shortcutsAndNoteHeads(self, drumIndex):
+        shortcuts = []
+        drum = self._drums[drumIndex]
+        for head in drum:
+            shortcut = drum.headData(head).shortcut
+            shortcuts.append((unicode(shortcut), head))
+        return shortcuts
+
     def write(self, handle, indenter):
         print >> handle, indenter("KIT_START")
         indenter.increase()
@@ -112,6 +120,7 @@ class DrumKit(object):
             if  lineType == "KIT_END":
                 if lastDrum is not None and len(lastDrum) == 0:
                     lastDrum.guessHeadData()
+                self._checkShortcuts()
                 break
             elif lineType == "DRUM":
                 if lastDrum is not None and len(lastDrum) == 0:
@@ -128,6 +137,10 @@ class DrumKit(object):
                 lastDrum.readHeadData(lineData)
             else:
                 raise IOError("Unrecognised line type.")
+
+    def _checkShortcuts(self):
+        for drum in self:
+            drum.checkShortcuts()
 
     def getDefaultHead(self, index):
         return self[index].head

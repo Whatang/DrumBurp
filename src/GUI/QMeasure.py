@@ -275,6 +275,7 @@ class QMeasure(QtGui.QGraphicsItem):
                 self._highlight = newPlace
                 self.update()
                 self.parentItem().setLineHighlight(newPlace[1])
+                self._qScore.setCurrentHeads(newPlace[1])
         elif self._highlight != None:
             self._highlight = None
             self.parentItem().clearHighlight()
@@ -296,6 +297,7 @@ class QMeasure(QtGui.QGraphicsItem):
         self._highlight = None
         self.update()
         self.parentItem().clearHighlight()
+        self._qScore.setCurrentHeads(None)
         self.setCursor(QtCore.Qt.ArrowCursor)
 
     def mousePressEvent(self, event):
