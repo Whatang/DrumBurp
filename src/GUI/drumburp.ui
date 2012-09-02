@@ -337,21 +337,6 @@ Sections in the score are defined by a section end barline, and the title that a
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="pagesLabel">
-         <property name="toolTip">
-          <string>Number of pages in this score</string>
-         </property>
-         <property name="whatsThis">
-          <string>The number of pages in this score.
-
-The number of pages used by this score depends on the score width, the font size and the current page size selected. The number of pages being used with the current settings is displayed here.</string>
-         </property>
-         <property name="text">
-          <string>0 Pages</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <spacer name="horizontalSpacer_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
