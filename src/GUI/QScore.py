@@ -41,7 +41,8 @@ from DBCommands import (MetaDataCommand, ScoreWidthCommand,
                         SetVisibilityCommand)
 import DBMidi
 import functools
-from DBFSM import Waiting, Escape
+from DBFSM import Waiting
+from DBFSMEvents import Escape
 _SCORE_FACTORY = ScoreFactory()
 
 def delayCall(method):
