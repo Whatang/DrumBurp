@@ -317,7 +317,7 @@ class MeasureLineContextMenuState(FsmState):
 class Playing(FsmState):
     def send(self, event):
         msgType = type(event)
-        if msgType == event.StopPlaying:
+        if msgType == Event.StopPlaying:
             return Waiting(self.qscore)
         else:
             return self
