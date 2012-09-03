@@ -729,7 +729,11 @@ class QScore(QtGui.QGraphicsScene):
 
     def sendFsmEvent(self, event):
 #        print self._state, event
-        self._state = self._state.send(event)
+        try:
+            self._state = self._state.send(event)
+        except StandardError:
+            self._state = Waiting(self)
+            raise
 #        print self._state
 
     def setPotentialRepeatNotes(self, notes, head):
