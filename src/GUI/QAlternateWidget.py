@@ -5,8 +5,9 @@ Created on Feb 25, 2012
 '''
 
 from ui_alternateRepeatWidget import Ui_AlternateWidget
+from PyQt4.QtGui import QWidget
 
-class QAlternateWidget(Ui_AlternateWidget):
+class QAlternateWidget(QWidget, Ui_AlternateWidget):
     '''
     classdocs
     '''
