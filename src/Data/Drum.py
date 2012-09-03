@@ -67,12 +67,12 @@ class HeadData(object):
         note = int(note)
         volume = int(volume)
         if len(fields) > 3:
-            nHead, nLine, nEffect, sDir = fields[3:8]
+            nHead, nLine, nEffect, sDir = fields[3:7]
             nLine = int(nLine)
             sDir = int(sDir)
             shortcut = ""
             if len(fields) > 7:
-                shortcut = fields[8]
+                shortcut = fields[7]
         else:
             nHead, nLine, nEffect, sDir = _guessNotation(abbr, head)
         return head, HeadData(note, volume, effect, nHead,
