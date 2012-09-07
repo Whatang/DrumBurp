@@ -156,14 +156,16 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
 
     def _moveDrumUp(self):
         idx = self._currentDrumIndex
-        self._currentKit[idx - 1:idx + 1] = self._currentKit[idx:idx - 2:-1]
+        druma, drumb = self._currentKit[idx - 1], self._currentKit[idx]
+        self._currentKit[idx - 1], self._currentKit[idx] = drumb, druma
         self.kitTable.item(idx).setText(self._currentKit[idx].name)
         self.kitTable.item(idx - 1).setText(self._currentKit[idx - 1].name)
         self.kitTable.setCurrentRow(idx - 1)
 
     def _moveDrumDown(self):
         idx = self._currentDrumIndex
-        self._currentKit[idx:idx + 2] = self._currentKit[idx + 1:idx - 1:-1]
+        druma, drumb = self._currentKit[idx], self._currentKit[idx + 1]
+        self._currentKit[idx], self._currentKit[idx + 1] = drumb, druma
         self.kitTable.item(idx).setText(self._currentKit[idx].name)
         self.kitTable.item(idx + 1).setText(self._currentKit[idx + 1].name)
         self.kitTable.setCurrentRow(idx + 1)
@@ -304,7 +306,6 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             for okShortcut in sorted(list(availableShortcuts)):
                 self.shortcutCombo.addItem(okShortcut)
             shortIndex = self.shortcutCombo.findText(self._currentHeadData.shortcut)
-            print shortIndex, self._currentHeadData.shortcut
             self.shortcutCombo.setCurrentIndex(shortIndex)
         finally:
             self.shortcutCombo.blockSignals(False)
