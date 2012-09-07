@@ -66,11 +66,11 @@ class HeadData(object):
         note, volume, effect = fields[:3]
         note = int(note)
         volume = int(volume)
+        shortcut = ""
         if len(fields) > 3:
             nHead, nLine, nEffect, sDir = fields[3:7]
             nLine = int(nLine)
             sDir = int(sDir)
-            shortcut = ""
             if len(fields) > 7:
                 shortcut = fields[7]
         else:

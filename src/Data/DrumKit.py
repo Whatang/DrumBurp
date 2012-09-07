@@ -75,6 +75,7 @@ class DrumKit(object):
                                    notationEffect = newNotationEffect,
                                    stemDirection = stemDirection)
                 drum.addNoteHead(extraHead, newData)
+            drum.checkShortcuts()
             self.addDrum(drum)
 
     def addDrum(self, drum):
