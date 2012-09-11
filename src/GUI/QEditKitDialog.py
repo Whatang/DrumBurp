@@ -72,7 +72,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.headDownButton.clicked.connect(self._moveNoteHeadDown)
         self.deleteHeadButton.clicked.connect(self._removeNoteHead)
         self.noteHeadBox.currentIndexChanged.connect(self._notationHeadChanged)
-        self.effectBox.currentIndexChanged.connect(self._effectChanged)
+        self.effectBox.currentIndexChanged.connect(self._notationEffectChanged)
         self.stemUpDownBox.stateChanged.connect(self._stemDirectionChanged)
         self.noteUpButton.clicked.connect(self._moveNotationUp)
         self.noteDownButton.clicked.connect(self._moveNotationDown)
