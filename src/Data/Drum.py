@@ -168,8 +168,11 @@ class Drum(object):
     def addNoteHead(self, head, headData = None):
         self._noteHeads.append(head)
         if headData is None:
-            self._headData[head] = copy.deepcopy(self._headData[self.head])
+            newHead = copy.deepcopy(self._headData[self.head])
+            newHead.shortcut = None
+            self._headData[head] = newHead
             self._guessEffect(head)
+            self.checkShortcuts()
         else:
             self._headData[head] = headData
 
