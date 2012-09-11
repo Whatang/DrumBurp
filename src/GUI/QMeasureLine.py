@@ -51,6 +51,7 @@ class QMeasureLine(QtGui.QGraphicsItem):
         self._index = index
         self._staffIndex = staffIndex
         self.setDimensions()
+        self.setAcceptHoverEvents(True)
 
     def boundingRect(self):
         return self._rect
@@ -111,6 +112,14 @@ class QMeasureLine(QtGui.QGraphicsItem):
             self._qScore.sendFsmEvent(fsmEvent)
         else:
             event.ignore()
+
+    def hoverEnterEvent(self, *args, **kwargs):
+        self._qScore.setStatusMessage.emit("Right-click for barline options.")
+        return super(QMeasureLine, self).hoverEnterEvent(*args, **kwargs)
+
+    def hoverLeaveEvent(self, *args, **kwargs):
+        self._qScore.setStatusMessage.emit("")
+        return super(QMeasureLine, self).hoverLeaveEvent(*args, **kwargs)
 
 #pylint:disable-msg=R0913
 class BarLinePainter(object):
