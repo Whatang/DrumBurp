@@ -32,6 +32,7 @@ class QGraphicsListData(QGraphicsItem):
     classdocs
     '''
 
+    _editName = ""
 
     def __init__(self, qScore, parent = None):
         '''
@@ -43,6 +44,7 @@ class QGraphicsListData(QGraphicsItem):
         self._rect = QRectF(0, 0, 0, 0)
         self.setRect()
         self.setCursor(Qt.PointingHandCursor)
+        self.setAcceptsHoverEvents(True)
 
     def _iterData(self):
         raise NotImplementedError()
@@ -91,3 +93,11 @@ class QGraphicsListData(QGraphicsItem):
     def update(self):
         self.setRect()
         super(QGraphicsListData, self).update()
+
+    def hoverEnterEvent(self, *args, **kwargs):
+        self._qScore.setStatusMessage.emit("Double click to edit %s." % self._editName)
+        return super(QGraphicsListData, self).hoverEnterEvent(*args, **kwargs)
+
+    def hoverLeaveEvent(self, *args, **kwargs):
+        self._qScore.setStatusMessage.emit("")
+        return super(QGraphicsListData, self).hoverLeaveEvent(*args, **kwargs)

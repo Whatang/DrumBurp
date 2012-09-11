@@ -128,6 +128,7 @@ class QScore(QtGui.QGraphicsScene):
     sceneFormatted = QtCore.pyqtSignal()
     playing = QtCore.pyqtSignal(bool)
     currentHeadsChanged = QtCore.pyqtSignal(QtCore.QString)
+    setStatusMessage = QtCore.pyqtSignal(QtCore.QString)
 
     def addCommand(self, command):
         self._undoStack.push(command)

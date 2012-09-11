@@ -129,6 +129,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         scene.sceneFormatted.connect(self.sceneFormatted)
         scene.playing.connect(self._scorePlaying)
         scene.currentHeadsChanged.connect(self.availableNotesLabel.setText)
+        scene.setStatusMessage.connect(self._setStatusFromScene)
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
@@ -792,3 +793,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             if numPages > 1:
                 pagetext += "s"
             self._infoBar.setText(", ".join([measureText, staffText, pagetext]))
+
+    def _setStatusFromScene(self, msg):
+        self.statusbar.showMessage(msg)
+

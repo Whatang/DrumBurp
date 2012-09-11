@@ -29,6 +29,7 @@ class QMetaData(QGraphicsListData):
     '''
     classdocs
     '''
+    _editName = "score information."
 
     def _iterData(self):
         line = unicode(self._qScore.title)

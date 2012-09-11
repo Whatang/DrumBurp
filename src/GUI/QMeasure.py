@@ -280,11 +280,17 @@ class QMeasure(QtGui.QGraphicsItem):
             self._highlight = None
             self.parentItem().clearHighlight()
             self.update()
-        if (self._isOverCount(point)
-            or self._isOverRepeatCount(point)
-            or self._isOverAlternate(point)):
+        if self._isOverCount(point):
+            self._qScore.setStatusMessage.emit("Double click to edit measure count.")
+            self.setCursor(QtCore.Qt.PointingHandCursor)
+        elif self._isOverRepeatCount(point):
+            self._qScore.setStatusMessage.emit("Double click to edit repeat count.")
+            self.setCursor(QtCore.Qt.PointingHandCursor)
+        elif self._isOverAlternate(point):
+            self._qScore.setStatusMessage.emit("Double click to edit alternate ending.")
             self.setCursor(QtCore.Qt.PointingHandCursor)
         else:
+            self._qScore.setStatusMessage.emit("")
             self.setCursor(QtCore.Qt.ArrowCursor)
 
     def hoverEnterEvent(self, event):
