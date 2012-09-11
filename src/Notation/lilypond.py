@@ -291,6 +291,7 @@ class LilyKit(object):
         self._lilyNames = []
         allLilyHeads = set()
         allLilyNames = set()
+        reservedNames = set(["s", "r"])
         headCount = 0
         for drum in kit:
             sanitized = "".join(ch.lower() for ch in drum.name if ch.isalpha())
@@ -311,7 +312,8 @@ class LilyKit(object):
                     headCount += 1
                     lHead = sanAbbr + lily
                     lName = sanitized + lily
-                    ok = not(lHead in allLilyHeads or lName in allLilyNames)
+                    ok = not(lHead in allLilyHeads or lName in allLilyNames
+                             or lHead in reservedNames)
                 lilyHeads[head] = lHead
                 lilyNames[head] = lName
                 allLilyHeads.add(lHead)
