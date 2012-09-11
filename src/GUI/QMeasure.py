@@ -338,11 +338,11 @@ class QMeasure(QtGui.QGraphicsItem):
             counter = self._measure.counter
             fsmEvent = EditMeasureProperties(counter,
                                              self._props.counterRegistry,
-                                             self._measurePosition())
+                                             self.measurePosition())
             self._qScore.sendFsmEvent(fsmEvent)
         elif self._isOverRepeatCount(point):
             fsmEvent = ChangeRepeatCount(self._measure.repeatCount,
-                                         self._measurePosition())
+                                         self.measurePosition())
             self._qScore.sendFsmEvent(fsmEvent)
         elif self._isOverAlternate(point):
             self.setAlternate()
@@ -355,13 +355,13 @@ class QMeasure(QtGui.QGraphicsItem):
                           drumIndex = drumIndex)
         return self.parentItem().augmentNotePosition(np)
 
-    def _measurePosition(self):
+    def measurePosition(self):
         np = NotePosition(measureIndex = self._index)
         return self.parentItem().augmentNotePosition(np)
 
     def setAlternate(self):
         self._qScore.sendFsmEvent(SetAlternateEvent(self._measure.alternateText,
-                                                    self._measurePosition()))
+                                                    self.measurePosition()))
 
     def setPlaying(self, onOff):
         self._playing = onOff

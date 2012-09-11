@@ -154,15 +154,14 @@ class NotesMenu(FsmState):
 
 
 class ContextMenu(FsmState):
-    def __init__(self, qscore, measure, note, screenPos):
+    def __init__(self, qscore, qmeasure, note, screenPos):
         super(ContextMenu, self).__init__(qscore)
         if qscore.hasDragSelection():
             if not qscore.inDragSelection(note):
                 qscore.clearDragSelection()
-        self.menu = QMeasureContextMenu(qscore, measure, note,
-                                        measure.noteAt(note),
-                                        measure.alternateText())
-        self.measure = measure
+        self.menu = QMeasureContextMenu(qscore, qmeasure, note,
+                                        qmeasure.alternateText())
+        self.measure = qmeasure
         self.note = note
         QtCore.QTimer.singleShot(0, lambda: self.menu.exec_(screenPos))
 
@@ -185,6 +184,11 @@ class ContextMenu(FsmState):
         elif msgType == Event.SetAlternateEvent:
             newState = SetAlternateState(self.qscore, event.alternateText,
                                      event.measurePosition)
+        elif msgType == Event.EditMeasureProperties:
+            newState = EditMeasurePropertiesState(self.qscore,
+                                                  event.counter,
+                                                  event.counterRegistry,
+                                                  event.measurePosition)
         return newState
 
 class Repeating(FsmState):
