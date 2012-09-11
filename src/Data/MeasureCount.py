@@ -26,7 +26,7 @@ Created on 18 Jan 2011
 from Beat import Beat
 from Counter import CounterRegistry
 
-MIDITICKSPERBEAT = 48
+MIDITICKSPERBEAT = 96
 
 class MeasureCount(object):
     def __init__(self):
@@ -55,7 +55,7 @@ class MeasureCount(object):
         if beatTicks == lastBeat.numTicks:
             return len(self.beats), 4
         else:
-            for i in (6, 4, 3, 2, 1):
+            for i in (12, 8, 6, 4, 3, 2, 1):
                 if (beatTicks % i) == 0 and (lastBeat.numTicks % i) == 0:
                     denomPerBeat = (lastBeat.numTicks / i)
                     denom = 4 * denomPerBeat

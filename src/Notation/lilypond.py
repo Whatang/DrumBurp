@@ -73,6 +73,21 @@ class TripletsProblem(LilypondProblem):
 class FiveSixthsProblem(LilypondProblem):
     "DrumBurp cannot set notes of length 5/6 beat."
 
+class FiveEighthsProblem(LilypondProblem):
+    "DrumBurp cannot set notes of length 5/8 beat."
+
+class SevenEighthsProblem(LilypondProblem):
+    "DrumBurp cannot set notes of length 7/8 beat."
+
+class FiveTwelfthsProblem(LilypondProblem):
+    "DrumBurp cannot set notes of length 5/12 beat."
+
+class SevenTwelfthsProblem(LilypondProblem):
+    "DrumBurp cannot set notes of length 7/12 beat."
+
+class ElevenTwelfthsProblem(LilypondProblem):
+    "DrumBurp cannot set notes of length 11/12 beat."
+
 def lilyDuration(beat, ticks):
     dur = None
     if ticks == beat.numTicks:
@@ -88,6 +103,16 @@ def lilyDuration(beat, ticks):
             dur = "@8"
         elif ticks * 6 == beat.numTicks:
             dur = "@16"
+        elif ticks * 12 == beat.numTicks:
+            dur = "@32"
+        elif ticks * 4 == beat.numTicks:
+            dur = "@16."
+        elif ticks * 12 == 5 * beat.numTicks:
+            raise FiveTwelfthsProblem()
+        elif ticks * 12 == 7 * beat.numTicks:
+            raise SevenTwelfthsProblem()
+        elif ticks * 12 == 11 * beat.numTicks:
+            raise ElevenTwelfthsProblem()
     else:
         if 2 * ticks == beat.numTicks:
             dur = "8"
@@ -95,6 +120,14 @@ def lilyDuration(beat, ticks):
             dur = "16"
         elif 4 * ticks == 3 * beat.numTicks:
             dur = "8."
+        elif 8 * ticks == beat.numTicks:
+            dur = "32"
+        elif 8 * ticks == 3 * beat.numTicks:
+            dur = "16."
+        elif 8 * ticks == 5 * beat.numTicks:
+            raise FiveEighthsProblem()
+        elif 8 * ticks == 7 * beat.numTicks:
+            raise SevenEighthsProblem()
     return dur
 
 
