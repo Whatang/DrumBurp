@@ -404,6 +404,9 @@ class LilypondScore(object):
         self._lilyKit = LilyKit(score.drumKit)
         self.scoreData = score.scoreData
         self.indenter = Indenter()
+        self._timeSig = None
+        self._lastTimeSig = None
+        self._hadRepeatCount = False
 
     def write(self, handle):
         self.indenter.setHandle(handle)
@@ -458,14 +461,32 @@ class LilypondScore(object):
 
     def _writeSectionTitle(self, sectionTitle):
         if sectionTitle:
+            if self._hadRepeatCount:
+                self._hadRepeatCount = False
+                self.indenter(r'\bar "|"')
+                self.indenter(r"\cadenzaOn")
+                self.indenter(r"\once \override Score.TimeSignature #'stencil = ##f")
+                self.indenter(r"\time 1/32")
+                self.indenter(r"s32")
+                self.indenter(r'\bar ""')
+                self.indenter(r"\cadenzaOff")
+                if self._timeSig == self._lastTimeSig:
+                    self.indenter(r"\once \override Score.TimeSignature #'stencil = ##f")
+                self.indenter(r"\time %s" % self._timeSig)
+                self._lastTimeSig = self._timeSig
             self.indenter(r'\mark %s' % lilyString(sectionTitle))
             sectionTitle = None
         return sectionTitle
 
 
     def _getLastRepeats(self, repeatCommands, hasAlternate, measure):
+        self._hadRepeatCount = False
         if measure.isRepeatEnd():
             if measure.repeatCount > 2:
+                self._hadRepeatCount = True
+                if measure.isSectionEnd() or measure.isLineBreak():
+                    self.indenter(r"\once \override Score.RehearsalMark " +
+                                  r"#'break-visibility = #end-of-line-visible")
                 self.indenter(r"\once \override Score.RehearsalMark " +
                               r"#'self-alignment-X = #right")
                 self.indenter(r'\mark %s'
@@ -494,19 +515,19 @@ class LilypondScore(object):
         secIndex, secTitle = self._getNextSectionTitle(-1)
         repeatCommands = []
         hasAlternate = False
-        lastTimeSig = None
+        self._lastTimeSig = None
         for measure in self.score.iterMeasures():
-            secTitle = self._writeSectionTitle(secTitle)
             hasAlternate = self._getNextRepeats(repeatCommands,
                                                 hasAlternate, measure)
             if repeatCommands:
                 self.indenter(r"\set Score.repeatCommands = #'(%s)" %
                               " ".join(repeatCommands))
                 repeatCommands = []
-            timeSig = self._getTimeSig(measure)
-            if timeSig != lastTimeSig:
-                self.indenter(r"\time %s" % timeSig)
-                lastTimeSig = timeSig
+            self._timeSig = self._getTimeSig(measure)
+            secTitle = self._writeSectionTitle(secTitle)
+            if self._timeSig != self._lastTimeSig:
+                self.indenter(r"\time %s" % self._timeSig)
+                self._lastTimeSig = self._timeSig
             with VOICE_CONTEXT(self.indenter, ""):
                 self._writeMeasure(measure)
             hasAlternate = self._getLastRepeats(repeatCommands,
