@@ -26,6 +26,7 @@ from __future__ import print_function
 from contextlib import contextmanager
 import collections
 from Data.DrumKit import DrumKit
+from DBVersion import DB_VERSION
 
 import sys
 
@@ -411,15 +412,22 @@ class LilypondScore(object):
     def write(self, handle):
         self.indenter.setHandle(handle)
         self.indenter(r'\version "2.12.3"')
-        with LILY_CONTEXT(self.indenter, '\header'):
+        with LILY_CONTEXT(self.indenter, r'\header'):
             self._writeHeader()
         self._writeMacros(handle)
         self._lilyKit.write(handle)
         with LILY_CONTEXT(self.indenter, '\score'):
             self._writeScore()
 
+    def _writeCustomFooter(self):
+        self.indenter(r'oddFooterMarkup = \markup \null')
+        self.indenter(r'evenFooterMarkup = \markup \null')
+        self.indenter(r'oddFooterMarkup = \markup {\fill-line { }}')
+        self.indenter(r'evenFooterMarkup = \oddFooterMarkup')
+
     def _writeHeader(self):
         self.indenter('title = %s' % lilyString(self.scoreData.title))
+        self.indenter(r'tagline = #(string-append "Score created using DrumBurp %s, engraved with Lilypond " (lilypond-version))' % DB_VERSION)
         if self.scoreData.artistVisible:
             self.indenter('composer = %s' % lilyString(self.scoreData.artist))
         if self.scoreData.creatorVisible:
