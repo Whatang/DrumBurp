@@ -104,7 +104,7 @@ class QMeasure(QtGui.QGraphicsItem):
             lineHeight = baseline + (self._qScore.ySpacing / 2.0) - 1
             lineIndex = self.lineIndex(drumIndex)
             for noteTime, x in enumerate(xValues):
-                if (drumIndex == self._potentialDrum
+                if (lineIndex == self._potentialDrum
                     and noteTime in self._potentialSet):
                     text = self._potentialHead
                     potential = True
