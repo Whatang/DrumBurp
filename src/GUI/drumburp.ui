@@ -344,6 +344,9 @@ Sections in the score are defined by a section end barline, and the title that a
          <property name="statusTip">
           <string>Change the size of Lilypond export.</string>
          </property>
+         <property name="whatsThis">
+          <string>Lilypond allows one to set a global size which affects how big the staves, notes, and text in a score are. It defaults to 20. By altering this parameter, one can make the output of a Lilypond exported DrumBurp score bigger or smaller.</string>
+         </property>
          <property name="minimum">
           <number>8</number>
          </property>

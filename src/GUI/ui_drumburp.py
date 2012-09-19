@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Wed Sep 19 00:30:22 2012
+# Created: Wed Sep 19 00:56:12 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -659,6 +659,7 @@ class Ui_DrumBurpWindow(object):
 "Sections in the score are defined by a section end barline, and the title that appears before it. You can quickly jump to the beginning of any section defined in the current score by selecting it from this drop down box.", None, QtGui.QApplication.UnicodeUTF8))
         self.lilypondSize.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Lilypond export size", None, QtGui.QApplication.UnicodeUTF8))
         self.lilypondSize.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Change the size of Lilypond export.", None, QtGui.QApplication.UnicodeUTF8))
+        self.lilypondSize.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "Lilypond allows one to set a global size which affects how big the staves, notes, and text in a score are. It defaults to 20. By altering this parameter, one can make the output of a Lilypond exported DrumBurp score bigger or smaller.", None, QtGui.QApplication.UnicodeUTF8))
         self.scoreView.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "The score editing window.\n"
 "\n"
 "This window displays the current score, and allows you to edit.\n"
