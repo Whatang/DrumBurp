@@ -279,12 +279,13 @@ class RepeatingDragging(FsmState):
         while more:
             note = copy.copy(note)
             note = self.score.notePlus(note, self.interval)
-            more = ((note.staffIndex < self._lastNote.staffIndex) or
+            more = (note is not None and
+                    ((note.staffIndex < self._lastNote.staffIndex) or
                     (note.staffIndex == self._lastNote.staffIndex
                      and note.measureIndex < self._lastNote.measureIndex) or
                     ((note.staffIndex == self._lastNote.staffIndex
                       and note.measureIndex == self._lastNote.measureIndex
-                      and note.noteTime <= self._lastNote.noteTime)))
+                      and note.noteTime <= self._lastNote.noteTime))))
             if more:
                 notes.append(note)
 
