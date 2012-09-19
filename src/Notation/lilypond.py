@@ -434,8 +434,9 @@ class LilypondScore(object):
     def __init__(self, score):
         self.score = score
         self._lilyKit = LilyKit(score.drumKit)
-        self._paperSize = score.paperSize
+        self._paperSize = str(score.paperSize)
         self.scoreData = score.scoreData
+        self._lilysize = score.lilysize
         self.indenter = Indenter()
         self._timeSig = None
         self._lastTimeSig = None
@@ -448,6 +449,8 @@ class LilypondScore(object):
             self._writePaper()
         with LILY_CONTEXT(self.indenter, r'\header'):
             self._writeHeader()
+        with LILY_CONTEXT(self.indenter, r'\layout'):
+            self._writeLayout()
         self._writeMacros(handle)
         self._lilyKit.write(handle)
         with LILY_CONTEXT(self.indenter, '\score'):
@@ -466,6 +469,9 @@ class LilypondScore(object):
             self.indenter('composer = %s' % lilyString(self.scoreData.artist))
         if self.scoreData.creatorVisible:
             self.indenter('arranger = %s' % lilyString(self.scoreData.creator))
+
+    def _writeLayout(self):
+        self.indenter(r'#(layout-set-staff-size %d)' % self._lilysize)
 
     def _writeScore(self):
         with VOICE_CONTEXT(self.indenter, r'\new DrumStaff'):

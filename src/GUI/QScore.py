@@ -38,7 +38,7 @@ from DBCommands import (MetaDataCommand, ScoreWidthCommand,
                         SetPaperSizeCommand, SetDefaultCountCommand,
                         SetSystemSpacingCommand, InsertMeasuresCommand,
                         SetFontCommand, SetFontSizeCommand,
-                        SetVisibilityCommand)
+                        SetVisibilityCommand, SetLilypondSizeCommand)
 import DBMidi
 import functools
 from DBFSM import Waiting
@@ -129,6 +129,7 @@ class QScore(QtGui.QGraphicsScene):
     playing = QtCore.pyqtSignal(bool)
     currentHeadsChanged = QtCore.pyqtSignal(QtCore.QString)
     setStatusMessage = QtCore.pyqtSignal(QtCore.QString)
+    lilysizeChanged = QtCore.pyqtSignal(int)
 
     def addCommand(self, command):
         self._undoStack.push(command)
@@ -653,6 +654,11 @@ class QScore(QtGui.QGraphicsScene):
         self._metaData.setRect()
         self._kitData.setRect()
         self.scale = 1
+
+    def setLilypondSize(self, size):
+        if size != self.score.lilysize:
+            command = SetLilypondSizeCommand(self, size)
+            self.addCommand(command)
 
     def setScoreFontSize(self, size, fontType):
         fontName = fontType + "FontSize"

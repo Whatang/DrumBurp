@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sun Sep 02 15:56:34 2012
+# Created: Wed Sep 19 00:30:22 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -138,6 +138,12 @@ class Ui_DrumBurpWindow(object):
         self.frame_10.setFrameShadow(QtGui.QFrame.Raised)
         self.frame_10.setObjectName(_fromUtf8("frame_10"))
         self.horizontalLayout_8.addWidget(self.frame_10)
+        self.lilypondSize = QtGui.QSpinBox(self.scorePropertiesGroup)
+        self.lilypondSize.setMinimum(8)
+        self.lilypondSize.setMaximum(32)
+        self.lilypondSize.setProperty("value", 20)
+        self.lilypondSize.setObjectName(_fromUtf8("lilypondSize"))
+        self.horizontalLayout_8.addWidget(self.lilypondSize)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_8.addItem(spacerItem)
         self.verticalLayout.addWidget(self.scorePropertiesGroup)
@@ -597,6 +603,7 @@ class Ui_DrumBurpWindow(object):
         QtCore.QObject.connect(self.sectionNavigator, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(int)")), self.scoreView.showSection)
         QtCore.QObject.connect(self.actionMIDIToolBarIsVisible, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.MIDIToolBar.setVisible)
         QtCore.QObject.connect(self.MIDIToolBar, QtCore.SIGNAL(_fromUtf8("visibilityChanged(bool)")), self.actionMIDIToolBarIsVisible.setChecked)
+        QtCore.QObject.connect(self.lilypondSize, QtCore.SIGNAL(_fromUtf8("valueChanged(int)")), self.scoreView.setLilypondSize)
         QtCore.QMetaObject.connectSlotsByName(DrumBurpWindow)
         DrumBurpWindow.setTabOrder(self.lineSpaceSlider, self.defaultMeasureButton)
         DrumBurpWindow.setTabOrder(self.defaultMeasureButton, self.fontsButton)
@@ -650,6 +657,8 @@ class Ui_DrumBurpWindow(object):
         self.sectionNavigator.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "Section navigator\n"
 "\n"
 "Sections in the score are defined by a section end barline, and the title that appears before it. You can quickly jump to the beginning of any section defined in the current score by selecting it from this drop down box.", None, QtGui.QApplication.UnicodeUTF8))
+        self.lilypondSize.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Lilypond export size", None, QtGui.QApplication.UnicodeUTF8))
+        self.lilypondSize.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Change the size of Lilypond export.", None, QtGui.QApplication.UnicodeUTF8))
         self.scoreView.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "The score editing window.\n"
 "\n"
 "This window displays the current score, and allows you to edit.\n"

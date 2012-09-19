@@ -337,6 +337,25 @@ Sections in the score are defined by a section end barline, and the title that a
         </widget>
        </item>
        <item>
+        <widget class="QSpinBox" name="lilypondSize">
+         <property name="toolTip">
+          <string>Lilypond export size</string>
+         </property>
+         <property name="statusTip">
+          <string>Change the size of Lilypond export.</string>
+         </property>
+         <property name="minimum">
+          <number>8</number>
+         </property>
+         <property name="maximum">
+          <number>32</number>
+         </property>
+         <property name="value">
+          <number>20</number>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="horizontalSpacer_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -2225,6 +2244,22 @@ p, li { white-space: pre-wrap; }
     <hint type="destinationlabel">
      <x>-1</x>
      <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lilypondSize</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setLilypondSize(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>807</x>
+     <y>97</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>815</x>
+     <y>143</y>
     </hint>
    </hints>
   </connection>

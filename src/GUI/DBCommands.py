@@ -113,6 +113,23 @@ class MetaDataCommand(_COMMAND_CLASS):
             setattr(self._score.scoreData, self._varname, self._oldValue)
             self._signal.emit(self._varname, self._oldValue)
 
+class SetLilypondSizeCommand(_COMMAND_CLASS):
+    def __init__(self, qScore, size):
+        super(SetLilypondSizeCommand, self).__init__(qScore, None,
+                                                     "set Lilypond size")
+        self._oldValue = self._score.lilysize
+        self._newValue = size
+
+    def _redo(self):
+        if self._score.lilysize != self._newValue:
+            self._score.lilysize = self._newValue
+            self._qScore.lilysizeChanged.emit(self._newValue)
+
+    def _undo(self):
+        if self._score.lilysize != self._oldValue:
+            self._score.lilysize = self._oldValue
+            self._qScore.lilysizeChanged.emit(self._oldValue)
+
 class ScoreWidthCommand(_COMMAND_CLASS):
     def __init__(self, qScore, value):
         super(ScoreWidthCommand, self).__init__(qScore, None,
