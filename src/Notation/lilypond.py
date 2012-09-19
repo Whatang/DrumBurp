@@ -399,10 +399,42 @@ class LilyKit(object):
         print("))", file = handle)
         print ("", file = handle)
 
+_PAPER_SIZES = { "A0" : "a0",
+                 "A1" : "a1",
+                 "A2" : "a2",
+                 "A3" : "a3",
+                 "A4" : "a4",
+                 "A5" : "a5",
+                 "A6" : "a6",
+                 "A7" : "a7",
+                 "A8" : "a8",
+                 "A9" : "a9",
+                 "B0" : "b0",
+                 "B1" : "b1",
+                 "B10" : "b10",
+                 "B2" : "b2",
+                 "B3" : "b3",
+                 "B4" : "b4",
+                 "B5" : "b5",
+                 "B6" : "b6",
+                 "B7" : "b7",
+                 "B8" : "b8",
+                 "B9" : "b9",
+                 "C5E" : "c5",
+                 "Executive" : "executive",
+                 "Folio" : "folio",
+                 "Ledger" : "ledger",
+                 "Legal" : "legal",
+                 "Letter" : "letter",
+                 "Tabloid" : "tabloid" }
+
+class BadPaperSize(LilypondProblem):
+    "DrumBurp cannot create a Lilypond score on this paper size."
 class LilypondScore(object):
     def __init__(self, score):
         self.score = score
         self._lilyKit = LilyKit(score.drumKit)
+        self._paperSize = score.paperSize
         self.scoreData = score.scoreData
         self.indenter = Indenter()
         self._timeSig = None
@@ -412,6 +444,8 @@ class LilypondScore(object):
     def write(self, handle):
         self.indenter.setHandle(handle)
         self.indenter(r'\version "2.12.3"')
+        with LILY_CONTEXT(self.indenter, r"\paper"):
+            self._writePaper()
         with LILY_CONTEXT(self.indenter, r'\header'):
             self._writeHeader()
         self._writeMacros(handle)
@@ -419,11 +453,11 @@ class LilypondScore(object):
         with LILY_CONTEXT(self.indenter, '\score'):
             self._writeScore()
 
-    def _writeCustomFooter(self):
-        self.indenter(r'oddFooterMarkup = \markup \null')
-        self.indenter(r'evenFooterMarkup = \markup \null')
-        self.indenter(r'oddFooterMarkup = \markup {\fill-line { }}')
-        self.indenter(r'evenFooterMarkup = \oddFooterMarkup')
+    def _writePaper(self):
+        paperSize = _PAPER_SIZES.get(self._paperSize, None)
+        if paperSize is None:
+            raise BadPaperSize(self._paperSize)
+        self.indenter(r'#(set-paper-size %s)' % lilyString(paperSize))
 
     def _writeHeader(self):
         self.indenter('title = %s' % lilyString(self.scoreData.title))
