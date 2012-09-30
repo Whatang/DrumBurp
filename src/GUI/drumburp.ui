@@ -122,6 +122,15 @@ The score width can be whatever you want it to be. When you're creating a score,
 
 However, when you print, or export to PDF/ASCII, you might want the width to be something which fits on a page: use the 'Fit to Page' option then.</string>
          </property>
+         <property name="frame">
+          <bool>true</bool>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="buttonSymbols">
+          <enum>QAbstractSpinBox::UpDownArrows</enum>
+         </property>
          <property name="minimum">
           <number>10</number>
          </property>
@@ -347,6 +356,9 @@ Sections in the score are defined by a section end barline, and the title that a
          <property name="whatsThis">
           <string>Lilypond allows one to set a global size which affects how big the staves, notes, and text in a score are. It defaults to 20. By altering this parameter, one can make the output of a Lilypond exported DrumBurp score bigger or smaller.</string>
          </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
          <property name="minimum">
           <number>8</number>
          </property>
@@ -355,6 +367,25 @@ Sections in the score are defined by a section end barline, and the title that a
          </property>
          <property name="value">
           <number>20</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="lilyPagesBox">
+         <property name="toolTip">
+          <string>Number of Lilypond pages</string>
+         </property>
+         <property name="statusTip">
+          <string>Force Lilypond to write this score to a given number of pages.</string>
+         </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set this value to force Lilypond export to fit on the given number of pages.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;If the value is zero then Lilypond will set the score on as many pages as it wants.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="maximum">
+          <number>1000</number>
          </property>
         </widget>
        </item>
@@ -2263,6 +2294,22 @@ p, li { white-space: pre-wrap; }
     <hint type="destinationlabel">
      <x>815</x>
      <y>143</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lilyPagesBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setLilypondPages(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>867</x>
+     <y>96</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>913</x>
+     <y>180</y>
     </hint>
    </hints>
   </connection>
