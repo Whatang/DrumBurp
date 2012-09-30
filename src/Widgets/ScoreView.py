@@ -53,6 +53,10 @@ class ScoreView(QtGui.QGraphicsView):
     def setLilypondSize(self, size):
         self.scene().setLilypondSize(size)
 
+    @QtCore.pyqtSlot(int)
+    def setLilypondPages(self, numPages):
+        self.scene().setLilypondPages(numPages)
+
     @QtCore.pyqtSlot(QtGui.QFont)
     def setFont(self, font):
         self.scene().setScoreFont(font, "note")

@@ -131,6 +131,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         scene.currentHeadsChanged.connect(self.availableNotesLabel.setText)
         scene.setStatusMessage.connect(self._setStatusFromScene)
         scene.lilysizeChanged.connect(self._setLilySize)
+        scene.lilypagesChanged.connect(self._setLilyPages)
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
@@ -193,6 +194,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self._beatChanged(scene.defaultCount)
         self.widthSpinBox.setValue(scene.scoreWidth)
         self.lilypondSize.setValue(scene.score.lilysize)
+        self.lilyPagesBox.setValue(scene.score.lilypages)
 
 
     def _startUp(self):
@@ -324,6 +326,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if self.scoreScene.loadScore(fname):
             self._beatChanged(self.scoreScene.defaultCount)
             self.lilypondSize.setValue(self.scoreScene.score.lilysize)
+            self.lilyPagesBox.setValue(self.scoreScene.score.lilypages)
             self.filename = unicode(fname)
             self.updateStatus("Successfully loaded %s" % self.filename)
             self.addToRecentFiles()
@@ -803,4 +806,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def _setLilySize(self, size):
         if size != self.lilypondSize.value():
             self.lilypondSize.setValue(size)
+
+    def _setLilyPages(self, numPages):
+        if numPages != self.lilyPagesBox.value():
+            self.lilyPagesBox.setValue(numPages)
 

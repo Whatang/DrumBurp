@@ -66,6 +66,7 @@ class Score(object):
         self.systemSpacing = 25
         self.fontOptions = FontOptions()
         self.lilysize = 20
+        self.lilypages = 0
 
     def __len__(self):
         return sum(len(staff) for staff in self._staffs)
@@ -766,6 +767,7 @@ class Score(object):
             print >> handle, indenter("SECTION_TITLE", title)
         print >> handle, "PAPER_SIZE", self.paperSize
         print >> handle, "LILYSIZE", self.lilysize
+        print >> handle, "LILYPAGES", self.lilypages
         self.defaultCount.write(handle, indenter,
                                 title = "DEFAULT_COUNT_INFO_START")
         print >> handle, "SYSTEM_SPACE", self.systemSpacing
@@ -801,6 +803,8 @@ class Score(object):
                 self.paperSize = lineData
             elif lineType == "LILYSIZE":
                 self.lilysize = int(lineData)
+            elif lineType == "LILYPAGES":
+                self.lilypages = int(lineData)
             elif lineType == "DEFAULT_COUNT_INFO_START":
                 self.defaultCount = MeasureCount()
                 self.defaultCount.read(scoreIterator)

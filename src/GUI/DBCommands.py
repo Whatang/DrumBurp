@@ -130,6 +130,23 @@ class SetLilypondSizeCommand(_COMMAND_CLASS):
             self._score.lilysize = self._oldValue
             self._qScore.lilysizeChanged.emit(self._oldValue)
 
+class SetLilypondPagesCommand(_COMMAND_CLASS):
+    def __init__(self, qScore, numPages):
+        super(SetLilypondPagesCommand, self).__init__(qScore, None,
+                                                     "set Lilypond pages")
+        self._oldValue = self._score.lilypages
+        self._newValue = numPages
+
+    def _redo(self):
+        if self._score.lilypages != self._newValue:
+            self._score.lilypages = self._newValue
+            self._qScore.lilypagesChanged.emit(self._newValue)
+
+    def _undo(self):
+        if self._score.lilypages != self._oldValue:
+            self._score.lilypages = self._oldValue
+            self._qScore.lilypagesChanged.emit(self._oldValue)
+
 class ScoreWidthCommand(_COMMAND_CLASS):
     def __init__(self, qScore, value):
         super(ScoreWidthCommand, self).__init__(qScore, None,
