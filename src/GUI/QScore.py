@@ -217,6 +217,7 @@ class QScore(QtGui.QGraphicsScene):
             self.paperSizeChanged.emit(self._score.paperSize)
             self.defaultCountChanged.emit(self._score.defaultCount)
             self.spacingChanged.emit(self._score.systemSpacing)
+            self.lilysizeChanged.emit(self._score.lilysize)
             self.sectionsChanged.emit()
             self._properties.newScore(self)
             self._kitData.setVisible(self._properties.kitDataVisible)
