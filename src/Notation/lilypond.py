@@ -533,7 +533,7 @@ class LilypondScore(object):
             if measure.repeatCount > 2:
                 self._hadRepeatCount = True
                 self.indenter(r"\once \override Score.RehearsalMark " +
-                              r"#'break-visibility = #end-of-line-visible")
+                              r"#'break-visibility = #begin-of-line-invisible")
                 self.indenter(r"\once \override Score.RehearsalMark " +
                               r"#'self-alignment-X = #right")
                 self.indenter(r'\mark %s'
