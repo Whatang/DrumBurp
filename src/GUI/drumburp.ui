@@ -38,135 +38,132 @@
      <number>3</number>
     </property>
     <item>
-     <widget class="QGroupBox" name="scorePropertiesGroup">
-      <property name="title">
-       <string>Score Properties</string>
+     <widget class="QFrame" name="frame_2">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
       </property>
-      <property name="flat">
-       <bool>false</bool>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
       </property>
-      <property name="checkable">
-       <bool>false</bool>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_8">
-       <property name="spacing">
-        <number>6</number>
-       </property>
-       <property name="leftMargin">
-        <number>5</number>
-       </property>
-       <property name="topMargin">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="margin">
         <number>0</number>
        </property>
-       <property name="rightMargin">
-        <number>1</number>
-       </property>
-       <property name="bottomMargin">
-        <number>3</number>
-       </property>
        <item>
-        <widget class="QComboBox" name="paperBox">
-         <property name="toolTip">
-          <string>Page size</string>
+        <widget class="QGroupBox" name="scorePropertiesGroup">
+         <property name="title">
+          <string>Score Properties</string>
          </property>
-         <property name="statusTip">
-          <string>Select the page size</string>
+         <property name="flat">
+          <bool>false</bool>
          </property>
-         <property name="whatsThis">
-          <string>Set the page size.
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <property name="spacing">
+           <number>6</number>
+          </property>
+          <property name="leftMargin">
+           <number>5</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>1</number>
+          </property>
+          <property name="bottomMargin">
+           <number>3</number>
+          </property>
+          <item>
+           <widget class="QComboBox" name="paperBox">
+            <property name="toolTip">
+             <string>Page size</string>
+            </property>
+            <property name="statusTip">
+             <string>Select the page size</string>
+            </property>
+            <property name="whatsThis">
+             <string>Set the page size.
 
 The page size determines the number of pages used by the current font size and score width settings, as well as affecting printing and PDF export.</string>
-         </property>
-         <item>
-          <property name="text">
-           <string>A4</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Letter</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item>
-        <widget class="QFrame" name="frame">
-         <property name="frameShape">
-          <enum>QFrame::VLine</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="widthSpinBox">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="toolTip">
-          <string>Score width</string>
-         </property>
-         <property name="statusTip">
-          <string>The number of columns to display the score with</string>
-         </property>
-         <property name="whatsThis">
-          <string>The score width
+            </property>
+            <item>
+             <property name="text">
+              <string>A4</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Letter</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame">
+            <property name="frameShape">
+             <enum>QFrame::VLine</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="widthSpinBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Score width</string>
+            </property>
+            <property name="statusTip">
+             <string>The number of columns to display the score with</string>
+            </property>
+            <property name="whatsThis">
+             <string>The score width
 
 The score width is the number of columns used to display the current score. DrumBurp will try to add each measure to a staff until the score width is reached, then following measure will be added to the next staff. 
 
 The score width can be whatever you want it to be. When you're creating a score, you might want to use as much screen real estate as possible, so you could use the 'Fit to Window' option. 
 
 However, when you print, or export to PDF/ASCII, you might want the width to be something which fits on a page: use the 'Fit to Page' option then.</string>
-         </property>
-         <property name="frame">
-          <bool>true</bool>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-         <property name="buttonSymbols">
-          <enum>QAbstractSpinBox::UpDownArrows</enum>
-         </property>
-         <property name="minimum">
-          <number>10</number>
-         </property>
-         <property name="maximum">
-          <number>1000</number>
-         </property>
-         <property name="value">
-          <number>80</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QFrame" name="frame_5">
-         <property name="frameShape">
-          <enum>QFrame::VLine</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QFrame" name="frame_3">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_7">
-          <property name="spacing">
-           <number>3</number>
-          </property>
-          <property name="margin">
-           <number>0</number>
-          </property>
+            </property>
+            <property name="frame">
+             <bool>true</bool>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="buttonSymbols">
+             <enum>QAbstractSpinBox::UpDownArrows</enum>
+            </property>
+            <property name="minimum">
+             <number>10</number>
+            </property>
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+            <property name="value">
+             <number>80</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame_5">
+            <property name="frameShape">
+             <enum>QFrame::VLine</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+           </widget>
+          </item>
           <item>
            <widget class="QFrame" name="frame_4">
             <property name="frameShape">
@@ -224,34 +221,16 @@ Each staff in the score is placed by DrumBurp with a certain amount of space sep
             </layout>
            </widget>
           </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QFrame" name="frame_6">
-         <property name="frameShape">
-          <enum>QFrame::VLine</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QFrame" name="frame_7">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_10">
-          <property name="spacing">
-           <number>3</number>
-          </property>
-          <property name="margin">
-           <number>0</number>
-          </property>
+          <item>
+           <widget class="QFrame" name="frame_6">
+            <property name="frameShape">
+             <enum>QFrame::VLine</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+           </widget>
+          </item>
           <item>
            <widget class="QPushButton" name="defaultMeasureButton">
             <property name="toolTip">
@@ -270,127 +249,142 @@ A score has a default measure count: this is the count that is given to new meas
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QFrame" name="frame_8">
+            <property name="frameShape">
+             <enum>QFrame::VLine</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="fontsButton">
+            <property name="toolTip">
+             <string>Fonts</string>
+            </property>
+            <property name="statusTip">
+             <string>Adjust the fonts used by this score</string>
+            </property>
+            <property name="whatsThis">
+             <string>Show/hide the font selection window.
+
+The font window is a floating dialog that you can use to adjust the fonts used to display the score. This button shows/hides it when you toggle it.</string>
+            </property>
+            <property name="text">
+             <string>Fonts...</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame_9">
+            <property name="frameShape">
+             <enum>QFrame::VLine</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="sectionNavigator">
+            <property name="toolTip">
+             <string>Section navigator</string>
+            </property>
+            <property name="statusTip">
+             <string>Quickly jump to a section of the score</string>
+            </property>
+            <property name="whatsThis">
+             <string>Section navigator
+
+Sections in the score are defined by a section end barline, and the title that appears before it. You can quickly jump to the beginning of any section defined in the current score by selecting it from this drop down box.</string>
+            </property>
+            <property name="sizeAdjustPolicy">
+             <enum>QComboBox::AdjustToContents</enum>
+            </property>
+            <property name="minimumContentsLength">
+             <number>6</number>
+            </property>
+            <property name="duplicatesEnabled">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
        <item>
-        <widget class="QFrame" name="frame_8">
-         <property name="frameShape">
-          <enum>QFrame::VLine</enum>
+        <widget class="QGroupBox" name="lilypondGroupBox">
+         <property name="title">
+          <string>Lilypond Export</string>
          </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QSpinBox" name="lilyPagesBox">
+            <property name="toolTip">
+             <string>Number of Lilypond pages</string>
+            </property>
+            <property name="statusTip">
+             <string>Force Lilypond to write this score to a given number of pages.</string>
+            </property>
+            <property name="whatsThis">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set this value to force Lilypond export to fit on the given number of pages.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;If the value is zero then Lilypond will set the score on as many pages as it wants.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="lilypondSize">
+            <property name="toolTip">
+             <string>Lilypond export size</string>
+            </property>
+            <property name="statusTip">
+             <string>Change the size of Lilypond export.</string>
+            </property>
+            <property name="whatsThis">
+             <string>Lilypond allows one to set a global size which affects how big the staves, notes, and text in a score are. It defaults to 20. By altering this parameter, one can make the output of a Lilypond exported DrumBurp score bigger or smaller.</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="minimum">
+             <number>8</number>
+            </property>
+            <property name="maximum">
+             <number>32</number>
+            </property>
+            <property name="value">
+             <number>20</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="lilyFillButton">
+            <property name="toolTip">
+             <string>Fill the last page of Lilypond export</string>
+            </property>
+            <property name="statusTip">
+             <string>Fill the last page of Lilypond export</string>
+            </property>
+            <property name="whatsThis">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Lilypond export can be set to fill the last page of the score with music, or to just stop halfway down the page when it runs out of staffs.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Check this box to fill the last page of the score.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Fill last page</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="fontsButton">
-         <property name="toolTip">
-          <string>Fonts</string>
-         </property>
-         <property name="statusTip">
-          <string>Adjust the fonts used by this score</string>
-         </property>
-         <property name="whatsThis">
-          <string>Show/hide the font selection window.
-
-The font window is a floating dialog that you can use to adjust the fonts used to display the score. This button shows/hides it when you toggle it.</string>
-         </property>
-         <property name="text">
-          <string>Fonts...</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QFrame" name="frame_9">
-         <property name="frameShape">
-          <enum>QFrame::VLine</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="sectionNavigator">
-         <property name="toolTip">
-          <string>Section navigator</string>
-         </property>
-         <property name="statusTip">
-          <string>Quickly jump to a section of the score</string>
-         </property>
-         <property name="whatsThis">
-          <string>Section navigator
-
-Sections in the score are defined by a section end barline, and the title that appears before it. You can quickly jump to the beginning of any section defined in the current score by selecting it from this drop down box.</string>
-         </property>
-         <property name="sizeAdjustPolicy">
-          <enum>QComboBox::AdjustToContents</enum>
-         </property>
-         <property name="minimumContentsLength">
-          <number>6</number>
-         </property>
-         <property name="duplicatesEnabled">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QFrame" name="frame_10">
-         <property name="frameShape">
-          <enum>QFrame::VLine</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="lilypondSize">
-         <property name="toolTip">
-          <string>Lilypond export size</string>
-         </property>
-         <property name="statusTip">
-          <string>Change the size of Lilypond export.</string>
-         </property>
-         <property name="whatsThis">
-          <string>Lilypond allows one to set a global size which affects how big the staves, notes, and text in a score are. It defaults to 20. By altering this parameter, one can make the output of a Lilypond exported DrumBurp score bigger or smaller.</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-         <property name="minimum">
-          <number>8</number>
-         </property>
-         <property name="maximum">
-          <number>32</number>
-         </property>
-         <property name="value">
-          <number>20</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="lilyPagesBox">
-         <property name="toolTip">
-          <string>Number of Lilypond pages</string>
-         </property>
-         <property name="statusTip">
-          <string>Force Lilypond to write this score to a given number of pages.</string>
-         </property>
-         <property name="whatsThis">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set this value to force Lilypond export to fit on the given number of pages.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;If the value is zero then Lilypond will set the score on as many pages as it wants.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-         <property name="maximum">
-          <number>1000</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_2">
+        <spacer name="horizontalSpacer_5">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -1770,7 +1764,6 @@ p, li { white-space: pre-wrap; }
  </customwidgets>
  <tabstops>
   <tabstop>lineSpaceSlider</tabstop>
-  <tabstop>defaultMeasureButton</tabstop>
   <tabstop>fontsButton</tabstop>
   <tabstop>sectionNavigator</tabstop>
   <tabstop>scoreView</tabstop>
@@ -1984,7 +1977,7 @@ p, li { white-space: pre-wrap; }
    <slot>setNoteFontSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>253</x>
+     <x>193</x>
      <y>215</y>
     </hint>
     <hint type="destinationlabel">
@@ -2000,7 +1993,7 @@ p, li { white-space: pre-wrap; }
    <slot>setSectionFontSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>253</x>
+     <x>193</x>
      <y>432</y>
     </hint>
     <hint type="destinationlabel">
@@ -2048,7 +2041,7 @@ p, li { white-space: pre-wrap; }
    <slot>setMetadataFontSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>253</x>
+     <x>193</x>
      <y>650</y>
     </hint>
     <hint type="destinationlabel">
@@ -2148,7 +2141,7 @@ p, li { white-space: pre-wrap; }
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>253</x>
+     <x>193</x>
      <y>650</y>
     </hint>
    </hints>
@@ -2176,8 +2169,8 @@ p, li { white-space: pre-wrap; }
    <slot>systemSpacingChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>509</x>
-     <y>107</y>
+     <x>475</x>
+     <y>109</y>
     </hint>
     <hint type="destinationlabel">
      <x>661</x>
@@ -2208,8 +2201,8 @@ p, li { white-space: pre-wrap; }
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>698</x>
-     <y>106</y>
+     <x>661</x>
+     <y>109</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -2240,8 +2233,8 @@ p, li { white-space: pre-wrap; }
    <slot>showSection(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>782</x>
-     <y>105</y>
+     <x>745</x>
+     <y>107</y>
     </hint>
     <hint type="destinationlabel">
      <x>876</x>
@@ -2288,8 +2281,8 @@ p, li { white-space: pre-wrap; }
    <slot>setLilypondSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>807</x>
-     <y>97</y>
+     <x>856</x>
+     <y>109</y>
     </hint>
     <hint type="destinationlabel">
      <x>815</x>
@@ -2304,12 +2297,28 @@ p, li { white-space: pre-wrap; }
    <slot>setLilypondPages(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>867</x>
-     <y>96</y>
+     <x>808</x>
+     <y>109</y>
     </hint>
     <hint type="destinationlabel">
      <x>913</x>
      <y>180</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lilyFillButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setLilyFill(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>873</x>
+     <y>101</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>852</x>
+     <y>163</y>
     </hint>
    </hints>
   </connection>

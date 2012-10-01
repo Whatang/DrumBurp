@@ -438,6 +438,7 @@ class LilypondScore(object):
         self.scoreData = score.scoreData
         self._lilysize = score.lilysize
         self._numPages = score.lilypages
+        self._lilyFill = score.lilyFill
         self.indenter = Indenter()
         self._timeSig = None
         self._lastTimeSig = None
@@ -464,6 +465,7 @@ class LilypondScore(object):
         self.indenter(r'#(set-paper-size %s)' % lilyString(paperSize))
         if self._numPages != 0:
             self.indenter(r'page-count = #%d' % self._numPages)
+        if self._lilyFill:
             self.indenter(r'ragged-last-bottom = ##f')
 
     def _writeHeader(self):

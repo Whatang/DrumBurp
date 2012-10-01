@@ -39,7 +39,7 @@ from DBCommands import (MetaDataCommand, ScoreWidthCommand,
                         SetSystemSpacingCommand, InsertMeasuresCommand,
                         SetFontCommand, SetFontSizeCommand,
                         SetVisibilityCommand, SetLilypondSizeCommand,
-                        SetLilypondPagesCommand)
+                        SetLilypondPagesCommand, SetLilypondFillCommand)
 import DBMidi
 import functools
 from DBFSM import Waiting
@@ -132,6 +132,7 @@ class QScore(QtGui.QGraphicsScene):
     setStatusMessage = QtCore.pyqtSignal(QtCore.QString)
     lilysizeChanged = QtCore.pyqtSignal(int)
     lilypagesChanged = QtCore.pyqtSignal(int)
+    lilyFillChanged = QtCore.pyqtSignal(bool)
 
     def addCommand(self, command):
         self._undoStack.push(command)
@@ -221,6 +222,7 @@ class QScore(QtGui.QGraphicsScene):
             self.spacingChanged.emit(self._score.systemSpacing)
             self.lilysizeChanged.emit(self._score.lilysize)
             self.lilypagesChanged.emit(self._score.lilypages)
+            self.lilyFillChanged.emit(self._score.lilyFill)
             self.sectionsChanged.emit()
             self._properties.newScore(self)
             self._kitData.setVisible(self._properties.kitDataVisible)
@@ -667,6 +669,11 @@ class QScore(QtGui.QGraphicsScene):
     def setLilypondPages(self, numPages):
         if numPages != self.score.lilypages:
             command = SetLilypondPagesCommand(self, numPages)
+            self.addCommand(command)
+
+    def setLilyFill(self, lilyFill):
+        if lilyFill != self.score.lilyFill:
+            command = SetLilypondFillCommand(self, lilyFill)
             self.addCommand(command)
 
     def setScoreFontSize(self, size, fontType):

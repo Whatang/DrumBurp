@@ -132,6 +132,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         scene.setStatusMessage.connect(self._setStatusFromScene)
         scene.lilysizeChanged.connect(self._setLilySize)
         scene.lilypagesChanged.connect(self._setLilyPages)
+        scene.lilyFillChanged.connect(self._setLilyFill)
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
@@ -195,6 +196,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.widthSpinBox.setValue(scene.scoreWidth)
         self.lilypondSize.setValue(scene.score.lilysize)
         self.lilyPagesBox.setValue(scene.score.lilypages)
+        self.lilyFillButton.setChecked(scene.score.lilyFill)
 
 
     def _startUp(self):
@@ -810,4 +812,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def _setLilyPages(self, numPages):
         if numPages != self.lilyPagesBox.value():
             self.lilyPagesBox.setValue(numPages)
+
+    def _setLilyFill(self, lilyFill):
+        if lilyFill != self.lilyFillButton.isChecked():
+            self.lilyFillButton.setChecked(lilyFill)
 

@@ -67,6 +67,7 @@ class Score(object):
         self.fontOptions = FontOptions()
         self.lilysize = 20
         self.lilypages = 0
+        self.lilyFill = False
 
     def __len__(self):
         return sum(len(staff) for staff in self._staffs)
@@ -768,6 +769,8 @@ class Score(object):
         print >> handle, "PAPER_SIZE", self.paperSize
         print >> handle, "LILYSIZE", self.lilysize
         print >> handle, "LILYPAGES", self.lilypages
+        if self.lilyFill:
+            print >> handle, "LILYFILL", "YES"
         self.defaultCount.write(handle, indenter,
                                 title = "DEFAULT_COUNT_INFO_START")
         print >> handle, "SYSTEM_SPACE", self.systemSpacing
@@ -788,6 +791,7 @@ class Score(object):
                 lineType = lineType.upper()
                 yield lineType, lineData
         scoreIterator = scoreHandle()
+        self.lilyFill = False
         for lineType, lineData in scoreIterator:
             if lineType == "SCORE_METADATA":
                 self.scoreData.load(scoreIterator)
@@ -805,6 +809,8 @@ class Score(object):
                 self.lilysize = int(lineData)
             elif lineType == "LILYPAGES":
                 self.lilypages = int(lineData)
+            elif lineType == "LILYFILL":
+                self.lilyFill = True
             elif lineType == "DEFAULT_COUNT_INFO_START":
                 self.defaultCount = MeasureCount()
                 self.defaultCount.read(scoreIterator)
