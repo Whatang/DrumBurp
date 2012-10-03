@@ -27,6 +27,7 @@ from Data import DBConstants
 from Data.Score import Score
 from Data.NotePosition import NotePosition
 import copy
+import DBVersion
 
 class ScoreCommand(QUndoCommand):
     def __init__(self, qScore, note, description):
@@ -63,6 +64,8 @@ class DebugScoreCommand(ScoreCommand): #pylint:disable-msg=W0223
         assert(newHash == self._hash)
 
 _COMMAND_CLASS = DebugScoreCommand
+if DBVersion.FULL_RELEASE:
+    _COMMAND_CLASS = ScoreCommand
 
 class NoteCommand(_COMMAND_CLASS): #pylint:disable-msg=W0223
     def __init__(self, qScore, notePosition, head = None):
