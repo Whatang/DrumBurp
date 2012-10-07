@@ -136,8 +136,11 @@ class DrumKit(object):
                 lastDrum = drum
             elif lineType == "NOTEHEAD":
                 lastDrum.readHeadData(lineData)
+            elif lineType == "KIT_START":
+                #No need to do anything
+                pass
             else:
-                raise IOError("Unrecognised line type.")
+                raise IOError("Unrecognised line type.", lineType)
 
     def _checkShortcuts(self):
         for drum in self:

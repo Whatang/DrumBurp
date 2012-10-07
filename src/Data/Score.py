@@ -33,6 +33,7 @@ from DBConstants import REPEAT_EXTENDER
 from NotePosition import NotePosition
 from ScoreMetaData import ScoreMetaData
 from FontOptions import FontOptions
+import fileUtils
 import os
 import bisect
 import copy
@@ -760,7 +761,7 @@ class Score(object):
         return emptyDrums
 
     def write(self, handle):
-        indenter = Indenter()
+        indenter = fileUtils.Indenter()
         self.scoreData.save(handle, indenter)
         self.drumKit.write(handle, indenter)
         for measure in self.iterMeasures():
@@ -779,19 +780,7 @@ class Score(object):
 
 
     def read(self, handle):
-        def scoreHandle():
-            for line in handle:
-                line = line.strip()
-                fields = line.split(None, 1)
-                if len(fields) == 1:
-                    fields.append(None)
-                elif len(fields) == 0:
-                    # Blank line
-                    continue
-                lineType, lineData = fields
-                lineType = lineType.upper()
-                yield lineType, lineData
-        scoreIterator = scoreHandle()
+        scoreIterator = fileUtils.dbFileIterator(handle)
         self.lilyFill = False
         for lineType, lineData in scoreIterator:
             if lineType == "SCORE_METADATA":
@@ -928,18 +917,3 @@ class ScoreFactory(object):
         score.write(scoreBuffer)
         with open(filename, 'w') as handle:
             handle.write(scoreBuffer.getvalue())
-
-class Indenter(object):
-    def __init__(self, indent = "  "):
-        self._indent = indent
-        self._level = 0
-    def increase(self):
-        self._level += 1
-    def decrease(self):
-        self._level -= 1
-        self._level = max(0, self._level)
-    def __call__(self, *args):
-        argString = " ".join(str(ar) for ar in args)
-        if self._level != 0:
-            argString = (self._indent * self._level) + argString
-        return argString

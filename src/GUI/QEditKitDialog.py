@@ -28,7 +28,7 @@ from ui_editKit import Ui_editKitDialog
 from PyQt4.QtCore import QVariant
 from Data.DrumKit import DrumKit
 from Data.Drum import Drum
-from Data.Score import Indenter
+from Data import fileUtils
 import copy
 import string #IGNORE:W0402
 import DBMidi
@@ -215,7 +215,25 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
 
 
     def _loadKit(self):
-        pass
+        directory = self._scoreDirectory
+        if directory is None:
+            home = QDesktopServices.HomeLocation
+            directory = unicode(QDesktopServices.storageLocation(home))
+        fname = QFileDialog.getOpenFileName(parent = self,
+                                            caption = "Load DrumBurp kit",
+                                            directory = directory,
+                                            filter = _KIT_FILTER)
+        if len(fname) == 0:
+            return
+        with open(fname, 'rU') as handle:
+            fileIterator = fileUtils.dbFileIterator(handle)
+            newKit = DrumKit()
+            newKit.read(fileIterator)
+        self._currentKit = list(reversed(newKit))
+        self._oldLines.clear()
+        for drum in self._currentKit:
+            self._oldLines[drum] = -1
+        self._populate()
 
     def _saveKit(self):
         directory = self._scoreDirectory
@@ -229,7 +247,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         if len(fname) == 0:
             return
         fname = unicode(fname)
-        indenter = Indenter()
+        indenter = fileUtils.Indenter()
         newKit, unused = self.getNewKit()
         with open(fname, 'w') as handle:
             newKit.write(handle, indenter)
