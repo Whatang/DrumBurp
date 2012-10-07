@@ -305,6 +305,7 @@ class EditMeasurePropertiesCommand(_COMMAND_CLASS):
         super(EditMeasurePropertiesCommand, self).__init__(qScore,
                                                            note,
                                                            name)
+        self._measureIndex = self._score.getMeasureIndex(note)
         self._newCounter = newCounter
         self._oldMeasure = self._score.copyMeasure(note)
 
@@ -313,7 +314,8 @@ class EditMeasurePropertiesCommand(_COMMAND_CLASS):
         measure.setBeatCount(self._newCounter)
 
     def _undo(self):
-        self._score.pasteMeasure(self._np, self._oldMeasure, True)
+        self._score.pasteMeasureByIndex(self._measureIndex, self._oldMeasure,
+                                        True)
 
 class SetMeasureLineCommand(_COMMAND_CLASS):
     def __init__(self, qScore, descr, note, onOff, method):
