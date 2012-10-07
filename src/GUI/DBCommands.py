@@ -343,13 +343,13 @@ class SetSectionEndCommand(SetMeasureLineCommand):
             self._title = self._score.getSectionTitle(self._index)
 
     def _undo(self):
-        super(SetSectionEndCommand, self)._undo()
+        super(SetSectionEndCommand, self)._undo() #IGNORE:W0212
         if not self._onOff:
             self._score.setSectionTitle(self._index, self._title)
         self._qScore.sectionsChanged.emit()
 
     def _redo(self):
-        super(SetSectionEndCommand, self)._redo()
+        super(SetSectionEndCommand, self)._redo() #IGNORE:W0212
         self._qScore.sectionsChanged.emit()
 
 
