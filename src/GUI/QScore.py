@@ -30,6 +30,7 @@ from QSection import QSection
 from QMeasure import QMeasure
 from QMetaData import QMetaData
 from QKitData import QKitData
+from QEditKitDialog import QEditKitDialog
 from Data.Score import ScoreFactory
 from Data.NotePosition import NotePosition
 from DBCommands import (MetaDataCommand, ScoreWidthCommand,
@@ -130,7 +131,7 @@ class QScore(QtGui.QGraphicsScene):
     sceneFormatted = QtCore.pyqtSignal()
     playing = QtCore.pyqtSignal(bool)
     currentHeadsChanged = QtCore.pyqtSignal(QtCore.QString)
-    setStatusMessage = QtCore.pyqtSignal(QtCore.QString)
+    statusMessageSet = QtCore.pyqtSignal(QtCore.QString)
     lilysizeChanged = QtCore.pyqtSignal(int)
     lilypagesChanged = QtCore.pyqtSignal(int)
     lilyFillChanged = QtCore.pyqtSignal(bool)
@@ -720,7 +721,13 @@ class QScore(QtGui.QGraphicsScene):
         qMeasure = self.getQMeasure(self._playingMeasure)
         qMeasure.setPlaying(True)
 
-    def changeKit(self, kit, changes):
+    def editKit(self):
+        editDialog = QEditKitDialog(self.score.drumKit,
+                                    self.score.emptyDrums(),
+                                    self.parent())
+        if not editDialog.exec_():
+            return
+        kit, changes = editDialog.getNewKit()
         if QtGui.QMessageBox.question(self.parent(),
                                       "Apply kit changes?",
                                       "Editing the kit cannot be undone. Proceed?",
@@ -815,6 +822,11 @@ class QScore(QtGui.QGraphicsScene):
             self._state = Waiting(self)
             raise
 #        print self._state
+
+    def setStatusMessage(self, msg = None):
+        if not msg:
+            msg = ""
+        self.statusMessageSet.emit(msg)
 
     def setPotentialRepeatNotes(self, notes, head):
         newMeasures = [(np.staffIndex, np.measureIndex) for np in notes]

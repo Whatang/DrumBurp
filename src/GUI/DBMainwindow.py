@@ -129,7 +129,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         scene.sceneFormatted.connect(self.sceneFormatted)
         scene.playing.connect(self._scorePlaying)
         scene.currentHeadsChanged.connect(self.availableNotesLabel.setText)
-        scene.setStatusMessage.connect(self._setStatusFromScene)
+        scene.statusMessageSet.connect(self._setStatusFromScene)
         scene.lilysizeChanged.connect(self._setLilySize)
         scene.lilypagesChanged.connect(self._setLilyPages)
         scene.lilyFillChanged.connect(self._setLilyFill)
