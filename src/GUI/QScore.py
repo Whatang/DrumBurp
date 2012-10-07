@@ -463,7 +463,7 @@ class QScore(QtGui.QGraphicsScene):
             return u"%s(%s)" % (self._currentHeads[head], head)
 
     def _highlightCurrentKeyHead(self):
-        if self._currentHeads:
+        if len(self._currentHeads) > 1:
             headText = []
             for head in self._headOrder[1:]: # Do not display default
                 if head == self._currentKey:
