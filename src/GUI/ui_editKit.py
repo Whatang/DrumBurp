@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\editKit.ui'
 #
-# Created: Sun Sep 02 16:41:28 2012
+# Created: Sun Oct 07 14:51:50 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_editKitDialog(object):
     def setupUi(self, editKitDialog):
         editKitDialog.setObjectName(_fromUtf8("editKitDialog"))
-        editKitDialog.resize(848, 566)
+        editKitDialog.resize(848, 592)
         self.verticalLayout_10 = QtGui.QVBoxLayout(editKitDialog)
         self.verticalLayout_10.setObjectName(_fromUtf8("verticalLayout_10"))
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
@@ -146,7 +146,7 @@ class Ui_editKitDialog(object):
         self.deleteEmptyButton.setObjectName(_fromUtf8("deleteEmptyButton"))
         self.horizontalLayout_5.addWidget(self.deleteEmptyButton)
         self.loadButton = QtGui.QPushButton(self.groupBox_5)
-        self.loadButton.setEnabled(False)
+        self.loadButton.setEnabled(True)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(24)
         sizePolicy.setVerticalStretch(24)
@@ -161,7 +161,7 @@ class Ui_editKitDialog(object):
         self.loadButton.setObjectName(_fromUtf8("loadButton"))
         self.horizontalLayout_5.addWidget(self.loadButton)
         self.saveButton = QtGui.QPushButton(self.groupBox_5)
-        self.saveButton.setEnabled(False)
+        self.saveButton.setEnabled(True)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)

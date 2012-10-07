@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>848</width>
-    <height>566</height>
+    <height>592</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -309,7 +309,7 @@
             <item>
              <widget class="QPushButton" name="loadButton">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -344,7 +344,7 @@
             <item>
              <widget class="QPushButton" name="saveButton">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">

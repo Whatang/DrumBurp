@@ -22,22 +22,27 @@ Created on 26 Jan 2011
 @author: Mike Thomas
 
 '''
-from PyQt4.QtGui import QDialog, QRadioButton
+from PyQt4.QtGui import (QDialog, QRadioButton, QFileDialog, QDesktopServices,
+                         QMessageBox)
 from ui_editKit import Ui_editKitDialog
 from PyQt4.QtCore import QVariant
 from Data.DrumKit import DrumKit
 from Data.Drum import Drum
+from Data.Score import Indenter
 import copy
 import string #IGNORE:W0402
 import DBMidi
 from QNotationScene import QNotationScene
+
+_KIT_FILE_EXT = ".dbk"
+_KIT_FILTER = "DrumBurp kits (*%s)" % _KIT_FILE_EXT
 
 class QEditKitDialog(QDialog, Ui_editKitDialog):
     '''
     classdocs
     '''
 
-    def __init__(self, kit, emptyDrums = None, parent = None):
+    def __init__(self, kit, emptyDrums = None, parent = None, directory = None):
         '''
         Constructor
         '''
@@ -46,6 +51,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         if emptyDrums is None:
             emptyDrums = []
             self.deleteEmptyButton.setEnabled(False)
+        self._scoreDirectory = directory
         self._emptyDrums = emptyDrums
         self._currentKit = []
         self._oldLines = {}
@@ -212,7 +218,23 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         pass
 
     def _saveKit(self):
-        pass
+        directory = self._scoreDirectory
+        if directory is None:
+            home = QDesktopServices.HomeLocation
+            directory = unicode(QDesktopServices.storageLocation(home))
+        fname = QFileDialog.getSaveFileName(parent = self,
+                                            caption = "Save DrumBurp kit",
+                                            directory = directory,
+                                            filter = _KIT_FILTER)
+        if len(fname) == 0:
+            return
+        fname = unicode(fname)
+        indenter = Indenter()
+        newKit, unused = self.getNewKit()
+        with open(fname, 'w') as handle:
+            newKit.write(handle, indenter)
+        QMessageBox.information(self, "Kit saved", "Successfully saved drumkit")
+
 
     def _drumNameEdited(self):
         self._currentDrum.name = unicode(self.drumName.text())
