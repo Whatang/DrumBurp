@@ -25,6 +25,7 @@ Created on 4 Jan 2011
 
 from PyQt4 import QtGui, QtCore
 import itertools
+import functools
 from QStaff import QStaff
 from QSection import QSection
 from QMeasure import QMeasure
@@ -42,7 +43,6 @@ from DBCommands import (MetaDataCommand, ScoreWidthCommand,
                         SetVisibilityCommand, SetLilypondSizeCommand,
                         SetLilypondPagesCommand, SetLilypondFillCommand)
 import DBMidi
-import functools
 from DBFSM import Waiting
 from DBFSMEvents import Escape
 _SCORE_FACTORY = ScoreFactory()
@@ -83,6 +83,7 @@ class QScore(QtGui.QGraphicsScene):
         self._dirty = None
         self._currentKey = None
         self._currentHeads = {}
+        self._headOrder = []
         self._ignoreNext = False
         self.measureClipboard = []
         self._playingMeasure = None
@@ -447,10 +448,12 @@ class QScore(QtGui.QGraphicsScene):
     def setCurrentHeads(self, drumIndex):
         if drumIndex is None:
             self._currentHeads = {}
+            self._headOrder = []
         else:
             currentHeads = self.score.drumKit.shortcutsAndNoteHeads(drumIndex)
             self._currentHeads = dict((unicode(x), y) for (x, y)
                                        in currentHeads)
+            self._headOrder = [unicode(x) for (x, y_) in currentHeads]
         self._highlightCurrentKeyHead()
 
     def _keyString(self, head):
@@ -462,7 +465,7 @@ class QScore(QtGui.QGraphicsScene):
     def _highlightCurrentKeyHead(self):
         if self._currentHeads:
             headText = []
-            for head in self._currentHeads:
+            for head in self._headOrder[1:]: # Do not display default
                 if head == self._currentKey:
                     headText.append(u'<span style="background-color:#55aaff;">'
                                     + self._keyString(head) + u"</span>")
