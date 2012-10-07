@@ -722,8 +722,12 @@ class Score(object):
             return len(self.drumKit)
         else:
             staff = self.getStaff(index)
-            return sum(drum.locked or staff.lineIsVisible(index)
-                       for index, drum in enumerate(self.drumKit))
+            count = sum(drum.locked or staff.lineIsVisible(index)
+                        for index, drum in enumerate(self.drumKit))
+            if count == 0:
+                return 1
+            else:
+                return count
 
     def nthVisibleLineIndex(self, staffIndex, lineIndex):
         count = -1
@@ -733,13 +737,19 @@ class Score(object):
                 count += 1
                 if count == lineIndex:
                     return lineNum
+        if count == -1:
+            return 0
         raise BadTimeError(staffIndex)
 
     def iterVisibleLines(self, staffIndex):
         staff = self.getStaff(staffIndex)
+        count = 0
         for lineNum, drum in enumerate(self.drumKit):
             if drum.locked or staff.lineIsVisible(lineNum):
+                count += 1
                 yield drum
+        if count == 0:
+            yield self.drumKit[0]
 
     def emptyDrums(self):
         emptyDrums = set(self.drumKit)
