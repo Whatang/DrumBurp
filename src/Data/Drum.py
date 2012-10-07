@@ -88,7 +88,7 @@ def _guessNotation(abbr, head):
         return ["default", 0, "none", STEM_UP]
     for headInfo in DEFAULT_EXTRA_HEADS[abbr]:
         if headInfo[0] == head:
-            nHead, nEffect = headInfo[-2:]
+            nHead, nEffect = headInfo[4:6]
     return nHead, nLine, nEffect, sDir
 
 
@@ -201,7 +201,8 @@ class Drum(object):
              newMidiVolume,
              newEffect,
              newNotationHead,
-             newNotationEffect) in DEFAULT_EXTRA_HEADS.get(self.abbr, []):
+             newNotationEffect,
+             shortcut) in DEFAULT_EXTRA_HEADS.get(self.abbr, []):
             if newMidi is None:
                 newMidi = midiNote
             if newMidiVolume is None:
@@ -210,7 +211,8 @@ class Drum(object):
                                notationHead = newNotationHead,
                                notationLine = notationLine,
                                notationEffect = newNotationEffect,
-                               stemDirection = stemDir)
+                               stemDirection = stemDir,
+                               shortcut = shortcut)
             self.addNoteHead(extraHead, newData)
 
     def readHeadData(self, dataString):

@@ -64,7 +64,8 @@ class DrumKit(object):
                  newMidiVolume,
                  newEffect,
                  newNotationHead,
-                 newNotationEffect) in DEFAULT_EXTRA_HEADS.get(drum.abbr, []):
+                 newNotationEffect,
+                 shortcut) in DEFAULT_EXTRA_HEADS.get(drum.abbr, []):
                 if newMidi is None:
                     newMidi = midiNote
                 if newMidiVolume is None:
@@ -73,7 +74,8 @@ class DrumKit(object):
                                    notationLine = notationLine,
                                    notationHead = newNotationHead,
                                    notationEffect = newNotationEffect,
-                                   stemDirection = stemDirection)
+                                   stemDirection = stemDirection,
+                                   shortcut = shortcut)
                 drum.addNoteHead(extraHead, newData)
             drum.checkShortcuts()
             self.addDrum(drum)
