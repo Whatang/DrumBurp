@@ -255,9 +255,6 @@ class Score(object):
         self._staffs.append(newStaff)
         self._setStaffCallBack(newStaff, self.numStaffs() - 1)
 
-    def deleteLastStaff(self):
-        staff = self._staffs.pop()
-        staff.clearCallBack()
 
     def deleteStaffByIndex(self, index):
         if not (0 <= index < self.numStaffs()):
@@ -707,7 +704,8 @@ class Score(object):
                     self.addStaff()
                 staff = self.getStaff(staffIndex)
         while self.numStaffs() > staffIndex + 1:
-            self.deleteLastStaff()
+            staff = self._staffs.pop()
+            staff.clearCallBack()
         return self._formatState != self._getFormatState()
 
     def textFormatScore(self, width = None, ignoreErrors = False):
