@@ -221,13 +221,6 @@ class Score(object):
             else:
                 index += 1
 
-
-    def iterNotes(self):
-        for sIndex, staff in enumerate(self.iterStaffs()):
-            for np, head in staff.iterNotes():
-                np.staffIndex = sIndex
-                yield np, head
-
     def getMeasure(self, index):
         if not (0 <= index < self.numMeasures()):
             raise BadTimeError()
@@ -819,9 +812,10 @@ class Score(object):
                 self.fontOptions.read(scoreIterator)
             else:
                 raise IOError("Unrecognised line type: " + lineType)
-        for np, head in self.iterNotes():
-            if not self.drumKit[np.drumIndex].isAllowedHead(head):
-                self.drumKit[np.drumIndex].addNoteHead(head)
+        for measure in self.iterMeasures():
+            for np, head in measure:
+                if not self.drumKit[np.drumIndex].isAllowedHead(head):
+                    self.drumKit[np.drumIndex].addNoteHead(head)
         # Format the score appropriately
         self.gridFormatScore(self.scoreData.width)
         # Make sure we've got the right number of section titles
