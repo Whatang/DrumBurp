@@ -89,6 +89,7 @@ class QScore(QtGui.QGraphicsScene):
         self._lastDrag = None
         self._dragSelection = []
         self._dragged = []
+        self._saved = False
         self._undoStack = QtGui.QUndoStack(self)
         self._undoStack.canUndoChanged.connect(self.canUndoChanged)
         self._undoStack.undoTextChanged.connect(self.undoTextChanged)
@@ -136,7 +137,7 @@ class QScore(QtGui.QGraphicsScene):
 
     def addCommand(self, command):
         self._undoStack.push(command)
-        self.dirty = not self._undoStack.isClean()
+        self.dirty = not (self._undoStack.isClean() and self._saved)
 
     def addRepeatedCommand(self, name, command, arguments):
         self._undoStack.beginMacro(name)
@@ -152,11 +153,11 @@ class QScore(QtGui.QGraphicsScene):
 
     def undo(self):
         self._undoStack.undo()
-        self.dirty = not self._undoStack.isClean()
+        self.dirty = not (self._undoStack.isClean() and self._saved)
 
     def redo(self):
         self._undoStack.redo()
-        self.dirty = not self._undoStack.isClean()
+        self.dirty = not (self._undoStack.isClean() and self._saved)
 
     def startUp(self):
         self.metadataChanged.emit("width", self.scoreWidth)
@@ -578,6 +579,7 @@ class QScore(QtGui.QGraphicsScene):
         except StandardError, exc:
             raise
         self._setScore(newScore)
+        self._saved = True
         return True
 
     def saveScore(self, filename):
@@ -590,6 +592,7 @@ class QScore(QtGui.QGraphicsScene):
                                       msg)
             return False
         self._undoStack.setClean()
+        self._saved = True
         self.dirty = False
         return True
 
@@ -718,10 +721,16 @@ class QScore(QtGui.QGraphicsScene):
         qMeasure.setPlaying(True)
 
     def changeKit(self, kit, changes):
-        self.score.changeKit(kit, changes)
-        DBMidi.setKit(kit)
-        self.reBuild()
-        self.dirty = True
+        if QtGui.QMessageBox.question(self.parent(),
+                                      "Apply kit changes?",
+                                      "Editing the kit cannot be undone. Proceed?",
+                                      buttons = QtGui.QMessageBox.Yes | QtGui.QMessageBox.No) == QtGui.QMessageBox.Yes:
+            self.score.changeKit(kit, changes)
+            DBMidi.setKit(kit)
+            self._undoStack.clear()
+            self._saved = False
+            self.reBuild()
+            self.dirty = True
 
     def _startDragging(self, qmeasure):
         self._dragStart = qmeasure
