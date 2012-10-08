@@ -25,13 +25,13 @@
     <file>GUI/Notation/Flam_Up_Harmonic.png</file>
     <file>GUI/Notation/Flam_Up_HarmonicBlack.png</file>
     <file>GUI/Notation/Flam_Up_Triangle.png</file>
-    <file>GUI/crossHead.png</file>
     <file>GUI/Notation/Flam_Up_Xcircle.png</file>
-    <file>GUI/defaultHead.png</file>
-    <file>GUI/diamondHead.png</file>
-    <file>GUI/harmonicBlackHead.png</file>
-    <file>GUI/harmonicHead.png</file>
-    <file>GUI/triangleHead.png</file>
-    <file>GUI/xcircleHead.png</file>
+    <file>GUI/Notation/crossHead.png</file>
+    <file>GUI/Notation/defaultHead.png</file>
+    <file>GUI/Notation/diamondHead.png</file>
+    <file>GUI/Notation/harmonicBlackHead.png</file>
+    <file>GUI/Notation/harmonicHead.png</file>
+    <file>GUI/Notation/triangleHead.png</file>
+    <file>GUI/Notation/xcircleHead.png</file>
   </qresource>
 </RCC>

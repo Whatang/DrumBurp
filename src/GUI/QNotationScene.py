@@ -88,13 +88,13 @@ class QNotationScene(QGraphicsScene):
     def _loadHeads(self):
         if self._heads:
             return
-        self._heads["default"] = QPixmap(":/heads/GUI/defaultHead.png")
-        self._heads["cross"] = QPixmap(":/heads/GUI/crossHead.png")
-        self._heads["diamond"] = QPixmap(":/heads/GUI/diamondHead.png")
-        self._heads["harmonic black"] = QPixmap(":/heads/GUI/harmonicBlackHead.png")
-        self._heads["harmonic"] = QPixmap(":/heads/GUI/harmonicHead.png")
-        self._heads["triangle"] = QPixmap(":/heads/GUI/triangleHead.png")
-        self._heads["xcircle"] = QPixmap(":/heads/GUI/xcircleHead.png")
+        self._heads["default"] = QPixmap(":/heads/GUI/Notation/defaultHead.png")
+        self._heads["cross"] = QPixmap(":/heads/GUI/Notation/crossHead.png")
+        self._heads["diamond"] = QPixmap(":/heads/GUI/Notation/diamondHead.png")
+        self._heads["harmonic black"] = QPixmap(":/heads/GUI/Notation/harmonicBlackHead.png")
+        self._heads["harmonic"] = QPixmap(":/heads/GUI/Notation/harmonicHead.png")
+        self._heads["triangle"] = QPixmap(":/heads/GUI/Notation/triangleHead.png")
+        self._heads["xcircle"] = QPixmap(":/heads/GUI/Notation/xcircleHead.png")
         for image in self._heads.itervalues():
             image.setMask(image.createHeuristicMask())
         self._effects["ghost"] = QPixmap(":/heads/GUI/Notation/Effect_Ghost.png")
