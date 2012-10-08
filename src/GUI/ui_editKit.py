@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\editKit.ui'
 #
-# Created: Mon Oct 08 12:26:09 2012
+# Created: Mon Oct 08 12:53:55 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!

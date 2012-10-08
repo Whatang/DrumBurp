@@ -6,13 +6,13 @@
     <file>GUI/Icons/list-remove.png</file>
   </qresource>
   <qresource prefix="heads">
+    <file>GUI/Notation/Effect_Ghost.png</file>
+    <file>GUI/Notation/Flam_Down_Cross.png</file>
     <file>GUI/Notation/Effect_Accent.png</file>
     <file>GUI/Notation/Effect_Choke.png</file>
     <file>GUI/Notation/Effect_Closed.png</file>
     <file>GUI/Notation/Effect_Drag.png</file>
-    <file>GUI/Notation/Effect_Ghost.png</file>
     <file>GUI/Notation/Effect_Open.png</file>
-    <file>GUI/Notation/Flam_Down_Cross.png</file>
     <file>GUI/Notation/Flam_Down_Default.png</file>
     <file>GUI/Notation/Flam_Down_Diamond.png</file>
     <file>GUI/Notation/Flam_Down_Harmonic.png</file>
