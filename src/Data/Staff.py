@@ -216,8 +216,9 @@ class Staff(object):
 
     def _getRepeatString(self, isRepeating, repeatExtender):
         staffString = []
-        hasRepeat = isRepeating or any(measure.isRepeatStart()
-                                       for measure in self)
+        hasRepeat = (isRepeating or
+                     any(measure.isRepeatStart() for measure in self) or
+                     any(measure.alternateText for measure in self))
         if not hasRepeat:
             return staffString, isRepeating, repeatExtender
         repeatString = "  "

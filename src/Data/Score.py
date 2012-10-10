@@ -844,6 +844,7 @@ class Score(object):
         for staff in self.iterStaffs():
             assert(staff.isConsistent())
             if newSection:
+                isRepeating = False
                 newSection = False
                 if sectionIndex < self.numSections():
                     if len(asciiString) > 0 and settings.emptyLineBeforeSection:
