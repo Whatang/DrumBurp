@@ -85,46 +85,47 @@ class QNotationScene(QGraphicsScene):
         self._dragImage.setZValue(EFFECTS_Z)
         self._dragImage.setVisible(False)
 
-    def _loadHeads(self):
-        if self._heads:
+    @classmethod
+    def _loadHeads(cls):
+        if cls._heads:
             return
-        self._heads["default"] = QPixmap(":/heads/GUI/Notation/defaultHead.png")
-        self._heads["cross"] = QPixmap(":/heads/GUI/Notation/crossHead.png")
-        self._heads["diamond"] = QPixmap(":/heads/GUI/Notation/diamondHead.png")
-        self._heads["harmonic black"] = QPixmap(":/heads/GUI/Notation/harmonicBlackHead.png")
-        self._heads["harmonic"] = QPixmap(":/heads/GUI/Notation/harmonicHead.png")
-        self._heads["triangle"] = QPixmap(":/heads/GUI/Notation/triangleHead.png")
-        self._heads["xcircle"] = QPixmap(":/heads/GUI/Notation/xcircleHead.png")
-        for image in self._heads.itervalues():
+        cls._heads["default"] = QPixmap(":/heads/GUI/Notation/defaultHead.png")
+        cls._heads["cross"] = QPixmap(":/heads/GUI/Notation/crossHead.png")
+        cls._heads["diamond"] = QPixmap(":/heads/GUI/Notation/diamondHead.png")
+        cls._heads["harmonic black"] = QPixmap(":/heads/GUI/Notation/harmonicBlackHead.png")
+        cls._heads["harmonic"] = QPixmap(":/heads/GUI/Notation/harmonicHead.png")
+        cls._heads["triangle"] = QPixmap(":/heads/GUI/Notation/triangleHead.png")
+        cls._heads["xcircle"] = QPixmap(":/heads/GUI/Notation/xcircleHead.png")
+        for image in cls._heads.itervalues():
             image.setMask(image.createHeuristicMask())
-        self._effects["ghost"] = QPixmap(":/heads/GUI/Notation/Effect_Ghost.png")
-        self._effects["accent"] = QPixmap(":/heads/GUI/Notation/Effect_Accent.png")
-        self._effects["stopped"] = QPixmap(":/heads/GUI/Notation/Effect_Closed.png")
-        self._effects["open"] = QPixmap(":/heads/GUI/Notation/Effect_Open.png")
-        self._effects["choke"] = QPixmap(":/heads/GUI/Notation/Effect_Choke.png")
-        for image in self._effects.itervalues():
+        cls._effects["ghost"] = QPixmap(":/heads/GUI/Notation/Effect_Ghost.png")
+        cls._effects["accent"] = QPixmap(":/heads/GUI/Notation/Effect_Accent.png")
+        cls._effects["stopped"] = QPixmap(":/heads/GUI/Notation/Effect_Closed.png")
+        cls._effects["open"] = QPixmap(":/heads/GUI/Notation/Effect_Open.png")
+        cls._effects["choke"] = QPixmap(":/heads/GUI/Notation/Effect_Choke.png")
+        for image in cls._effects.itervalues():
             image.setMask(image.createHeuristicMask())
-        self._flams[STEM_UP] = {}
-        self._flams[STEM_UP]["default"] = QPixmap(":/heads/GUI/Notation/Flam_Up_Default.png")
-        self._flams[STEM_UP]["cross"] = QPixmap(":/heads/GUI/Notation/Flam_Up_Cross.png")
-        self._flams[STEM_UP]["diamond"] = QPixmap(":/heads/GUI/Notation/Flam_Up_Diamond.png")
-        self._flams[STEM_UP]["harmonic black"] = QPixmap(":/heads/GUI/Notation/Flam_Up_HarmonicBlack.png")
-        self._flams[STEM_UP]["harmonic"] = QPixmap(":/heads/GUI/Notation/Flam_Up_Harmonic.png")
-        self._flams[STEM_UP]["triangle"] = QPixmap(":/heads/GUI/Notation/Flam_Up_Triangle.png")
-        self._flams[STEM_UP]["xcircle"] = QPixmap(":/heads/GUI/Notation/Flam_Up_Xcircle.png")
-        for image in self._flams[STEM_UP].itervalues():
+        cls._flams[STEM_UP] = {}
+        cls._flams[STEM_UP]["default"] = QPixmap(":/heads/GUI/Notation/Flam_Up_Default.png")
+        cls._flams[STEM_UP]["cross"] = QPixmap(":/heads/GUI/Notation/Flam_Up_Cross.png")
+        cls._flams[STEM_UP]["diamond"] = QPixmap(":/heads/GUI/Notation/Flam_Up_Diamond.png")
+        cls._flams[STEM_UP]["harmonic black"] = QPixmap(":/heads/GUI/Notation/Flam_Up_HarmonicBlack.png")
+        cls._flams[STEM_UP]["harmonic"] = QPixmap(":/heads/GUI/Notation/Flam_Up_Harmonic.png")
+        cls._flams[STEM_UP]["triangle"] = QPixmap(":/heads/GUI/Notation/Flam_Up_Triangle.png")
+        cls._flams[STEM_UP]["xcircle"] = QPixmap(":/heads/GUI/Notation/Flam_Up_Xcircle.png")
+        for image in cls._flams[STEM_UP].itervalues():
             image.setMask(image.createHeuristicMask())
-        self._flams[STEM_DOWN] = {}
-        self._flams[STEM_DOWN]["default"] = QPixmap(":/heads/GUI/Notation/Flam_Down_Default.png")
-        self._flams[STEM_DOWN]["cross"] = QPixmap(":/heads/GUI/Notation/Flam_Down_Cross.png")
-        self._flams[STEM_DOWN]["diamond"] = QPixmap(":/heads/GUI/Notation/Flam_Down_Diamond.png")
-        self._flams[STEM_DOWN]["harmonic black"] = QPixmap(":/heads/GUI/Notation/Flam_Down_HarmonicBlack.png")
-        self._flams[STEM_DOWN]["harmonic"] = QPixmap(":/heads/GUI/Notation/Flam_Down_Harmonic.png")
-        self._flams[STEM_DOWN]["triangle"] = QPixmap(":/heads/GUI/Notation/Flam_Down_Triangle.png")
-        self._flams[STEM_DOWN]["xcircle"] = QPixmap(":/heads/GUI/Notation/Flam_Down_Xcircle.png")
-        for image in self._flams[STEM_DOWN].itervalues():
+        cls._flams[STEM_DOWN] = {}
+        cls._flams[STEM_DOWN]["default"] = QPixmap(":/heads/GUI/Notation/Flam_Down_Default.png")
+        cls._flams[STEM_DOWN]["cross"] = QPixmap(":/heads/GUI/Notation/Flam_Down_Cross.png")
+        cls._flams[STEM_DOWN]["diamond"] = QPixmap(":/heads/GUI/Notation/Flam_Down_Diamond.png")
+        cls._flams[STEM_DOWN]["harmonic black"] = QPixmap(":/heads/GUI/Notation/Flam_Down_HarmonicBlack.png")
+        cls._flams[STEM_DOWN]["harmonic"] = QPixmap(":/heads/GUI/Notation/Flam_Down_Harmonic.png")
+        cls._flams[STEM_DOWN]["triangle"] = QPixmap(":/heads/GUI/Notation/Flam_Down_Triangle.png")
+        cls._flams[STEM_DOWN]["xcircle"] = QPixmap(":/heads/GUI/Notation/Flam_Down_Xcircle.png")
+        for image in cls._flams[STEM_DOWN].itervalues():
             image.setMask(image.createHeuristicMask())
-        self._drag = QPixmap(":/heads/GUI/Notation/Effect_Drag.png")
+        cls._drag = QPixmap(":/heads/GUI/Notation/Effect_Drag.png")
 
 
     def setHeadData(self, headData):
