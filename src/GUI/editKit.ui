@@ -458,6 +458,9 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="toolTip">
+             <string>Abbreviation for this drum</string>
+            </property>
             <property name="text">
              <string>Abbreviation</string>
             </property>
@@ -503,7 +506,7 @@
              </sizepolicy>
             </property>
             <property name="toolTip">
-             <string>Copy the data from one of the drums in the current score to this drum</string>
+             <string>Copy the existing notes from one of the drums in the current score to this drum</string>
             </property>
             <property name="text">
              <string>Convert from existing drum?</string>
@@ -531,7 +534,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Copy the data from one of the drums in the current score to this drum</string>
+             <string>Copy the existing notes from one of the drums in the current score to this drum</string>
             </property>
            </widget>
           </item>
@@ -605,6 +608,9 @@
                 <property name="text">
                  <string>Current note head</string>
                 </property>
+                <property name="buddy">
+                 <cstring>currentNoteHead</cstring>
+                </property>
                </widget>
               </item>
               <item row="0" column="2">
@@ -653,6 +659,9 @@
                <widget class="QLabel" name="label_10">
                 <property name="text">
                  <string>Shortcut</string>
+                </property>
+                <property name="buddy">
+                 <cstring>shortcutCombo</cstring>
                 </property>
                </widget>
               </item>
@@ -1020,8 +1029,11 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="toolTip">
+            <string>Set how Lilypond will display this note</string>
+           </property>
            <property name="title">
-            <string>Notation</string>
+            <string>Lilypond Notation</string>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
             <item>
@@ -1065,6 +1077,12 @@
                    <height>150</height>
                   </size>
                  </property>
+                 <property name="contextMenuPolicy">
+                  <enum>Qt::NoContextMenu</enum>
+                 </property>
+                 <property name="toolTip">
+                  <string>Example note display</string>
+                 </property>
                 </widget>
                </item>
                <item>
@@ -1078,6 +1096,9 @@
                  <layout class="QVBoxLayout" name="verticalLayout_11">
                   <item>
                    <widget class="QPushButton" name="noteUpButton">
+                    <property name="toolTip">
+                     <string>Move the note up</string>
+                    </property>
                     <property name="text">
                      <string/>
                     </property>
@@ -1089,6 +1110,9 @@
                   </item>
                   <item>
                    <widget class="QPushButton" name="noteDownButton">
+                    <property name="toolTip">
+                     <string>Move the note down</string>
+                    </property>
                     <property name="text">
                      <string/>
                     </property>
@@ -1121,15 +1145,11 @@
                </property>
                <item>
                 <widget class="QCheckBox" name="stemUpDownBox">
+                 <property name="toolTip">
+                  <string>Note stems should prefer to go up</string>
+                 </property>
                  <property name="text">
                   <string>Stem up</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="useDefaultLineBox">
-                 <property name="text">
-                  <string>Default line</string>
                  </property>
                 </widget>
                </item>
@@ -1140,6 +1160,9 @@
              <layout class="QFormLayout" name="formLayout">
               <item row="1" column="1">
                <widget class="QComboBox" name="effectBox">
+                <property name="toolTip">
+                 <string>Notation effect to apply to the note</string>
+                </property>
                 <item>
                  <property name="text">
                   <string>none</string>
@@ -1184,13 +1207,22 @@
               </item>
               <item row="1" column="0">
                <widget class="QLabel" name="label_8">
+                <property name="toolTip">
+                 <string>Notation effect to apply to the note</string>
+                </property>
                 <property name="text">
                  <string>Effect</string>
+                </property>
+                <property name="buddy">
+                 <cstring>effectBox</cstring>
                 </property>
                </widget>
               </item>
               <item row="0" column="1">
                <widget class="QComboBox" name="noteHeadBox">
+                <property name="toolTip">
+                 <string>Select the note head</string>
+                </property>
                 <item>
                  <property name="text">
                   <string>default</string>
@@ -1230,8 +1262,14 @@
               </item>
               <item row="0" column="0">
                <widget class="QLabel" name="label_9">
+                <property name="toolTip">
+                 <string>Select the note head</string>
+                </property>
                 <property name="text">
                  <string>Head</string>
+                </property>
+                <property name="buddy">
+                 <cstring>noteHeadBox</cstring>
                 </property>
                </widget>
               </item>
@@ -1303,6 +1341,9 @@
           </item>
           <item>
            <widget class="QLabel" name="label_7">
+            <property name="toolTip">
+             <string>Mute audio in this dialog</string>
+            </property>
             <property name="text">
              <string>Play sound effects</string>
             </property>
@@ -1578,6 +1619,9 @@
               <width>182</width>
               <height>48</height>
              </size>
+            </property>
+            <property name="toolTip">
+             <string>Lock this line</string>
             </property>
             <property name="text">
              <string>The line for this drum will always be displayed, even if it contains no notes.</string>

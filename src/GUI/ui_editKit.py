@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\editKit.ui'
 #
-# Created: Mon Oct 08 12:58:51 2012
+# Created: Tue Oct 09 20:48:59 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -423,6 +423,7 @@ class Ui_editKitDialog(object):
         self.noteView.setSizePolicy(sizePolicy)
         self.noteView.setMinimumSize(QtCore.QSize(0, 150))
         self.noteView.setMaximumSize(QtCore.QSize(16777215, 150))
+        self.noteView.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.noteView.setObjectName(_fromUtf8("noteView"))
         self.horizontalLayout_8.addWidget(self.noteView)
         self.frame_2 = QtGui.QFrame(self.frame)
@@ -454,9 +455,6 @@ class Ui_editKitDialog(object):
         self.stemUpDownBox = QtGui.QCheckBox(self.frame_3)
         self.stemUpDownBox.setObjectName(_fromUtf8("stemUpDownBox"))
         self.horizontalLayout_9.addWidget(self.stemUpDownBox)
-        self.useDefaultLineBox = QtGui.QCheckBox(self.frame_3)
-        self.useDefaultLineBox.setObjectName(_fromUtf8("useDefaultLineBox"))
-        self.horizontalLayout_9.addWidget(self.useDefaultLineBox)
         self.verticalLayout_3.addWidget(self.frame_3)
         self.formLayout = QtGui.QFormLayout()
         self.formLayout.setObjectName(_fromUtf8("formLayout"))
@@ -627,6 +625,10 @@ class Ui_editKitDialog(object):
         self.label_3.setBuddy(self.drumName)
         self.label_4.setBuddy(self.drumAbbr)
         self.label_5.setBuddy(self.oldDrum)
+        self.label_6.setBuddy(self.currentNoteHead)
+        self.label_10.setBuddy(self.shortcutCombo)
+        self.label_8.setBuddy(self.effectBox)
+        self.label_9.setBuddy(self.noteHeadBox)
         self.label_7.setBuddy(self.muteButton)
         self.label.setBuddy(self.lockedCheckBox)
 
@@ -660,13 +662,14 @@ class Ui_editKitDialog(object):
         self.label_3.setToolTip(QtGui.QApplication.translate("editKitDialog", "Name for this drum", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("editKitDialog", "Name", None, QtGui.QApplication.UnicodeUTF8))
         self.drumName.setToolTip(QtGui.QApplication.translate("editKitDialog", "Name for this drum", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_4.setToolTip(QtGui.QApplication.translate("editKitDialog", "Abbreviation for this drum", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("editKitDialog", "Abbreviation", None, QtGui.QApplication.UnicodeUTF8))
         self.drumAbbr.setToolTip(QtGui.QApplication.translate("editKitDialog", "Abbreviation for this drum", None, QtGui.QApplication.UnicodeUTF8))
         self.drumAbbr.setStatusTip(QtGui.QApplication.translate("editKitDialog", "Abbreviation for this drum", None, QtGui.QApplication.UnicodeUTF8))
         self.drumAbbr.setInputMask(QtGui.QApplication.translate("editKitDialog", "NN; ", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_5.setToolTip(QtGui.QApplication.translate("editKitDialog", "Copy the data from one of the drums in the current score to this drum", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_5.setToolTip(QtGui.QApplication.translate("editKitDialog", "Copy the existing notes from one of the drums in the current score to this drum", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("editKitDialog", "Convert from existing drum?", None, QtGui.QApplication.UnicodeUTF8))
-        self.oldDrum.setToolTip(QtGui.QApplication.translate("editKitDialog", "Copy the data from one of the drums in the current score to this drum", None, QtGui.QApplication.UnicodeUTF8))
+        self.oldDrum.setToolTip(QtGui.QApplication.translate("editKitDialog", "Copy the existing notes from one of the drums in the current score to this drum", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox.setToolTip(QtGui.QApplication.translate("editKitDialog", "Define the valid note heads for this drum", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox.setTitle(QtGui.QApplication.translate("editKitDialog", "Note Heads", None, QtGui.QApplication.UnicodeUTF8))
         self.label_6.setText(QtGui.QApplication.translate("editKitDialog", "Current note head", None, QtGui.QApplication.UnicodeUTF8))
@@ -705,9 +708,14 @@ class Ui_editKitDialog(object):
         self.setDefaultHeadButton.setText(QtGui.QApplication.translate("editKitDialog", "Set Default", None, QtGui.QApplication.UnicodeUTF8))
         self.headDownButton.setToolTip(QtGui.QApplication.translate("editKitDialog", "Move the current note head down", None, QtGui.QApplication.UnicodeUTF8))
         self.deleteHeadButton.setToolTip(QtGui.QApplication.translate("editKitDialog", "Remove the currently selected note head", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_7.setTitle(QtGui.QApplication.translate("editKitDialog", "Notation", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox_7.setToolTip(QtGui.QApplication.translate("editKitDialog", "Set how Lilypond will display this note", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox_7.setTitle(QtGui.QApplication.translate("editKitDialog", "Lilypond Notation", None, QtGui.QApplication.UnicodeUTF8))
+        self.noteView.setToolTip(QtGui.QApplication.translate("editKitDialog", "Example note display", None, QtGui.QApplication.UnicodeUTF8))
+        self.noteUpButton.setToolTip(QtGui.QApplication.translate("editKitDialog", "Move the note up", None, QtGui.QApplication.UnicodeUTF8))
+        self.noteDownButton.setToolTip(QtGui.QApplication.translate("editKitDialog", "Move the note down", None, QtGui.QApplication.UnicodeUTF8))
+        self.stemUpDownBox.setToolTip(QtGui.QApplication.translate("editKitDialog", "Note stems should prefer to go up", None, QtGui.QApplication.UnicodeUTF8))
         self.stemUpDownBox.setText(QtGui.QApplication.translate("editKitDialog", "Stem up", None, QtGui.QApplication.UnicodeUTF8))
-        self.useDefaultLineBox.setText(QtGui.QApplication.translate("editKitDialog", "Default line", None, QtGui.QApplication.UnicodeUTF8))
+        self.effectBox.setToolTip(QtGui.QApplication.translate("editKitDialog", "Notation effect to apply to the note", None, QtGui.QApplication.UnicodeUTF8))
         self.effectBox.setItemText(0, QtGui.QApplication.translate("editKitDialog", "none", None, QtGui.QApplication.UnicodeUTF8))
         self.effectBox.setItemText(1, QtGui.QApplication.translate("editKitDialog", "open", None, QtGui.QApplication.UnicodeUTF8))
         self.effectBox.setItemText(2, QtGui.QApplication.translate("editKitDialog", "stopped", None, QtGui.QApplication.UnicodeUTF8))
@@ -716,7 +724,9 @@ class Ui_editKitDialog(object):
         self.effectBox.setItemText(5, QtGui.QApplication.translate("editKitDialog", "choke", None, QtGui.QApplication.UnicodeUTF8))
         self.effectBox.setItemText(6, QtGui.QApplication.translate("editKitDialog", "accent", None, QtGui.QApplication.UnicodeUTF8))
         self.effectBox.setItemText(7, QtGui.QApplication.translate("editKitDialog", "drag", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_8.setToolTip(QtGui.QApplication.translate("editKitDialog", "Notation effect to apply to the note", None, QtGui.QApplication.UnicodeUTF8))
         self.label_8.setText(QtGui.QApplication.translate("editKitDialog", "Effect", None, QtGui.QApplication.UnicodeUTF8))
+        self.noteHeadBox.setToolTip(QtGui.QApplication.translate("editKitDialog", "Select the note head", None, QtGui.QApplication.UnicodeUTF8))
         self.noteHeadBox.setItemText(0, QtGui.QApplication.translate("editKitDialog", "default", None, QtGui.QApplication.UnicodeUTF8))
         self.noteHeadBox.setItemText(1, QtGui.QApplication.translate("editKitDialog", "harmonic", None, QtGui.QApplication.UnicodeUTF8))
         self.noteHeadBox.setItemText(2, QtGui.QApplication.translate("editKitDialog", "harmonic black", None, QtGui.QApplication.UnicodeUTF8))
@@ -724,10 +734,12 @@ class Ui_editKitDialog(object):
         self.noteHeadBox.setItemText(4, QtGui.QApplication.translate("editKitDialog", "cross", None, QtGui.QApplication.UnicodeUTF8))
         self.noteHeadBox.setItemText(5, QtGui.QApplication.translate("editKitDialog", "xcircle", None, QtGui.QApplication.UnicodeUTF8))
         self.noteHeadBox.setItemText(6, QtGui.QApplication.translate("editKitDialog", "triangle", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_9.setToolTip(QtGui.QApplication.translate("editKitDialog", "Select the note head", None, QtGui.QApplication.UnicodeUTF8))
         self.label_9.setText(QtGui.QApplication.translate("editKitDialog", "Head", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_4.setToolTip(QtGui.QApplication.translate("editKitDialog", "Mute audio in this dialog", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_4.setTitle(QtGui.QApplication.translate("editKitDialog", "Sound", None, QtGui.QApplication.UnicodeUTF8))
         self.muteButton.setToolTip(QtGui.QApplication.translate("editKitDialog", "Mute audio in this dialog", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_7.setToolTip(QtGui.QApplication.translate("editKitDialog", "Mute audio in this dialog", None, QtGui.QApplication.UnicodeUTF8))
         self.label_7.setText(QtGui.QApplication.translate("editKitDialog", "Play sound effects", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_3.setToolTip(QtGui.QApplication.translate("editKitDialog", "The MIDI noise associated with this note head for this drum", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_3.setTitle(QtGui.QApplication.translate("editKitDialog", "MIDI Note", None, QtGui.QApplication.UnicodeUTF8))
@@ -754,6 +766,7 @@ class Ui_editKitDialog(object):
         self.groupBox_2.setToolTip(QtGui.QApplication.translate("editKitDialog", "Should the drum line be locked?", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_2.setTitle(QtGui.QApplication.translate("editKitDialog", "Line Lock", None, QtGui.QApplication.UnicodeUTF8))
         self.lockedCheckBox.setToolTip(QtGui.QApplication.translate("editKitDialog", "Lock this line", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setToolTip(QtGui.QApplication.translate("editKitDialog", "Lock this line", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("editKitDialog", "The line for this drum will always be displayed, even if it contains no notes.", None, QtGui.QApplication.UnicodeUTF8))
 
 import buttons_rc
