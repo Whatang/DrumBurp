@@ -873,12 +873,13 @@ class Score(object):
         print >> handle, ("Tabbed with DrumBurp, "
                           "a drum tab editor from www.whatang.org")
         if settings.metadata:
-            handle.writelines(mString + os.linesep
-                              for mString in metadataString)
+            for mString in metadataString:
+                print >> handle, mString
         if settings.kitKey:
-            handle.writelines(iString + os.linesep
-                              for iString in kitString)
-        handle.writelines(sString + os.linesep for sString in asciiString)
+            for iString in kitString:
+                print >> handle, iString
+        for sString in asciiString:
+            print >> handle, sString
 
 class ScoreFactory(object):
     def __call__(self, filename = None,
