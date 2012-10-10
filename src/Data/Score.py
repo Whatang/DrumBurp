@@ -880,6 +880,9 @@ class Score(object):
                 print >> handle, iString
         for sString in asciiString:
             print >> handle, sString
+        print >> handle, ""
+        print >> handle, ("Tabbed with DrumBurp, "
+                          "a drum tab editor from www.whatang.org")
 
 class ScoreFactory(object):
     def __call__(self, filename = None,
