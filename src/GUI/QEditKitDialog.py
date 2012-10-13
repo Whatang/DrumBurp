@@ -23,7 +23,7 @@ Created on 26 Jan 2011
 
 '''
 from PyQt4.QtGui import (QDialog, QRadioButton, QFileDialog, QDesktopServices,
-                         QMessageBox)
+                         QMessageBox, QInputDialog)
 from ui_editKit import Ui_editKitDialog
 from PyQt4.QtCore import QVariant
 from Data.DrumKit import DrumKit
@@ -31,6 +31,7 @@ from Data.Drum import Drum
 from Data import fileUtils
 from QDefaultKitManager import QDefaultKitManager
 import copy
+import os
 import string #IGNORE:W0402
 import DBMidi
 from QNotationScene import QNotationScene
@@ -150,6 +151,8 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.kitTable.addItem(drum.name)
         self.kitTable.setCurrentRow(len(self._currentKit) - 1)
         self._checkDrumButtons()
+        self.drumName.setFocus()
+        self.drumName.selectAll()
 
     def _removeDrum(self):
         index = self._currentDrumIndex
@@ -379,6 +382,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self._populateHeadTable()
         self.noteHeadTable.setCurrentRow(len(self._currentDrum) - 1)
         self._checkHeadButtons()
+        self.currentNoteHead.setFocus()
 
     def _removeNoteHead(self):
         row = self.noteHeadTable.currentRow()
@@ -583,12 +587,59 @@ def main():
     dialog.show()
     app.exec_()
     if dialog.result():
-        newKit, changes = dialog.getNewKit()
-        print changes
-        for drum, oldDrumIndex in zip(newKit, changes):
-            print (drum.name, kit[oldDrumIndex].name
-                   if oldDrumIndex != -1
-                   else None, drum.head)
+        kitname, ok = QInputDialog.getText(None, "Enter new kit name", "Kit name")
+        if not ok:
+            return
+        kitname = unicode(kitname)
+        kitvar = kitname.upper()
+        kitvar = "".join([ch if ch.isalpha() else "_" for ch in kitvar])
+        newKit, changes_ = dialog.getNewKit()
+        lines = []
+        indent = '%s_DRUMS = [' % kitvar
+        for drum in newKit:
+            line = indent
+            headData = drum.headData(drum.head)
+            values = (drum.name, drum.abbr, drum.head, str(drum.locked),
+                      headData.midiNote, headData.effect, headData.notationLine,
+                      "UP" if headData.stemDirection == DrumKit.UP else "DOWN")
+            line += '(("%s", "%s", "%s", %s), %d, "%s", %d, STEM_%s)' % values
+            lines.append(line)
+            indent = " " * len(indent)
+        lines = ("," + os.linesep).join(lines) + "]"
+        print lines
+        indent = '%s_HEADS = {' % kitvar
+        lines = []
+        for drum in newKit:
+            headLines = []
+            headIndent = indent + '"%s" : [' % drum.abbr
+            defaultData = drum.headData(drum.head)
+            for head in drum:
+                if head == drum.head:
+                    continue
+                data = drum.headData(head)
+                line = headIndent
+                values = (head,
+                          "None" if data.midiNote == defaultData.midiNote
+                          else str(data.midiNote),
+                          "None" if data.midiVolume == defaultData.midiVolume
+                          else str(data.midiVolume),
+                          data.effect, data.notationHead,
+                          data.notationEffect, data.shortcut)
+                line += '("%s", %s, %s, "%s", "%s", "%s", "%s")' % values
+                headLines.append(line)
+                headIndent = ' ' * len(headIndent)
+            if headLines:
+                headLines = ("," + os.linesep).join(headLines) + "]"
+                lines.append(headLines)
+                indent = ' ' * len(indent)
+        if lines:
+            lines = ("," + os.linesep).join(lines) + "}"
+        else:
+            lines = '%s_HEADS = {}' % kitvar
+        print lines
+        print '%s_KIT = {"drums":%s_DRUMS, "heads":%s_HEADS}' % (kitvar, kitvar, kitvar)
+        print 'NAMED_DEFAULTS["%s"] = %s_KIT' % (kitname, kitvar)
+        print 'DEFAULT_KIT_NAMES.append("%s")' % kitname
 
 
 if __name__ == "__main__":

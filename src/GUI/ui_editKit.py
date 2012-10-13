@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\editKit.ui'
 #
-# Created: Sat Oct 13 17:10:49 2012
+# Created: Sat Oct 13 18:52:33 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -234,6 +234,7 @@ class Ui_editKitDialog(object):
         sizePolicy.setHeightForWidth(self.drumAbbr.sizePolicy().hasHeightForWidth())
         self.drumAbbr.setSizePolicy(sizePolicy)
         self.drumAbbr.setMinimumSize(QtCore.QSize(143, 0))
+        self.drumAbbr.setText(_fromUtf8(""))
         self.drumAbbr.setMaxLength(2)
         self.drumAbbr.setObjectName(_fromUtf8("drumAbbr"))
         self.gridLayout_2.addWidget(self.drumAbbr, 1, 1, 1, 1)
@@ -691,7 +692,7 @@ class Ui_editKitDialog(object):
         self.drumAbbr.setToolTip(QtGui.QApplication.translate("editKitDialog", "Abbreviation for this drum", None, QtGui.QApplication.UnicodeUTF8))
         self.drumAbbr.setStatusTip(QtGui.QApplication.translate("editKitDialog", "Abbreviation for this drum", None, QtGui.QApplication.UnicodeUTF8))
         self.drumAbbr.setWhatsThis(QtGui.QApplication.translate("editKitDialog", "<html><head/><body><p><span style=\" font-weight:600;\">Drum name abbreviation</span></p><p><br/></p><p>The short version of this drum name as it appears on the line labels to the left of every staff.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.drumAbbr.setInputMask(QtGui.QApplication.translate("editKitDialog", "NN; ", None, QtGui.QApplication.UnicodeUTF8))
+        self.drumAbbr.setInputMask(QtGui.QApplication.translate("editKitDialog", "Nn; ", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setToolTip(QtGui.QApplication.translate("editKitDialog", "Copy the existing notes from one of the drums in the current score to this drum", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("editKitDialog", "Convert from existing drum?", None, QtGui.QApplication.UnicodeUTF8))
         self.oldDrum.setToolTip(QtGui.QApplication.translate("editKitDialog", "Copy the existing notes from one of the drums in the current score to this drum", None, QtGui.QApplication.UnicodeUTF8))

@@ -573,7 +573,10 @@
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Drum name abbreviation&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;The short version of this drum name as it appears on the line labels to the left of every staff.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="inputMask">
-             <string>NN; </string>
+             <string>Nn; </string>
+            </property>
+            <property name="text">
+             <string/>
             </property>
             <property name="maxLength">
              <number>2</number>
