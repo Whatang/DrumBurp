@@ -48,6 +48,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         '''
         super(QEditKitDialog, self).__init__(parent)
         self.setupUi(self)
+        self.muteButton.setChecked(DBMidi.isMuted())
         if emptyDrums is None:
             emptyDrums = []
             self.deleteEmptyButton.setEnabled(False)
