@@ -457,7 +457,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
      <string>Operations on the DrumBurp Score</string>
     </property>
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <widget class="QMenu" name="menuRecentScores">
      <property name="toolTip">
@@ -467,7 +467,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
       <string>Open recently visited scores</string>
      </property>
      <property name="title">
-      <string>Recent Scores...</string>
+      <string>&amp;Recent Scores...</string>
      </property>
      <property name="icon">
       <iconset resource="DrumBurp.qrc">
@@ -492,11 +492,11 @@ To select a measure/measures, click and drag: selected measures can be copy/past
      <string>Options affecting the view</string>
     </property>
     <property name="title">
-     <string>View</string>
+     <string>&amp;View</string>
     </property>
     <widget class="QMenu" name="menuShowToolBars">
      <property name="title">
-      <string>Tool Bars...</string>
+      <string>&amp;Tool Bars...</string>
      </property>
      <addaction name="actionFileToolbarIsVisible"/>
      <addaction name="actionDisplayToolBarIsVisible"/>
@@ -517,7 +517,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
-     <string>Edit</string>
+     <string>&amp;Edit</string>
     </property>
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
@@ -531,7 +531,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Help</string>
+     <string>&amp;Help</string>
     </property>
     <addaction name="actionWhatsThis"/>
     <addaction name="actionOnlineManual"/>
@@ -1032,7 +1032,7 @@ The score editing window uses the font selected here to display the score inform
      <normaloff>:/Icons/Icons/system-log-out.png</normaloff>:/Icons/Icons/system-log-out.png</iconset>
    </property>
    <property name="text">
-    <string>Quit</string>
+    <string>&amp;Quit</string>
    </property>
    <property name="toolTip">
     <string>Quit DrumBurp</string>
@@ -1075,7 +1075,7 @@ You'll be asked how you want the new score set up, then it will appear in the ed
      <normaloff>:/Icons/Icons/document-open.png</normaloff>:/Icons/Icons/document-open.png</iconset>
    </property>
    <property name="text">
-    <string>Open</string>
+    <string>&amp;Open</string>
    </property>
    <property name="toolTip">
     <string>Open Score</string>
@@ -1100,7 +1100,7 @@ You'll then be asked to pick a .brp file from your hard drive. DrumBurp will try
      <normaloff>:/Icons/Icons/document-save.png</normaloff>:/Icons/Icons/document-save.png</iconset>
    </property>
    <property name="text">
-    <string>Save</string>
+    <string>&amp;Save</string>
    </property>
    <property name="statusTip">
     <string>Save this DrumBurp score</string>
@@ -1120,7 +1120,7 @@ If you've previously saved this score, any new changes will be written to the sa
      <normaloff>:/Icons/Icons/document-save-as.png</normaloff>:/Icons/Icons/document-save-as.png</iconset>
    </property>
    <property name="text">
-    <string>Save As</string>
+    <string>Save &amp;As</string>
    </property>
    <property name="statusTip">
     <string>Save this DrumBurp score with a new name</string>
@@ -1157,7 +1157,7 @@ p, li { white-space: pre-wrap; }
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Choose Fonts...</string>
+    <string>Choose &amp;Fonts...</string>
    </property>
    <property name="toolTip">
     <string>Toggle visibility of font window</string>
@@ -1171,7 +1171,7 @@ p, li { white-space: pre-wrap; }
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>File</string>
+    <string>&amp;File</string>
    </property>
    <property name="toolTip">
     <string>Change visibility of File tool bar</string>
@@ -1186,7 +1186,7 @@ p, li { white-space: pre-wrap; }
      <normaloff>:/Icons/Icons/video-display.png</normaloff>:/Icons/Icons/video-display.png</iconset>
    </property>
    <property name="text">
-    <string>Fit Window</string>
+    <string>Fit &amp;Window</string>
    </property>
    <property name="toolTip">
     <string>Fit score in window</string>
@@ -1212,7 +1212,7 @@ Note: if you subsequently change the window size, you'll need to select this ope
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Display</string>
+    <string>&amp;Display</string>
    </property>
    <property name="toolTip">
     <string>Change visibility of Display tool bar</string>
@@ -1230,7 +1230,7 @@ Note: if you subsequently change the window size, you'll need to select this ope
      <normaloff>:/Icons/Icons/document-print.png</normaloff>:/Icons/Icons/document-print.png</iconset>
    </property>
    <property name="text">
-    <string>Print</string>
+    <string>&amp;Print</string>
    </property>
    <property name="toolTip">
     <string>Print this score</string>
@@ -1253,7 +1253,7 @@ Selecting this option will try to print the score to whatever printer you choose
      <normaloff>:/Icons/Icons/help-browser.png</normaloff>:/Icons/Icons/help-browser.png</iconset>
    </property>
    <property name="text">
-    <string>What's this?</string>
+    <string>&amp;What's this?</string>
    </property>
    <property name="toolTip">
     <string>Get help on DrumBurp elements</string>
@@ -1276,7 +1276,7 @@ Get a little more help on any DrumBurp element. Select this option then click on
      <normaloff>:/Icons/Icons/edit-undo.png</normaloff>:/Icons/Icons/edit-undo.png</iconset>
    </property>
    <property name="text">
-    <string>Undo</string>
+    <string>&amp;Undo</string>
    </property>
    <property name="toolTip">
     <string>Undo the last action</string>
@@ -1294,7 +1294,7 @@ Get a little more help on any DrumBurp element. Select this option then click on
      <normaloff>:/Icons/Icons/edit-redo.png</normaloff>:/Icons/Icons/edit-redo.png</iconset>
    </property>
    <property name="text">
-    <string>Redo</string>
+    <string>&amp;Redo</string>
    </property>
    <property name="toolTip">
     <string>Redo the last undone action</string>
@@ -1312,7 +1312,7 @@ Get a little more help on any DrumBurp element. Select this option then click on
      <normaloff>:/Icons/Icons/pdf.png</normaloff>:/Icons/Icons/pdf.png</iconset>
    </property>
    <property name="text">
-    <string>Export PDF</string>
+    <string>E&amp;xport PDF</string>
    </property>
    <property name="toolTip">
     <string>Export PDF</string>
@@ -1332,7 +1332,7 @@ If you want to share the score you've written, it may be easier to do it as a PD
      <normaloff>:/Icons/Icons/drumburp.png</normaloff>:/Icons/Icons/drumburp.png</iconset>
    </property>
    <property name="text">
-    <string>About DrumBurp</string>
+    <string>&amp;About DrumBurp</string>
    </property>
    <property name="statusTip">
     <string>About DrumBurp</string>
@@ -1348,7 +1348,7 @@ Tells you some info about where DrumBurp comes from and how it is made.</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Print &amp;&amp; Export</string>
+    <string>&amp;Print &amp;&amp; Export</string>
    </property>
    <property name="toolTip">
     <string>Change visibility of Print &amp; Export Tool Bar</string>
@@ -1362,7 +1362,7 @@ Tells you some info about where DrumBurp comes from and how it is made.</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Help</string>
+    <string>&amp;Help</string>
    </property>
    <property name="toolTip">
     <string>Change the visibility of the Help Tool Bar</string>
@@ -1383,7 +1383,7 @@ Tells you some info about where DrumBurp comes from and how it is made.</string>
      <normaloff>:/Icons/Icons/format-justify-fill.png</normaloff>:/Icons/Icons/format-justify-fill.png</iconset>
    </property>
    <property name="text">
-    <string>Show Empty Lines</string>
+    <string>Show &amp;Empty Lines</string>
    </property>
    <property name="statusTip">
     <string>Show or hide empty lines in the score.</string>
@@ -1405,7 +1405,7 @@ Drums which are &quot;locked&quot; in the drum kit definition are never hidden.<
      <normaloff>:/Icons/Icons/1299815323_HAL-9000 Brain Room Key.png</normaloff>:/Icons/Icons/1299815323_HAL-9000 Brain Room Key.png</iconset>
    </property>
    <property name="text">
-    <string>Show Drum Key</string>
+    <string>Show &amp;Drum Key</string>
    </property>
    <property name="toolTip">
     <string>Show/Hide Drum Key</string>
@@ -1431,7 +1431,7 @@ The drum key appears at the top of the score and shows the abbreviations and ful
      <normaloff>:/Icons/Icons/applications-multimedia.png</normaloff>:/Icons/Icons/applications-multimedia.png</iconset>
    </property>
    <property name="text">
-    <string>Show Score Info</string>
+    <string>Show &amp;Score Info</string>
    </property>
    <property name="toolTip">
     <string>Show/Hide score info</string>
@@ -1459,7 +1459,7 @@ If you just want to hide individual items in the score information, double-click
      <normaloff>:/Icons/Icons/1299814882_Black_Numbered-List.png</normaloff>:/Icons/Icons/1299814882_Black_Numbered-List.png</iconset>
    </property>
    <property name="text">
-    <string>Show Beat Count</string>
+    <string>Show &amp;Beat Count</string>
    </property>
    <property name="statusTip">
     <string>Show/hide the beat count below measures</string>
@@ -1476,7 +1476,7 @@ The beat count appears underneath each measure in the score. If you want to save
      <normaloff>:/Icons/Icons/fit-page</normaloff>:/Icons/Icons/fit-page</iconset>
    </property>
    <property name="text">
-    <string>Fit Page...</string>
+    <string>Fit &amp;Page</string>
    </property>
    <property name="toolTip">
     <string>Fit score to page</string>
@@ -1575,7 +1575,7 @@ The score you've created can be written out to a MIDI file. You can then use thi
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>MIDI</string>
+    <string>&amp;MIDI</string>
    </property>
    <property name="toolTip">
     <string>Change visibility of MIDI toolbar</string>
@@ -1638,7 +1638,7 @@ Plays the currently selected measures back through MIDI. To stop playback, click
      <normaloff>:/Icons/Icons/edit-copy.png</normaloff>:/Icons/Icons/edit-copy.png</iconset>
    </property>
    <property name="text">
-    <string>Copy Measures</string>
+    <string>&amp;Copy Measures</string>
    </property>
    <property name="toolTip">
     <string>Copy the currently selected measures to the clipboard</string>
@@ -1656,7 +1656,7 @@ Plays the currently selected measures back through MIDI. To stop playback, click
      <normaloff>:/Icons/Icons/edit-paste.png</normaloff>:/Icons/Icons/edit-paste.png</iconset>
    </property>
    <property name="text">
-    <string>Paste Measures</string>
+    <string>&amp;Paste Measures</string>
    </property>
    <property name="toolTip">
     <string>Paste the clipboard over the currently selected measures</string>
@@ -1667,7 +1667,7 @@ Plays the currently selected measures back through MIDI. To stop playback, click
   </action>
   <action name="actionClearMeasures">
    <property name="text">
-    <string>Clear Measures</string>
+    <string>C&amp;lear Measures</string>
    </property>
    <property name="toolTip">
     <string>Clear the selected measures of all notes</string>
@@ -1685,7 +1685,7 @@ Plays the currently selected measures back through MIDI. To stop playback, click
      <normaloff>:/Icons/Icons/edit-delete.png</normaloff>:/Icons/Icons/edit-delete.png</iconset>
    </property>
    <property name="text">
-    <string>Delete Measures</string>
+    <string>&amp;Delete Measures</string>
    </property>
    <property name="toolTip">
     <string>Delete the currently selected measures</string>
@@ -1703,7 +1703,7 @@ Plays the currently selected measures back through MIDI. To stop playback, click
      <normaloff>:/Icons/Icons/edit-paste.png</normaloff>:/Icons/Icons/edit-paste.png</iconset>
    </property>
    <property name="text">
-    <string>Fill Paste Measures</string>
+    <string>&amp;Fill Paste Measures</string>
    </property>
    <property name="toolTip">
     <string>Paste the copied measues enough times to fill the selected ones.</string>
@@ -1721,7 +1721,7 @@ Plays the currently selected measures back through MIDI. To stop playback, click
      <normaloff>:/Icons/Icons/book.png</normaloff>:/Icons/Icons/book.png</iconset>
    </property>
    <property name="text">
-    <string>Online Manual</string>
+    <string>&amp;Online Manual</string>
    </property>
    <property name="toolTip">
     <string>Open the Online Manual in a web browser</string>
@@ -1736,7 +1736,7 @@ Plays the currently selected measures back through MIDI. To stop playback, click
      <normaloff>:/Icons/Icons/lilypond-icon.png</normaloff>:/Icons/Icons/lilypond-icon.png</iconset>
    </property>
    <property name="text">
-    <string>Export Lilypond</string>
+    <string>Export &amp;Lilypond</string>
    </property>
    <property name="toolTip">
     <string>Export Lilypond</string>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sun Sep 30 19:54:00 2012
+# Created: Sat Oct 13 15:02:33 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -681,15 +681,15 @@ class Ui_DrumBurpWindow(object):
 "\n"
 "To select a measure/measures, click and drag: selected measures can be copy/pasted, deleted, cleared, and more.", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Operations on the DrumBurp Score", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuFile.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuFile.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
         self.menuRecentScores.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Recently opened scores", None, QtGui.QApplication.UnicodeUTF8))
         self.menuRecentScores.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Open recently visited scores", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuRecentScores.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "Recent Scores...", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuRecentScores.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "&Recent Scores...", None, QtGui.QApplication.UnicodeUTF8))
         self.menuView.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Options affecting the view", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuView.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "View", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuShowToolBars.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "Tool Bars...", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuEdit.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "Edit", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuHelp.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuView.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "&View", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuShowToolBars.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "&Tool Bars...", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuEdit.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "&Edit", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuHelp.setTitle(QtGui.QApplication.translate("DrumBurpWindow", "&Help", None, QtGui.QApplication.UnicodeUTF8))
         self.fileToolBar.setWindowTitle(QtGui.QApplication.translate("DrumBurpWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
         self.displayToolBar.setWindowTitle(QtGui.QApplication.translate("DrumBurpWindow", "Display", None, QtGui.QApplication.UnicodeUTF8))
         self.exportToolBar.setWindowTitle(QtGui.QApplication.translate("DrumBurpWindow", "Print && Export", None, QtGui.QApplication.UnicodeUTF8))
@@ -740,7 +740,7 @@ class Ui_DrumBurpWindow(object):
         self.metadataFontCombo.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "The font used to display section titles in the Score", None, QtGui.QApplication.UnicodeUTF8))
         self.metadataFontSizeSpinbox.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Size of section titles.", None, QtGui.QApplication.UnicodeUTF8))
         self.MIDIToolBar.setWindowTitle(QtGui.QApplication.translate("DrumBurpWindow", "MIDI ToolBar", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionQuit.setText(QtGui.QApplication.translate("DrumBurpWindow", "Quit", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionQuit.setText(QtGui.QApplication.translate("DrumBurpWindow", "&Quit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Quit DrumBurp", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Quit DrumBurp", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNew.setText(QtGui.QApplication.translate("DrumBurpWindow", "&New", None, QtGui.QApplication.UnicodeUTF8))
@@ -753,7 +753,7 @@ class Ui_DrumBurpWindow(object):
 "\n"
 "You\'ll be asked how you want the new score set up, then it will appear in the editing window.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNew.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+N", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionLoad.setText(QtGui.QApplication.translate("DrumBurpWindow", "Open", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionLoad.setText(QtGui.QApplication.translate("DrumBurpWindow", "&Open", None, QtGui.QApplication.UnicodeUTF8))
         self.actionLoad.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Open Score", None, QtGui.QApplication.UnicodeUTF8))
         self.actionLoad.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Load a saved DrumBurp score", None, QtGui.QApplication.UnicodeUTF8))
         self.actionLoad.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "Load a score from a .brp file.\n"
@@ -762,13 +762,13 @@ class Ui_DrumBurpWindow(object):
 "\n"
 "You\'ll then be asked to pick a .brp file from your hard drive. DrumBurp will try to load it and then display it in the editing window.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionLoad.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+O", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionSave.setText(QtGui.QApplication.translate("DrumBurpWindow", "Save", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSave.setText(QtGui.QApplication.translate("DrumBurpWindow", "&Save", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSave.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Save this DrumBurp score", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSave.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "Save the current score to a file on disk.\n"
 "\n"
 "If you\'ve previously saved this score, any new changes will be written to the same file. If you haven\'t saved it before, you\'ll be asked to pick a file to save the score to. You\'ll then be able to open this score in DrumBurp again in the future for further editing.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSave.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+S", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionSaveAs.setText(QtGui.QApplication.translate("DrumBurpWindow", "Save As", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSaveAs.setText(QtGui.QApplication.translate("DrumBurpWindow", "Save &As", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSaveAs.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Save this DrumBurp score with a new name", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSaveAs.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "Save this score to a new file.\n"
 "\n"
@@ -782,13 +782,13 @@ class Ui_DrumBurpWindow(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Export this Score to an ASCII file.</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Writes this Score as a plain .txt file. You\'ll see a dialog with options regarding exactly how the score is exported.</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionDisplayOptionsIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "Choose Fonts...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDisplayOptionsIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "Choose &Fonts...", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDisplayOptionsIsVisible.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Toggle visibility of font window", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDisplayOptionsIsVisible.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Toggle display of font window", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionFileToolbarIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionFileToolbarIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFileToolbarIsVisible.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Change visibility of File tool bar", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFileToolbarIsVisible.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Change visibility of File tool bar", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionFitInWindow.setText(QtGui.QApplication.translate("DrumBurpWindow", "Fit Window", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionFitInWindow.setText(QtGui.QApplication.translate("DrumBurpWindow", "Fit &Window", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFitInWindow.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Fit score in window", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFitInWindow.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Attempt to make the score as wide as possible within the current window.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFitInWindow.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "Try to make the score fit in the editing window.\n"
@@ -797,62 +797,62 @@ class Ui_DrumBurpWindow(object):
 "\n"
 "Note: if you subsequently change the window size, you\'ll need to select this operation again to fit the score in the window.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionToolbars.setText(QtGui.QApplication.translate("DrumBurpWindow", "Toolbars", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionDisplayToolBarIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "Display", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDisplayToolBarIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "&Display", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDisplayToolBarIsVisible.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Change visibility of Display tool bar", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDisplayToolBarIsVisible.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Change visibility of Display tool bar", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionPrint.setText(QtGui.QApplication.translate("DrumBurpWindow", "Print", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPrint.setText(QtGui.QApplication.translate("DrumBurpWindow", "&Print", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrint.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Print this score", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrint.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Print this score", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrint.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "Print the score.\n"
 "\n"
 "Selecting this option will try to print the score to whatever printer you choose. You\'ll see a print preview dialog before printing occurs; you can use this to check that you\'re going to get what you expect.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrint.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+P", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionWhatsThis.setText(QtGui.QApplication.translate("DrumBurpWindow", "What\'s this?", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionWhatsThis.setText(QtGui.QApplication.translate("DrumBurpWindow", "&What\'s this?", None, QtGui.QApplication.UnicodeUTF8))
         self.actionWhatsThis.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Get help on DrumBurp elements", None, QtGui.QApplication.UnicodeUTF8))
         self.actionWhatsThis.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Get help on DrumBurp elements", None, QtGui.QApplication.UnicodeUTF8))
         self.actionWhatsThis.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "What\'s this?\n"
 "\n"
 "Get a little more help on any DrumBurp element. Select this option then click on something you want to know more about.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionWhatsThis.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Shift+F1", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionUndo.setText(QtGui.QApplication.translate("DrumBurpWindow", "Undo", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionUndo.setText(QtGui.QApplication.translate("DrumBurpWindow", "&Undo", None, QtGui.QApplication.UnicodeUTF8))
         self.actionUndo.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Undo the last action", None, QtGui.QApplication.UnicodeUTF8))
         self.actionUndo.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Undo the last action", None, QtGui.QApplication.UnicodeUTF8))
         self.actionUndo.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+Z", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionRedo.setText(QtGui.QApplication.translate("DrumBurpWindow", "Redo", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionRedo.setText(QtGui.QApplication.translate("DrumBurpWindow", "&Redo", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRedo.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Redo the last undone action", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRedo.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Redo the last undone action", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRedo.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+Y", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionExportPDF.setText(QtGui.QApplication.translate("DrumBurpWindow", "Export PDF", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExportPDF.setText(QtGui.QApplication.translate("DrumBurpWindow", "E&xport PDF", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExportPDF.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Export PDF", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExportPDF.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Export this score to a PDF file", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExportPDF.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "Export this score to a PDF file.\n"
 "\n"
 "If you want to share the score you\'ve written, it may be easier to do it as a PDF file. Select this option to write the score to a PDF: you\'ll see a print preview dialog before it exports, so you can check what you\'ll be getting.", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionAboutDrumBurp.setText(QtGui.QApplication.translate("DrumBurpWindow", "About DrumBurp", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAboutDrumBurp.setText(QtGui.QApplication.translate("DrumBurpWindow", "&About DrumBurp", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAboutDrumBurp.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "About DrumBurp", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAboutDrumBurp.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "More about DrumBurp.\n"
 "\n"
 "Tells you some info about where DrumBurp comes from and how it is made.", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionExportToolBarIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "Print && Export", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExportToolBarIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "&Print && Export", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExportToolBarIsVisible.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Change visibility of Print & Export Tool Bar", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExportToolBarIsVisible.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Change visibility of Print & Export Tool Bar", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionHelpToolBarIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionHelpToolBarIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "&Help", None, QtGui.QApplication.UnicodeUTF8))
         self.actionHelpToolBarIsVisible.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Change the visibility of the Help Tool Bar", None, QtGui.QApplication.UnicodeUTF8))
         self.actionHelpToolBarIsVisible.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Change the visibility of the Help Tool Bar", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionShowEmptyLines.setText(QtGui.QApplication.translate("DrumBurpWindow", "Show Empty Lines", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShowEmptyLines.setText(QtGui.QApplication.translate("DrumBurpWindow", "Show &Empty Lines", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShowEmptyLines.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Show or hide empty lines in the score.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShowEmptyLines.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "Show/hide empty lines in the score.\n"
 "\n"
 "Some lines in the score won\'t have any notes on them. You may want to hide these lines in order to save space. Toggle this option to show/hide these empty lines.\n"
 "\n"
 "Drums which are \"locked\" in the drum kit definition are never hidden.", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionShowDrumKey.setText(QtGui.QApplication.translate("DrumBurpWindow", "Show Drum Key", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShowDrumKey.setText(QtGui.QApplication.translate("DrumBurpWindow", "Show &Drum Key", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShowDrumKey.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Show/Hide Drum Key", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShowDrumKey.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Show/Hide Drum Key", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShowDrumKey.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "Show/hide the drum key.\n"
 "\n"
 "The drum key appears at the top of the score and shows the abbreviations and full names of each of the drums in the set. To edit the drums in the kit, double-click on the drum key, or on one of the drum name abbreviations at the left hand side of a system.", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionShowScoreInfo.setText(QtGui.QApplication.translate("DrumBurpWindow", "Show Score Info", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShowScoreInfo.setText(QtGui.QApplication.translate("DrumBurpWindow", "Show &Score Info", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShowScoreInfo.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Show/Hide score info", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShowScoreInfo.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Show/Hide score information", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShowScoreInfo.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "Toggle this option to show/hide the score information.\n"
@@ -860,12 +860,12 @@ class Ui_DrumBurpWindow(object):
 "The score information is the list of song name, artist name, tabber name and BPM shown at the top of the score. You can show/hide the whole thing with this option.\n"
 "\n"
 "If you just want to hide individual items in the score information, double-click on it, then tick/untick the items you want to show/hide in the dialog.", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionShowBeatCount.setText(QtGui.QApplication.translate("DrumBurpWindow", "Show Beat Count", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShowBeatCount.setText(QtGui.QApplication.translate("DrumBurpWindow", "Show &Beat Count", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShowBeatCount.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Show/hide the beat count below measures", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShowBeatCount.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "Show/hide the beat count.\n"
 "\n"
 "The beat count appears underneath each measure in the score. If you want to save space you may want to hide the count with this option.", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionFitPage.setText(QtGui.QApplication.translate("DrumBurpWindow", "Fit Page...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionFitPage.setText(QtGui.QApplication.translate("DrumBurpWindow", "Fit &Page", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFitPage.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Fit score to page", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFitPage.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Attempt to make the score as wide as possible within the current page size.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFitPage.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -901,7 +901,7 @@ class Ui_DrumBurpWindow(object):
         self.actionExportMIDI.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "Export this score to a MIDI file\n"
 "\n"
 "The score you\'ve created can be written out to a MIDI file. You can then use this as a standalone drum track with a MIDI player.", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionMIDIToolBarIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "MIDI", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMIDIToolBarIsVisible.setText(QtGui.QApplication.translate("DrumBurpWindow", "&MIDI", None, QtGui.QApplication.UnicodeUTF8))
         self.actionMIDIToolBarIsVisible.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Change visibility of MIDI toolbar", None, QtGui.QApplication.UnicodeUTF8))
         self.actionMIDIToolBarIsVisible.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Change visibility of MIDI toolbar", None, QtGui.QApplication.UnicodeUTF8))
         self.actionLoopBars.setText(QtGui.QApplication.translate("DrumBurpWindow", "Loop", None, QtGui.QApplication.UnicodeUTF8))
@@ -916,29 +916,29 @@ class Ui_DrumBurpWindow(object):
         self.actionPlayOnce.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "Play the selected measures once\n"
 "\n"
 "Plays the currently selected measures back through MIDI. To stop playback, click this button again.", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionCopyMeasures.setText(QtGui.QApplication.translate("DrumBurpWindow", "Copy Measures", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCopyMeasures.setText(QtGui.QApplication.translate("DrumBurpWindow", "&Copy Measures", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCopyMeasures.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Copy the currently selected measures to the clipboard", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCopyMeasures.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Copy the currently selected measures to the clipboard", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCopyMeasures.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+C", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionPasteMeasures.setText(QtGui.QApplication.translate("DrumBurpWindow", "Paste Measures", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPasteMeasures.setText(QtGui.QApplication.translate("DrumBurpWindow", "&Paste Measures", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPasteMeasures.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Paste the clipboard over the currently selected measures", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPasteMeasures.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+V", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionClearMeasures.setText(QtGui.QApplication.translate("DrumBurpWindow", "Clear Measures", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionClearMeasures.setText(QtGui.QApplication.translate("DrumBurpWindow", "C&lear Measures", None, QtGui.QApplication.UnicodeUTF8))
         self.actionClearMeasures.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Clear the selected measures of all notes", None, QtGui.QApplication.UnicodeUTF8))
         self.actionClearMeasures.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Clear the selected measures of all notes", None, QtGui.QApplication.UnicodeUTF8))
         self.actionClearMeasures.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Del", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionDeleteMeasures.setText(QtGui.QApplication.translate("DrumBurpWindow", "Delete Measures", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDeleteMeasures.setText(QtGui.QApplication.translate("DrumBurpWindow", "&Delete Measures", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDeleteMeasures.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Delete the currently selected measures", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDeleteMeasures.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Delete the currently selected measures", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDeleteMeasures.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+Del", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionFillPasteMeasures.setText(QtGui.QApplication.translate("DrumBurpWindow", "Fill Paste Measures", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionFillPasteMeasures.setText(QtGui.QApplication.translate("DrumBurpWindow", "&Fill Paste Measures", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFillPasteMeasures.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Paste the copied measues enough times to fill the selected ones.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFillPasteMeasures.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Paste the copied measues enough times to fill the selected ones.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFillPasteMeasures.setShortcut(QtGui.QApplication.translate("DrumBurpWindow", "Ctrl+Shift+V", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionOnlineManual.setText(QtGui.QApplication.translate("DrumBurpWindow", "Online Manual", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionOnlineManual.setText(QtGui.QApplication.translate("DrumBurpWindow", "&Online Manual", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOnlineManual.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Open the Online Manual in a web browser", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOnlineManual.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Open the Online Manual in a web browser", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionExportLilypond.setText(QtGui.QApplication.translate("DrumBurpWindow", "Export Lilypond", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExportLilypond.setText(QtGui.QApplication.translate("DrumBurpWindow", "Export &Lilypond", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExportLilypond.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Export Lilypond", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExportLilypond.setStatusTip(QtGui.QApplication.translate("DrumBurpWindow", "Export this score to a Lilypond input file", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExportLilypond.setWhatsThis(QtGui.QApplication.translate("DrumBurpWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
