@@ -505,7 +505,8 @@ class QScore(QtGui.QGraphicsScene):
             start = self._dragSelection[0]
             measureIndex = self._score.getMeasureIndex(start)
             self.beginMacro("delete measures")
-            for unused in self.iterDragSelection():
+            measures = list(self.iterDragSelection())
+            for unused in measures:
                 command = DeleteMeasureCommand(self, start, measureIndex)
                 self.addCommand(command)
             self.endMacro()

@@ -393,11 +393,13 @@ class ClearMeasureCommand(_COMMAND_CLASS):
 
 class DeleteMeasureCommand(_COMMAND_CLASS):
     def __init__(self, qScore, note, measureIndex = None):
-        note = note.makeMeasurePosition()
+        if measureIndex is None:
+            measureIndex = qScore.score.getMeasureIndex(note)
+            note = note.makeMeasurePosition()
+        else:
+            note = qScore.score.getMeasurePosition(measureIndex)
         super(DeleteMeasureCommand, self).__init__(qScore, note,
                                                    "delete measure")
-        if measureIndex is None:
-            measureIndex = self._score.getMeasureIndex(note)
         self._index = measureIndex
         self._oldMeasure = self._score.copyMeasure(note)
         self._sectionIndex = None
@@ -407,7 +409,7 @@ class DeleteMeasureCommand(_COMMAND_CLASS):
             self._sectionTitle = self._score.getSectionTitle(self._sectionIndex)
 
     def _redo(self):
-        self._score.deleteMeasureByIndex(self._index)
+        self._score.deleteMeasureByPosition(self._np)
         if self._sectionIndex:
             self._qScore.sectionsChanged.emit()
 
