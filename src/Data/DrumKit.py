@@ -24,7 +24,8 @@ Created on 12 Dec 2010
 '''
 
 from Drum import Drum, HeadData
-from DefaultKits import DEFAULT_KIT, DEFAULT_EXTRA_HEADS, STEM_DOWN, STEM_UP
+from DefaultKits import (DEFAULT_KIT_INFO, STEM_DOWN, STEM_UP,
+                         NAMED_DEFAULTS)
 from DBErrors import DuplicateDrumError, NoSuchDrumError
 
 class DrumKit(object):
@@ -50,9 +51,11 @@ class DrumKit(object):
     def clear(self):
         self._drums = []
 
-    def loadDefaultKit(self):
+    def loadDefaultKit(self, kitInfo = None):
+        if kitInfo is None:
+            kitInfo = DEFAULT_KIT_INFO
         for (drumData, midiNote, notationHead,
-             notationLine, stemDirection) in DEFAULT_KIT:
+             notationLine, stemDirection) in kitInfo["drums"]:
             drum = Drum(*drumData)
             headData = HeadData(midiNote = midiNote,
                                 notationHead = notationHead,
@@ -65,7 +68,7 @@ class DrumKit(object):
                  newEffect,
                  newNotationHead,
                  newNotationEffect,
-                 shortcut) in DEFAULT_EXTRA_HEADS.get(drum.abbr, []):
+                 shortcut) in kitInfo["heads"].get(drum.abbr, []):
                 if newMidi is None:
                     newMidi = midiNote
                 if newMidiVolume is None:
@@ -150,3 +153,10 @@ class DrumKit(object):
 
     def getDefaultHead(self, index):
         return self[index].head
+
+def loadNamedDefault(default_name):
+    kitInfo = NAMED_DEFAULTS[default_name]
+    kit = DrumKit()
+    kit.loadDefaultKit(kitInfo)
+    return kit
+

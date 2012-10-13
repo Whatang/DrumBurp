@@ -29,6 +29,7 @@ from PyQt4.QtCore import QVariant
 from Data.DrumKit import DrumKit
 from Data.Drum import Drum
 from Data import fileUtils
+from QDefaultKitManager import QDefaultKitManager
 import copy
 import string #IGNORE:W0402
 import DBMidi
@@ -66,6 +67,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.deleteEmptyButton.clicked.connect(self._deleteEmpty)
         self.clearButton.clicked.connect(self._clearKit)
         self.resetButton.clicked.connect(self._resetKit)
+        self.defaultKitButton.clicked.connect(self._manageDefaultKits)
         self.loadButton.clicked.connect(self._loadKit)
         self.saveButton.clicked.connect(self._saveKit)
         self.drumName.textEdited.connect(self._drumNameEdited)
@@ -235,6 +237,17 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         for drum in self._currentKit:
             self._oldLines[drum] = -1
         self._populate()
+
+    def _manageDefaultKits(self):
+        currentKit, unused_ = self.getNewKit()
+        dialog = QDefaultKitManager(currentKit, self)
+        if dialog.exec_():
+            newKit = dialog.getKit()
+            self._currentKit = list(reversed(newKit))
+            self._oldLines.clear()
+            for drum in self._currentKit:
+                self._oldLines[drum] = -1
+            self._populate()
 
     def _saveKit(self):
         directory = self._scoreDirectory
@@ -488,6 +501,15 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self._currentHeadData.notationLine -= 1
         self._notationScene.setHeadData(self._currentHeadData)
         self._checkNotationButtons()
+
+    def accept(self):
+        if all(old == -1 for old in self._oldLines.itervalues()):
+            if QMessageBox.question(self.parent(),
+                                    "Discard all existing notes?",
+                                    "Warning! You have changed the kit, but none of the old drums are being converted to new drums. This will discard all notes currently in the score. Are you sure you want to proceed?",
+                                    buttons = QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+                return
+        super(QEditKitDialog, self).accept()
 
     def getNewKit(self):
         newKit = DrumKit()

@@ -58,7 +58,7 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_5">
             <property name="spacing">
-             <number>0</number>
+             <number>6</number>
             </property>
             <property name="sizeConstraint">
              <enum>QLayout::SetFixedSize</enum>
@@ -220,74 +220,37 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="clearButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
+             <spacer name="horizontalSpacer_5">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
               </property>
-              <property name="minimumSize">
+              <property name="sizeType">
+               <enum>QSizePolicy::Maximum</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
                <size>
-                <width>24</width>
-                <height>24</height>
+                <width>10</width>
+                <height>20</height>
                </size>
               </property>
-              <property name="maximumSize">
-               <size>
-                <width>24</width>
-                <height>24</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string>Clear the kit and start again</string>
-              </property>
-              <property name="whatsThis">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;New drum kit&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Click this button to remove all drums from the kit and start witha new kit.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="DrumBurp.qrc">
-                <normaloff>:/Icons/Icons/document-new.png</normaloff>:/Icons/Icons/document-new.png</iconset>
-              </property>
-             </widget>
+             </spacer>
             </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
-             <widget class="QPushButton" name="resetButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
+             <spacer name="horizontalSpacer_14">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
               </property>
-              <property name="minimumSize">
+              <property name="sizeHint" stdset="0">
                <size>
-                <width>24</width>
-                <height>24</height>
+                <width>40</width>
+                <height>20</height>
                </size>
               </property>
-              <property name="maximumSize">
-               <size>
-                <width>24</width>
-                <height>24</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string>Reset the kit</string>
-              </property>
-              <property name="whatsThis">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Reset kit&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Click this button to revert to the kit as it was when you opened this editor window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="DrumBurp.qrc">
-                <normaloff>:/Icons/Icons/edit-undo.png</normaloff>:/Icons/Icons/edit-undo.png</iconset>
-              </property>
-             </widget>
+             </spacer>
             </item>
             <item>
              <widget class="QPushButton" name="deleteEmptyButton">
@@ -331,14 +294,11 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="loadButton">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
+             <widget class="QPushButton" name="resetButton">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>24</horstretch>
-                <verstretch>24</verstretch>
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
                </sizepolicy>
               </property>
               <property name="minimumSize">
@@ -354,17 +314,69 @@
                </size>
               </property>
               <property name="toolTip">
-               <string>Load a drum kit</string>
+               <string>Reset the kit</string>
               </property>
               <property name="whatsThis">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Load a drum kit&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Load a drum kit from disk.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Reset kit&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Click this button to revert to the kit as it was when you opened this editor window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
                <string/>
               </property>
               <property name="icon">
                <iconset resource="DrumBurp.qrc">
-                <normaloff>:/Icons/Icons/folder.png</normaloff>:/Icons/Icons/folder.png</iconset>
+                <normaloff>:/Icons/Icons/edit-undo.png</normaloff>:/Icons/Icons/edit-undo.png</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="clearButton">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>24</width>
+                <height>24</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>24</width>
+                <height>24</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>Clear the kit and start again</string>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;New drum kit&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Click this button to remove all drums from the kit and start witha new kit.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="DrumBurp.qrc">
+                <normaloff>:/Icons/Icons/document-new.png</normaloff>:/Icons/Icons/document-new.png</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="defaultKitButton">
+              <property name="toolTip">
+               <string>Default kits</string>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Default kits&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;DrumBurp comes with a number of default kits that you can use, and you can add your own kits to this list. Click this button to load a default kit, or save the current kit as a default.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="DrumBurp.qrc">
+                <normaloff>:/Icons/Icons/go-home.png</normaloff>:/Icons/Icons/go-home.png</iconset>
               </property>
              </widget>
             </item>
@@ -407,16 +419,51 @@
              </widget>
             </item>
             <item>
-             <spacer name="horizontalSpacer_5">
+             <widget class="QPushButton" name="loadButton">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>24</horstretch>
+                <verstretch>24</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>24</width>
+                <height>24</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>24</width>
+                <height>24</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>Load a drum kit</string>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Load a drum kit&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Load a drum kit from disk.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="DrumBurp.qrc">
+                <normaloff>:/Icons/Icons/folder.png</normaloff>:/Icons/Icons/folder.png</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_15">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Maximum</enum>
-              </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>10</width>
+                <width>40</width>
                 <height>20</height>
                </size>
               </property>
@@ -1691,6 +1738,9 @@
          <property name="toolTip">
           <string>Should the drum line be locked?</string>
          </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Lock this drum&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;If this drum is locked then:&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;a) it will always be displayed in the score, even when there are no notes on its line and the &lt;span style=&quot; font-style:italic;&quot;&gt;Omit Empty Lines&lt;/span&gt; option is turned on, and;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;b) it will not be deleted from the kit if the &lt;span style=&quot; font-style:italic;&quot;&gt;Delete Non-Locked Empty Drums&lt;/span&gt; button is pressed in the kit editor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="title">
           <string>Line Lock</string>
          </property>
@@ -1762,9 +1812,6 @@
  <tabstops>
   <tabstop>addButton</tabstop>
   <tabstop>deleteButton</tabstop>
-  <tabstop>clearButton</tabstop>
-  <tabstop>loadButton</tabstop>
-  <tabstop>saveButton</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
@@ -1779,8 +1826,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>173</x>
-     <y>404</y>
+     <x>182</x>
+     <y>582</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -1795,8 +1842,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>173</x>
-     <y>404</y>
+     <x>182</x>
+     <y>582</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
@@ -1811,12 +1858,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>827</x>
-     <y>112</y>
+     <x>825</x>
+     <y>175</y>
     </hint>
     <hint type="destinationlabel">
-     <x>680</x>
-     <y>81</y>
+     <x>678</x>
+     <y>144</y>
     </hint>
    </hints>
   </connection>

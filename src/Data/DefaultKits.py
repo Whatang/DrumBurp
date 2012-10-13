@@ -70,6 +70,12 @@ DEFAULT_EXTRA_HEADS = {"FT": [("O", None, ACCENT_VOLUME, "accent", "default", "a
                               ("d", None, None, "drag", "default", "drag", "d")],
                        "Hf" : []}
 
+DEFAULT_KIT_INFO = {"drums":DEFAULT_KIT,
+                    "heads":DEFAULT_EXTRA_HEADS}
+
+NAMED_DEFAULTS = {"Default": DEFAULT_KIT_INFO}
+DEFAULT_KIT_NAMES = ["Default"]
+
 DEFAULT_LILYPOND = {"Hf":"hhp",
                     "Bd": "bd",
                     "FT": "toml",
