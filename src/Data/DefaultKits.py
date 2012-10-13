@@ -24,6 +24,7 @@ Created on 17 Sep 2011
 STEM_UP = 0
 STEM_DOWN = 1
 
+# [((Drum name, abbreviation, default head, locked), Midi note, lilypond symbol, lilypond position, lilypond stem direction)*]
 DEFAULT_KIT = [(("Foot pedal", "Hf", "x", False), 44, "cross", -5 , STEM_DOWN),
                (("Kick", "Bd", "o", True), 36, "default", -3, STEM_DOWN),
                (("Floor Tom", "FT", "o", False), 43, "default", -1, STEM_DOWN),
@@ -37,6 +38,7 @@ DEFAULT_KIT = [(("Foot pedal", "Hf", "x", False), 44, "cross", -5 , STEM_DOWN),
 ACCENT_VOLUME = 127
 GHOST_VOLUME = 50
 #pylint:disable-msg=C0301
+# {Abbr: [(Head, MIDI note or None for default, MIDI volume or None for default, Midi effect, lilypond symbol, lilypond effect, keyboard shortcut)*]}
 DEFAULT_EXTRA_HEADS = {"FT": [("O", None, ACCENT_VOLUME, "accent", "default", "accent", "o"),
                               ("g", None, GHOST_VOLUME, "ghost", "default", "ghost", "g"),
                               ("f", None, None, "flam", "default", "flam", "f"),
@@ -73,8 +75,56 @@ DEFAULT_EXTRA_HEADS = {"FT": [("O", None, ACCENT_VOLUME, "accent", "default", "a
 DEFAULT_KIT_INFO = {"drums":DEFAULT_KIT,
                     "heads":DEFAULT_EXTRA_HEADS}
 
-NAMED_DEFAULTS = {"Default": DEFAULT_KIT_INFO}
-DEFAULT_KIT_NAMES = ["Default"]
+TTABS_DRUMS = [(("Bass drum", "B", "o", True), 36, "default", -3, STEM_DOWN),
+               (("Floor Tom", "FT", "o", False), 43, "default", -1, STEM_DOWN),
+               (("Mid Tom", "T", "o", False), 47, "default", 2, STEM_DOWN),
+               (("Snare", "S", "o", True), 38, "default", 1, STEM_DOWN),
+               (("Hi-Hat with foot", "Hf", "x", False), 44, "cross", -5 , STEM_DOWN),
+               (("HiHat", "HH", "x", False), 42, "cross", 5, STEM_UP),
+               (("Ride Cymbal", "Rd", "x", False), 51, "cross", 4, STEM_UP),
+               (("Crash-ride cymbal", "CR", "x", False), 57, "cross", 7, STEM_UP),
+               (("Crash cymbal", "CC", "x", False), 49, "cross", 6, STEM_UP)]
+
+TTABS_EXTRA = {"B": [("O", None, ACCENT_VOLUME, "accent", "default", "accent", "o"),
+                     ("g", None, GHOST_VOLUME, "ghost", "default", "ghost", "g"),
+                     ("d", None, None, "drag", "default", "drag", "d")],
+               "FT": [("O", None, ACCENT_VOLUME, "accent", "default", "accent", "o"),
+                      ("g", None, GHOST_VOLUME, "ghost", "default", "ghost", "g"),
+                      ("f", None, None, "flam", "default", "flam", "f"),
+                      ("b", None, GHOST_VOLUME, "default", "none", "b"),
+                      ("B", None, ACCENT_VOLUME, "default", "accent", "r"),
+                      ("d", None, None, "drag", "default", "drag", "d")],
+               "S": [("O", None, ACCENT_VOLUME, "accent", "default", "accent", "o"),
+                     ("g", None, GHOST_VOLUME, "ghost", "default", "ghost", "g"),
+                     ("@", 37, None, "normal", "cross", "none", "x"),
+                     ("f", None, None, "flam", "default", "flam", "f"),
+                     ("b", None, GHOST_VOLUME, "default", "none", "b"),
+                     ("B", None, ACCENT_VOLUME, "default", "accent", "r"),
+                     ("d", None, None, "drag", "default", "drag", "d")],
+               "T": [("O", None, ACCENT_VOLUME, "accent", "default", "accent", "o"),
+                     ("g", None, GHOST_VOLUME, "ghost", "default", "ghost", "g"),
+                     ("f", None, None, "flam", "default", "flam", "f"),
+                     ("b", None, GHOST_VOLUME, "default", "none", "b"),
+                     ("B", None, ACCENT_VOLUME, "default", "accent", "r"),
+                     ("d", None, None, "drag", "default", "drag", "d")],
+               "HH": [("X", None, ACCENT_VOLUME, "accent", "cross", "accent", "x"),
+                      ("o", 46, None, "normal", "cross", "open", "o"),
+                      ("d", None, None, "drag", "cross", "drag", "d"),
+                      ("#", None, None, "choke", "cross", "choke", "c")],
+               "Rd": [("X", None, ACCENT_VOLUME, "accent", "cross", "accent", "x"),
+                      ("b", 53, None, "normal", "triangle", "none", "b"),
+                      ("d", None, None, "drag", "cross", "drag", "d")],
+               "CR": [("X", None, ACCENT_VOLUME, "accent", "cross", "accent", "x"),
+                      ("b", 53, None, "normal", "triangle", "none", "b"),
+                      ("#", None, None, "choke", "cross", "stopped", "c")],
+               "CC": [("X", None, ACCENT_VOLUME, "accent", "cross", "accent", "x"),
+                      ("b", 53, None, "normal", "triangle", "none", "b"),
+                      ("#", None, None, "choke", "cross", "stopped", "c")], }
+
+TTABS_KIT = {"drums":TTABS_DRUMS, "heads":TTABS_EXTRA}
+
+NAMED_DEFAULTS = {"Default": DEFAULT_KIT_INFO, "TTabs.com": TTABS_KIT}
+DEFAULT_KIT_NAMES = ["Default", "TTabs.com"]
 
 DEFAULT_LILYPOND = {"Hf":"hhp",
                     "Bd": "bd",
