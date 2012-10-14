@@ -23,7 +23,7 @@ Created on 12 Dec 2010
 
 '''
 
-from DrumKit import DrumKit
+import DrumKit
 from Staff import Staff
 from Measure import Measure
 from Counter import CounterRegistry
@@ -55,7 +55,7 @@ class Score(object):
         Constructor
         '''
         self._staffs = []
-        self.drumKit = DrumKit()
+        self.drumKit = DrumKit.DrumKit()
         self._callBack = None
         self._callBacksEnabled = True
         self.scoreData = ScoreMetaData()
@@ -898,7 +898,7 @@ class ScoreFactory(object):
     @classmethod
     def makeEmptyScore(cls, numMeasures, counter):
         score = Score()
-        score.drumKit.loadDefaultKit()
+        score.drumKit = DrumKit.getNamedDefaultKit()
         if counter is None:
             registry = CounterRegistry()
             counter = list(registry.countsByTicks(2))

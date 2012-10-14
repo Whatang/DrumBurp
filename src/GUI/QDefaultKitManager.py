@@ -127,7 +127,7 @@ class QDefaultKitManager(Ui_DefaulKitManager, QtGui.QDialog):
             kit.read(dbfile)
             return kit
         else:
-            return DrumKit.loadNamedDefault(kitName)
+            return DrumKit.getNamedDefaultKit(kitName)
 
 
 def main():
@@ -137,8 +137,7 @@ def main():
     app.setOrganizationName("Whatang Software")
     app.setOrganizationDomain("whatang.org")
     app.setApplicationName("DefaultKitManagerTest")
-    oldkit = DrumKit.DrumKit()
-    oldkit.loadDefaultKit()
+    oldkit = DrumKit.getNamedDefaultKit()
     dialog = QDefaultKitManager(oldkit)
     dialog.show()
     app.exec_()

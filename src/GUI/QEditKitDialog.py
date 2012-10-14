@@ -26,7 +26,7 @@ from PyQt4.QtGui import (QDialog, QRadioButton, QFileDialog, QDesktopServices,
                          QMessageBox, QInputDialog, QColor, QDialogButtonBox)
 from ui_editKit import Ui_editKitDialog
 from PyQt4.QtCore import QVariant
-from Data.DrumKit import DrumKit
+from Data import DrumKit
 from Data.Drum import Drum
 from Data.DefaultKits import GHOST_VOLUME, ACCENT_VOLUME
 from Data import fileUtils
@@ -238,7 +238,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             return
         with open(fname, 'rU') as handle:
             fileIterator = fileUtils.dbFileIterator(handle)
-            newKit = DrumKit()
+            newKit = DrumKit.DrumKit()
             newKit.read(fileIterator)
         self._currentKit = list(reversed(newKit))
         self._oldLines.clear()
@@ -295,7 +295,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
                 drumIndicesByAbbr[drum.abbr] = []
             drumIndicesByAbbr[drum.abbr].append(index)
         ok = True
-        for abbr, indices in drumIndicesByAbbr.iteritems():
+        for indices in drumIndicesByAbbr.itervalues():
             if len(indices) > 1:
                 ok = False
                 for index in indices:
@@ -388,10 +388,12 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             availableShortcuts = set('abcdefghijklmnopqrstuvwxyz')
             for head in self._currentDrum:
                 if head != self._currentHead:
-                    availableShortcuts.remove(self._currentDrum.headData(head).shortcut)
+                    shortcut = self._currentDrum.headData(head).shortcut
+                    availableShortcuts.remove(shortcut)
             for okShortcut in sorted(list(availableShortcuts)):
                 self.shortcutCombo.addItem(okShortcut)
-            shortIndex = self.shortcutCombo.findText(self._currentHeadData.shortcut)
+            shortcut = self._currentHeadData.shortcut
+            shortIndex = self.shortcutCombo.findText(shortcut)
             self.shortcutCombo.setCurrentIndex(shortIndex)
         finally:
             self.shortcutCombo.blockSignals(False)
@@ -501,7 +503,8 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
 
     def _setNotation(self):
         headData = self._currentHeadData
-        self.stemUpDownBox.setChecked(headData.stemDirection == DrumKit.UP)
+        self.stemUpDownBox.setChecked(headData.stemDirection
+                                      == DrumKit.STEM_UP)
         effectIndex = self.effectBox.findText(headData.notationEffect)
         self.effectBox.setCurrentIndex(effectIndex)
         headIndex = self.noteHeadBox.findText(headData.notationHead)
@@ -519,9 +522,9 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
 
     def _stemDirectionChanged(self):
         if self.stemUpDownBox.isChecked():
-            self._currentHeadData.stemDirection = DrumKit.UP
+            self._currentHeadData.stemDirection = DrumKit.STEM_UP
         else:
-            self._currentHeadData.stemDirection = DrumKit.DOWN
+            self._currentHeadData.stemDirection = DrumKit.STEM_DOWN
         self._notationScene.setHeadData(self._currentHeadData)
 
     def _moveNotationUp(self):
@@ -544,7 +547,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         super(QEditKitDialog, self).accept()
 
     def getNewKit(self):
-        newKit = DrumKit()
+        newKit = DrumKit.DrumKit()
         oldLines = []
         for drum in reversed(self._currentKit):
             newKit.addDrum(drum)
@@ -609,8 +612,7 @@ def main():
     from PyQt4.QtGui import QApplication
     import sys
     app = QApplication(sys.argv)
-    kit = DrumKit()
-    kit.loadDefaultKit()
+    kit = DrumKit.getNamedDefaultKit()
     dialog = QEditKitDialog(kit, [kit[0]])
     dialog.show()
     app.exec_()
@@ -631,7 +633,8 @@ def main():
             headData = drum.headData(drum.head)
             values = (drum.name, drum.abbr, drum.head, str(drum.locked),
                       headData.midiNote, headData.effect, headData.notationLine,
-                      "UP" if headData.stemDirection == DrumKit.UP else "DOWN")
+                      "UP" if headData.stemDirection == DrumKit.STEM_UP
+                      else "DOWN")
             line += '(("%s", "%s", "%s", %s), %d, "%s", %d, STEM_%s)' % values
             lines.append(line)
             indent = " " * len(indent)
@@ -670,7 +673,8 @@ def main():
         else:
             lines = '%s_HEADS = {}' % kitvar
         print lines
-        print '%s_KIT = {"drums":%s_DRUMS, "heads":%s_HEADS}' % (kitvar, kitvar, kitvar)
+        print ('%s_KIT = {"drums":%s_DRUMS, "heads":%s_HEADS}'
+               % (kitvar, kitvar, kitvar))
         print 'NAMED_DEFAULTS["%s"] = %s_KIT' % (kitname, kitvar)
         print 'DEFAULT_KIT_NAMES.append("%s")' % kitname
 
