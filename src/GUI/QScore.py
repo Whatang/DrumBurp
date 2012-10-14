@@ -109,9 +109,9 @@ class QScore(QtGui.QGraphicsScene):
         if parent.filename is not None:
             if not self.loadScore(parent.filename, quiet = True):
                 parent.filename = None
-                self.newScore()
+                self.newScore(None)
         else:
-            self.newScore()
+            self.newScore(None)
         self.defaultCountChanged.connect(parent.setDefaultCount)
         self.spacingChanged.connect(parent.setSystemSpacing)
         self.sectionsChanged.connect(parent.setSections)
