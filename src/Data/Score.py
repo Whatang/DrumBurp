@@ -888,17 +888,20 @@ class Score(object):
 class ScoreFactory(object):
     def __call__(self, filename = None,
                  numMeasures = 32,
-                 counter = None):
+                 counter = None,
+                 kit = None):
         if filename is not None:
             score = self.loadScore(filename)
         else:
-            score = self.makeEmptyScore(numMeasures, counter)
+            score = self.makeEmptyScore(numMeasures, counter, kit)
         return score
 
     @classmethod
-    def makeEmptyScore(cls, numMeasures, counter):
+    def makeEmptyScore(cls, numMeasures, counter, kit):
         score = Score()
-        score.drumKit = DrumKit.getNamedDefaultKit()
+        if kit is None:
+            kit = DrumKit.getNamedDefaultKit()
+        score.drumKit = kit
         if counter is None:
             registry = CounterRegistry()
             counter = list(registry.countsByTicks(2))

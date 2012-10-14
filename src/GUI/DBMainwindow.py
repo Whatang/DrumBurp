@@ -390,8 +390,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                                      counter,
                                      registry)
             if dialog.exec_():
-                nMeasures, counter = dialog.getValues()
-                self.scoreScene.newScore(numMeasures = nMeasures,
+                nMeasures, counter, kit = dialog.getValues()
+                self.scoreScene.newScore(kit,
+                                         numMeasures = nMeasures,
                                          counter = counter)
                 self.filename = None
                 self.updateRecentFiles()

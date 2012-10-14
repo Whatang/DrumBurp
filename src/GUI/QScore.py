@@ -601,7 +601,7 @@ class QScore(QtGui.QGraphicsScene):
         self.dirty = False
         return True
 
-    def newScore(self, numMeasures = 16,
+    def newScore(self, kit, numMeasures = 16,
                  counter = None):
         if counter is None:
             if self._score is None:
@@ -609,7 +609,8 @@ class QScore(QtGui.QGraphicsScene):
             else:
                 counter = self.defaultCount
         newScore = _SCORE_FACTORY(numMeasures = numMeasures,
-                                  counter = counter)
+                                  counter = counter,
+                                  kit = kit)
         self._setScore(newScore)
 
     def numPages(self, pageHeight):

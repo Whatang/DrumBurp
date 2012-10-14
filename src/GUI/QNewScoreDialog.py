@@ -25,8 +25,12 @@ Created on 9 Jan 2011
 
 from ui_newScoreDialog import Ui_newScoreDialog
 from PyQt4.QtGui import QDialog
+from PyQt4.QtCore import QSettings, QVariant
+from cStringIO import StringIO
 import Data.MeasureCount
 from QComplexCountDialog import QComplexCountDialog
+from Data import DefaultKits, DrumKit, fileUtils
+
 class QNewScoreDialog(QDialog, Ui_newScoreDialog):
     '''
     classdocs
@@ -40,7 +44,24 @@ class QNewScoreDialog(QDialog, Ui_newScoreDialog):
         self.setupUi(self)
         self.measureTabs.setup(counter, registry,
                                Data.MeasureCount, QComplexCountDialog)
+        for name in DefaultKits.DEFAULT_KIT_NAMES:
+            self.kitCombobox.addItem(name, userData = QVariant(False))
+        self._settings = QSettings()
+        self._settings.beginGroup("UserDefaultKits")
+        for kitName in self._settings.allKeys():
+            self.kitCombobox.addItem(kitName, userData = QVariant(True))
 
     def getValues(self):
         mc = self.measureTabs.getCounter()
-        return (self.numMeasuresSpinBox.value(), mc)
+        kitName = unicode(self.kitCombobox.currentText())
+        kitIndex = self.kitCombobox.currentIndex()
+        isUserKit = self.kitCombobox.itemData(kitIndex).toBool()
+        if isUserKit:
+            kitString = str(self._settings.value(kitName).toString())
+            handle = StringIO(kitString)
+            dbfile = fileUtils.dbFileIterator(handle)
+            kit = DrumKit.DrumKit()
+            kit.read(dbfile)
+        else:
+            kit = DrumKit.getNamedDefaultKit(kitName)
+        return (self.numMeasuresSpinBox.value(), mc, kit)
