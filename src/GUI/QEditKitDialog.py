@@ -633,7 +633,7 @@ def main():
             line = indent
             headData = drum.headData(drum.head)
             values = (drum.name, drum.abbr, drum.head, str(drum.locked),
-                      headData.midiNote, headData.effect, headData.notationLine,
+                      headData.midiNote, headData.notationHead, headData.notationLine,
                       "UP" if headData.stemDirection == DrumKit.STEM_UP
                       else "DOWN")
             line += '(("%s", "%s", "%s", %s), %d, "%s", %d, STEM_%s)' % values
