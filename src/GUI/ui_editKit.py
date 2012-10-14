@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\editKit.ui'
 #
-# Created: Sat Oct 13 19:47:09 2012
+# Created: Sat Oct 13 21:00:08 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -668,7 +668,7 @@ class Ui_editKitDialog(object):
         self.saveButton.setToolTip(QtGui.QApplication.translate("editKitDialog", "Save this drum kit", None, QtGui.QApplication.UnicodeUTF8))
         self.saveButton.setWhatsThis(QtGui.QApplication.translate("editKitDialog", "<html><head/><body><p><span style=\" font-weight:600;\">Save the drum kit</span></p><p><br/></p><p>Save the current drum kit to a file on disk.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.kitTable.setToolTip(QtGui.QApplication.translate("editKitDialog", "The drums and their order", None, QtGui.QApplication.UnicodeUTF8))
-        self.kitTable.setWhatsThis(QtGui.QApplication.translate("editKitDialog", "<html><head/><body><p><span style=\" font-weight:600;\">List of instruments</span></p><p><br/></p><p>Each drum in the kit is represented by a single line in the score. This list of instruments defines what drums you have in the kit, and what order they appear in the score. You can add and delete drums, move them around, and edit their information.</p><p><br/></p><p>Select one of the drums in this list to edit its name, abbreviation, note heads, Lilypond notation, and MIDI sound.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.kitTable.setWhatsThis(QtGui.QApplication.translate("editKitDialog", "<html><head/><body><p><span style=\" font-weight:600;\">List of instruments</span></p><p><br/></p><p>Each drum in the kit is represented by a single line in the score. This list of instruments defines what drums you have in the kit, and what order they appear in the score. You can add and delete drums, move them around, and edit their information.</p><p>Select one of the drums in this list to edit its name, abbreviation, note heads, Lilypond notation, and MIDI sound.</p><p><span style=\" font-weight:600;\">Note: </span>It is an error for more than one drum to have the same abbreviation. If this happens, the offending drums will be highlighted in red, and the <span style=\" font-style:italic;\">OK</span> button will be disabled.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.addButton.setToolTip(QtGui.QApplication.translate("editKitDialog", "Add a drum", None, QtGui.QApplication.UnicodeUTF8))
         self.addButton.setWhatsThis(QtGui.QApplication.translate("editKitDialog", "<html><head/><body><p><span style=\" font-weight:600;\">Add a new drum</span></p><p><br/></p><p>Click this to add a new drum to the kit. It will be added at the bottom of the current kit, with some default settings.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.upButton.setToolTip(QtGui.QApplication.translate("editKitDialog", "Move the current drum up", None, QtGui.QApplication.UnicodeUTF8))

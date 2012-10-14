@@ -23,7 +23,7 @@ Created on 26 Jan 2011
 
 '''
 from PyQt4.QtGui import (QDialog, QRadioButton, QFileDialog, QDesktopServices,
-                         QMessageBox, QInputDialog)
+                         QMessageBox, QInputDialog, QColor, QDialogButtonBox)
 from ui_editKit import Ui_editKitDialog
 from PyQt4.QtCore import QVariant
 from Data.DrumKit import DrumKit
@@ -38,6 +38,9 @@ from QNotationScene import QNotationScene
 
 _KIT_FILE_EXT = ".dbk"
 _KIT_FILTER = "DrumBurp kits (*%s)" % _KIT_FILE_EXT
+
+_BAD_ABBR_COLOR = QColor("red")
+_GOOD_ABBR_COLOR = QColor("black")
 
 class QEditKitDialog(QDialog, Ui_editKitDialog):
     '''
@@ -115,7 +118,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             self.kitTable.addItem(drum.name)
         self.kitTable.blockSignals(False)
         self.kitTable.setCurrentRow(0)
-
+        self._checkAbbrs()
 
     @property
     def _currentDrumIndex(self):
@@ -151,6 +154,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.kitTable.addItem(drum.name)
         self.kitTable.setCurrentRow(len(self._currentKit) - 1)
         self._checkDrumButtons()
+        self._checkAbbrs()
         self.drumName.setFocus()
         self.drumName.selectAll()
 
@@ -166,6 +170,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             self.kitTable.setCurrentRow(index - 1)
         self.kitTable.takeItem(index)
         self._checkDrumButtons()
+        self._checkAbbrs()
 
     def _moveDrumUp(self):
         idx = self._currentDrumIndex
@@ -218,7 +223,6 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             self._currentKit.append(drum)
             self._oldLines[drum] = drumIndex
         self._populate()
-
 
     def _loadKit(self):
         directory = self._scoreDirectory
@@ -278,6 +282,29 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
 
     def _drumAbbrEdited(self):
         self._currentDrum.abbr = unicode(self.drumAbbr.text())
+        self._checkAbbrs()
+
+    def _checkAbbrs(self):
+        # Check that there is not more than one drum with the same
+        # abbreviation. If there is, highlight them and disable the OK button 
+        # and accept action.
+        drumIndicesByAbbr = {}
+        for index, drum in enumerate(self._currentKit):
+            if drum.abbr not in drumIndicesByAbbr:
+                drumIndicesByAbbr[drum.abbr] = []
+            drumIndicesByAbbr[drum.abbr].append(index)
+        ok = True
+        for abbr, indices in drumIndicesByAbbr.iteritems():
+            if len(indices) > 1:
+                ok = False
+                for index in indices:
+                    self.kitTable.item(index).setTextColor(_BAD_ABBR_COLOR)
+            else:
+                for index in indices:
+                    self.kitTable.item(index).setTextColor(_GOOD_ABBR_COLOR)
+        self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(ok)
+        return ok
+
 
     def _oldDrumChanged(self):
         drum = self._currentDrum
