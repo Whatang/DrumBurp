@@ -304,6 +304,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
                 for index in indices:
                     self.kitTable.item(index).setTextColor(_GOOD_ABBR_COLOR)
         self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(ok)
+        self.saveButton.setEnabled(ok)
         return ok
 
 
