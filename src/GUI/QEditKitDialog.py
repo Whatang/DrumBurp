@@ -28,6 +28,7 @@ from ui_editKit import Ui_editKitDialog
 from PyQt4.QtCore import QVariant
 from Data.DrumKit import DrumKit
 from Data.Drum import Drum
+from Data.DefaultKits import GHOST_VOLUME, ACCENT_VOLUME
 from Data import fileUtils
 from QDefaultKitManager import QDefaultKitManager
 import copy
@@ -638,7 +639,8 @@ def main():
         print lines
         indent = '%s_HEADS = {' % kitvar
         lines = []
-        volumeSymbols = {50: "GHOST_VOLUME", 127:"ACCENT_VOLUME"}
+        volumeSymbols = {GHOST_VOLUME: "GHOST_VOLUME",
+                         ACCENT_VOLUME:"ACCENT_VOLUME"}
         for drum in newKit:
             headLines = []
             headIndent = indent + '"%s" : [' % drum.abbr
