@@ -36,7 +36,10 @@ DEFAULT_KIT = [(("Foot pedal", "Hf", "x", False), 44, "cross", -5 , STEM_DOWN),
                (("Crash", "Cr", "x", False), 49, "cross", 6, STEM_UP)]
 
 ACCENT_VOLUME = 127
+DEFAULT_VOLUME = 96
 GHOST_VOLUME = 50
+DEFAULT_NOTE = 71
+
 #pylint:disable-msg=C0301
 # {Abbr: [(Head, MIDI note or None for default, MIDI volume or None for default, Midi effect, lilypond symbol, lilypond effect, keyboard shortcut)*]}
 DEFAULT_EXTRA_HEADS = {"FT": [("O", None, ACCENT_VOLUME, "accent", "default", "accent", "o"),
