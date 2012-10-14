@@ -614,12 +614,14 @@ def main():
     dialog.show()
     app.exec_()
     if dialog.result():
-        kitname, ok = QInputDialog.getText(None, "Enter new kit name", "Kit name")
+        kitname, ok = QInputDialog.getText(None, "Enter new kit name",
+                                           "Kit name")
         if not ok:
             return
         kitname = unicode(kitname)
         kitvar = kitname.upper()
-        kitvar = "".join([ch if ch.isalpha() else "_" for ch in kitvar])
+        kitvar = "".join([ch if ch.isalnum() else "_" for ch in kitvar])
+        kitvar = "_" + kitvar
         newKit, changes_ = dialog.getNewKit()
         lines = []
         indent = '%s_DRUMS = [' % kitvar
@@ -636,6 +638,7 @@ def main():
         print lines
         indent = '%s_HEADS = {' % kitvar
         lines = []
+        volumeSymbols = {50: "GHOST_VOLUME", 127:"ACCENT_VOLUME"}
         for drum in newKit:
             headLines = []
             headIndent = indent + '"%s" : [' % drum.abbr
@@ -649,7 +652,8 @@ def main():
                           "None" if data.midiNote == defaultData.midiNote
                           else str(data.midiNote),
                           "None" if data.midiVolume == defaultData.midiVolume
-                          else str(data.midiVolume),
+                          else volumeSymbols.get(data.midiVolume,
+                                                str(data.midiVolume)),
                           data.effect, data.notationHead,
                           data.notationEffect, data.shortcut)
                 line += '("%s", %s, %s, "%s", "%s", "%s", "%s")' % values
