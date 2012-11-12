@@ -58,6 +58,7 @@ except ImportError:
         _PLAYER.cleanup()
 
 import atexit
+atexit.register(cleanup)
 import time
 import StringIO
 
@@ -158,6 +159,7 @@ class _midi(QObject):
         if self._midiOut is not None:
             self._midiOut.abort()
             del self._midiOut
+            self._midiOut = None
 
     def _highlight(self):
         delay = -1

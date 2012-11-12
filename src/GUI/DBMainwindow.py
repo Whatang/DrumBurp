@@ -298,7 +298,6 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             settings.setValue("MainWindow/State",
                               QVariant(self.saveState()))
             self.songProperties.save(settings)
-            DBMidi.cleanup()
         else:
             event.ignore()
 
