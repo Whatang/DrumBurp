@@ -275,7 +275,8 @@ class QMeasure(QtGui.QGraphicsItem):
                 self._highlight = newPlace
                 self.update()
                 self.parentItem().setLineHighlight(newPlace[1])
-                self._qScore.setCurrentHeads(self.parentItem().lineIndex(newPlace[1]))
+                realIndex = self.parentItem().lineIndex(newPlace[1])
+                self._qScore.setCurrentHeads(realIndex)
         elif self._highlight != None:
             self._highlight = None
             self.parentItem().clearHighlight()
@@ -287,7 +288,8 @@ class QMeasure(QtGui.QGraphicsItem):
             self._qScore.setStatusMessage("Double click to edit repeat count.")
             self.setCursor(QtCore.Qt.PointingHandCursor)
         elif self._isOverAlternate(point):
-            self._qScore.setStatusMessage("Double click to edit alternate ending.")
+            self._qScore.setStatusMessage("Double click to edit "
+                                          "alternate ending.")
             self.setCursor(QtCore.Qt.PointingHandCursor)
         else:
             self._qScore.setStatusMessage()
