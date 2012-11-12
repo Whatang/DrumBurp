@@ -73,12 +73,8 @@ class DrumKit(object):
         return list(self._drums[drumIndex])
 
     def shortcutsAndNoteHeads(self, drumIndex):
-        shortcuts = []
         drum = self._drums[drumIndex]
-        for head in drum:
-            shortcut = drum.headData(head).shortcut
-            shortcuts.append((unicode(shortcut), head))
-        return shortcuts
+        return drum.shortcutsAndNoteHeads()
 
     def write(self, handle, indenter):
         print >> handle, indenter("KIT_START")

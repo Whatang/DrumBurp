@@ -253,6 +253,13 @@ class Drum(object):
                 else:
                     data.shortcut = availableShortcuts.pop()
 
+    def shortcutsAndNoteHeads(self):
+        shortcuts = []
+        for head in self:
+            shortcut = self._headData[head].shortcut
+            shortcuts.append((unicode(shortcut), head))
+        return shortcuts
+
 
     def write(self, handle, indenter):
         print >> handle, indenter("DRUM %s,%s,%s,%s" % (self.name,
