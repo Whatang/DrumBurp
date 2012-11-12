@@ -23,6 +23,7 @@ Created on 12 Dec 2010
 '''
 import unittest
 from Data.Score import Score
+from Data import DrumKit
 from Data.DBErrors import BadTimeError, OverSizeMeasure
 from Data.DBConstants import EMPTY_NOTE
 from Data.NotePosition import NotePosition
@@ -168,7 +169,7 @@ class TestMeasureControl(unittest.TestCase):
 class TestNoteControl(unittest.TestCase):
     def setUp(self):
         self.score = Score()
-        self.score.drumKit.loadDefaultKit()
+        self.score.drumKit = DrumKit.getNamedDefaultKit()
         for dummy in range(0, 12):
             self.score.addEmptyMeasure(16)
         self.score.textFormatScore(80)
@@ -304,7 +305,7 @@ class TestCharacterFormatScore(unittest.TestCase):
         for staff in self.score.iterStaffs():
             self.assertEqual(staff.numMeasures(), 4)
             self.assertEqual(len(staff), 64)
-            self.assertEqual(staff.characterWidth(), 71)
+            self.assertEqual(staff.characterWidth(), 69)
 
     def testTextFormatScoreWithSections(self):
         for dummy in range(0, 20):
@@ -312,7 +313,7 @@ class TestCharacterFormatScore(unittest.TestCase):
         self.score.getMeasure(5).setSectionEnd(True)
         self.score.textFormatScore(80)
         self.assertEqual(self.score.numStaffs(), 6)
-        self.assertEqual(self.score.getStaff(1).characterWidth(), 37)
+        self.assertEqual(self.score.getStaff(1).characterWidth(), 35)
 
     def testTextFormatScore_SectionEndAtScoreEnd(self):
         for dummy in range(0, 20):
@@ -329,7 +330,7 @@ class TestCharacterFormatScore(unittest.TestCase):
         self.score.getMeasure(5).setRepeatEnd(True)
         self.score.textFormatScore(80)
         self.assertEqual(self.score.numStaffs(), 6)
-        self.assertEqual(self.score.getStaff(1).characterWidth(), 37)
+        self.assertEqual(self.score.getStaff(1).characterWidth(), 35)
 
     def testTextFormatScoreWithLargeBar(self):
         for dummy in range(0, 12):
@@ -339,7 +340,7 @@ class TestCharacterFormatScore(unittest.TestCase):
             self.score.addEmptyMeasure(16)
         self.score.textFormatScore(80)
         self.assertEqual(self.score.numStaffs(), 7)
-        self.assertEqual(self.score.getStaff(3).characterWidth(), 74)
+        self.assertEqual(self.score.getStaff(3).characterWidth(), 72)
 
     def testTextFormatScoreWithOverSizeBar_IgnoreErrors(self):
         for dummy in range(0, 12):
@@ -349,7 +350,7 @@ class TestCharacterFormatScore(unittest.TestCase):
             self.score.addEmptyMeasure(16)
         self.score.textFormatScore(80, ignoreErrors = True)
         self.assertEqual(self.score.numStaffs(), 7)
-        self.assertEqual(self.score.getStaff(3).characterWidth(), 84)
+        self.assertEqual(self.score.getStaff(3).characterWidth(), 82)
 
     def testTextFormatScoreWithOverSizeBar_DontIgnoreErrors(self):
         for dummy in range(0, 12):
@@ -379,7 +380,7 @@ class TestCharacterFormatScore(unittest.TestCase):
 class TestCallBack(unittest.TestCase):
     def setUp(self):
         self.score = Score()
-        self.score.drumKit.loadDefaultKit()
+        self.score.drumKit = DrumKit.getNamedDefaultKit()
         for dummy in range(0, 16):
             self.score.addEmptyMeasure(16)
         self.score.textFormatScore(80)

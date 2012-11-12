@@ -108,44 +108,6 @@ class TestMeasure(unittest.TestCase):
         self.assertRaises(BadTimeError, self.measure.toggleNote,
                           NotePosition(noteTime = 20, drumIndex = 0), "x")
 
-    def testSetWidth_BadWidth(self):
-        self.assertRaises(AssertionError, self.measure.setWidth, -1)
-
-    def testSetWidth_MakeEmptyMeasureBigger(self):
-        self.measure.setWidth(32)
-        self.assertEqual(len(self.measure), 32)
-
-    def testSetWidth_MakeEmptyMeasureSmaller(self):
-        self.measure.setWidth(8)
-        self.assertEqual(len(self.measure), 8)
-
-    def testSetWidth_MakeNonEmptyMeasureBigger(self):
-        self.measure.addNote(NotePosition(noteTime = 7, drumIndex = 1), "x")
-        self.measure.setWidth(32)
-        self.assertEqual(len(self.measure), 32)
-        notePos = NotePosition(noteTime = 7, drumIndex = 1)
-        self.assertEqual(self.measure.getNote(notePos), "x")
-
-    def testSetWidth_MakeNonEmptyMeasureSmaller(self):
-        self.measure.addNote(NotePosition(noteTime = 7, drumIndex = 1), "x")
-        self.measure.addNote(NotePosition(noteTime = 12, drumIndex = 1), "x")
-        self.measure.setWidth(8)
-        self.assertEqual(len(self.measure), 8)
-        notePos = NotePosition(noteTime = 7, drumIndex = 1)
-        self.assertEqual(self.measure.getNote(notePos), "x")
-        self.assertEqual(self.measure.numNotes(), 1)
-
-    def testSetWidth_NoEffect(self):
-        notePos1 = NotePosition(noteTime = 7, drumIndex = 1)
-        notePos2 = NotePosition(noteTime = 12, drumIndex = 1)
-        self.measure.addNote(notePos1, "x")
-        self.measure.addNote(notePos2, "x")
-        self.measure.setWidth(16)
-        self.assertEqual(len(self.measure), 16)
-        self.assertEqual(self.measure.getNote(notePos1), "x")
-        self.assertEqual(self.measure.getNote(notePos2), "x")
-        self.assertEqual(self.measure.numNotes(), 2)
-
     def testSetSectionEnd_NoRepeat(self):
         self.assertFalse(self.measure.isSectionEnd())
         self.measure.setSectionEnd(True)
