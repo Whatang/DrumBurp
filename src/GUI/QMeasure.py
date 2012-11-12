@@ -275,7 +275,7 @@ class QMeasure(QtGui.QGraphicsItem):
                 self._highlight = newPlace
                 self.update()
                 self.parentItem().setLineHighlight(newPlace[1])
-                self._qScore.setCurrentHeads(newPlace[1])
+                self._qScore.setCurrentHeads(self.parentItem().lineIndex(newPlace[1]))
         elif self._highlight != None:
             self._highlight = None
             self.parentItem().clearHighlight()
