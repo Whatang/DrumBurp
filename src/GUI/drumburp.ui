@@ -484,6 +484,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <addaction name="actionExportASCII"/>
     <addaction name="actionExportPDF"/>
     <addaction name="actionExportLilypond"/>
+    <addaction name="actionExportMIDI"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -559,8 +560,8 @@ To select a measure/measures, click and drag: selected measures can be copy/past
    </property>
    <property name="iconSize">
     <size>
-     <width>32</width>
-     <height>32</height>
+     <width>24</width>
+     <height>24</height>
     </size>
    </property>
    <attribute name="toolBarArea">
@@ -586,8 +587,8 @@ To select a measure/measures, click and drag: selected measures can be copy/past
    </property>
    <property name="iconSize">
     <size>
-     <width>32</width>
-     <height>32</height>
+     <width>24</width>
+     <height>24</height>
     </size>
    </property>
    <attribute name="toolBarArea">
@@ -610,8 +611,8 @@ To select a measure/measures, click and drag: selected measures can be copy/past
    </property>
    <property name="iconSize">
     <size>
-     <width>32</width>
-     <height>32</height>
+     <width>24</width>
+     <height>24</height>
     </size>
    </property>
    <attribute name="toolBarArea">
@@ -624,6 +625,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
    <addaction name="actionExportASCII"/>
    <addaction name="actionExportPDF"/>
    <addaction name="actionExportLilypond"/>
+   <addaction name="actionExportMIDI"/>
   </widget>
   <widget class="QToolBar" name="helpToolBar">
    <property name="windowTitle">
@@ -631,8 +633,8 @@ To select a measure/measures, click and drag: selected measures can be copy/past
    </property>
    <property name="iconSize">
     <size>
-     <width>32</width>
-     <height>32</height>
+     <width>24</width>
+     <height>24</height>
     </size>
    </property>
    <attribute name="toolBarArea">
@@ -1024,7 +1026,6 @@ The score editing window uses the font selected here to display the score inform
    <addaction name="actionPlayOnce"/>
    <addaction name="actionLoopBars"/>
    <addaction name="actionMuteNotes"/>
-   <addaction name="actionExportMIDI"/>
   </widget>
   <action name="actionQuit">
    <property name="icon">
@@ -1556,7 +1557,7 @@ When a note is added to the score, a sound is played to indicate the note that w
      <normaloff>:/Icons/Icons/midi</normaloff>:/Icons/Icons/midi</iconset>
    </property>
    <property name="text">
-    <string>Export MIDI</string>
+    <string>Export &amp;MIDI</string>
    </property>
    <property name="toolTip">
     <string>Export this score to a MIDI file</string>

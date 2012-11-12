@@ -23,19 +23,7 @@ Created on 17 Sep 2011
 
 '''
 
-import pygame
-import pygame.midi
-import atexit
-import time
-import StringIO
-
-from PyQt4.QtCore import QTimer, pyqtSignal, QObject
-from Data.MeasureCount import MIDITICKSPERBEAT
-
-
-pygame.init()
-pygame.midi.init()
-
+HAS_MIDI = True
 _PERCUSSION = 0x99
 _BUFSIZE = 1024
 
@@ -43,16 +31,46 @@ _FREQ = 44100    # audio CD quality
 _BITSIZE = -16   # unsigned 16 bit
 _CHANNELS = 2    # 1 is mono, 2 is stereo
 _NUMSAMPLES = 4096    # number of samples
-pygame.mixer.init(_FREQ, _BITSIZE, _CHANNELS, _NUMSAMPLES)
 
-# optional volume 0 to 1.0
-pygame.mixer.music.set_volume(0.8)
+try:
+    import pygame
+    import pygame.midi
+    pygame.init()
+    pygame.midi.init()
+    pygame.mixer.init(_FREQ, _BITSIZE, _CHANNELS, _NUMSAMPLES)
+    pygame.mixer.music.set_volume(0.8)
+
+    def get_default_id():
+        return pygame.midi.get_default_output_id()
+
+    def cleanup():
+        _PLAYER.cleanup()
+        pygame.mixer.quit()
+        pygame.midi.quit()
+        pygame.quit()
+
+except ImportError:
+    HAS_MIDI = False
+    def get_default_id():
+        return -1
+
+    def cleanup():
+        _PLAYER.cleanup()
+
+import atexit
+import time
+import StringIO
+
+from PyQt4.QtCore import QTimer, pyqtSignal, QObject
+from Data.MeasureCount import MIDITICKSPERBEAT
 
 class _midi(QObject):
     def __init__(self):
         super(_midi, self).__init__()
-        self._port = pygame.midi.get_default_output_id()
-        self._midiOut = pygame.midi.Output(self._port, 0, _BUFSIZE)
+        self._port = get_default_id()
+        self._midiOut = None
+        if self._port != -1:
+            self._midiOut = pygame.midi.Output(self._port, 0, _BUFSIZE)
         self.timer = QTimer()
         self.timer.setSingleShot(True)
         self._measureDetails = []
@@ -64,6 +82,9 @@ class _midi(QObject):
         self._musicPlaying = False
         self.kit = None
 
+    def isGood(self):
+        return self._port != -1 and self._midiOut is not None
+
     def setMute(self, onOff):
         self._mute = onOff
 
@@ -73,7 +94,7 @@ class _midi(QObject):
     highlightMeasure = pyqtSignal(int)
 
     def playNote(self, drumIndex, head):
-        if self.kit is None or self._mute or self._midiOut is None:
+        if self.kit is None or self._mute:
             return
         headData = self.kit[drumIndex].headData(head)
         self.playHeadData(headData)
@@ -89,7 +110,7 @@ class _midi(QObject):
         self._playMIDINow(measureList, score)
 
     def _playMIDINow(self, measureList, score):
-        if self.kit is None:
+        if self.kit is None or self._midiOut is None:
             return
         baseTime = 0
         msPerBeat = 60000.0 / score.scoreData.bpm
@@ -153,6 +174,7 @@ class _midi(QObject):
 
 
 _PLAYER = _midi()
+HAS_MIDI = HAS_MIDI and _PLAYER.isGood()
 
 SONGEND_SIGNAL = _PLAYER.timer.timeout
 HIGHLIGHT_SIGNAL = _PLAYER.highlightMeasure
@@ -240,10 +262,3 @@ def exportMidi(measureIterator, score, handle):
     handle.write("MTrk")
     for byte in midiData:
         handle.write("%c" % byte)
-
-
-def cleanup():
-    _PLAYER.cleanup()
-    pygame.mixer.quit()
-    pygame.midi.quit()
-    pygame.quit()
