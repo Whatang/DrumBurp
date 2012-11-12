@@ -26,7 +26,7 @@ import unittest
 from Data.NotePosition import NotePosition
 from Data.DBErrors import BadNoteSpecification
 
-#pylint: disable-msg=R0904
+# pylint: disable-msg=R0904
 
 
 
@@ -116,6 +116,54 @@ class TestNotePosition(unittest.TestCase):
     def testString(self):
         np = NotePosition(1, 2, 3, 4)
         self.assertEqual(str(np), "1, 2, 3, 4")
+
+    def testMakeMeasurePosition(self):
+        np = NotePosition(1, 2, 3, 4).makeMeasurePosition()
+        self.assertEqual(np.drumIndex, None)
+        self.assertEqual(np.noteTime, None)
+        self.assertEqual(np.measureIndex, 2)
+        self.assertEqual(np.staffIndex, 1)
+
+    def testMakeStaffPosition(self):
+        np = NotePosition(1, 2, 3, 4).makeStaffPosition()
+        self.assertEqual(np.drumIndex, None)
+        self.assertEqual(np.noteTime, None)
+        self.assertEqual(np.measureIndex, None)
+        self.assertEqual(np.staffIndex, 1)
+
+    def testCompare_None(self):
+        np1 = NotePosition(1, 2, 3, 4)
+        self.assert_(np1 > None)
+        self.assert_(None < np1)
+
+    def testCompare_Equal(self):
+        np1 = NotePosition(1, 2, 3, 4)
+        np2 = NotePosition(1, 2, 3, 4)
+        self.assert_(np1 == np2)
+
+    def testCompare_SameStaff_SameMeasure_SameTime_DifferentDrum(self):
+        np1 = NotePosition(1, 2, 3, 4)
+        np2 = NotePosition(1, 2, 3, 5)
+        self.assert_(np1 < np2)
+        self.assertFalse(np2 <= np1)
+
+    def testCompare_SameStaff_SameMeasure_DifferentTime(self):
+        np1 = NotePosition(1, 2, 3, 4)
+        np2 = NotePosition(1, 2, 4, 4)
+        self.assert_(np1 < np2)
+        self.assertFalse(np2 <= np1)
+
+    def testCompare_SameStaff_DifferentMeasure(self):
+        np1 = NotePosition(1, 1, 3, 4)
+        np2 = NotePosition(1, 2, 3, 4)
+        self.assert_(np1 < np2)
+        self.assertFalse(np2 <= np1)
+
+    def testCompare_DifferentStaff(self):
+        np1 = NotePosition(1, 1, 3, 4)
+        np2 = NotePosition(2, 1, 3, 4)
+        self.assert_(np1 < np2)
+        self.assertFalse(np2 <= np1)
 
 
 
