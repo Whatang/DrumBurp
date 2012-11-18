@@ -56,8 +56,8 @@ class HeadData(object):
                                                   self.shortcut)
         print >> handle, indenter("NOTEHEAD", dataString)
 
-    @staticmethod
-    def read(abbr, dataString):
+    @classmethod
+    def read(cls, abbr, dataString):
         head, data = dataString.split(None, 1)
         fields = data.split(",")
         note, volume, effect = fields[:3]
@@ -71,22 +71,23 @@ class HeadData(object):
             if len(fields) > 7:
                 shortcut = fields[7]
         else:
-            nHead, nLine, nEffect, sDir = _guessNotation(abbr, head)
-        return head, HeadData(note, volume, effect, nHead,
-                              nLine, nEffect, sDir, shortcut)
+            nHead, nLine, nEffect, sDir = cls._guessNotation(abbr, head)
+        return head, cls(note, volume, effect, nHead,
+                         nLine, nEffect, sDir, shortcut)
 
-def _guessNotation(abbr, head):
-    for drumInfo in DefaultKits.DEFAULT_KIT:
-        if drumInfo[0][1] == abbr:
-            nHead, nLine, sDir = drumInfo[-3:]
-            nEffect = "none"
-            break
-    else:
-        return ["default", 0, "none", DefaultKits.STEM_UP]
-    for headInfo in DefaultKits.DEFAULT_EXTRA_HEADS[abbr]:
-        if headInfo[0] == head:
-            nHead, nEffect = headInfo[4:6]
-    return nHead, nLine, nEffect, sDir
+    @staticmethod
+    def _guessNotation(abbr, head):
+        for drumInfo in DefaultKits.DEFAULT_KIT:
+            if drumInfo[0][1] == abbr:
+                nHead, nLine, sDir = drumInfo[-3:]
+                nEffect = "none"
+                break
+        else:
+            return ["default", 0, "none", DefaultKits.STEM_UP]
+        for headInfo in DefaultKits.DEFAULT_EXTRA_HEADS[abbr]:
+            if headInfo[0] == head:
+                nHead, nEffect = headInfo[4:6]
+        return nHead, nLine, nEffect, sDir
 
 
 
@@ -123,7 +124,8 @@ class Drum(object):
         return self._head
 
     def setDefaultHead(self, head):
-        assert(head in self._headData)
+        if head not in self._headData:
+            return
         self._head = head
         index = self._noteHeads.index(head)
         self._noteHeads = ([head] + self._noteHeads[:index]
@@ -155,7 +157,7 @@ class Drum(object):
     def renameHead(self, oldHead, head):
         try:
             index = self._noteHeads.index(oldHead)
-        except IndexError:
+        except ValueError:
             return
         self._noteHeads[index] = head
         self._headData[head] = self._headData.pop(oldHead)
@@ -171,6 +173,7 @@ class Drum(object):
             self._guessEffect(head)
             self.checkShortcuts()
         else:
+            assert(isinstance(headData, HeadData))
             self._headData[head] = headData
 
     def _guessEffect(self, head):
@@ -211,6 +214,7 @@ class Drum(object):
                                stemDirection = stemDir,
                                shortcut = shortcut)
             self.addNoteHead(extraHead, newData)
+        self.checkShortcuts()
 
     def readHeadData(self, dataString):
         head, data = HeadData.read(self.abbr, dataString)
@@ -227,17 +231,19 @@ class Drum(object):
     def moveHeadUp(self, head):
         try:
             idx = self._noteHeads.index(head)
-        except IndexError:
+        except ValueError:
             return
-        assert(idx > 1)
+        if(idx < 2):
+            return
         self._noteHeads[idx - 1:idx + 1] = self._noteHeads[idx:idx - 2:-1]
 
     def moveHeadDown(self, head):
         try:
             idx = self._noteHeads.index(head)
-        except IndexError:
+        except ValueError:
             return
-        assert(idx < len(self) - 1)
+        if idx >= len(self) - 1 or idx == 0:
+            return
         self._noteHeads[idx:idx + 2] = self._noteHeads[idx + 1:idx - 1:-1]
 
     def checkShortcuts(self):
