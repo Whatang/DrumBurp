@@ -224,8 +224,8 @@ class Measure(object):
         return self._notes.getNote(noteTime, drumIndex)
 
     def clear(self):
-        for pos, dummyHead in list(self):
-            self.deleteNote(pos)
+        self._notes.clear()
+        self._runCallBack(NotePosition())
 
     def addNote(self, position, head):
         if not(0 <= position.noteTime < len(self)):
