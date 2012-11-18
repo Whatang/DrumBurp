@@ -117,10 +117,13 @@ class TestMeasure(unittest.TestCase):
 
     def testSetSectionEnd_NoRepeat(self):
         self.assertFalse(self.measure.isSectionEnd())
+        self.assertFalse(self.measure.isLineEnd())
         self.measure.setSectionEnd(True)
         self.assert_(self.measure.isSectionEnd())
+        self.assert_(self.measure.isLineEnd())
         self.measure.setSectionEnd(False)
         self.assertFalse(self.measure.isSectionEnd())
+        self.assertFalse(self.measure.isLineEnd())
 
     def testSetSectionEnd_Repeat(self):
         self.measure.setRepeatEnd(True)
@@ -154,6 +157,24 @@ class TestMeasure(unittest.TestCase):
         self.measure.setRepeatEnd(False)
         self.assertFalse(self.measure.isRepeatEnd())
 
+    def testLineBreak(self):
+        self.assertFalse(self.measure.isLineBreak())
+        self.assertFalse(self.measure.isLineEnd())
+        self.measure.setLineBreak(True)
+        self.assert_(self.measure.isLineBreak())
+        self.assert_(self.measure.isLineEnd())
+        self.measure.setLineBreak(False)
+        self.assertFalse(self.measure.isLineBreak())
+        self.assertFalse(self.measure.isLineEnd())
+
+    def testClearMeasure(self):
+        self.measure.addNote(NotePosition(noteTime = 0, drumIndex = 0), "x")
+        self.measure.addNote(NotePosition(noteTime = 1, drumIndex = 1), "o")
+        self.assertEqual(self.measure.numNotes(), 2)
+        self.assertFalse(self.measure.isEmpty())
+        self.measure.clear()
+        self.assert_(self.measure.isEmpty())
+
 class TestCallBack(unittest.TestCase):
     def setUp(self):
         self.measure = Measure(16)
@@ -168,9 +189,9 @@ class TestCallBack(unittest.TestCase):
         self.assertEqual(self.calls[0], (0, 0))
         self.measure.addNote(NotePosition(noteTime = 0, drumIndex = 0), "x")
         self.assertEqual(len(self.calls), 1)
-        self.measure.addNote(NotePosition(noteTime = 0, drumIndex = 0), "o")
+        self.measure.addNote(NotePosition(noteTime = 1, drumIndex = 1), "o")
         self.assertEqual(len(self.calls), 2)
-        self.assertEqual(self.calls[1], (0, 0))
+        self.assertEqual(self.calls[1], (1, 1))
 
     def testDeleteNoteCallBack(self):
         self.measure.deleteNote(NotePosition(noteTime = 0, drumIndex = 0))
@@ -196,6 +217,14 @@ class TestCallBack(unittest.TestCase):
         self.measure.toggleNote(np, "o")
         self.assertEqual(len(self.calls), 4)
         self.assertEqual(self.calls[2], (0, 0))
+
+    def testClearMeasureCallback(self):
+        self.measure.addNote(NotePosition(noteTime = 0, drumIndex = 0), "x")
+        self.measure.addNote(NotePosition(noteTime = 1, drumIndex = 1), "o")
+        self.assertEqual(len(self.calls), 2)
+        self.measure.clear()
+        self.assertEqual(len(self.calls), 3)
+        self.assertEqual(self.calls[2], (None, None))
 
     def testClearCallBack(self):
         self.measure.clearCallBack()
