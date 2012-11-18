@@ -166,7 +166,7 @@ class Measure(object):
         self._callBack = None
 
     def isEmpty(self):
-        return (len(list(self)) == 0
+        return (len(self._notes) == 0
                 and not (self.isRepeatEnd() or
                          self.isSectionEnd()))
 

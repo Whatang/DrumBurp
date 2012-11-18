@@ -26,7 +26,7 @@ from Data.Measure import Measure
 from Data.DBErrors import BadTimeError
 from Data.DBConstants  import EMPTY_NOTE
 from Data.NotePosition import NotePosition
-#pylint: disable-msg=R0904
+# pylint: disable-msg=R0904
 
 class TestMeasure(unittest.TestCase):
     def setUp(self):
@@ -41,6 +41,13 @@ class TestMeasure(unittest.TestCase):
         self.assertFalse(self.measure.isSectionEnd())
         self.assertFalse(self.measure.isRepeatEnd())
         self.assertFalse(self.measure.isRepeatStart())
+
+    def testIsEmpty_True(self):
+        self.assert_(self.measure.isEmpty())
+
+    def testIsEmpty_False(self):
+        self.measure.addNote(NotePosition(noteTime = 0, drumIndex = 0), "o")
+        self.assertFalse(self.measure.isEmpty())
 
     def testGetNote_BadTime(self):
         self.assertRaises(BadTimeError, self.measure.getNote,
