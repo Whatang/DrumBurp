@@ -48,9 +48,6 @@ class DrumKit(object):
     def __iter__(self):
         return iter(self._drums)
 
-    def clear(self):
-        self._drums = []
-
     def addDrum(self, drum):
         if drum in self._drums:
             raise DuplicateDrumError(drum.name, drum.abbr)
@@ -106,7 +103,7 @@ class DrumKit(object):
             elif lineType == "NOTEHEAD":
                 lastDrum.readHeadData(lineData)
             elif lineType == "KIT_START":
-                #No need to do anything
+                # No need to do anything
                 pass
             else:
                 raise IOError("Unrecognised line type.", lineType)
