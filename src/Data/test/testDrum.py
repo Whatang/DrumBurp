@@ -87,10 +87,6 @@ class TestHeadData(unittest.TestCase):
         self.assertEqual(data.shortcut, "")
 
 
-
-
-if __name__ == '__main__':
-    unittest.main()
 class TestDrum(unittest.TestCase):
 
 
