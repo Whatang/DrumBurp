@@ -30,7 +30,7 @@ from NotePosition import NotePosition
 from Data import MeasureCount
 import copy
 
-class NoteDictionary(object):
+class _NoteDictionary(object):
     def __init__(self):
         self._notes = defaultdict(lambda:defaultdict(dict))
         self._notesOnLine = defaultdict(lambda : 0)
@@ -119,7 +119,7 @@ class Measure(object):
 
     def __init__(self, width = 0):
         self._width = width
-        self._notes = NoteDictionary()
+        self._notes = _NoteDictionary()
         self.startBar = BAR_TYPES["NORMAL_BAR"]
         self.endBar = BAR_TYPES["NORMAL_BAR"]
         self._callBack = None
