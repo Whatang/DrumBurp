@@ -84,13 +84,9 @@ class DrumKit(object):
         lastDrum = None
         for lineType, lineData in scoreIterator:
             if  lineType == "KIT_END":
-                if lastDrum is not None and len(lastDrum) == 0:
-                    lastDrum.guessHeadData()
-                self._checkShortcuts()
+                self._checkDrumData()
                 break
             elif lineType == "DRUM":
-                if lastDrum is not None and len(lastDrum) == 0:
-                    lastDrum.guessHeadData()
                 fields = lineData.split(",")
                 if len(fields) > 3:
                     fields[3] = (fields[3] == "True")
@@ -107,16 +103,16 @@ class DrumKit(object):
             else:
                 raise IOError("Unrecognised line type.", lineType)
 
-    def _checkShortcuts(self):
+    def _checkDrumData(self):
         for drum in self:
+            if len(drum) == 0:
+                drum.guessHeadData()
             drum.checkShortcuts()
 
     def getDefaultHead(self, index):
         return self[index].head
 
 def _loadDefaultKit(kit, kitInfo = None):
-    if kitInfo is None:
-        kitInfo = DEFAULT_KIT_INFO
     for (drumData, midiNote, notationHead,
          notationLine, stemDirection) in kitInfo["drums"]:
         drum = Drum(*drumData)
