@@ -140,10 +140,10 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                                          measurePosition)
         self._qScore.sendFsmEvent(fsmEvent)
 
-    def _insertDefaultMeasure(self, np):
+    def _insertDefaultMeasure(self, np, preserveSectionEnd = False):
         mc = self._qScore.defaultCount
         command = InsertMeasuresCommand(self._qScore, np, 1,
-                                        mc)
+                                        mc, preserveSectionEnd)
         self._qScore.addCommand(command)
         self._qScore.sendFsmEvent(MenuSelect())
 
@@ -154,7 +154,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
     def _insertMeasureAfter(self):
         np = copy.copy(self._np)
         np.measureIndex += 1
-        self._insertDefaultMeasure(np)
+        self._insertDefaultMeasure(np, True)
         self._qScore.sendFsmEvent(MenuSelect())
 
     def _insertOtherMeasures(self):
@@ -165,10 +165,12 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                                              self._props.counterRegistry)
         if insertDialog.exec_():
             nMeasures, counter, insertBefore = insertDialog.getValues()
+            preserve = False
             if not insertBefore:
                 np.measureIndex += 1
+                preserve = True
             command = InsertMeasuresCommand(self._qScore, np, nMeasures,
-                                            counter)
+                                            counter, preserve)
             self._qScore.addCommand(command)
         self._qScore.sendFsmEvent(MenuSelect())
 

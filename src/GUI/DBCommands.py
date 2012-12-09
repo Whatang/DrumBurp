@@ -69,7 +69,7 @@ class CheckUndo(ScoreCommand):
         def _redo(self):
             self._hash = self._score.hashScore()
 
-class DebugScoreCommand(ScoreCommand): #pylint:disable-msg=W0223
+class DebugScoreCommand(ScoreCommand):  # pylint:disable-msg=W0223
     def __init__(self, qScore, note, description):
         super(DebugScoreCommand, self).__init__(qScore, note, description)
         self._hash = self._score.hashScore()
@@ -100,7 +100,7 @@ class CheckFormatStateCommand(ScoreCommand):
     def _redo(self):
         self._qScore.checkFormatting()
 
-class NoteCommand(ScoreCommand): #pylint:disable-msg=W0223
+class NoteCommand(ScoreCommand):  # pylint:disable-msg=W0223
     canReformat = False
     def __init__(self, qScore, notePosition, head = None):
         super(NoteCommand, self).__init__(qScore, notePosition,
@@ -288,22 +288,39 @@ class RepeatNoteCommand(ScoreCommand):
                 self._score.addNote(np, head)
 
 class InsertMeasuresCommand(ScoreCommand):
-    def __init__(self, qScore, notePosition, numMeasures, counter):
+    def __init__(self, qScore, notePosition, numMeasures, counter, preserveSections = False):
         super(InsertMeasuresCommand, self).__init__(qScore, notePosition,
                                                     "insert measures")
         self._index = self._score.getMeasureIndex(self._np)
         self._numMeasures = numMeasures
         self._width = len(counter)
         self._counter = counter
+        self._preserveSections = preserveSections
 
     def _redo(self):
+        moveEnd = False
+        if self._preserveSections and self._index > 0:
+            measure = self._score.getMeasure(self._index - 1)
+            moveEnd = measure.isSectionEnd()
+            if moveEnd:
+                measure.setSectionEnd(False)
         for dummyMeasureIndex in range(self._numMeasures):
             self._score.insertMeasureByIndex(self._width, self._index,
                                              counter = self._counter)
+        if moveEnd:
+            measure = self._score.getMeasure(self._index + self._numMeasures - 1)
+            measure.setSectionEnd(True)
 
     def _undo(self):
+        if self._preserveSections and self._index > 0:
+            measure = self._score.getMeasure(self._index + self._numMeasures - 1)
+            if measure.isSectionEnd():
+                measure.setSectionEnd(False)
+                measure = self._score.getMeasure(self._index - 1)
+                measure.setSectionEnd(True)
         for dummyMeasureIndex in range(self._numMeasures):
             self._score.deleteMeasureByIndex(self._index)
+
 
 class InsertSectionCommand(ScoreCommand):
     def __init__(self, qScore, note, sectionIndex):
@@ -383,13 +400,13 @@ class SetSectionEndCommand(SetMeasureLineCommand):
             self._title = self._score.getSectionTitle(self._index)
 
     def _undo(self):
-        super(SetSectionEndCommand, self)._undo() #IGNORE:W0212
+        super(SetSectionEndCommand, self)._undo()  # IGNORE:W0212
         if not self._onOff:
             self._score.setSectionTitle(self._index, self._title)
         self._qScore.sectionsChanged.emit()
 
     def _redo(self):
-        super(SetSectionEndCommand, self)._redo() #IGNORE:W0212
+        super(SetSectionEndCommand, self)._redo()  # IGNORE:W0212
         self._qScore.sectionsChanged.emit()
 
 

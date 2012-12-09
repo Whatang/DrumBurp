@@ -494,7 +494,7 @@ class QScore(QtGui.QGraphicsScene):
     def _highlightCurrentKeyHead(self):
         if len(self._currentHeads) > 1:
             headText = []
-            for head in self._headOrder[1:]: # Do not display default
+            for head in self._headOrder[1:]:  # Do not display default
                 if head == self._currentKey:
                     headText.append(u'<span style="background-color:#55aaff;">'
                                     + self._keyString(head) + u"</span>")
@@ -592,7 +592,7 @@ class QScore(QtGui.QGraphicsScene):
                 command = InsertMeasuresCommand(self,
                                                 position,
                                                 sourceLength - measureCount,
-                                                self.defaultCount)
+                                                self.defaultCount, True)
                 self.addCommand(command)
             measureData = self.measureClipboard
             measureData = measureData[:sourceLength]
@@ -792,10 +792,10 @@ class QScore(QtGui.QGraphicsScene):
         newDragged = [(index, position) for (unused, index, position) in
                       self.score.iterMeasuresBetween(*self._dragSelection)]
         for index, position in newDragged:
-            if all(x[0] != index for x in self._dragged): # Turn on
+            if all(x[0] != index for x in self._dragged):  # Turn on
                 self._setDragHighlight(position, True)
         for index, position in self._dragged:
-            if all(x[0] != index for x in newDragged): # Turn off
+            if all(x[0] != index for x in newDragged):  # Turn off
                 self._setDragHighlight(position, False)
         self._dragged = newDragged
 
