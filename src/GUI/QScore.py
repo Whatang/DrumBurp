@@ -41,7 +41,9 @@ from DBCommands import (MetaDataCommand, ScoreWidthCommand,
                         SetSystemSpacingCommand, InsertMeasuresCommand,
                         SetFontCommand, SetFontSizeCommand,
                         SetVisibilityCommand, SetLilypondSizeCommand,
-                        SetLilypondPagesCommand, SetLilypondFillCommand)
+                        SetLilypondPagesCommand, SetLilypondFillCommand,
+                        SaveFormatStateCommand, CheckFormatStateCommand,
+                        CheckUndo)
 import DBMidi
 from DBFSM import Waiting
 from DBFSMEvents import Escape
@@ -62,7 +64,6 @@ def _metaDataProperty(varname):
                                       self.metadataChanged, value)
             self.addCommand(command)
     return property(fget = _getData, fset = _setData)
-
 
 class QScore(QtGui.QGraphicsScene):
     '''
@@ -93,6 +94,8 @@ class QScore(QtGui.QGraphicsScene):
         self._dragged = []
         self._saved = False
         self._undoStack = QtGui.QUndoStack(self)
+        self._inMacro = False
+        self._macroCanReformat = False
         self._undoStack.canUndoChanged.connect(self.canUndoChanged)
         self._undoStack.undoTextChanged.connect(self.undoTextChanged)
         self._undoStack.canRedoChanged.connect(self.canRedoChanged)
@@ -138,20 +141,45 @@ class QScore(QtGui.QGraphicsScene):
     lilyFillChanged = QtCore.pyqtSignal(bool)
 
     def addCommand(self, command):
+        if not self._inMacro:
+            self._undoStack.beginMacro(command.actionText())
+            self._undoStack.push(CheckUndo(self))
+            if command.canReformat:
+                self._addSaveStateCommand()
         self._undoStack.push(command)
+        if not self._inMacro:
+            if command.canReformat:
+                self._addCheckStateCommand()
+            self._undoStack.endMacro()
         self.dirty = not (self._undoStack.isClean() and self._saved)
 
     def addRepeatedCommand(self, name, command, arguments):
-        self._undoStack.beginMacro(name)
+        self.beginMacro(name, command.canReformat)
         for args in arguments:
             self.addCommand(command(self, *args))
-        self._undoStack.endMacro()
+        self.endMacro()
 
-    def beginMacro(self, name):
+    def beginMacro(self, name, canReformat = True):
         self._undoStack.beginMacro(name)
+        self._inMacro = True
+        self._undoStack.push(CheckUndo(self))
+        self._macroCanReformat = canReformat
+        if canReformat:
+            self._addSaveStateCommand()
 
     def endMacro(self):
+        if self._macroCanReformat:
+            self._addCheckStateCommand()
         self._undoStack.endMacro()
+        self._inMacro = False
+
+    def _addSaveStateCommand(self):
+        command = SaveFormatStateCommand(self)
+        self._undoStack.push(command)
+
+    def _addCheckStateCommand(self):
+        command = CheckFormatStateCommand(self)
+        self._undoStack.push(command)
 
     def undo(self):
         self._undoStack.undo()
@@ -233,6 +261,7 @@ class QScore(QtGui.QGraphicsScene):
             DBMidi.setKit(score.drumKit)
             self._undoStack.clear()
             self._undoStack.setClean()
+            self._inMacro = False
             for view in self.views():
                 view.setWidth(self.scoreWidth)
             self.reBuild()

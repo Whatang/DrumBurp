@@ -58,7 +58,7 @@ class QMetaData(QGraphicsListData):
                           dialog.getValues().iteritems()))
             if not changed:
                 return
-            self._qScore.beginMacro("Set Score Information")
+            self._qScore.beginMacro("Set Score Information", False)
             for attribute, value in dialog.getValues().iteritems():
                 setattr(self._qScore, attribute, value)
             self._qScore.endMacro()
