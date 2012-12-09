@@ -49,23 +49,18 @@ class ScoreCommand(QUndoCommand):
     def _redo(self):
         raise NotImplementedError()
 
-if DBVersion.FULL_RELEASE:
-    class CheckUndo(ScoreCommand):
-        def __init__(self, qScore):
-            super(CheckUndo, self).__init__(qScore, None, None)
+class CheckUndo(ScoreCommand):
+    def __init__(self, qScore):
+        super(CheckUndo, self).__init__(qScore, None, None)
+        self._hash = None
 
+    if DBVersion.FULL_RELEASE:
         def _undo(self):
             pass
 
         def _redo(self):
             pass
-
-else:
-    class CheckUndo(ScoreCommand):
-        def __init__(self, qScore):
-            super(CheckUndo, self).__init__(qScore, None, None)
-            self._hash = None
-
+    else:
         def _undo(self):
             newHash = self._score.hashScore()
             print newHash.encode('hex'), self._hash.encode('hex')
