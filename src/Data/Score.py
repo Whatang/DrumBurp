@@ -34,7 +34,6 @@ from NotePosition import NotePosition
 from ScoreMetaData import ScoreMetaData
 from FontOptions import FontOptions
 import fileUtils
-import os
 import bisect
 import copy
 import hashlib
