@@ -21,18 +21,81 @@ Created on 7 Oct 2012
 
 @author: Mike Thomas
 '''
-def dbFileIterator(handle):
-    for line in handle:
-        line = line.strip()
-        fields = line.split(None, 1)
-        if len(fields) == 1:
-            fields.append(None)
-        elif len(fields) == 0:
-            # Blank line
-            continue
-        lineType, lineData = fields
-        lineType = lineType.upper()
-        yield lineType, lineData
+class dbFileIterator(object):
+    class _Section(object):
+        def __init__(self, iterator, startLine, endLine, convertNone = None):
+            self._iterator = iterator
+            self._startLine = startLine
+            self._endLine = endLine
+            self._convertNone = convertNone
+            self._lines = {}
+
+        def __enter__(self):
+            return self
+
+        def process(self):
+            for lineType, lineData in self._iterator:
+                if lineData == None:
+                    lineData = self._convertNone
+                if lineType == self._startLine:
+                    continue
+                elif lineType == self._endLine:
+                    break
+                elif lineType in self._lines:
+                    self._lines[lineType](lineData)
+                else:
+                    raise IOError("Unrecognised line type: " + lineType)
+
+        @staticmethod
+        def _parseInteger(data):
+            try:
+                data = int(data)
+            except (TypeError, ValueError):
+                raise IOError("Bad integer value %s" % str(data))
+            return data
+
+        @classmethod
+        def _parsePositiveInteger(cls, data):
+            data = cls._parsePositiveInteger(data)
+            if data <= 0:
+                raise IOError("Integer value must be positive: %d" % data)
+            return data
+
+        def registerInteger(self, lineType, target, attrName):
+            self._lines[lineType] = lambda data: setattr(target, attrName,
+                                                         self._parseInteger(data))
+
+        def registerPositiveInteger(self, lineType, target, attrName):
+            self._lines[lineType] = lambda data: setattr(target, attrName,
+                                                         self._parsePositiveInteger(data))
+
+        def registerString(self, lineType, target, attrName):
+            self._lines[lineType] = lambda data: setattr(target, attrName, data)
+
+        def registerCallback(self, lineType, callback):
+            self._lines[lineType] = callback
+
+        def __exit__(self, excType, excValue, excTraceback):
+            return False
+
+    def __init__(self, handle):
+        self._handle = handle
+
+    def __iter__(self):
+        for line in self._handle:
+            line = line.strip()
+            fields = line.split(None, 1)
+            if len(fields) == 1:
+                fields.append(None)
+            elif len(fields) == 0:
+                # Blank line
+                continue
+            lineType, lineData = fields
+            lineType = lineType.upper()
+            yield lineType, lineData
+
+    def section(self, startLine, endLine, convertNone = None):
+        return self._Section(self, startLine, endLine, convertNone)
 
 
 class Indenter(object):

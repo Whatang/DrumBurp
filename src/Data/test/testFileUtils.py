@@ -42,6 +42,47 @@ class TestDbFileIterator(unittest.TestCase):
                           ("SECONDLINE", "hasdata"),
                           ("THIRDLINE", "comes after a blank")])
 
+    def testSection(self):
+        mockfile = """START
+        STRING1 string1
+        INT1 1
+        STRING2 string2
+        INT2 2
+        POSINT 100
+        CALLBACK some callback data
+        EMPTY 
+        END
+        """
+        class Target(object):
+            s1 = None
+            s2 = None
+            e = None
+            i1 = None
+            i2 = None
+            pi = None
+            cb = None
+        target = Target()
+        mockfile = StringIO(mockfile)
+        iterator = fileUtils.dbFileIterator(mockfile)
+        with iterator.section("START", "END", "empty") as section:
+            section.registerString("STRING1", target, "s1")
+            section.registerString("STRING2", target, "s2")
+            section.registerString("EMPTY", target, "e")
+            section.registerInteger("INT1", target, "i1")
+            section.registerInteger("INT2", target, "i2")
+            section.registerInteger("POSINT", target, "pi")
+            def get_length(data):
+                target.cb = len(data)
+            section.registerCallback("CALLBACK", get_length)
+            section.process()
+        self.assertEqual(target.s1, "string1")
+        self.assertEqual(target.s2, "string2")
+        self.assertEqual(target.e, "empty")
+        self.assertEqual(target.i1, 1)
+        self.assertEqual(target.i2, 2)
+        self.assertEqual(target.pi, 100)
+        self.assertEqual(target.cb, 18)
+
 class TestIndenter(unittest.TestCase):
 
     def setUp(self):
