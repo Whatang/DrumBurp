@@ -56,6 +56,8 @@ class ScoreMetaData(object):
         for lineType, lineData in scoreIterator:
             if lineData is None:
                 lineData = ""
+            if lineType == "SCORE_METADATA":
+                continue
             if lineType == "TITLE":
                 self.title = lineData
             elif lineType == "ARTIST":
@@ -67,11 +69,21 @@ class ScoreMetaData(object):
             elif lineType == "CREATORVISIBLE":
                 self.creatorVisible = (lineData == "True")
             elif lineType == "BPM":
-                self.bpm = int(lineData)
+                try:
+                    self.bpm = int(lineData)
+                except (TypeError, ValueError):
+                    raise IOError("Bad BPM: " + lineData)
+                if self.bpm <= 0:
+                    raise IOError("Bad BPM: " + lineData)
             elif lineType == "BPMVISIBLE":
                 self.bpmVisible = (lineData == "True")
             elif lineType == "WIDTH":
-                self.width = int(lineData)
+                try:
+                    self.width = int(lineData)
+                except (TypeError, ValueError):
+                    raise IOError("Bad score width: " + lineData)
+                if self.width <= 0:
+                    raise IOError("Bad score width: " + lineData)
             elif lineType == "KITDATAVISIBLE":
                 self.kitDataVisible = (lineData == "True")
             elif lineType == "METADATAVISIBLE":
@@ -82,6 +94,8 @@ class ScoreMetaData(object):
                 self.emptyLinesVisible = (lineData == "True")
             elif lineType == "END_SCORE_METADATA":
                 break
+            else:
+                raise IOError("Unrecognised line type: " + lineType)
 
     def save(self, handle, indenter):
         print >> handle, indenter("SCORE_METADATA")
