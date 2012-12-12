@@ -35,9 +35,6 @@ class Beat(object):
     up a MeasureCount.
     '''
     def __init__(self, counter, numTicks = None):
-        '''
-        Constructor
-        '''
         self.counter = counter
         if numTicks is None:
             numTicks = self.ticksPerBeat
@@ -60,7 +57,7 @@ class Beat(object):
         return str(self.counter)
 
     def iterTicks(self):
-        return iter(range(0, self.numTicks))
+        return xrange(self.numTicks)
 
     def numBeats(self):
         return self._beatLength
@@ -88,10 +85,17 @@ class Beat(object):
         counter = None
         registry = CounterRegistry()
         for lineType, lineData in scoreIterator:
-            if lineType == "BEAT_END":
+            if lineType == "BEAT_START":
+                continue
+            elif lineType == "BEAT_END":
                 return Beat(counter, numTicks)
             elif lineType == "NUM_TICKS":
-                numTicks = int(lineData)
+                try:
+                    numTicks = int(lineData)
+                except (ValueError, TypeError):
+                    raise IOError("Bad number of ticks for beat: " + lineData)
+                if numTicks <= 0:
+                    raise IOError("Bad number of ticks for beat: " + lineData)
             elif lineType == "COUNT":
                 if lineData[0] == "|" and lineData[-1] == "|":
                     lineData = lineData[1:-1]
@@ -101,6 +105,6 @@ class Beat(object):
                 except KeyError:
                     raise IOError("Unrecognised beat: " + lineData)
             else:
-                raise IOError("Unrecognised line type")
+                raise IOError("Unrecognised line type" + lineType)
 
 
