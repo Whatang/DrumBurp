@@ -95,7 +95,10 @@ class Beat(object):
                 if lineData[0] == "|" and lineData[-1] == "|":
                     lineData = lineData[1:-1]
                 lineData = BEAT_COUNT + lineData[1:]
-                counter = registry.findMaster(lineData)
+                try:
+                    counter = registry.findMaster(lineData)
+                except KeyError:
+                    raise IOError("Unrecognised beat: " + lineData)
             else:
                 raise IOError("Unrecognised line type")
 
