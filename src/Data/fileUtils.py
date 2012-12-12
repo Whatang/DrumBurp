@@ -39,11 +39,14 @@ class Indenter(object):
     def __init__(self, indent = "  "):
         self._indent = indent
         self._level = 0
+
     def increase(self):
         self._level += 1
+
     def decrease(self):
         self._level -= 1
         self._level = max(0, self._level)
+
     def __call__(self, *args):
         argString = " ".join(str(ar) for ar in args)
         if self._level != 0:
