@@ -30,7 +30,7 @@ from DBVersion import DB_VERSION
 
 import sys
 
-class Indenter(object):
+class LilyIndenter(object):
     def __init__(self, spaces = 2):
         self._spaces = spaces
         self._level = 0
@@ -439,7 +439,7 @@ class LilypondScore(object):
         self._lilysize = score.lilysize
         self._numPages = score.lilypages
         self._lilyFill = score.lilyFill
-        self.indenter = Indenter()
+        self.indenter = LilyIndenter()
         self._timeSig = None
         self._lastTimeSig = None
         self._hadRepeatCount = False
