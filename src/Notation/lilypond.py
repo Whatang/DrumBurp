@@ -163,7 +163,7 @@ class LilyMeasure(object):
         for direction in notes:
             timeSet = set(notePos.noteTime for (notePos, head) in
                 notes[direction])
-            for tick in self.measure.counter.iterBeatTimes():
+            for tick in self.measure.counter.iterBeatTickPositions():
                 timeSet.add(tick)
 
             timeSet.add(len(self._beats))
