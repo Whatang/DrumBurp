@@ -36,6 +36,23 @@ def dbFileIterator(handle):
 
 
 class Indenter(object):
+    class Section(object):
+        def __init__(self, handle, indenter, sectionStart, sectionEnd):
+            self.handle = handle
+            self.indenter = indenter
+            self.start = sectionStart
+            self.end = sectionEnd
+
+        def __enter__(self):
+            print >> self.handle, self.indenter(self.start)
+            self.indenter.increase()
+            return self
+
+        def __exit__(self, excType, excValue, excTraceback):
+            self.indenter.decrease()
+            print >> self.handle, self.indenter(self.end)
+            return False
+
     def __init__(self, indent = "  "):
         self._indent = indent
         self._level = 0
@@ -60,3 +77,6 @@ class Indenter(object):
     def __exit__(self, excType, excValue, excTraceback):
         self.decrease()
         return False
+
+    def section(self, handle, sectionStart, sectionEnd):
+        return self.Section(handle, self, sectionStart, sectionEnd)
