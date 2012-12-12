@@ -45,7 +45,7 @@ class HeadData(object):
         self.stemDirection = stemDirection
         self.shortcut = shortcut
 
-    def write(self, noteHead, handle, indenter):
+    def write(self, noteHead, indenter):
         dataString = "%s %d,%d,%s,%s,%d,%s,%d,%s" % (noteHead, self.midiNote,
                                                   self.midiVolume,
                                                   self.effect,
@@ -54,7 +54,7 @@ class HeadData(object):
                                                   self.notationEffect,
                                                   self.stemDirection,
                                                   self.shortcut)
-        print >> handle, indenter("NOTEHEAD", dataString)
+        indenter("NOTEHEAD", dataString)
 
     @classmethod
     def read(cls, abbr, dataString):
@@ -267,15 +267,13 @@ class Drum(object):
         return shortcuts
 
 
-    def write(self, handle, indenter):
-        print >> handle, indenter("DRUM %s,%s,%s,%s" % (self.name,
-                                                        self.abbr,
-                                                        self.head,
-                                                        str(self.locked)))
+    def write(self, indenter):
+        indenter("DRUM %s,%s,%s,%s" % (self.name, self.abbr, self.head,
+                                       str(self.locked)))
         for head in self:
             headData = self.headData(head)
             indenter.increase()
-            headData.write(head, handle, indenter)
+            headData.write(head, indenter)
             indenter.decrease()
 
 

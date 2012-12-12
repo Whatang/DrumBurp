@@ -57,8 +57,8 @@ class TestFullBeat(unittest.TestCase):
 
     def testWrite(self):
         handle = StringIO()
-        indenter = fileUtils.Indenter()
-        self.beat.write(handle, indenter)
+        indenter = fileUtils.Indenter(handle)
+        self.beat.write(indenter)
         output = handle.getvalue().splitlines()
         self.assertEqual(output,
                          ["BEAT_START",
@@ -94,8 +94,8 @@ class TestPartialBeat(unittest.TestCase):
 
     def testWrite(self):
         handle = StringIO()
-        indenter = fileUtils.Indenter()
-        self.beat.write(handle, indenter)
+        indenter = fileUtils.Indenter(handle)
+        self.beat.write(indenter)
         output = handle.getvalue().splitlines()
         self.assertEqual(output,
                          ["BEAT_START",

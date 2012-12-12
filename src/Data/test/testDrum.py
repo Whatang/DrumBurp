@@ -34,16 +34,16 @@ class TestHeadData(unittest.TestCase):
     def testWrite_Default(self):
         handle = StringIO()
         headData = HeadData()
-        indenter = Indenter()
-        headData.write("x", handle, indenter)
+        indenter = Indenter(handle)
+        headData.write("x", indenter)
         self.assertEqual(handle.getvalue().rstrip(),
                          "NOTEHEAD x 71,96,normal,default,0,none,0,")
 
     def testWrite_Different(self):
         handle = StringIO()
         headData = HeadData(72, 100, "ghost", "cross", 1, "choke", 1, "c")
-        indenter = Indenter()
-        headData.write("x", handle, indenter)
+        indenter = Indenter(handle)
+        headData.write("x", indenter)
         self.assertEqual(handle.getvalue().rstrip(),
                          "NOTEHEAD x 72,100,ghost,cross,1,choke,1,c")
 
@@ -269,8 +269,8 @@ class TestDrum(unittest.TestCase):
         drum, first_, second_ = self.makeDrum()
         second_.shortcut = "a"
         outstring = StringIO()
-        indenter = Indenter()
-        drum.write(outstring, indenter)
+        indenter = Indenter(outstring)
+        drum.write(indenter)
         outlines = outstring.getvalue().splitlines()
         self.assertEqual(len(outlines), 4)
         self.assertEqual(outlines[0], "DRUM test,td,x,False")

@@ -72,13 +72,13 @@ class DrumKit(object):
         drum = self._drums[drumIndex]
         return drum.shortcutsAndNoteHeads()
 
-    def write(self, handle, indenter):
-        print >> handle, indenter("KIT_START")
+    def write(self, indenter):
+        indenter("KIT_START")
         indenter.increase()
         for drum in self:
-            drum.write(handle, indenter)
+            drum.write(indenter)
         indenter.decrease()
-        print >> handle, indenter("KIT_END")
+        indenter("KIT_END")
 
     def read(self, scoreIterator):
         lastDrum = None

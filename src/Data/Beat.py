@@ -70,14 +70,14 @@ class Beat(object):
     def numTicks(self):
         return self._numTicks
 
-    def write(self, handle, indenter):
-        print >> handle, indenter("BEAT_START")
+    def write(self, indenter):
+        indenter("BEAT_START")
         indenter.increase()
         if self.numTicks != self.ticksPerBeat:
-            print >> handle, indenter("NUM_TICKS", self.numTicks)
-        self.counter.write(handle, indenter)
+            indenter("NUM_TICKS", self.numTicks)
+        self.counter.write(indenter)
         indenter.decrease()
-        print >> handle, indenter("BEAT_END")
+        indenter("BEAT_END")
 
     @staticmethod
     def read(scoreIterator):

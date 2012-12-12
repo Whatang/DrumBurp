@@ -97,25 +97,25 @@ class ScoreMetaData(object):
             else:
                 raise IOError("Unrecognised line type: " + lineType)
 
-    def save(self, handle, indenter):
-        print >> handle, indenter("SCORE_METADATA")
+    def save(self, indenter):
+        indenter("SCORE_METADATA")
         indenter.increase()
-        print >> handle, indenter("TITLE", self.title)
-        print >> handle, indenter("ARTIST", self.artist)
-        print >> handle, indenter("ARTISTVISIBLE", str(self.artistVisible))
-        print >> handle, indenter("CREATOR", self.creator)
-        print >> handle, indenter("CREATORVISIBLE", str(self.creatorVisible))
-        print >> handle, indenter("BPM", self.bpm)
-        print >> handle, indenter("BPMVISIBLE", str(self.bpmVisible))
-        print >> handle, indenter("WIDTH", self.width)
-        print >> handle, indenter("KITDATAVISIBLE", str(self.kitDataVisible))
-        print >> handle, indenter("METADATAVISIBLE", str(self.metadataVisible))
-        print >> handle, indenter("BEATCOUNTVISIBLE",
+        indenter("TITLE", self.title)
+        indenter("ARTIST", self.artist)
+        indenter("ARTISTVISIBLE", str(self.artistVisible))
+        indenter("CREATOR", self.creator)
+        indenter("CREATORVISIBLE", str(self.creatorVisible))
+        indenter("BPM", self.bpm)
+        indenter("BPMVISIBLE", str(self.bpmVisible))
+        indenter("WIDTH", self.width)
+        indenter("KITDATAVISIBLE", str(self.kitDataVisible))
+        indenter("METADATAVISIBLE", str(self.metadataVisible))
+        indenter("BEATCOUNTVISIBLE",
                                   str(self.beatCountVisible))
-        print >> handle, indenter("EMPTYLINESVISIBLE",
+        indenter("EMPTYLINESVISIBLE",
                                   str(self.emptyLinesVisible))
         indenter.decrease()
-        print >> handle, indenter("END_SCORE_METADATA")
+        indenter("END_SCORE_METADATA")
 
 
     def exportASCII(self):

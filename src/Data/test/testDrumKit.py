@@ -200,25 +200,17 @@ class TestDrumKit(unittest.TestCase):
         drum.checkShortcuts()
         kit.addDrum(drum)
         handle = StringIO()
-        indenter = Indenter()
-        kit.write(handle, indenter)
+        indenter = Indenter(handle)
+        kit.write(indenter)
         outlines = handle.getvalue().splitlines()
-        self.assertEqual(len(outlines), 8)
-        self.assertEqual(outlines[0],
-                         "KIT_START")
-        self.assertEqual(outlines[1],
-                         "  DRUM One,d1,x,True")
-        self.assertEqual(outlines[2],
-                         "    NOTEHEAD x 71,96,normal,default,0,none,0,x")
-        self.assertEqual(outlines[3],
-                         "    NOTEHEAD g 71,96,ghost,default,0,ghost,0,g")
-        self.assertEqual(outlines[4],
-                         "  DRUM Two,d2,o,False")
-        self.assertEqual(outlines[5],
-                         "    NOTEHEAD o 71,96,normal,default,-5,none,1,o")
-        self.assertEqual(outlines[6],
-                         "    NOTEHEAD O 71,96,accent,default,-5,accent,1,a")
-        self.assertEqual(outlines[7],
-                         "KIT_END")
+        self.assertEqual(outlines,
+                         ["KIT_START",
+                          "  DRUM One,d1,x,True",
+                          "    NOTEHEAD x 71,96,normal,default,0,none,0,x",
+                          "    NOTEHEAD g 71,96,ghost,default,0,ghost,0,g",
+                          "  DRUM Two,d2,o,False",
+                          "    NOTEHEAD o 71,96,normal,default,-5,none,1,o",
+                          "    NOTEHEAD O 71,96,accent,default,-5,accent,1,a",
+                          "KIT_END"])
 if __name__ == "__main__":
     unittest.main()

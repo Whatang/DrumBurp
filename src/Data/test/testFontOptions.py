@@ -31,8 +31,8 @@ class TestFontOptions(unittest.TestCase):
     def testWrite(self):
         options = FontOptions.FontOptions()
         handle = StringIO()
-        indenter = fileUtils.Indenter()
-        options.write(handle, indenter)
+        indenter = fileUtils.Indenter(handle)
+        options.write(indenter)
         output = handle.getvalue().splitlines()
         self.assertEqual(output,
                          ["FONT_OPTIONS_START",

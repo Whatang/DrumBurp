@@ -44,9 +44,9 @@ class TestCounter(unittest.TestCase):
         self.assertRaises(ValueError, Counter.Counter, "^bcd", "^de")
 
     def testWrite(self):
-        indenter = fileUtils.Indenter()
         handle = StringIO()
-        self.counter.write(handle, indenter)
+        indenter = fileUtils.Indenter(handle)
+        self.counter.write(indenter)
         self.assertEqual(handle.getvalue(), "COUNT |^bcd|\n")
 
     def testMatchExact(self):

@@ -45,38 +45,51 @@ class TestDbFileIterator(unittest.TestCase):
 class TestIndenter(unittest.TestCase):
 
     def setUp(self):
-        self.indenter = fileUtils.Indenter()
+        self.handle = StringIO()
+        self.indenter = fileUtils.Indenter(self.handle)
 
     def testNoIndent(self):
-        self.assert_(self.indenter("a", "b", "c"), "a b c")
+        self.indenter("a", "b", "c")
+        self.assertEqual(self.handle.getvalue(), "a b c\n")
 
     def testIndent(self):
         self.indenter.increase()
-        self.assert_(self.indenter("a", "b", "c"), "  a b c")
+        self.indenter("a", "b", "c")
         self.indenter.increase()
-        self.assert_(self.indenter("a", "b", "c"), "    a b c")
+        self.indenter("a", "b", "c")
         self.indenter.decrease()
-        self.assert_(self.indenter("a", "b", "c"), "  a b c")
+        self.indenter("a", "b", "c")
         self.indenter.decrease()
-        self.assert_(self.indenter("a", "b", "c"), "a b c")
+        self.indenter("a", "b", "c")
+        output = self.handle.getvalue().splitlines()
+        self.assert_(output,
+                     ["  a b c",
+                      "    a b c",
+                      "  a b c",
+                      "a b c"])
 
     def testContext(self):
-        self.assert_(self.indenter("a", "b", "c"), "a b c")
+        self.indenter("a", "b", "c")
         with self.indenter:
-            self.assert_(self.indenter("a", "b", "c"), "  a b c")
+            self.indenter("a", "b", "c")
             with self.indenter:
-                self.assert_(self.indenter("a", "b", "c"), "    a b c")
-        self.assert_(self.indenter("a", "b", "c"), "a b c")
+                self.indenter("a", "b", "c")
+        self.indenter("a", "b", "c")
+        output = self.handle.getvalue().splitlines()
+        self.assert_(output,
+                     ["a b c",
+                      "  a b c",
+                      "    a b c",
+                      "a b c"])
 
     def testSections(self):
-        handle = StringIO()
-        with self.indenter.section(handle, "START1", "END1"):
-            print >> handle, self.indenter("data1")
-            with self.indenter.section(handle, "START2", "END2"):
-                print >> handle, self.indenter("data2")
-            with self.indenter.section(handle, "START3", "END3"):
-                print >> handle, self.indenter("data3")
-        output = handle.getvalue().splitlines()
+        with self.indenter.section("START1", "END1"):
+            self.indenter("data1")
+            with self.indenter.section("START2", "END2"):
+                self.indenter("data2")
+            with self.indenter.section("START3", "END3"):
+                self.indenter("data3")
+        output = self.handle.getvalue().splitlines()
         self.assertEqual(output,
                          ["START1",
                           "  data1",

@@ -383,7 +383,7 @@ class Score(object):
 
     def clearMeasure(self, position):
         measure = self.getItemAtPosition(position.makeMeasurePosition())
-        measure.clear() #IGNORE:E1103
+        measure.clear()  # IGNORE:E1103
 
     def trailingEmptyMeasures(self):
         emptyMeasures = []
@@ -392,7 +392,7 @@ class Score(object):
         np.measureIndex = staff.numMeasures() - 1
         measure = self.getItemAtPosition(np)
         while ((np.staffIndex > 0 or np.measureIndex > 0)
-               and measure.isEmpty()): #pylint:disable-msg=E1103
+               and measure.isEmpty()):  # pylint:disable-msg=E1103
             emptyMeasures.append(copy.copy(np))
             if np.measureIndex == 0:
                 np.staffIndex -= 1
@@ -760,22 +760,22 @@ class Score(object):
         return emptyDrums
 
     def write(self, handle):
-        indenter = fileUtils.Indenter()
-        self.scoreData.save(handle, indenter)
-        self.drumKit.write(handle, indenter)
+        indenter = fileUtils.Indenter(handle)
+        self.scoreData.save(indenter)
+        self.drumKit.write(indenter)
         for measure in self.iterMeasures():
-            measure.write(handle, indenter)
+            measure.write(indenter)
         for title in self._sections:
-            print >> handle, indenter("SECTION_TITLE", title)
-        print >> handle, "PAPER_SIZE", self.paperSize
-        print >> handle, "LILYSIZE", self.lilysize
-        print >> handle, "LILYPAGES", self.lilypages
+            indenter("SECTION_TITLE", title)
+        indenter("PAPER_SIZE", self.paperSize)
+        indenter("LILYSIZE", self.lilysize)
+        indenter("LILYPAGES", self.lilypages)
         if self.lilyFill:
-            print >> handle, "LILYFILL", "YES"
-        self.defaultCount.write(handle, indenter,
+            indenter("LILYFILL", "YES")
+        self.defaultCount.write(indenter,
                                 title = "DEFAULT_COUNT_INFO_START")
-        print >> handle, "SYSTEM_SPACE", self.systemSpacing
-        self.fontOptions.write(handle, indenter)
+        indenter("SYSTEM_SPACE", self.systemSpacing)
+        self.fontOptions.write(indenter)
 
 
     def read(self, handle):
@@ -831,7 +831,7 @@ class Score(object):
         self.write(scoreString)
         scoreString.seek(0, 0)
         scoreString = "".join(scoreString)
-        return hashlib.md5(str(scoreString)).digest() #pylint:disable-msg=E1101
+        return hashlib.md5(str(scoreString)).digest()  # pylint:disable-msg=E1101
 
     def exportASCII(self, handle, settings):
         metadataString = self.scoreData.exportASCII()

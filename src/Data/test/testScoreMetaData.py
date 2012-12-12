@@ -16,8 +16,8 @@ class Test(unittest.TestCase):
         meta = ScoreMetaData.ScoreMetaData()
         meta.makeEmpty()
         handle = StringIO()
-        indenter = fileUtils.Indenter()
-        meta.save(handle, indenter)
+        indenter = fileUtils.Indenter(handle)
+        meta.save(indenter)
         output = handle.getvalue().splitlines()
         self.assertEqual(output,
                          ["SCORE_METADATA",

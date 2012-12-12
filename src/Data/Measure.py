@@ -344,27 +344,25 @@ class Measure(object):
     def lineIsVisible(self, index):
         return (self._notes.notesOnLine(index) > 0)
 
-    def write(self, handle, indenter):
-        print >> handle, indenter("START_BAR %d" % len(self))
+    def write(self, indenter):
+        indenter("START_BAR %d" % len(self))
         indenter.increase()
         if self.counter is not None:
-            self.counter.write(handle, indenter)
+            self.counter.write(indenter)
         startString = [name for name, value in BAR_TYPES.iteritems()
                        if (self.startBar & value) == value]
-        print >> handle, indenter("BARLINE %s" % ",".join(startString))
+        indenter("BARLINE %s" % ",".join(startString))
         for pos, head in self:
-            print >> handle, indenter("NOTE %d,%d,%s" % (pos.noteTime,
-                                                         pos.drumIndex,
-                                                         head))
+            indenter("NOTE %d,%d,%s" % (pos.noteTime, pos.drumIndex, head))
         endString = [name for name, value in BAR_TYPES.iteritems()
                      if (self.endBar & value) == value ]
-        print >> handle, indenter("BARLINE %s" % ",".join(endString))
+        indenter("BARLINE %s" % ",".join(endString))
         if self.repeatCount != 1:
-            print >> handle, indenter("REPEAT_COUNT %d" % self.repeatCount)
+            indenter("REPEAT_COUNT %d" % self.repeatCount)
         if self.alternateText is not None:
-            print >> handle, indenter("ALTERNATE %s" % self.alternateText)
+            indenter("ALTERNATE %s" % self.alternateText)
         indenter.decrease()
-        print >> handle, indenter("END_BAR")
+        indenter("END_BAR")
 
     def read(self, scoreIterator):
         seenStartLine = False

@@ -33,20 +33,17 @@ class FontOptions(object):
         self.metadataFontSize = 16
         self.metadataFont = "MS Shell Dlg 2"
 
-    def write(self, handle, indenter):
-        print >> handle, indenter("FONT_OPTIONS_START")
+    def write(self, indenter):
+        indenter("FONT_OPTIONS_START")
         indenter.increase()
-        print >> handle, indenter("NOTEFONT", self.noteFont)
-        print >> handle, indenter("NOTEFONTSIZE %d"
-                                  % self.noteFontSize)
-        print >> handle, indenter("SECTIONFONT", self.sectionFont)
-        print >> handle, indenter("SECTIONFONTSIZE %d"
-                                  % self.sectionFontSize)
-        print >> handle, indenter("METADATAFONT", self.metadataFont)
-        print >> handle, indenter("METADATAFONTSIZE %d"
-                                  % self.metadataFontSize)
+        indenter("NOTEFONT", self.noteFont)
+        indenter("NOTEFONTSIZE %d" % self.noteFontSize)
+        indenter("SECTIONFONT", self.sectionFont)
+        indenter("SECTIONFONTSIZE %d" % self.sectionFontSize)
+        indenter("METADATAFONT", self.metadataFont)
+        indenter("METADATAFONTSIZE %d" % self.metadataFontSize)
         indenter.decrease()
-        print >> handle, indenter("FONT_OPTIONS_END")
+        indenter("FONT_OPTIONS_END")
 
     def read(self, scoreIterator):
         for lineType, lineData in scoreIterator:

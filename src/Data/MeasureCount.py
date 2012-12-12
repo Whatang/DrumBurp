@@ -110,23 +110,24 @@ class MeasureCount(object):
     def numBeats(self):
         return len(self.beats)
 
-    def write(self, handle, indenter, title = "COUNT_INFO_START"):
-        print >> handle, indenter(title)
+    def write(self, indenter, title = "COUNT_INFO_START"):
+        indenter(title)
         indenter.increase()
         if self.isSimpleCount():
             # All beats are the same
-            print >> handle, indenter("REPEAT_BEATS %d" % len(self.beats))
-            self.beats[0].write(handle, indenter)
+            indenter("REPEAT_BEATS %d" % len(self.beats))
+            self.beats[0].write(indenter)
         else:
             for beat in self.beats:
-                beat.write(handle, indenter)
+                beat.write(indenter)
         indenter.decrease()
-        print >> handle, indenter("COUNT_INFO_END")
+        indenter("COUNT_INFO_END")
 
     def read(self, scoreIterator):
         repeat = False
         for lineType, lineData in scoreIterator:
-            if lineType == "COUNT_INFO_START":
+            if (lineType == "COUNT_INFO_START" or
+                lineType == "DEFAULT_COUNT_INFO_START"):
                 continue
             elif lineType == "COUNT_INFO_END":
                 break

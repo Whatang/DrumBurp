@@ -103,8 +103,8 @@ class TestSimple(unittest.TestCase):
 
     def testWrite(self):
         handle = StringIO()
-        indenter = fileUtils.Indenter()
-        self.count.write(handle, indenter)
+        indenter = fileUtils.Indenter(handle)
+        self.count.write(indenter)
         output = handle.getvalue().splitlines()
         self.assertEqual(output,
                          ["COUNT_INFO_START",
@@ -197,8 +197,8 @@ class TestComplex(unittest.TestCase):
 
     def testWrite(self):
         handle = StringIO()
-        indenter = fileUtils.Indenter()
-        self.count.write(handle, indenter)
+        indenter = fileUtils.Indenter(handle)
+        self.count.write(indenter)
         output = handle.getvalue().splitlines()
         self.assertEqual(output,
                          ["COUNT_INFO_START",
@@ -231,6 +231,21 @@ class TestRead(unittest.TestCase):
         count.read(iterator)
         self.assert_(count.isSimpleCount())
         self.assertEqual(len(count), 16)
+
+    def testReadSimpleDefault(self):
+        data = """DEFAULT_COUNT_INFO_START
+                      REPEAT_BEATS 4
+                      BEAT_START
+                          COUNT |^e+a|
+                      BEAT_END
+                  COUNT_INFO_END"""
+        handle = StringIO(data)
+        iterator = fileUtils.dbFileIterator(handle)
+        count = MeasureCount.MeasureCount()
+        count.read(iterator)
+        self.assert_(count.isSimpleCount())
+        self.assertEqual(len(count), 16)
+
 
     def testReadComplex(self):
         data = """COUNT_INFO_START
