@@ -10,39 +10,44 @@ from Data import fileUtils
 # pylint: disable-msg=R0904
 
 class TestCounter(unittest.TestCase):
-    counter = Counter.Counter("abcd", "efgh", "ijkl")
+    counter = Counter.Counter("^bcd", "^fgh", "^jkl")
     def testLength(self):
         self.assertEqual(len(self.counter), 4)
 
     def testIter(self):
-        self.assertEqual(list(self.counter), ["a", "b", "c", "d"])
+        self.assertEqual(list(self.counter), ["^", "b", "c", "d"])
 
     def testStr(self):
-        self.assertEqual(str(self.counter), "abcd")
+        self.assertEqual(str(self.counter), "^bcd")
+
+    def testBadCounter(self):
+        self.assertRaises(ValueError, Counter.Counter, "abcd")
+        self.assertRaises(ValueError, Counter.Counter, "^bcd", "defg")
+        self.assertRaises(ValueError, Counter.Counter, "^bcd", "^de")
 
     def testWrite(self):
         indenter = fileUtils.Indenter()
         handle = StringIO()
         self.counter.write(handle, indenter)
-        self.assertEqual(handle.getvalue(), "COUNT |abcd|\n")
+        self.assertEqual(handle.getvalue(), "COUNT |^bcd|\n")
 
     def testMatchExact(self):
-        self.assert_(self.counter.matchesExact("abcd"))
-        self.assertFalse(self.counter.matchesExact("efgh"))
-        self.assertFalse(self.counter.matchesExact("wxyz"))
+        self.assert_(self.counter.matchesExact("^bcd"))
+        self.assertFalse(self.counter.matchesExact("^fgh"))
+        self.assertFalse(self.counter.matchesExact("^xyz"))
 
     def testMatchAlternative(self):
-        self.assertFalse(self.counter.matchesAlternative("abcd"))
-        self.assert_(self.counter.matchesAlternative("efgh"))
-        self.assert_(self.counter.matchesAlternative("ijkl"))
-        self.assertFalse(self.counter.matchesAlternative("wxyz"))
+        self.assertFalse(self.counter.matchesAlternative("^bcd"))
+        self.assert_(self.counter.matchesAlternative("^fgh"))
+        self.assert_(self.counter.matchesAlternative("^jkl"))
+        self.assertFalse(self.counter.matchesAlternative("^xyz"))
 
 class TestCounterRegistryInit(unittest.TestCase):
     def testRegisterIterAndClear(self):
         reg = Counter.CounterRegistry(False)
-        tc1 = Counter.Counter("abcd")
-        tc2 = Counter.Counter("uvw", "xyz")
-        tc3 = Counter.Counter("efgh")
+        tc1 = Counter.Counter("^bcd")
+        tc2 = Counter.Counter("^vw", "^yz")
+        tc3 = Counter.Counter("^fgh")
         reg.register("four", tc1)
         reg.register("three", tc2)
         self.assertRaises(KeyError, reg.register, "four", tc3)
@@ -57,9 +62,9 @@ class TestCounterRegistryInit(unittest.TestCase):
 class TestCounterRegistryLookups(unittest.TestCase):
     def setUp(self):
         self.reg = Counter.CounterRegistry(False)
-        self.counter1 = Counter.Counter("abcd")
-        self.counter2 = Counter.Counter("uvw", "xyz")
-        self.counter3 = Counter.Counter("efgh")
+        self.counter1 = Counter.Counter("^bcd")
+        self.counter2 = Counter.Counter("^vw", "^yz")
+        self.counter3 = Counter.Counter("^fgh")
         self.reg.register("four", self.counter1)
         self.reg.register("three", self.counter2)
         self.reg.register("four2", self.counter3)
@@ -86,18 +91,18 @@ class TestCounterRegistryLookups(unittest.TestCase):
                                  ("four2", self.counter3)])
 
     def testlookupIndex(self):
-        self.assertEqual(self.reg.lookupIndex("abcd"), 0)
-        self.assertEqual(self.reg.lookupIndex("uvw"), 1)
-        self.assertEqual(self.reg.lookupIndex("xyz"), 1)
-        self.assertEqual(self.reg.lookupIndex("efgh"), 2)
-        self.assertEqual(self.reg.lookupIndex("ijkl"), -1)
+        self.assertEqual(self.reg.lookupIndex("^bcd"), 0)
+        self.assertEqual(self.reg.lookupIndex("^vw"), 1)
+        self.assertEqual(self.reg.lookupIndex("^yz"), 1)
+        self.assertEqual(self.reg.lookupIndex("^fgh"), 2)
+        self.assertEqual(self.reg.lookupIndex("^jkl"), -1)
 
     def testFindMaster(self):
-        self.assertEqual(self.reg.findMaster("abcd"), self.counter1)
-        self.assertEqual(self.reg.findMaster("uvw"), self.counter2)
-        self.assertEqual(self.reg.findMaster("xyz"), self.counter2)
-        self.assertEqual(self.reg.findMaster("efgh"), self.counter3)
-        self.assertRaises(KeyError, self.reg.findMaster, "ijkl")
+        self.assertEqual(self.reg.findMaster("^bcd"), self.counter1)
+        self.assertEqual(self.reg.findMaster("^vw"), self.counter2)
+        self.assertEqual(self.reg.findMaster("^yz"), self.counter2)
+        self.assertEqual(self.reg.findMaster("^fgh"), self.counter3)
+        self.assertRaises(KeyError, self.reg.findMaster, "^jkl")
 
 class TestDefaultRegistry(unittest.TestCase):
     reg = Counter.CounterRegistry()
