@@ -91,10 +91,13 @@ class CounterRegistry(object):
         self.register('32nds', _THIRTY_SECONDS_COUNT)
         self.register('Sparse 32nds', _THIRTY_SECONDS_COUNT_SPARSE)
         self.register('32nd Triplets', _THIRTY_SECONDS_TRIPLET_COUNT)
-        self.register('Sparse 32nd Triplets', _THIRTY_SECONDS_TRIPLET_COUNT_SPARSE)
+        self.register('Sparse 32nd Triplets',
+                      _THIRTY_SECONDS_TRIPLET_COUNT_SPARSE)
 
     def register(self, name, count):
-        if count not in self._counts:
+        if count in self._counts.values():
+            raise ValueError("Count %s already exists" % count)
+        elif name not in self._counts:
             self._names.append(name)
             self._counts[name] = count
         else:
@@ -127,6 +130,8 @@ class CounterRegistry(object):
 
     def findMaster(self, countString):
         index = self.lookupIndex(countString)
+        if index == -1:
+            raise KeyError("Unrecognised beat!")
         return self._counts[self._names[index]]
 
     def __getitem__(self, index):
