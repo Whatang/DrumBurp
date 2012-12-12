@@ -42,5 +42,13 @@ class TestIndenter(unittest.TestCase):
         self.indenter.decrease()
         self.assert_(self.indenter("a", "b", "c"), "a b c")
 
+    def testContext(self):
+        self.assert_(self.indenter("a", "b", "c"), "a b c")
+        with self.indenter:
+            self.assert_(self.indenter("a", "b", "c"), "  a b c")
+            with self.indenter:
+                self.assert_(self.indenter("a", "b", "c"), "    a b c")
+        self.assert_(self.indenter("a", "b", "c"), "a b c")
+
 if __name__ == "__main__":
     unittest.main()

@@ -52,3 +52,11 @@ class Indenter(object):
         if self._level != 0:
             argString = (self._indent * self._level) + argString
         return argString
+
+    def __enter__(self):
+        self.increase()
+        return self
+
+    def __exit__(self, excType, excValue, excTraceback):
+        self.decrease()
+        return False
