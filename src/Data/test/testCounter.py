@@ -131,30 +131,42 @@ class TestDefaultRegistry(unittest.TestCase):
     def testQuarters(self):
         names = [name for name, unusedCount in self.reg.countsByTicks(1)]
         self.assertEqual(names, ["Quarter Notes"])
+        self.assertEqual(len(self.reg.findMaster("^")), 1)
 
     def testEighths(self):
         names = [name for name, unusedCount in self.reg.countsByTicks(2)]
         self.assertEqual(names, ["8ths"])
+        self.assertEqual(len(self.reg.findMaster("^+")), 2)
 
     def testSixteenths(self):
         names = [name for name, unusedCount in self.reg.countsByTicks(4)]
         self.assertEqual(names, ["16ths", "Sparse 16ths"])
+        self.assertEqual(len(self.reg.findMaster("^e+a")), 4)
+        self.assertEqual(len(self.reg.findMaster("^ + ")), 4)
 
     def testThirtySeconds(self):
         names = [name for name, unusedCount in self.reg.countsByTicks(8)]
         self.assertEqual(names, ["32nds", "Sparse 32nds"])
+        self.assertEqual(len(self.reg.findMaster("^.e.+.a.")), 8)
+        self.assertEqual(len(self.reg.findMaster("^ e + a ")), 8)
 
     def testTriplets(self):
         names = [name for name, unusedCount in self.reg.countsByTicks(3)]
         self.assertEqual(names, ["Triplets"])
+        self.assertEqual(len(self.reg.findMaster("^+a")), 3)
+        self.assertEqual(len(self.reg.findMaster("^ea")), 3)
 
     def testSixteenthTriplets(self):
         names = [name for name, unusedCount in self.reg.countsByTicks(6)]
         self.assertEqual(names, ["16th Triplets", "Sparse 16th Triplets"])
+        self.assertEqual(len(self.reg.findMaster("^ea+ea")), 6)
+        self.assertEqual(len(self.reg.findMaster("^  +  ")), 6)
 
     def testThirtySecondTriplets(self):
         names = [name for name, unusedCount in self.reg.countsByTicks(12)]
         self.assertEqual(names, ["32nd Triplets", "Sparse 32nd Triplets"])
+        self.assertEqual(len(self.reg.findMaster("^.e.a.+.e.a.")), 12)
+        self.assertEqual(len(self.reg.findMaster("^ e a + e a ")), 12)
 
 if __name__ == "__main__":
     unittest.main()
