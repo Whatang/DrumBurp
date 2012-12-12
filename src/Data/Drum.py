@@ -270,11 +270,10 @@ class Drum(object):
     def write(self, indenter):
         indenter("DRUM %s,%s,%s,%s" % (self.name, self.abbr, self.head,
                                        str(self.locked)))
-        for head in self:
-            headData = self.headData(head)
-            indenter.increase()
-            headData.write(head, indenter)
-            indenter.decrease()
+        with indenter:
+            for head in self:
+                headData = self.headData(head)
+                headData.write(head, indenter)
 
 
 
