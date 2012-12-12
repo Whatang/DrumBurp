@@ -50,7 +50,9 @@ class FontOptions(object):
 
     def read(self, scoreIterator):
         for lineType, lineData in scoreIterator:
-            if lineType == "FONT_OPTIONS_END":
+            if lineType == "FONT_OPTIONS_START":
+                continue
+            elif lineType == "FONT_OPTIONS_END":
                 break
             elif lineType == "NOTEFONT":
                 self.noteFont = lineData
@@ -65,4 +67,4 @@ class FontOptions(object):
             elif lineType == "METADATAFONTSIZE":
                 self.metadataFontSize = int(lineData)
             else:
-                raise IOError("Font information not recognised.")
+                raise IOError("Font information not recognised:" + lineData)
