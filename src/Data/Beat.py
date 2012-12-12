@@ -28,11 +28,12 @@ from Counter import CounterRegistry
 from DBConstants import BEAT_COUNT
 
 class Beat(object):
+    '''A Beat is a measured instance of a Counter. 
+    
+    A Beat may be less than the full length of the corresponding Counter to 
+    reflect partial beats at the end of a Measure. A sequence of Beats makes
+    up a MeasureCount.
     '''
-    classdocs
-    '''
-
-
     def __init__(self, counter, numTicks = None):
         '''
         Constructor
