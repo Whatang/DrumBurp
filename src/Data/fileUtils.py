@@ -51,21 +51,24 @@ class dbFileIterator(object):
             try:
                 data = int(data)
             except (TypeError, ValueError):
-                raise IOError("Bad integer value %s for %s" % (str(data), lineName))
+                raise IOError("Bad integer value %s for %s"
+                              % (str(data), lineName))
             return data
 
         @classmethod
         def _parsePositiveInteger(cls, data, lineName):
             data = cls._parseInteger(data, lineName)
             if data <= 0:
-                raise IOError("Integer value for %s must be positive: %d" % (lineName, data))
+                raise IOError("Integer value for %s must be positive: %d"
+                              % (lineName, data))
             return data
 
         @classmethod
         def _parseNonNegativeInteger(cls, data, lineName):
             data = cls._parseInteger(data, lineName)
             if data < 0:
-                raise IOError("Integer value for %s must be non-negative: %d" % (lineName, data))
+                raise IOError("Integer value for %s must be non-negative: %d"
+                              % (lineName, data))
             return data
 
         @staticmethod

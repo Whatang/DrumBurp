@@ -81,12 +81,12 @@ class TestDbFileIterator(unittest.TestCase):
             section.readBoolean("BOOL2", Target, "b2")
             section.readPositiveInteger("POSINT", Target, "pi")
             section.readNonNegativeInteger("NNINT", Target, "nni")
-            def reader(sub_iterator):
-                Target.sub_read = sub_iterator
+            def reader(subiterator):
+                Target.sub_read = subiterator
             section.readSubsection("SUBSECTION", reader)
-            def get_length(data):
+            def getlength(data):
                 Target.cb = len(data)
-            section.readCallback("CALLBACK", get_length)
+            section.readCallback("CALLBACK", getlength)
         self.assertEqual(Target.s1, "string1")
         self.assertEqual(Target.s2, "string2")
         self.assertEqual(Target.e, "empty")
