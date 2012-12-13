@@ -127,13 +127,6 @@ class Measure(object):
         self.counter = None
         self.alternateText = None
 
-    @staticmethod
-    def barString(first, second):
-        if first is None and second is None:
-            return ""
-        else:
-            return BARLINE
-
     def _getrepeatCount(self):
         return self._info.repeatCount
     def _setrepeatCount(self, value):
@@ -262,6 +255,10 @@ class Measure(object):
     def setBeatCount(self, counter):
         if counter == self.counter:
             return
+        if self.counter is None:
+            self.counter = counter
+            self._setWidth(len(counter))
+            return
         oldNotes = copy.deepcopy(self._notes)
         oldTimes = list(self.counter.iterTime())
         self._setWidth(len(counter))
@@ -308,13 +305,9 @@ class Measure(object):
     def pasteMeasure(self, other, copyMeasureDecorations = False):
         oldMeasure = self.copyMeasure()
         self.clear()
-        self._setWidth(len(other))
-        self.counter = other.counter
+        self.setBeatCount(other.counter)
         for pos, head in other:
-            try:
-                self.addNote(pos, head)
-            except BadTimeError:
-                continue
+            self.addNote(pos, head)
         if copyMeasureDecorations:
             self.setRepeatStart(other.isRepeatStart())
             self.setRepeatEnd(other.isRepeatEnd())

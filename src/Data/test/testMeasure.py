@@ -23,14 +23,32 @@ Created on 12 Dec 2010
 '''
 import unittest
 from Data.Measure import Measure
+from Data.Counter import CounterRegistry
+from Data.MeasureCount import MeasureCount
 from Data.DBErrors import BadTimeError
 from Data.DBConstants  import EMPTY_NOTE
 from Data.NotePosition import NotePosition
 # pylint: disable-msg=R0904
 
 class TestMeasure(unittest.TestCase):
+    reg = CounterRegistry()
+
     def setUp(self):
         self.measure = Measure(16)
+        counter = self.reg.getCounterByName("16ths")
+        mc = MeasureCount()
+        mc.addSimpleBeats(counter, 4)
+        self.measure.setBeatCount(mc)
+
+    def testCount(self):
+        count = self.measure.count()
+        self.assertEqual(count,
+                         ["1", "e", "+", "a",
+                          "2", "e", "+", "a",
+                          "3", "e", "+", "a",
+                          "4", "e", "+", "a"])
+        measure = Measure(16)
+        self.assertEqual(measure.count(), [" "] * 16)
 
     def testEmptyMeasure(self):
         self.assertEqual(len(self.measure), 16)
@@ -174,6 +192,149 @@ class TestMeasure(unittest.TestCase):
         self.assertFalse(self.measure.isEmpty())
         self.measure.clear()
         self.assert_(self.measure.isEmpty())
+
+    def testCopyPaste(self):
+        self.measure.addNote(NotePosition(noteTime = 0, drumIndex = 0), "x")
+        self.measure.addNote(NotePosition(noteTime = 1, drumIndex = 1), "o")
+        measure2 = Measure(8)
+        copied = self.measure.copyMeasure()
+        measure2.pasteMeasure(copied)
+        self.assertEqual(len(measure2), 16)
+        self.assertEqual(measure2.numNotes(), 2)
+        self.assertEqual(measure2.getNote(NotePosition(None, None, 0, 0)), "x")
+        self.assertEqual(measure2.getNote(NotePosition(None, None, 1, 1)), "o")
+
+    def testCopyPasteWithDecorations(self):
+        self.measure.addNote(NotePosition(noteTime = 0, drumIndex = 0), "x")
+        self.measure.addNote(NotePosition(noteTime = 1, drumIndex = 1), "o")
+        self.measure.setRepeatEnd(True)
+        self.measure.setRepeatStart(True)
+        self.measure.setLineBreak(True)
+        self.measure.setSectionEnd(True)
+        measure2 = Measure(8)
+        self.assertFalse(measure2.isRepeatEnd())
+        self.assertFalse(measure2.isRepeatStart())
+        self.assertFalse(measure2.isLineBreak())
+        self.assertFalse(measure2.isSectionEnd())
+        copied = self.measure.copyMeasure()
+        measure2.pasteMeasure(copied, True)
+        self.assertEqual(len(measure2), 16)
+        self.assertEqual(measure2.numNotes(), 2)
+        self.assertEqual(measure2.getNote(NotePosition(None, None, 0, 0)), "x")
+        self.assertEqual(measure2.getNote(NotePosition(None, None, 1, 1)), "o")
+        self.assertTrue(measure2.isRepeatEnd())
+        self.assertTrue(measure2.isRepeatStart())
+        self.assertTrue(measure2.isLineBreak())
+        self.assertTrue(measure2.isSectionEnd())
+
+    def testChangeCount_Shorter(self):
+        self.measure.addNote(NotePosition(noteTime = 0, drumIndex = 0), "a")
+        self.measure.addNote(NotePosition(noteTime = 1, drumIndex = 1), "b")
+        self.measure.addNote(NotePosition(noteTime = 2, drumIndex = 0), "c")
+        self.measure.addNote(NotePosition(noteTime = 3, drumIndex = 1), "d")
+        self.measure.addNote(NotePosition(noteTime = 4, drumIndex = 0), "e")
+        self.measure.addNote(NotePosition(noteTime = 5, drumIndex = 1), "f")
+        self.measure.addNote(NotePosition(noteTime = 6, drumIndex = 0), "g")
+        self.measure.addNote(NotePosition(noteTime = 7, drumIndex = 1), "h")
+        self.measure.addNote(NotePosition(noteTime = 8, drumIndex = 0), "i")
+        self.measure.addNote(NotePosition(noteTime = 9, drumIndex = 1), "j")
+        self.measure.addNote(NotePosition(noteTime = 10, drumIndex = 0), "k")
+        self.measure.addNote(NotePosition(noteTime = 11, drumIndex = 1), "l")
+        self.measure.addNote(NotePosition(noteTime = 12, drumIndex = 0), "m")
+        self.measure.addNote(NotePosition(noteTime = 13, drumIndex = 1), "n")
+        self.measure.addNote(NotePosition(noteTime = 14, drumIndex = 0), "o")
+        self.measure.addNote(NotePosition(noteTime = 15, drumIndex = 1), "p")
+        counter = self.reg.getCounterByName("8ths")
+        mc = MeasureCount()
+        mc.addSimpleBeats(counter, 3)
+        self.measure.setBeatCount(mc)
+        self.assertEqual(len(self.measure), 6)
+        self.assertEqual(self.measure.numNotes(), 6)
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 0,
+                                                           drumIndex = 0)), "a")
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 1,
+                                                           drumIndex = 0)), "c")
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 2,
+                                                           drumIndex = 0)), "e")
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 3,
+                                                           drumIndex = 0)), "g")
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 4,
+                                                           drumIndex = 0)), "i")
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 5,
+                                                           drumIndex = 0)), "k")
+
+
+    def testChangeCount_Longer(self):
+        self.measure.addNote(NotePosition(noteTime = 0, drumIndex = 0), "a")
+        self.measure.addNote(NotePosition(noteTime = 1, drumIndex = 1), "b")
+        self.measure.addNote(NotePosition(noteTime = 2, drumIndex = 0), "c")
+        self.measure.addNote(NotePosition(noteTime = 3, drumIndex = 1), "d")
+        self.measure.addNote(NotePosition(noteTime = 4, drumIndex = 0), "e")
+        self.measure.addNote(NotePosition(noteTime = 5, drumIndex = 1), "f")
+        self.measure.addNote(NotePosition(noteTime = 6, drumIndex = 0), "g")
+        self.measure.addNote(NotePosition(noteTime = 7, drumIndex = 1), "h")
+        self.measure.addNote(NotePosition(noteTime = 8, drumIndex = 0), "i")
+        self.measure.addNote(NotePosition(noteTime = 9, drumIndex = 1), "j")
+        self.measure.addNote(NotePosition(noteTime = 10, drumIndex = 0), "k")
+        self.measure.addNote(NotePosition(noteTime = 11, drumIndex = 1), "l")
+        self.measure.addNote(NotePosition(noteTime = 12, drumIndex = 0), "m")
+        self.measure.addNote(NotePosition(noteTime = 13, drumIndex = 1), "n")
+        self.measure.addNote(NotePosition(noteTime = 14, drumIndex = 0), "o")
+        self.measure.addNote(NotePosition(noteTime = 15, drumIndex = 1), "p")
+        counter = self.reg.getCounterByName("32nds")
+        mc = MeasureCount()
+        mc.addSimpleBeats(counter, 5)
+        self.measure.setBeatCount(mc)
+        self.assertEqual(len(self.measure), 40)
+        self.assertEqual(self.measure.numNotes(), 16)
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 0,
+                                                           drumIndex = 0)),
+                         "a")
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 2,
+                                                           drumIndex = 1)),
+                         "b")
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 4,
+                                                           drumIndex = 0)),
+                         "c")
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 6,
+                                                           drumIndex = 1)),
+                         "d")
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 8,
+                                                           drumIndex = 0)),
+                         "e")
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 10,
+                                                           drumIndex = 1)),
+                         "f")
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 12,
+                                                           drumIndex = 0)),
+                         "g")
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 14,
+                                                           drumIndex = 1)),
+                         "h")
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 16,
+                                                           drumIndex = 0)),
+                         "i")
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 18,
+                                                           drumIndex = 1)),
+                         "j")
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 20,
+                                                           drumIndex = 0)),
+                         "k")
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 22,
+                                                           drumIndex = 1)),
+                         "l")
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 24,
+                                                           drumIndex = 0)),
+                         "m")
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 26,
+                                                           drumIndex = 1)),
+                         "n")
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 28,
+                                                           drumIndex = 0)),
+                         "o")
+        self.assertEqual(self.measure.getNote(NotePosition(noteTime = 30,
+                                                           drumIndex = 1)),
+                         "p")
 
 class TestCallBack(unittest.TestCase):
     def setUp(self):

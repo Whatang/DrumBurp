@@ -24,7 +24,7 @@ Created on 12 Dec 2010
 '''
 from DBErrors import BadTimeError
 from DBConstants import (EMPTY_NOTE, DRUM_ABBR_WIDTH,
-                         REPEAT_STARTER, REPEAT_END,
+                         REPEAT_STARTER, REPEAT_END, BARLINE,
                          REPEAT_EXTENDER, ALTERNATE_EXTENDER)
 from NotePosition import NotePosition
 from Measure import Measure
@@ -179,6 +179,13 @@ class Staff(object):
     def lineIsVisible(self, index):
         return any(measure.lineIsVisible(index) for measure in self)
 
+    @staticmethod
+    def _barString(first, second):
+        if first is None and second is None:
+            return ""
+        else:
+            return BARLINE
+
     def _getDrumLine(self, drum, position, drumIndex):
         position.drumIndex = drumIndex
         lastBar = None
@@ -186,7 +193,7 @@ class Staff(object):
         lineOk = False
         for measureIndex, measure in enumerate(self):
             position.measureIndex = measureIndex
-            barString = Measure.barString(lastBar, measure)
+            barString = self._barString(lastBar, measure)
             lineString += barString
             lastBar = measure
             for noteTime in range(len(measure)):
@@ -194,7 +201,7 @@ class Staff(object):
                 note = measure.getNote(position)
                 lineString += note
                 lineOk = lineOk or note != EMPTY_NOTE
-        barString = Measure.barString(lastBar, None)
+        barString = self._barString(lastBar, None)
         lineString += barString
         return lineString, lineOk
 
@@ -202,11 +209,11 @@ class Staff(object):
         countString = "  "
         lastBar = None
         for measure in self:
-            barString = Measure.barString(lastBar, measure)
+            barString = self._barString(lastBar, measure)
             lastBar = measure
             countString += " " * len(barString)
             countString += "".join(measure.count())
-        barString = Measure.barString(lastBar, None)
+        barString = self._barString(lastBar, None)
         countString += " " * len(barString)
         return countString
 
