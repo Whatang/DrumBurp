@@ -27,7 +27,7 @@ import DrumKit
 from Staff import Staff
 from Measure import Measure
 from Counter import CounterRegistry
-from MeasureCount import makeSimpleCount, MeasureCount
+from MeasureCount import makeSimpleCount
 from DBErrors import BadTimeError, OverSizeMeasure
 from DBConstants import REPEAT_EXTENDER
 from NotePosition import NotePosition
