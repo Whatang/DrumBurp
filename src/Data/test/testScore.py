@@ -28,7 +28,7 @@ from Data.DBErrors import BadTimeError, OverSizeMeasure
 from Data.DBConstants import EMPTY_NOTE
 from Data.NotePosition import NotePosition
 
-#pylint: disable-msg=R0904
+# pylint: disable-msg=R0904
 
 class TestStaffControl(unittest.TestCase):
 
@@ -172,7 +172,7 @@ class TestNoteControl(unittest.TestCase):
         self.score.drumKit = DrumKit.getNamedDefaultKit()
         for dummy in range(0, 12):
             self.score.addEmptyMeasure(16)
-        self.score.textFormatScore(80)
+        self.score.gridFormatScore(80)
 
     def testGetNote(self):
         self.assertEqual(self.score.getNote(NotePosition(0, 0, 0, 0)),
@@ -297,84 +297,85 @@ class TestCharacterFormatScore(unittest.TestCase):
     def setUp(self):
         self.score = Score()
 
-    def testTextFormatScore(self):
+    def testgridFormatScore(self):
         for dummy in range(0, 20):
             self.score.addEmptyMeasure(16)
-        self.score.textFormatScore(80)
+        self.score.gridFormatScore(80)
         self.assertEqual(self.score.numStaffs(), 5)
         for staff in self.score.iterStaffs():
             self.assertEqual(staff.numMeasures(), 4)
             self.assertEqual(len(staff), 64)
-            self.assertEqual(staff.characterWidth(), 69)
+            self.assertEqual(staff.gridWidth(), 69)
 
-    def testTextFormatScoreWithSections(self):
+    def testgridFormatScoreWithSections(self):
         for dummy in range(0, 20):
             self.score.addEmptyMeasure(16)
         self.score.getMeasure(5).setSectionEnd(True)
-        self.score.textFormatScore(80)
+        self.score.gridFormatScore(80)
         self.assertEqual(self.score.numStaffs(), 6)
-        self.assertEqual(self.score.getStaff(1).characterWidth(), 35)
+        self.assertEqual(self.score.getStaff(1).gridWidth(), 35)
 
-    def testTextFormatScore_SectionEndAtScoreEnd(self):
+    def testgridFormatScore_SectionEndAtScoreEnd(self):
         for dummy in range(0, 20):
             self.score.addEmptyMeasure(16)
         self.score.getMeasure(19).setSectionEnd(True)
-        self.score.textFormatScore(80)
+        self.score.gridFormatScore(80)
         self.assertEqual(self.score.numStaffs(), 5)
 
-    def testTextFormatScoreWithSectionsAndRepeat(self):
+    def testgridFormatScoreWithSectionsAndRepeat(self):
         for dummy in range(0, 20):
             self.score.addEmptyMeasure(16)
         self.score.getMeasure(0).setRepeatStart(True)
         self.score.getMeasure(5).setSectionEnd(True)
         self.score.getMeasure(5).setRepeatEnd(True)
-        self.score.textFormatScore(80)
+        self.score.gridFormatScore(80)
         self.assertEqual(self.score.numStaffs(), 6)
-        self.assertEqual(self.score.getStaff(1).characterWidth(), 35)
+        self.assertEqual(self.score.getStaff(1).gridWidth(), 35)
 
-    def testTextFormatScoreWithLargeBar(self):
+    def testgridFormatScoreWithLargeBar(self):
         for dummy in range(0, 12):
             self.score.addEmptyMeasure(16)
         self.score.addEmptyMeasure(70)
         for dummy in range(0, 12):
             self.score.addEmptyMeasure(16)
-        self.score.textFormatScore(80)
+        self.score.gridFormatScore(80)
         self.assertEqual(self.score.numStaffs(), 7)
-        self.assertEqual(self.score.getStaff(3).characterWidth(), 72)
+        self.assertEqual(self.score.getStaff(3).gridWidth(), 72)
 
-    def testTextFormatScoreWithOverSizeBar_IgnoreErrors(self):
+    def testgridFormatScoreWithOverSizeBar_IgnoreErrors(self):
         for dummy in range(0, 12):
             self.score.addEmptyMeasure(16)
         self.score.addEmptyMeasure(80)
         for dummy in range(0, 12):
             self.score.addEmptyMeasure(16)
-        self.score.textFormatScore(80, ignoreErrors = True)
+        self.score.gridFormatScore(80, ignoreErrors = True)
         self.assertEqual(self.score.numStaffs(), 7)
-        self.assertEqual(self.score.getStaff(3).characterWidth(), 82)
+        self.assertEqual(self.score.getStaff(3).gridWidth(), 82)
 
-    def testTextFormatScoreWithOverSizeBar_DontIgnoreErrors(self):
+    def testgridFormatScoreWithOverSizeBar_DontIgnoreErrors(self):
         for dummy in range(0, 12):
             self.score.addEmptyMeasure(16)
         self.score.addEmptyMeasure(90)
         for dummy in range(0, 12):
             self.score.addEmptyMeasure(16)
-        self.assertRaises(OverSizeMeasure, self.score.textFormatScore, 80)
+        self.assertRaises(OverSizeMeasure, self.score.gridFormatScore, 80,
+                          ignoreErrors = False)
 
-    def testTextFormatScore_FewerStaffsAfterDelete(self):
+    def testgridFormatScore_FewerStaffsAfterDelete(self):
         for dummy in range(0, 9):
             self.score.addEmptyMeasure(16)
-        self.score.textFormatScore(80)
+        self.score.gridFormatScore(80)
         self.assertEqual(self.score.numStaffs(), 3)
         self.score.deleteMeasureByIndex(6)
-        self.score.textFormatScore(80)
+        self.score.gridFormatScore(80)
         self.assertEqual(self.score.numStaffs(), 2)
 
-    def testTextFormatScore_FewerStaffsOnWiderFormat(self):
+    def testgridFormatScore_FewerStaffsOnWiderFormat(self):
         for dummy in range(0, 8):
             self.score.addEmptyMeasure(16)
-        self.score.textFormatScore(40)
+        self.score.gridFormatScore(40)
         self.assertEqual(self.score.numStaffs(), 4)
-        self.score.textFormatScore(80)
+        self.score.gridFormatScore(80)
         self.assertEqual(self.score.numStaffs(), 2)
 
 class TestCallBack(unittest.TestCase):
@@ -383,7 +384,7 @@ class TestCallBack(unittest.TestCase):
         self.score.drumKit = DrumKit.getNamedDefaultKit()
         for dummy in range(0, 16):
             self.score.addEmptyMeasure(16)
-        self.score.textFormatScore(80)
+        self.score.gridFormatScore(80)
         self.calls = []
         def myCallBack(position):
             self.calls.append((position.staffIndex,

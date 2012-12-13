@@ -664,8 +664,7 @@ class Score(object):
     def saveFormatState(self):
         self._formatState = self._getFormatState()
 
-    def _formatScore(self, width,
-                     widthFunction, ignoreErrors = False):
+    def gridFormatScore(self, width = None, ignoreErrors = True):
         if width is None:
             width = self.scoreData.width
         measures = list(self.iterMeasures())
@@ -677,7 +676,7 @@ class Score(object):
         staffIndex = 0
         for measureIndex, measure in enumerate(measures):
             staff.addMeasure(measure)
-            while widthFunction(staff) > width:
+            while staff.gridWidth() > width:
                 if staff.numMeasures() == 1:
                     if ignoreErrors:
                         break
@@ -700,14 +699,6 @@ class Score(object):
             staff = self._staffs.pop()
             staff.clearCallBack()
         return self._formatState != self._getFormatState()
-
-    def textFormatScore(self, width = None, ignoreErrors = False):
-        return self._formatScore(width, Staff.characterWidth, ignoreErrors)
-
-    def gridFormatScore(self, width = None):
-        return self._formatScore(width,
-                                 Staff.gridWidth,
-                                 True)
 
     def changeKit(self, newKit, changes):
         for measure in self.iterMeasures():

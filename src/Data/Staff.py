@@ -29,7 +29,7 @@ from DBConstants import (EMPTY_NOTE, DRUM_ABBR_WIDTH,
 from NotePosition import NotePosition
 from Measure import Measure
 
-#pylint:disable-msg=R0904
+# pylint:disable-msg=R0904
 class Staff(object):
     '''
     classdocs
@@ -142,9 +142,6 @@ class Staff(object):
         for measure in self:
             measure.clearCallBack()
         self._measures = []
-
-    def characterWidth(self):
-        return self.gridWidth()
 
     def gridWidth(self):
         if self.numMeasures() == 0:

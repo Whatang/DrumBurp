@@ -28,7 +28,7 @@ from Data.DBConstants import EMPTY_NOTE
 from Data.DBErrors import BadTimeError
 from Data.NotePosition import NotePosition
 
-#pylint: disable-msg=R0904
+# pylint: disable-msg=R0904
 
 class TestStaff(unittest.TestCase):
     def setUp(self):
@@ -123,19 +123,6 @@ class TestStaff(unittest.TestCase):
         self.staff.clear()
         self.assertEqual(len(self.staff), 0)
         self.assertEqual(self.staff.numMeasures(), 0)
-
-    def testCharacterWidth_EmptyStaff(self):
-        self.assertEqual(self.staff.characterWidth(), 0)
-
-    def testCharacterWidth(self):
-        self.staff.addMeasure(Measure(16))
-        self.staff.addMeasure(Measure(16))
-        self.staff.addMeasure(Measure(16))
-        self.assertEqual(self.staff.characterWidth(), 52)
-        endMeasure = Measure(16)
-        endMeasure.setSectionEnd(True)
-        self.staff.addMeasure(endMeasure)
-        self.assertEqual(self.staff.characterWidth(), 69)
 
     def testGridWidth_EmptyStaff(self):
         self.assertEqual(self.staff.gridWidth(), 0)
