@@ -24,7 +24,7 @@ Created on 12 Dec 2010
 '''
 
 from collections import defaultdict
-from DBConstants import EMPTY_NOTE, BARLINE, BAR_TYPES
+from DBConstants import EMPTY_NOTE, BAR_TYPES
 from DBErrors import BadTimeError
 from NotePosition import NotePosition
 from Data import MeasureCount
