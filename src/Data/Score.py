@@ -772,44 +772,34 @@ class Score(object):
         indenter("LILYPAGES", self.lilypages)
         if self.lilyFill:
             indenter("LILYFILL", "YES")
-        self.defaultCount.write(indenter,
-                                title = "DEFAULT_COUNT_INFO_START")
+        self.defaultCount.write(indenter, True)
         indenter("SYSTEM_SPACE", self.systemSpacing)
         self.fontOptions.write(indenter)
 
 
     def read(self, handle):
+        # Read from the input file
         scoreIterator = fileUtils.dbFileIterator(handle)
         self.lilyFill = False
-        for lineType, lineData in scoreIterator:
-            if lineType == "SCORE_METADATA":
-                self.scoreData.load(scoreIterator)
-            elif lineType == "START_BAR":
-                measureWidth = int(lineData)
-                measure = self.addEmptyMeasure(measureWidth)
-                measure.read(scoreIterator)
-            elif lineType == "KIT_START":
-                self.drumKit.read(scoreIterator)
-            elif lineType == "SECTION_TITLE":
-                self._sections.append(lineData)
-            elif lineType == "PAPER_SIZE":
-                self.paperSize = lineData
-            elif lineType == "LILYSIZE":
-                self.lilysize = int(lineData)
-            elif lineType == "LILYPAGES":
-                self.lilypages = int(lineData)
-            elif lineType == "LILYFILL":
-                self.lilyFill = True
-            elif lineType == "DEFAULT_COUNT_INFO_START":
-                self.defaultCount = MeasureCount()
-                self.defaultCount.read(scoreIterator)
-            elif lineType == "SYSTEM_SPACE":
-                self.systemSpacing = int(lineData)
-            elif lineType == "FONT_OPTIONS_START":
-                self.fontOptions = FontOptions()
-                self.fontOptions.read(scoreIterator)
-            else:
-                raise IOError("Unrecognised line type: " + lineType)
+        def _readMeasure(lineData):
+            measureWidth = int(lineData)
+            measure = self.addEmptyMeasure(measureWidth)
+            measure.read(scoreIterator)
+        with scoreIterator.section(None, None) as section:
+            section.readSubsection("SCORE_METADATA", self.scoreData.load)
+            section.readCallback("START_BAR", _readMeasure)
+            section.readSubsection("KIT_START", self.drumKit.read)
+            section.readCallback("SECTION_TITLE",
+                                 self._sections.append)
+            section.readString("PAPER_SIZE", self, "paperSize")
+            section.readPositiveInteger("LILYSIZE", self, "lilySize")
+            section.readNonNegativeInteger("LILYPAGES", self, "lilyPages")
+            section.readBoolean("LILYFILL", self, "lilyFill")
+            section.readSubsection("DEFAULT_COUNT_INFO_START",
+                                   lambda i: self.defaultCount.read(i, True))
+            section.readPositiveInteger("SYSTEM_SPACE", self, "systemSpacing")
+            section.readSubsection("FONT_OPTIONS_START", self.fontOptions.read)
+        # Check that all the note heads are valid
         for measure in self.iterMeasures():
             for np, head in measure:
                 if not self.drumKit[np.drumIndex].isAllowedHead(head):

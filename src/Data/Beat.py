@@ -78,30 +78,18 @@ class Beat(object):
 
     @staticmethod
     def read(scoreIterator):
-        numTicks = None
-        counter = None
+        targetValues = {"numTicks" : None, "counter" : None }
         registry = CounterRegistry()
-        for lineType, lineData in scoreIterator:
-            if lineType == "BEAT_START":
-                continue
-            elif lineType == "BEAT_END":
-                return Beat(counter, numTicks)
-            elif lineType == "NUM_TICKS":
-                try:
-                    numTicks = int(lineData)
-                except (ValueError, TypeError):
-                    raise IOError("Bad number of ticks for beat: " + lineData)
-                if numTicks <= 0:
-                    raise IOError("Bad number of ticks for beat: " + lineData)
-            elif lineType == "COUNT":
-                if lineData[0] == "|" and lineData[-1] == "|":
-                    lineData = lineData[1:-1]
-                lineData = BEAT_COUNT + lineData[1:]
-                try:
-                    counter = registry.findMaster(lineData)
-                except KeyError:
-                    raise IOError("Unrecognised beat: " + lineData)
-            else:
-                raise IOError("Unrecognised line type" + lineType)
-
+        def readCount(lineData):
+            if lineData[0] == "|" and lineData[-1] == "|":
+                lineData = lineData[1:-1]
+            lineData = BEAT_COUNT + lineData[1:]
+            try:
+                targetValues["counter"] = registry.findMaster(lineData)
+            except KeyError:
+                raise IOError("Unrecognised beat: " + lineData)
+        with scoreIterator.section("BEAT_START", "BEAT_END") as section:
+            section.readPositiveInteger("NUM_TICKS", targetValues, "numTicks")
+            section.readCallback("COUNT", readCount)
+        return Beat(targetValues["counter"], targetValues["numTicks"])
 

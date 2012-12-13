@@ -242,7 +242,7 @@ class TestRead(unittest.TestCase):
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
         count = MeasureCount.MeasureCount()
-        count.read(iterator)
+        count.read(iterator, True)
         self.assert_(count.isSimpleCount())
         self.assertEqual(len(count), 16)
 

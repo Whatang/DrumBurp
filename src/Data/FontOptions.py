@@ -43,22 +43,11 @@ class FontOptions(object):
             indenter("METADATAFONTSIZE %d" % self.metadataFontSize)
 
     def read(self, scoreIterator):
-        for lineType, lineData in scoreIterator:
-            if lineType == "FONT_OPTIONS_START":
-                continue
-            elif lineType == "FONT_OPTIONS_END":
-                break
-            elif lineType == "NOTEFONT":
-                self.noteFont = lineData
-            elif lineType == "NOTEFONTSIZE":
-                self.noteFontSize = int(lineData)
-            elif lineType == "SECTIONFONT":
-                self.sectionFont = lineData
-            elif lineType == "SECTIONFONTSIZE":
-                self.sectionFontSize = int(lineData)
-            elif lineType == "METADATAFONT":
-                self.metadataFont = lineData
-            elif lineType == "METADATAFONTSIZE":
-                self.metadataFontSize = int(lineData)
-            else:
-                raise IOError("Font information not recognised:" + lineData)
+        with scoreIterator.section("FONT_OPTIONS_START",
+                                   "FONT_OPTIONS_END") as section:
+            section.readString("NOTEFONT", self, "noteFont")
+            section.readPositiveInteger("NOTEFONTSIZE", self, "noteFontSize")
+            section.readString("SECTIONFONT", self, "sectionFont")
+            section.readPositiveInteger("SECTIONFONTSIZE", self, "sectionFontSize")
+            section.readString("METADATAFONT", self, "metadataFont")
+            section.readPositiveInteger("METADATAFONTSIZE", self, "metadataFontSize")

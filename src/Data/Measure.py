@@ -361,51 +361,55 @@ class Measure(object):
             if self.alternateText is not None:
                 indenter("ALTERNATE %s" % self.alternateText)
 
-    def read(self, scoreIterator):
-        seenStartLine = False
-        seenEndLine = False
+    class _BarlineTracker(object):
+        @staticmethod
         def doNothing(dummy):
             pass
-        mapping = {"NO_BAR" : doNothing,
-                   "NORMAL_BAR" : doNothing,
-                   "REPEAT_START": self.setRepeatStart,
-                   "REPEAT_END": self.setRepeatEnd,
-                   "SECTION_END": self.setSectionEnd,
-                   "LINE_BREAK": self.setLineBreak}
-        for lineType, lineData in scoreIterator:
-            if  lineType == "BARLINE":
-                if not seenStartLine:
-                    self.startBar = 0
-                    for barType in lineData.split(","):
-                        self.startBar |= BAR_TYPES[barType]
-                        mapping[barType](True)
-                    seenStartLine = True
-                elif not seenEndLine:
-                    self.endBar = 0
-                    for barType in lineData.split(","):
-                        self.endBar |= BAR_TYPES[barType]
-                        mapping[barType](True)
-                    seenEndLine = True
-                else:
-                    raise IOError("Too many bar lines")
-            elif lineType == "NOTE":
-                noteTime, drumIndex, head = lineData.split(",")
-                pos = NotePosition(noteTime = int(noteTime),
-                                   drumIndex = int(drumIndex))
-                self.addNote(pos, head)
-            elif lineType == "END_BAR":
-                break
-            elif lineType == "BEATLENGTH":
-                # Old-style count information
-                self.counter = MeasureCount.counterMaker(int(lineData),
-                                                         len(self))
-            elif lineType == "COUNT_INFO_START":
-                # New-style count information
-                self.counter = MeasureCount.MeasureCount()
-                self.counter.read(scoreIterator)
-            elif lineType == "REPEAT_COUNT":
-                self.repeatCount = int(lineData)
-            elif lineType == "ALTERNATE":
-                self.alternateText = lineData
+
+        def __init__(self, measure):
+            self.measure = measure
+            self.seenStartLine = False
+            self.seenEndLine = False
+            self.mapping = {"NO_BAR" : self.doNothing,
+                            "NORMAL_BAR" : self.doNothing,
+                            "REPEAT_START": measure.setRepeatStart,
+                            "REPEAT_END": measure.setRepeatEnd,
+                            "SECTION_END": measure.setSectionEnd,
+                            "LINE_BREAK": measure.setLineBreak}
+
+        def processBarline(self, lineData):
+            if not self.seenStartLine:
+                self.measure.startBar = 0
+                for barType in lineData.split(","):
+                    self.measure.startBar |= BAR_TYPES[barType]
+                    self.mapping[barType](True)
+                self.seenStartLine = True
+            elif not self.seenEndLine:
+                self.measure.endBar = 0
+                for barType in lineData.split(","):
+                    self.measure.endBar |= BAR_TYPES[barType]
+                    self.mapping[barType](True)
+                self.seenEndLine = True
             else:
-                raise IOError("Unrecognised line type")
+                raise IOError("Too many bar lines")
+
+    def _readNote(self, lineData):
+        noteTime, drumIndex, head = lineData.split(",")
+        pos = NotePosition(noteTime = int(noteTime),
+                           drumIndex = int(drumIndex))
+        self.addNote(pos, head)
+
+    def _makeOldMeasure(self, lineData):
+        self.counter = MeasureCount.counterMaker(int(lineData),
+                                                 len(self))
+
+    def read(self, scoreIterator):
+        tracker = self._BarlineTracker(self)
+        self.counter = MeasureCount.MeasureCount()
+        with scoreIterator.section("START_BAR", "END_BAR") as section:
+            section.readCallback("BARLINE", tracker.processBarline)
+            section.readCallback("NOTE", self._readNote)
+            section.readSubsection("COUNT_INFO_START", self.counter.read)
+            section.readCallback("BEATLENGTH", self._makeOldMeasure)
+            section.readPositiveInteger("REPEAT_COUNT", self, "repeatCount")
+            section.readString("ALTERNATE", self, "alternateText")

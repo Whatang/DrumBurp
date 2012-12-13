@@ -78,12 +78,10 @@ class DrumKit(object):
                 drum.write(indenter)
 
     def read(self, scoreIterator):
-        lastDrum = None
-        for lineType, lineData in scoreIterator:
-            if  lineType == "KIT_END":
-                self._checkDrumData()
-                break
-            elif lineType == "DRUM":
+        class DrumTracker(object):
+            lastDrum = None
+            @classmethod
+            def addDrum(cls, lineData):
                 fields = lineData.split(",")
                 if len(fields) > 3:
                     fields[3] = (fields[3] == "True")
@@ -91,16 +89,14 @@ class DrumKit(object):
                         fields = fields[:3]
                 drum = Drum(*fields)
                 self.addDrum(drum)
-                lastDrum = drum
-            elif lineType == "NOTEHEAD":
-                lastDrum.readHeadData(lineData)
-            elif lineType == "KIT_START":
-                # No need to do anything
-                pass
-            else:
-                raise IOError("Unrecognised line type.", lineType)
-
-    def _checkDrumData(self):
+                cls.lastDrum = drum
+            @classmethod
+            def readHeadData(cls, headData):
+                cls.lastDrum.readHeadData(headData)
+        tracker = DrumTracker
+        with scoreIterator.section("KIT_START", "KIT_END") as section:
+            section.readCallback("DRUM", tracker.addDrum)
+            section.readCallback("NOTEHEAD", tracker.readHeadData)
         for drum in self:
             if len(drum) == 0:
                 drum.guessHeadData()

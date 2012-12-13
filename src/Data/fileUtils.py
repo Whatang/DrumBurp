@@ -33,7 +33,7 @@ class dbFileIterator(object):
         def __enter__(self):
             return self
 
-        def process(self):
+        def _process(self):
             for lineType, lineData in self._iterator:
                 if lineData == None:
                     lineData = self._convertNone
@@ -47,35 +47,76 @@ class dbFileIterator(object):
                     raise IOError("Unrecognised line type: " + lineType)
 
         @staticmethod
-        def _parseInteger(data):
+        def _parseInteger(data, lineName):
             try:
                 data = int(data)
             except (TypeError, ValueError):
-                raise IOError("Bad integer value %s" % str(data))
+                raise IOError("Bad integer value %s for %s" % (str(data), lineName))
             return data
 
         @classmethod
-        def _parsePositiveInteger(cls, data):
-            data = cls._parsePositiveInteger(data)
+        def _parsePositiveInteger(cls, data, lineName):
+            data = cls._parseInteger(data, lineName)
             if data <= 0:
-                raise IOError("Integer value must be positive: %d" % data)
+                raise IOError("Integer value for %s must be positive: %d" % (lineName, data))
             return data
 
-        def registerInteger(self, lineType, target, attrName):
-            self._lines[lineType] = lambda data: setattr(target, attrName,
-                                                         self._parseInteger(data))
+        @classmethod
+        def _parseNonNegativeInteger(cls, data, lineName):
+            data = cls._parseInteger(data, lineName)
+            if data < 0:
+                raise IOError("Integer value for %s must be non-negative: %d" % (lineName, data))
+            return data
 
-        def registerPositiveInteger(self, lineType, target, attrName):
-            self._lines[lineType] = lambda data: setattr(target, attrName,
-                                                         self._parsePositiveInteger(data))
+        @staticmethod
+        def _parseBoolean(data, unusedLineName):
+            return (data == "True" or data.upper() == "YES")
 
-        def registerString(self, lineType, target, attrName):
-            self._lines[lineType] = lambda data: setattr(target, attrName, data)
 
-        def registerCallback(self, lineType, callback):
+        @staticmethod
+        def _parseString(data, unusedLineName):
+            return data
+
+        @staticmethod
+        def _updateDict(target, key, value):
+            target[key] = value
+
+        def _storeReader(self, lineType, target, attrName, parser):
+            if isinstance(target, dict):
+                setter = self._updateDict
+            else:
+                setter = setattr
+            self._lines[lineType] = lambda data: setter(target, attrName,
+                                                        parser(data, lineType))
+
+        def readInteger(self, lineType, target, attrName):
+            self._storeReader(lineType, target, attrName, self._parseInteger)
+
+        def readPositiveInteger(self, lineType, target, attrName):
+            self._storeReader(lineType, target, attrName,
+                              self._parsePositiveInteger)
+
+        def readNonNegativeInteger(self, lineType, target, attrName):
+            self._storeReader(lineType, target, attrName,
+                              self._parseNonNegativeInteger)
+
+        def readBoolean(self, lineType, target, attrName):
+            self._storeReader(lineType, target, attrName,
+                              self._parseBoolean)
+
+        def readString(self, lineType, target, attrName):
+            self._storeReader(lineType, target, attrName,
+                              self._parseString)
+
+        def readSubsection(self, lineType, callback):
+            self._lines[lineType] = lambda unused: callback(self._iterator)
+
+        def readCallback(self, lineType, callback):
             self._lines[lineType] = callback
 
         def __exit__(self, excType, excValue, excTraceback):
+            if excType is None:
+                self._process()
             return False
 
     def __init__(self, handle):

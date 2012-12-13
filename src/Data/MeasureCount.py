@@ -110,7 +110,10 @@ class MeasureCount(object):
     def numBeats(self):
         return len(self.beats)
 
-    def write(self, indenter, title = "COUNT_INFO_START"):
+    def write(self, indenter, default = False):
+        title = "COUNT_INFO_START"
+        if default:
+            title = "DEFAULT_" + title
         with indenter.section(title, "COUNT_INFO_END"):
             if self.isSimpleCount():
                 # All beats are the same
@@ -120,29 +123,24 @@ class MeasureCount(object):
                 for beat in self.beats:
                     beat.write(indenter)
 
-    def read(self, scoreIterator):
-        repeat = False
-        for lineType, lineData in scoreIterator:
-            if (lineType == "COUNT_INFO_START" or
-                lineType == "DEFAULT_COUNT_INFO_START"):
-                continue
-            elif lineType == "COUNT_INFO_END":
-                break
-            elif lineType == "REPEAT_BEATS":
-                try:
-                    repeat = int(lineData)
-                except (ValueError, TypeError):
-                    raise IOError("Bad count data " + lineData)
-                if repeat <= 0:
-                    raise IOError("Non-positive count data " + lineData)
-            elif lineType == "BEAT_START":
+    def read(self, scoreIterator, default = False):
+        title = "COUNT_INFO_START"
+        if default:
+            title = "DEFAULT_" + title
+        self.beats = []
+        class RepeatTracker(object):
+            repeat = False
+            @classmethod
+            def readBeat(cls, unused):
                 beat = Beat.read(scoreIterator)
-                if repeat:
-                    self.beats.extend([beat] * repeat)
+                if cls.repeat:
+                    self.beats.extend([beat] * cls.repeat)
                 else:
                     self.beats.append(beat)
-            else:
-                raise IOError("Unrecognised line type")
+        tracker = RepeatTracker
+        with scoreIterator.section(title, "COUNT_INFO_END") as section:
+            section.readPositiveInteger("REPEAT_BEATS", tracker, "repeat")
+            section.readCallback("BEAT_START", tracker.readBeat)
 
 def counterMaker(beatLength, numTicks):
     # Create a MeasureCount from an 'old style' specification, where

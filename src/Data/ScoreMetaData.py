@@ -53,49 +53,20 @@ class ScoreMetaData(object):
         self.creator = "Nobody"
 
     def load(self, scoreIterator):
-        for lineType, lineData in scoreIterator:
-            if lineData is None:
-                lineData = ""
-            if lineType == "SCORE_METADATA":
-                continue
-            if lineType == "TITLE":
-                self.title = lineData
-            elif lineType == "ARTIST":
-                self.artist = lineData
-            elif lineType == "ARTISTVISIBLE":
-                self.artistVisible = (lineData == "True")
-            elif lineType == "CREATOR":
-                self.creator = lineData
-            elif lineType == "CREATORVISIBLE":
-                self.creatorVisible = (lineData == "True")
-            elif lineType == "BPM":
-                try:
-                    self.bpm = int(lineData)
-                except (TypeError, ValueError):
-                    raise IOError("Bad BPM: " + lineData)
-                if self.bpm <= 0:
-                    raise IOError("Bad BPM: " + lineData)
-            elif lineType == "BPMVISIBLE":
-                self.bpmVisible = (lineData == "True")
-            elif lineType == "WIDTH":
-                try:
-                    self.width = int(lineData)
-                except (TypeError, ValueError):
-                    raise IOError("Bad score width: " + lineData)
-                if self.width <= 0:
-                    raise IOError("Bad score width: " + lineData)
-            elif lineType == "KITDATAVISIBLE":
-                self.kitDataVisible = (lineData == "True")
-            elif lineType == "METADATAVISIBLE":
-                self.metadataVisible = (lineData == "True")
-            elif lineType == "BEATCOUNTVISIBLE":
-                self.beatCountVisible = (lineData == "True")
-            elif lineType == "EMPTYLINESVISIBLE":
-                self.emptyLinesVisible = (lineData == "True")
-            elif lineType == "END_SCORE_METADATA":
-                break
-            else:
-                raise IOError("Unrecognised line type: " + lineType)
+        with scoreIterator.section("SCORE_METADATA",
+                                   "END_SCORE_METADATA") as section:
+            section.readString("TITLE", self, "title")
+            section.readString("ARTIST", self, "artist")
+            section.readBoolean("ARTISTVISIBLE", self, "artistVisible")
+            section.readString("CREATOR", self, "creator")
+            section.readBoolean("CREATORVISIBLE", self, "creatorVisible")
+            section.readPositiveInteger("BPM", self, "bpm")
+            section.readBoolean("BPMVISIBLE", self, "bpmVisible")
+            section.readPositiveInteger("WIDTH", self, "width")
+            section.readBoolean("KITDATAVISIBLE", self, "kitDataVisible")
+            section.readBoolean("METADATAVISIBLE", self, "metadataVisible")
+            section.readBoolean("BEATCOUNTVISIBLE", self, "beatCountVisible")
+            section.readBoolean("EMPTYLINESVISIBLE", self, "emptyLinesVisible")
 
     def save(self, indenter):
         with indenter.section("SCORE_METADATA", "END_SCORE_METADATA"):

@@ -49,7 +49,11 @@ class TestDbFileIterator(unittest.TestCase):
         STRING2 string2
         INT2 2
         POSINT 100
+        NNINT 0
+        BOOL1 True
+        BOOL2 False
         CALLBACK some callback data
+        SUBSECTION
         EMPTY 
         END
         """
@@ -60,28 +64,40 @@ class TestDbFileIterator(unittest.TestCase):
             i1 = None
             i2 = None
             pi = None
+            nni = None
+            b1 = None
+            b2 = None
             cb = None
-        target = Target()
+            sub_read = None
         mockfile = StringIO(mockfile)
         iterator = fileUtils.dbFileIterator(mockfile)
         with iterator.section("START", "END", "empty") as section:
-            section.registerString("STRING1", target, "s1")
-            section.registerString("STRING2", target, "s2")
-            section.registerString("EMPTY", target, "e")
-            section.registerInteger("INT1", target, "i1")
-            section.registerInteger("INT2", target, "i2")
-            section.registerInteger("POSINT", target, "pi")
+            section.readString("STRING1", Target, "s1")
+            section.readString("STRING2", Target, "s2")
+            section.readString("EMPTY", Target, "e")
+            section.readInteger("INT1", Target, "i1")
+            section.readInteger("INT2", Target, "i2")
+            section.readBoolean("BOOL1", Target, "b1")
+            section.readBoolean("BOOL2", Target, "b2")
+            section.readPositiveInteger("POSINT", Target, "pi")
+            section.readNonNegativeInteger("NNINT", Target, "nni")
+            def reader(sub_iterator):
+                Target.sub_read = sub_iterator
+            section.readSubsection("SUBSECTION", reader)
             def get_length(data):
-                target.cb = len(data)
-            section.registerCallback("CALLBACK", get_length)
-            section.process()
-        self.assertEqual(target.s1, "string1")
-        self.assertEqual(target.s2, "string2")
-        self.assertEqual(target.e, "empty")
-        self.assertEqual(target.i1, 1)
-        self.assertEqual(target.i2, 2)
-        self.assertEqual(target.pi, 100)
-        self.assertEqual(target.cb, 18)
+                Target.cb = len(data)
+            section.readCallback("CALLBACK", get_length)
+        self.assertEqual(Target.s1, "string1")
+        self.assertEqual(Target.s2, "string2")
+        self.assertEqual(Target.e, "empty")
+        self.assertEqual(Target.i1, 1)
+        self.assertEqual(Target.i2, 2)
+        self.assertEqual(Target.pi, 100)
+        self.assertEqual(Target.nni, 0)
+        self.assertEqual(Target.b1, True)
+        self.assertEqual(Target.b2, False)
+        self.assertEqual(Target.sub_read, iterator)
+        self.assertEqual(Target.cb, 18)
 
 class TestIndenter(unittest.TestCase):
 
