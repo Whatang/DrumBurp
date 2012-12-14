@@ -26,7 +26,7 @@ from cStringIO import StringIO
 from Data import DrumKit
 from Data.DBErrors import DuplicateDrumError, NoSuchDrumError
 from Data.Drum import Drum, HeadData
-from Data.fileUtils import dbFileIterator, Indenter
+from Data import fileUtils, DBErrors
 # pylint: disable-msg=R0904
 
 class TestDrumKit(unittest.TestCase):
@@ -97,7 +97,7 @@ class TestDrumKit(unittest.TestCase):
         KIT_END
         """
         handle = StringIO(kitData)
-        iterator = dbFileIterator(handle)
+        iterator = fileUtils.dbFileIterator(handle)
         kit = DrumKit.DrumKit()
         kit.read(iterator)
         self.assertEqual(len(kit), 2)
@@ -118,9 +118,9 @@ class TestDrumKit(unittest.TestCase):
         KIT_END
         """
         handle = StringIO(kitData)
-        iterator = dbFileIterator(handle)
+        iterator = fileUtils.dbFileIterator(handle)
         kit = DrumKit.DrumKit()
-        self.assertRaises(IOError, kit.read, iterator)
+        self.assertRaises(DBErrors.UnrecognisedLine, kit.read, iterator)
 
     def testRead_OldNoteHeads(self):
         kitData = """KIT_START
@@ -133,7 +133,7 @@ class TestDrumKit(unittest.TestCase):
         KIT_END
         """
         handle = StringIO(kitData)
-        iterator = dbFileIterator(handle)
+        iterator = fileUtils.dbFileIterator(handle)
         kit = DrumKit.DrumKit()
         kit.read(iterator)
         self.assertEqual(len(kit), 2)
@@ -154,7 +154,7 @@ class TestDrumKit(unittest.TestCase):
         KIT_END
         """
         handle = StringIO(kitData)
-        iterator = dbFileIterator(handle)
+        iterator = fileUtils.dbFileIterator(handle)
         kit = DrumKit.DrumKit()
         kit.read(iterator)
         self.assertEqual(len(kit), 2)
@@ -175,7 +175,7 @@ class TestDrumKit(unittest.TestCase):
         KIT_END
         """
         handle = StringIO(kitData)
-        iterator = dbFileIterator(handle)
+        iterator = fileUtils.dbFileIterator(handle)
         kit = DrumKit.DrumKit()
         kit.read(iterator)
         self.assertEqual(kit.getDefaultHead(0), "x")
@@ -200,7 +200,7 @@ class TestDrumKit(unittest.TestCase):
         drum.checkShortcuts()
         kit.addDrum(drum)
         handle = StringIO()
-        indenter = Indenter(handle)
+        indenter = fileUtils.Indenter(handle)
         kit.write(indenter)
         outlines = handle.getvalue().splitlines()
         self.assertEqual(outlines,

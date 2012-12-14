@@ -9,7 +9,7 @@ from cStringIO import StringIO
 
 # pylint: disable-msg=R0904
 
-from Data import ScoreMetaData, fileUtils
+from Data import ScoreMetaData, fileUtils, DBErrors
 
 class Test(unittest.TestCase):
     def testWrite(self):
@@ -98,7 +98,7 @@ class Test(unittest.TestCase):
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
         meta = ScoreMetaData.ScoreMetaData()
-        self.assertRaises(IOError, meta.load, iterator)
+        self.assertRaises(DBErrors.UnrecognisedLine, meta.load, iterator)
 
     def testBadBpm(self):
         data = """SCORE_METADATA
@@ -118,7 +118,7 @@ class Test(unittest.TestCase):
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
         meta = ScoreMetaData.ScoreMetaData()
-        self.assertRaises(IOError, meta.load, iterator)
+        self.assertRaises(DBErrors.InvalidInteger, meta.load, iterator)
 
     def testNegativeBpm(self):
         data = """SCORE_METADATA
@@ -138,7 +138,7 @@ class Test(unittest.TestCase):
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
         meta = ScoreMetaData.ScoreMetaData()
-        self.assertRaises(IOError, meta.load, iterator)
+        self.assertRaises(DBErrors.InvalidPositiveInteger, meta.load, iterator)
 
     def testBadWidth(self):
         data = """SCORE_METADATA
@@ -158,7 +158,7 @@ class Test(unittest.TestCase):
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
         meta = ScoreMetaData.ScoreMetaData()
-        self.assertRaises(IOError, meta.load, iterator)
+        self.assertRaises(DBErrors.InvalidInteger, meta.load, iterator)
 
     def testNegativeWidth(self):
         data = """SCORE_METADATA
@@ -178,7 +178,7 @@ class Test(unittest.TestCase):
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
         meta = ScoreMetaData.ScoreMetaData()
-        self.assertRaises(IOError, meta.load, iterator)
+        self.assertRaises(DBErrors.InvalidPositiveInteger, meta.load, iterator)
 
 if __name__ == "__main__":
     unittest.main()

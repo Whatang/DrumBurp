@@ -21,6 +21,9 @@ Created on 7 Oct 2012
 
 @author: Mike Thomas
 '''
+
+import DBErrors
+
 class dbFileIterator(object):
     class _Section(object):
         def __init__(self, iterator, startLine, endLine, convertNone = None):
@@ -44,31 +47,28 @@ class dbFileIterator(object):
                 elif lineType in self._lines:
                     self._lines[lineType](lineData)
                 else:
-                    raise IOError("Unrecognised line type: " + lineType)
+                    raise DBErrors.UnrecognisedLine(lineType)
 
         @staticmethod
         def _parseInteger(data, lineName):
             try:
                 data = int(data)
             except (TypeError, ValueError):
-                raise IOError("Bad integer value %s for %s"
-                              % (str(data), lineName))
+                raise DBErrors.InvalidInteger(lineName, data)
             return data
 
         @classmethod
         def _parsePositiveInteger(cls, data, lineName):
             data = cls._parseInteger(data, lineName)
             if data <= 0:
-                raise IOError("Integer value for %s must be positive: %d"
-                              % (lineName, data))
+                raise DBErrors.InvalidPositiveInteger(lineName, data)
             return data
 
         @classmethod
         def _parseNonNegativeInteger(cls, data, lineName):
             data = cls._parseInteger(data, lineName)
             if data < 0:
-                raise IOError("Integer value for %s must be non-negative: %d"
-                              % (lineName, data))
+                raise DBErrors.InvalidNonNegativeInteger(lineName, data)
             return data
 
         @staticmethod

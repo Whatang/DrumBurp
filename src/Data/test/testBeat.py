@@ -23,8 +23,7 @@ Created on 12 Dec 2012
 '''
 import unittest
 from cStringIO import StringIO
-from Data import Beat, Counter
-from Data import fileUtils
+from Data import Beat, Counter, fileUtils, DBErrors
 
 # pylint: disable-msg=R0904
 
@@ -126,7 +125,7 @@ class TestReadBeats(unittest.TestCase):
         COUNT |^e+d|
         BEAT_END""")
         iterator = fileUtils.dbFileIterator(handle)
-        self.assertRaises(IOError, Beat.Beat.read, iterator)
+        self.assertRaises(DBErrors.BadCount, Beat.Beat.read, iterator)
 
     def testReadBadTicks(self):
         handle = StringIO("""BEAT_START
@@ -134,7 +133,7 @@ class TestReadBeats(unittest.TestCase):
         COUNT |^e+a|
         BEAT_END""")
         iterator = fileUtils.dbFileIterator(handle)
-        self.assertRaises(IOError, Beat.Beat.read, iterator)
+        self.assertRaises(DBErrors.InvalidInteger, Beat.Beat.read, iterator)
 
     def testReadBadNegativeTicks(self):
         handle = StringIO("""BEAT_START
@@ -142,7 +141,7 @@ class TestReadBeats(unittest.TestCase):
         COUNT |^e+a|
         BEAT_END""")
         iterator = fileUtils.dbFileIterator(handle)
-        self.assertRaises(IOError, Beat.Beat.read, iterator)
+        self.assertRaises(DBErrors.InvalidPositiveInteger, Beat.Beat.read, iterator)
 
     def testReadBadLine(self):
         handle = StringIO("""BEAT_START
@@ -150,7 +149,7 @@ class TestReadBeats(unittest.TestCase):
         BAD_LINE xxx
         BEAT_END""")
         iterator = fileUtils.dbFileIterator(handle)
-        self.assertRaises(IOError, Beat.Beat.read, iterator)
+        self.assertRaises(DBErrors.UnrecognisedLine, Beat.Beat.read, iterator)
 
 if __name__ == "__main__":
     unittest.main()
