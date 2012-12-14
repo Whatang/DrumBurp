@@ -71,6 +71,12 @@ class Staff(object):
             self._runCallBack(position)
         measure.setCallBack(wrappedCallBack)
 
+    def _isValidPosition(self, position, afterOk = False):
+        if not (0 <= position.measureIndex < self.numMeasures()):
+            if not (afterOk and position.measureIndex == self.numMeasures()):
+                raise BadTimeError(position)
+
+
     def addMeasure(self, measure):
         self._measures.append(measure)
         self._setMeasureCallBack(self._measures[-1], len(self._measures) - 1)
@@ -81,8 +87,7 @@ class Staff(object):
             measure.clearCallBack()
 
     def deleteMeasure(self, position):
-        if not (0 <= position.measureIndex < self.numMeasures()):
-            raise BadTimeError(position)
+        self._isValidPosition(position)
         measure = self._measures.pop(position.measureIndex)
         measure.clearCallBack()
         iterator = enumerate(self._measures[position.measureIndex:])
@@ -91,27 +96,23 @@ class Staff(object):
                                      position.measureIndex + index)
 
     def insertMeasure(self, position, measure):
-        if not (0 <= position.measureIndex <= self.numMeasures()):
-            raise BadTimeError(position)
+        self._isValidPosition(position, True)
         self._measures.insert(position.measureIndex, measure)
         for index in range(position.measureIndex, self.numMeasures()):
             nextMeasure = self[index]
             self._setMeasureCallBack(nextMeasure, index)
 
     def copyMeasure(self, position):
-        if not (0 <= position.measureIndex < self.numMeasures()):
-            raise BadTimeError(position)
+        self._isValidPosition(position)
         return self[position.measureIndex].copyMeasure()
 
     def pasteMeasure(self, position, notes, copyMeasureDecorations = False):
-        if not (0 <= position.measureIndex < self.numMeasures()):
-            raise BadTimeError(position)
+        self._isValidPosition(position)
         return self[position.measureIndex].pasteMeasure(notes,
                                                         copyMeasureDecorations)
 
     def setSectionEnd(self, position, onOff):
-        if not (0 <= position.measureIndex < self.numMeasures()):
-            raise BadTimeError(position)
+        self._isValidPosition(position)
         self._measures[position.measureIndex].setSectionEnd(onOff)
 
     def isSectionEnd(self):
@@ -124,18 +125,15 @@ class Staff(object):
         return ok
 
     def setLineBreak(self, position, onOff):
-        if not (0 <= position.measureIndex < self.numMeasures()):
-            raise BadTimeError(position)
+        self._isValidPosition(position)
         self._measures[position.measureIndex].setLineBreak(onOff)
 
     def setRepeatEnd(self, position, onOff):
-        if not (0 <= position.measureIndex < self.numMeasures()):
-            raise BadTimeError(position)
+        self._isValidPosition(position)
         self._measures[position.measureIndex].setRepeatEnd(onOff)
 
     def setRepeatStart(self, position, onOff):
-        if not (0 <= position.measureIndex < self.numMeasures()):
-            raise BadTimeError(position)
+        self._isValidPosition(position)
         self._measures[position.measureIndex].setRepeatStart(onOff)
 
     def clear(self):
@@ -149,31 +147,26 @@ class Staff(object):
         return (len(self) + self.numMeasures() + 1)
 
     def getNote(self, position):
-        if not (0 <= position.measureIndex < self.numMeasures()):
-            raise BadTimeError(position)
+        self._isValidPosition(position)
         return self[position.measureIndex].getNote(position)
 
     def getItemAtPosition(self, position):
-        if not (0 <= position.measureIndex < self.numMeasures()):
-            raise BadTimeError(position)
+        self._isValidPosition(position)
         measure = self[position.measureIndex]
         if position.noteTime is None:
             return measure
         return measure.getNote(position)
 
     def addNote(self, position, head):
-        if not (0 <= position.measureIndex < self.numMeasures()):
-            raise BadTimeError(position)
+        self._isValidPosition(position)
         self[position.measureIndex].addNote(position, head)
 
     def deleteNote(self, position):
-        if not (0 <= position.measureIndex < self.numMeasures()):
-            raise BadTimeError(position)
+        self._isValidPosition(position)
         self[position.measureIndex].deleteNote(position)
 
     def toggleNote(self, position, head):
-        if not (0 <= position.measureIndex < self.numMeasures()):
-            raise BadTimeError(position)
+        self._isValidPosition(position)
         self[position.measureIndex].toggleNote(position, head)
 
     def lineIsVisible(self, index):

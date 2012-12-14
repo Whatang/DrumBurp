@@ -152,6 +152,13 @@ class TestNoteControl(unittest.TestCase):
                                                          drumIndex = 0)),
                          EMPTY_NOTE)
 
+    def testGetItemAtPosition(self):
+        np = NotePosition(measureIndex = 0,
+                          noteTime = 0,
+                          drumIndex = 0)
+        self.assertEqual(self.staff.getItemAtPosition(np),
+                         EMPTY_NOTE)
+
     def testGetNote_BadTime(self):
         self.assertRaises(BadTimeError, self.staff.getNote,
                           NotePosition(measureIndex = -1,
@@ -227,6 +234,112 @@ class TestNoteControl(unittest.TestCase):
         self.assertRaises(BadTimeError, self.staff.toggleNote,
                           NotePosition(measureIndex = 0,
                                        noteTime = 20, drumIndex = 0), "x")
+
+class TestMeasureControl(unittest.TestCase):
+    def setUp(self):
+        self.staff = Staff()
+        self.staff.addMeasure(Measure(1))
+        self.staff.addMeasure(Measure(2))
+        self.staff.addMeasure(Measure(3))
+        self.staff.addMeasure(Measure(4))
+        self.np = NotePosition(measureIndex = 2)
+
+    def testGetItemAtPosition(self):
+        measure = self.staff.getItemAtPosition(self.np)
+        self.assertEqual(len(measure), 3)
+
+    def testSetLineBreak(self):
+        measure = self.staff.getItemAtPosition(self.np)
+        self.assertFalse(measure.isLineBreak())
+        self.staff.setLineBreak(self.np, True)
+        self.assertTrue(measure.isLineBreak())
+        self.staff.setLineBreak(self.np, False)
+        self.assertFalse(measure.isLineBreak())
+
+    def testSetRepeatStart(self):
+        measure = self.staff.getItemAtPosition(self.np)
+        self.assertFalse(measure.isRepeatStart())
+        self.staff.setRepeatStart(self.np, True)
+        self.assertTrue(measure.isRepeatStart())
+        self.staff.setRepeatStart(self.np, False)
+        self.assertFalse(measure.isRepeatStart())
+
+    def testSetRepeatEnd(self):
+        measure = self.staff.getItemAtPosition(self.np)
+        self.assertFalse(measure.isRepeatEnd())
+        self.staff.setRepeatEnd(self.np, True)
+        self.assertTrue(measure.isRepeatEnd())
+        self.staff.setRepeatEnd(self.np, False)
+        self.assertFalse(measure.isRepeatEnd())
+
+    def testSetSectionEnd(self):
+        measure = self.staff.getItemAtPosition(self.np)
+        self.assertFalse(measure.isSectionEnd())
+        self.staff.setSectionEnd(self.np, True)
+        self.assertTrue(measure.isSectionEnd())
+        self.staff.setSectionEnd(self.np, False)
+        self.assertFalse(measure.isSectionEnd())
+
+    def testIsSectionEnd(self):
+        self.assertFalse(self.staff.isSectionEnd())
+        self.staff.setSectionEnd(self.np, True)
+        self.assertFalse(self.staff.isSectionEnd())
+        self.staff.setSectionEnd(self.np, False)
+        self.assertFalse(self.staff.isSectionEnd())
+        endPos = NotePosition(measureIndex = 3)
+        self.staff.setSectionEnd(endPos, True)
+        self.assertTrue(self.staff.isSectionEnd())
+        self.staff.setSectionEnd(endPos, False)
+        self.assertFalse(self.staff.isSectionEnd())
+
+    def testIsConsistent(self):
+        self.assertTrue(self.staff.isConsistent())
+        self.staff.setSectionEnd(self.np, True)
+        self.assertFalse(self.staff.isConsistent())
+        self.staff.setSectionEnd(self.np, False)
+        self.assertTrue(self.staff.isConsistent())
+        endPos = NotePosition(measureIndex = 3)
+        self.staff.setSectionEnd(endPos, True)
+        self.assertTrue(self.staff.isConsistent())
+        self.staff.setSectionEnd(endPos, False)
+        self.assertTrue(self.staff.isConsistent())
+
+    def testCopyPasteWithoutDecoration(self):
+        measure = self.staff.getItemAtPosition(self.np)
+        measure.setRepeatStart(True)
+        copied = self.staff.copyMeasure(self.np)
+        newPos = NotePosition(measureIndex = 0)
+        self.assertFalse(self.staff[0].isRepeatStart())
+        self.assertEqual(len(self.staff[0]), 1)
+        self.staff.pasteMeasure(newPos, copied, False)
+        self.assertFalse(self.staff[0].isRepeatStart())
+        self.assertEqual(len(self.staff[0]), 3)
+
+    def testCopyPasteWithDecoration(self):
+        measure = self.staff.getItemAtPosition(self.np)
+        measure.setRepeatStart(True)
+        copied = self.staff.copyMeasure(self.np)
+        newPos = NotePosition(measureIndex = 0)
+        self.assertFalse(self.staff[0].isRepeatStart())
+        self.assertEqual(len(self.staff[0]), 1)
+        self.staff.pasteMeasure(newPos, copied, True)
+        self.assertTrue(self.staff[0].isRepeatStart())
+        self.assertEqual(len(self.staff[0]), 3)
+
+    def testLineIsVisible(self):
+        self.staff.addNote(NotePosition(measureIndex = 0, noteTime = 0,
+                                        drumIndex = 0), "x")
+        self.staff.addNote(NotePosition(measureIndex = 1, noteTime = 0,
+                                        drumIndex = 2), "x")
+        self.staff.addNote(NotePosition(measureIndex = 2, noteTime = 0,
+                                        drumIndex = 4), "x")
+        self.assertTrue(self.staff.lineIsVisible(0))
+        self.assertFalse(self.staff.lineIsVisible(1))
+        self.assertTrue(self.staff.lineIsVisible(2))
+        self.assertFalse(self.staff.lineIsVisible(3))
+        self.assertTrue(self.staff.lineIsVisible(4))
+        self.assertFalse(self.staff.lineIsVisible(5))
+
 
 class TestCallBack(unittest.TestCase):
     def setUp(self):

@@ -305,6 +305,8 @@ class Measure(object):
     def pasteMeasure(self, other, copyMeasureDecorations = False):
         oldMeasure = self.copyMeasure()
         self.clear()
+        if other.counter is None:
+            self._setWidth(len(other))
         self.setBeatCount(other.counter)
         for pos, head in other:
             self.addNote(pos, head)
