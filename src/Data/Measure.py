@@ -32,8 +32,8 @@ import copy
 
 class _NoteDictionary(object):
     def __init__(self):
-        self._notes = defaultdict(lambda:defaultdict(dict))
-        self._notesOnLine = defaultdict(lambda : 0)
+        self._notes = defaultdict(defaultdict)
+        self._notesOnLine = defaultdict(int)
         self._noteTimes = []
 
     def __len__(self):
