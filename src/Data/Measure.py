@@ -211,9 +211,15 @@ class Measure(object):
     def getNote(self, position):
         return self.noteAt(position.noteTime, position.drumIndex)
 
-    def noteAt(self, noteTime, drumIndex):
+    def _checkValidNoteTime(self, noteTime):
         if not(0 <= noteTime < len(self)):
             raise BadTimeError(noteTime)
+
+    def _checkValidPosition(self, position):
+        self._checkValidNoteTime(position.noteTime)
+
+    def noteAt(self, noteTime, drumIndex):
+        self._checkValidNoteTime(noteTime)
         return self._notes.getNote(noteTime, drumIndex)
 
     def clear(self):
@@ -221,20 +227,17 @@ class Measure(object):
         self._runCallBack(NotePosition())
 
     def addNote(self, position, head):
-        if not(0 <= position.noteTime < len(self)):
-            raise BadTimeError(position)
+        self._checkValidPosition(position)
         if self._notes.setNote(position.noteTime, position.drumIndex, head):
             self._runCallBack(position)
 
     def deleteNote(self, position):
-        if not(0 <= position.noteTime < len(self)):
-            raise BadTimeError(position)
+        self._checkValidPosition(position)
         if self._notes.delNote(position.noteTime, position.drumIndex):
             self._runCallBack(position)
 
     def toggleNote(self, position, head):
-        if not(0 <= position.noteTime < len(self)):
-            raise BadTimeError(position)
+        self._checkValidPosition(position)
         oldHead = self._notes.getNote(position.noteTime, position.drumIndex)
         if (oldHead == head):
             self.deleteNote(position)
