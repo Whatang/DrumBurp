@@ -32,6 +32,7 @@ from QMeasure import QMeasure
 from QMetaData import QMetaData
 from QKitData import QKitData
 from QEditKitDialog import QEditKitDialog
+from Data import DBErrors
 from Data.Score import ScoreFactory
 from Data.NotePosition import NotePosition
 from DBCommands import (MetaDataCommand, ScoreWidthCommand,
@@ -603,7 +604,7 @@ class QScore(QtGui.QGraphicsScene):
     def loadScore(self, filename, quiet = False):
         try:
             newScore = _SCORE_FACTORY(filename = filename)
-        except IOError, exc:
+        except DBErrors.DbReadError, exc:
             if not quiet:
                 msg = "Error loading DrumBurp file %s" % filename
                 QtGui.QMessageBox.warning(self.parent(),

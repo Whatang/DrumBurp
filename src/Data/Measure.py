@@ -25,7 +25,7 @@ Created on 12 Dec 2010
 
 from collections import defaultdict
 from DBConstants import EMPTY_NOTE, BAR_TYPES
-from DBErrors import BadTimeError
+from DBErrors import BadTimeError, TooManyBarLines
 from NotePosition import NotePosition
 from Data import MeasureCount
 import copy
@@ -384,7 +384,7 @@ class Measure(object):
                     self.mapping[barType](True)
                 self.seenEndLine = True
             else:
-                raise IOError("Too many bar lines")
+                raise TooManyBarLines("Too many bar lines")
 
     def _readNote(self, lineData):
         noteTime, drumIndex, head = lineData.split(",")

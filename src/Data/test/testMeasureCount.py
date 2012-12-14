@@ -26,7 +26,7 @@ from cStringIO import StringIO
 
 # pylint: disable-msg=R0904
 
-from Data import MeasureCount, Counter, Beat, fileUtils
+from Data import MeasureCount, Counter, Beat, fileUtils, DBErrors
 
 class TestSimple(unittest.TestCase):
     my_counter = Counter.Counter(Counter.BEAT_COUNT + "e+a")
@@ -281,7 +281,7 @@ class TestRead(unittest.TestCase):
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
         count = MeasureCount.MeasureCount()
-        self.assertRaises(IOError, count.read, iterator)
+        self.assertRaises(DBErrors.UnrecognisedLine, count.read, iterator)
 
     def testBadBeatCount(self):
         data = """COUNT_INFO_START
@@ -294,7 +294,7 @@ class TestRead(unittest.TestCase):
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
         count = MeasureCount.MeasureCount()
-        self.assertRaises(IOError, count.read, iterator)
+        self.assertRaises(DBErrors.InvalidInteger, count.read, iterator)
 
     def testNegativeBeatCount(self):
         data = """COUNT_INFO_START
@@ -307,7 +307,7 @@ class TestRead(unittest.TestCase):
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
         count = MeasureCount.MeasureCount()
-        self.assertRaises(IOError, count.read, iterator)
+        self.assertRaises(DBErrors.InvalidPositiveInteger, count.read, iterator)
 
 class TestCounterMaker(unittest.TestCase):
     def testMake(self):

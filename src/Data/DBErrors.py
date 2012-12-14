@@ -36,3 +36,25 @@ class NoSuchDrumError(StandardError):
 
 class OverSizeMeasure(StandardError):
     "The Score contains a Measure which is too large to format for this width."
+
+class DbReadError(StandardError):
+    "There was an error reading the score."
+
+class UnrecognisedLine(StandardError):
+    "The line type was not recognised."
+
+class InvalidInteger(DbReadError):
+    "The value must be an integer."
+
+class InvalidNonNegativeInteger(DbReadError):
+    "The value must be a non-negative integer."
+
+class InvalidPositiveInteger(DbReadError):
+    "The value must be a positive integer."
+
+class TooManyBarLines(DbReadError):
+    "There are too many bar lines specifed for this measure."
+
+class BadCount(DbReadError):
+    "The given count is not recognised."
+

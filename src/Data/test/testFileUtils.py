@@ -23,7 +23,7 @@ Created on 12 Dec 2012
 '''
 import unittest
 from cStringIO import StringIO
-from Data import fileUtils
+from Data import fileUtils, DBErrors
 
 # pylint: disable-msg=R0904
 
@@ -162,7 +162,7 @@ class TestDbFileIterator(unittest.TestCase):
             with iterator.section("START", "END", "empty") as section:
                 section.readString("STRING1", _Target, "s1")
                 section.readInteger("INT1", _Target, "i1")
-        except IOError:
+        except DBErrors.UnrecognisedLine:
             errorRaised = True
         self.assert_(errorRaised)
 
@@ -179,7 +179,7 @@ class TestDbFileIterator(unittest.TestCase):
             with iterator.section("START", "END", "empty") as section:
                 section.readString("STRING1", _Target, "s1")
                 section.readInteger("INT1", _Target, "i1")
-        except IOError:
+        except DBErrors.InvalidInteger:
             errorRaised = True
         self.assert_(errorRaised)
 
@@ -196,7 +196,7 @@ class TestDbFileIterator(unittest.TestCase):
             with iterator.section("START", "END", "empty") as section:
                 section.readString("STRING1", _Target, "s1")
                 section.readPositiveInteger("INT1", _Target, "i1")
-        except IOError:
+        except DBErrors.InvalidPositiveInteger:
             errorRaised = True
         self.assert_(errorRaised)
 
@@ -213,7 +213,7 @@ class TestDbFileIterator(unittest.TestCase):
             with iterator.section("START", "END", "empty") as section:
                 section.readString("STRING1", _Target, "s1")
                 section.readPositiveInteger("INT1", _Target, "i1")
-        except IOError:
+        except DBErrors.InvalidPositiveInteger:
             errorRaised = True
         self.assert_(errorRaised)
 
@@ -230,7 +230,7 @@ class TestDbFileIterator(unittest.TestCase):
             with iterator.section("START", "END", "empty") as section:
                 section.readString("STRING1", _Target, "s1")
                 section.readNonNegativeInteger("INT1", _Target, "i1")
-        except IOError:
+        except DBErrors.InvalidNonNegativeInteger:
             errorRaised = True
         self.assert_(errorRaised)
 
@@ -247,7 +247,7 @@ class TestDbFileIterator(unittest.TestCase):
             with iterator.section("START", "END", "empty") as section:
                 section.readString("STRING1", _Target, "s1")
                 section.readNonNegativeInteger("INT1", _Target, "i1")
-        except IOError:
+        except DBErrors.InvalidNonNegativeInteger:
             errorRaised = True
         self.assert_(errorRaised)
 

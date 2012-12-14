@@ -26,6 +26,7 @@ Created on 16 Apr 2011
 import itertools
 from Counter import CounterRegistry
 from DBConstants import BEAT_COUNT
+import DBErrors
 
 class Beat(object):
     '''A Beat is a measured instance of a Counter. 
@@ -87,7 +88,7 @@ class Beat(object):
             try:
                 targetValues["counter"] = registry.findMaster(lineData)
             except KeyError:
-                raise IOError("Unrecognised beat: " + lineData)
+                raise DBErrors.BadCount(lineData)
         with scoreIterator.section("BEAT_START", "BEAT_END") as section:
             section.readPositiveInteger("NUM_TICKS", targetValues, "numTicks")
             section.readCallback("COUNT", readCount)
