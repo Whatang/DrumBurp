@@ -396,13 +396,18 @@ class Measure(object):
         self.counter = MeasureCount.counterMaker(int(lineData),
                                                  len(self))
 
+    def _readCounter(self, scoreIterator):
+        counter = MeasureCount.MeasureCount()
+        counter.read(scoreIterator)
+        self.setBeatCount(counter)
+
     def read(self, scoreIterator):
         tracker = self._BarlineTracker(self)
         self.counter = MeasureCount.MeasureCount()
         with scoreIterator.section("START_BAR", "END_BAR") as section:
             section.readCallback("BARLINE", tracker.processBarline)
             section.readCallback("NOTE", self._readNote)
-            section.readSubsection("COUNT_INFO_START", self.counter.read)
+            section.readSubsection("COUNT_INFO_START", self._readCounter)
             section.readCallback("BEATLENGTH", self._makeOldMeasure)
             section.readPositiveInteger("REPEAT_COUNT", self, "repeatCount")
             section.readString("ALTERNATE", self, "alternateText")

@@ -22,12 +22,14 @@ Created on 12 Dec 2010
 @author: Mike Thomas
 '''
 import unittest
+from cStringIO import StringIO
 from Data.Measure import Measure
 from Data.Counter import CounterRegistry
 from Data.MeasureCount import MeasureCount
 from Data.DBErrors import BadTimeError
 from Data.DBConstants  import EMPTY_NOTE
 from Data.NotePosition import NotePosition
+from Data import fileUtils
 # pylint: disable-msg=R0904
 
 class TestMeasure(unittest.TestCase):
@@ -335,6 +337,51 @@ class TestMeasure(unittest.TestCase):
         self.assertEqual(self.measure.getNote(NotePosition(noteTime = 30,
                                                            drumIndex = 1)),
                          "p")
+
+class TestRead(unittest.TestCase):
+    def testReadMeasure(self):
+        data = """START_BAR 8
+                  COUNT_INFO_START
+                    REPEAT_BEATS 4
+                    BEAT_START
+                      COUNT |^+|
+                    BEAT_END
+                  COUNT_INFO_END
+                  BARLINE NORMAL_BAR,NO_BAR
+                  NOTE 0,1,o
+                  NOTE 0,2,o
+                  NOTE 1,2,o
+                  NOTE 2,2,o
+                  NOTE 2,3,o
+                  NOTE 3,2,o
+                  NOTE 3,3,o
+                  NOTE 4,1,o
+                  NOTE 4,2,o
+                  NOTE 5,2,o
+                  NOTE 6,2,o
+                  NOTE 6,3,o
+                  NOTE 7,2,o
+                  BARLINE NORMAL_BAR,NO_BAR
+                END_BAR"""
+        handle = StringIO(data)
+        iterator = fileUtils.dbFileIterator(handle)
+        measure = Measure()
+        measure.read(iterator)
+        self.assertEqual(len(measure), 8)
+        self.assertEqual(measure.numNotes(), 13)
+        self.assertEqual(measure.noteAt(0, 1), "o")
+        self.assertEqual(measure.noteAt(0, 2), "o")
+        self.assertEqual(measure.noteAt(1, 2), "o")
+        self.assertEqual(measure.noteAt(2, 2), "o")
+        self.assertEqual(measure.noteAt(2, 3), "o")
+        self.assertEqual(measure.noteAt(3, 2), "o")
+        self.assertEqual(measure.noteAt(3, 3), "o")
+        self.assertEqual(measure.noteAt(4, 1), "o")
+        self.assertEqual(measure.noteAt(4, 2), "o")
+        self.assertEqual(measure.noteAt(5, 2), "o")
+        self.assertEqual(measure.noteAt(6, 2), "o")
+        self.assertEqual(measure.noteAt(6, 3), "o")
+        self.assertEqual(measure.noteAt(7, 2), "o")
 
 class TestCallBack(unittest.TestCase):
     def setUp(self):
