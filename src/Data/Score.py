@@ -383,10 +383,6 @@ class Score(object):
                 staff = self.getStaff(position.staffIndex)
             staff.deleteMeasure(position)
 
-    def clearMeasure(self, position):
-        measure = self.getItemAtPosition(position.makeMeasurePosition())
-        measure.clear()  # IGNORE:E1103
-
     def trailingEmptyMeasures(self):
         emptyMeasures = []
         np = NotePosition(staffIndex = self.numStaffs() - 1)

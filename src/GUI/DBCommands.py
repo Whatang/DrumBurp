@@ -34,7 +34,10 @@ class ScoreCommand(QUndoCommand):
         super(ScoreCommand, self).__init__(description)
         self.description = description
         self._qScore = qScore
-        self._np = note.makeCopy()
+        if note is not None:
+            self._np = note.makeCopy()
+        else:
+            self._np = note
         self._score = self._qScore.score
 
     def undo(self):
@@ -445,13 +448,13 @@ class ClearMeasureCommand(ScoreCommand):
     def __init__(self, qScore, positions):
         super(ClearMeasureCommand, self).__init__(qScore, NotePosition(),
                                                   "clear measures")
-        self._positions = positions
+        self._positions = [np.makeMeasurePosition() for np in positions]
         self._oldMeasures = [self._score.copyMeasure(note)
                              for note in positions]
 
     def _redo(self):
         for np in self._positions:
-            self._score.clearMeasure(np)
+            self._score.getItemAtPosition(np).clear()
 
     def _undo(self):
         for np, data in zip(self._positions, self._oldMeasures):
