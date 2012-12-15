@@ -41,15 +41,6 @@ class TestStaffControl(unittest.TestCase):
         self.score.addStaff()
         self.assertEqual(self.score.numStaffs(), 2)
 
-    def testDeleteStaff(self):
-        self.score.addStaff()
-        self.score.addStaff()
-        self.assertEqual(self.score.numStaffs(), 2)
-        lastStaff = self.score.getStaff(1)
-        self.score.deleteStaff(NotePosition(staffIndex = 0))
-        self.assertEqual(self.score.numStaffs(), 1)
-        self.assert_(self.score.getStaff(0) is lastStaff)
-
     def testInsertStaffAtStart(self):
         self.score.addStaff()
         self.score.addStaff()
