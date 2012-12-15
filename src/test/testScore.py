@@ -36,14 +36,14 @@ class TestStaffControl(unittest.TestCase):
         self.score = Score()
 
     def testAddStaff(self):
-        self.score.addStaff()
+        self.score._addStaff()
         self.assertEqual(self.score.numStaffs(), 1)
-        self.score.addStaff()
+        self.score._addStaff()
         self.assertEqual(self.score.numStaffs(), 2)
 
     def testInsertStaffAtStart(self):
-        self.score.addStaff()
-        self.score.addStaff()
+        self.score._addStaff()
+        self.score._addStaff()
         self.assertEqual(self.score.numStaffs(), 2)
         firstStaff = self.score.getStaff(0)
         self.score.insertStaff(NotePosition(staffIndex = 0))
@@ -51,8 +51,8 @@ class TestStaffControl(unittest.TestCase):
         self.assert_(firstStaff is self.score.getStaff(1))
 
     def testInsertStaffInMiddle(self):
-        self.score.addStaff()
-        self.score.addStaff()
+        self.score._addStaff()
+        self.score._addStaff()
         self.assertEqual(self.score.numStaffs(), 2)
         firstStaff = self.score.getStaff(0)
         lastStaff = self.score.getStaff(1)
@@ -63,8 +63,8 @@ class TestStaffControl(unittest.TestCase):
         self.assert_(self.score.getStaff(1) not in (firstStaff, lastStaff))
 
     def testInsertStaffAtEnd(self):
-        self.score.addStaff()
-        self.score.addStaff()
+        self.score._addStaff()
+        self.score._addStaff()
         self.assertEqual(self.score.numStaffs(), 2)
         lastStaff = self.score.getStaff(1)
         self.score.insertStaff(NotePosition(staffIndex = 2))

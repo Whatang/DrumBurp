@@ -245,7 +245,7 @@ class Score(object):
     def numStaffs(self):
         return len(self._staffs)
 
-    def addStaff(self):
+    def _addStaff(self):
         newStaff = Staff()
         self._staffs.append(newStaff)
         self._setStaffCallBack(newStaff, self.numStaffs() - 1)
@@ -289,7 +289,7 @@ class Score(object):
         newMeasure = Measure(width)
         newMeasure.counter = counter
         if self.numStaffs() == 0:
-            self.addStaff()
+            self._addStaff()
         self.getStaff(-1).addMeasure(newMeasure)
         return newMeasure
 
@@ -329,7 +329,7 @@ class Score(object):
         if not (0 <= index <= self.numMeasures()):
             raise BadTimeError()
         if self.numStaffs() == 0:
-            self.addStaff()
+            self._addStaff()
             staff = self.getStaff(0)
         elif index == self.numMeasures():
             staff = self.getStaff(-1)
@@ -654,14 +654,14 @@ class Score(object):
                     staff.deleteLastMeasure()
                     staffIndex += 1
                     if staffIndex == self.numStaffs():
-                        self.addStaff()
+                        self._addStaff()
                     staff = self.getStaff(staffIndex)
                     staff.addMeasure(measure)
             if (measure.isLineEnd() and
                 measureIndex != len(measures) - 1):
                 staffIndex += 1
                 if staffIndex == self.numStaffs():
-                    self.addStaff()
+                    self._addStaff()
                 staff = self.getStaff(staffIndex)
         while self.numStaffs() > staffIndex + 1:
             staff = self._staffs.pop()
