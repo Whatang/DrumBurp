@@ -788,7 +788,7 @@ class Score(object):
             section.readBoolean("LILYFILL", self, "lilyFill")
             section.readSubsection("DEFAULT_COUNT_INFO_START",
                                    lambda i: self.defaultCount.read(i, True))
-            section.readPositiveInteger("SYSTEM_SPACE", self, "systemSpacing")
+            section.readNonNegativeInteger("SYSTEM_SPACE", self, "systemSpacing")
             section.readSubsection("FONT_OPTIONS_START", self.fontOptions.read)
         # Check that all the note heads are valid
         for measure in self.iterMeasures():
