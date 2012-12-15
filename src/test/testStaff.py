@@ -146,8 +146,8 @@ class TestNoteControl(unittest.TestCase):
         self.staff.addMeasure(Measure(16))
         self.staff.addMeasure(Measure(16))
 
-    def testGetNote(self):
-        self.assertEqual(self.staff.getNote(NotePosition(measureIndex = 0,
+    def testgetItemAtPosition(self):
+        self.assertEqual(self.staff.getItemAtPosition(NotePosition(measureIndex = 0,
                                                          noteTime = 0,
                                                          drumIndex = 0)),
                          EMPTY_NOTE)
@@ -159,24 +159,24 @@ class TestNoteControl(unittest.TestCase):
         self.assertEqual(self.staff.getItemAtPosition(np),
                          EMPTY_NOTE)
 
-    def testGetNote_BadTime(self):
-        self.assertRaises(BadTimeError, self.staff.getNote,
+    def testgetItemAtPosition_BadTime(self):
+        self.assertRaises(BadTimeError, self.staff.getItemAtPosition,
                           NotePosition(measureIndex = -1,
                                        noteTime = 0, drumIndex = 0))
-        self.assertRaises(BadTimeError, self.staff.getNote,
+        self.assertRaises(BadTimeError, self.staff.getItemAtPosition,
                           NotePosition(measureIndex = 20,
                                        noteTime = 0, drumIndex = 0))
-        self.assertRaises(BadTimeError, self.staff.getNote,
+        self.assertRaises(BadTimeError, self.staff.getItemAtPosition,
                           NotePosition(measureIndex = 0,
                                        noteTime = -1, drumIndex = 0))
-        self.assertRaises(BadTimeError, self.staff.getNote,
+        self.assertRaises(BadTimeError, self.staff.getItemAtPosition,
                           NotePosition(measureIndex = 0,
                                        noteTime = 20, drumIndex = 0))
 
     def testAddNote(self):
         self.staff.addNote(NotePosition(measureIndex = 0,
                                         noteTime = 0, drumIndex = 0), "o")
-        self.assertEqual(self.staff.getNote(NotePosition(measureIndex = 0,
+        self.assertEqual(self.staff.getItemAtPosition(NotePosition(measureIndex = 0,
                                                          noteTime = 0,
                                                          drumIndex = 0)), "o")
 
@@ -198,7 +198,7 @@ class TestNoteControl(unittest.TestCase):
         np = NotePosition(measureIndex = 0, noteTime = 0, drumIndex = 0)
         self.staff.addNote(np, "o")
         self.staff.deleteNote(np)
-        self.assertEqual(self.staff.getNote(np), EMPTY_NOTE)
+        self.assertEqual(self.staff.getItemAtPosition(np), EMPTY_NOTE)
 
     def testDeleteNote_BadTime(self):
         self.assertRaises(BadTimeError, self.staff.deleteNote,
@@ -217,9 +217,9 @@ class TestNoteControl(unittest.TestCase):
     def testToggleNote(self):
         np = NotePosition(measureIndex = 0, noteTime = 0, drumIndex = 0)
         self.staff.toggleNote(np, "o")
-        self.assertEqual(self.staff.getNote(np), "o")
+        self.assertEqual(self.staff.getItemAtPosition(np), "o")
         self.staff.toggleNote(np, "o")
-        self.assertEqual(self.staff.getNote(np), EMPTY_NOTE)
+        self.assertEqual(self.staff.getItemAtPosition(np), EMPTY_NOTE)
 
     def testToggleNote_BadTime(self):
         self.assertRaises(BadTimeError, self.staff.toggleNote,

@@ -235,6 +235,9 @@ class Score(object):
         staff = self.getStaff(position.staffIndex)
         if position.measureIndex is None:
             return staff
+        if (position.drumIndex is not None and
+            not(0 <= position.drumIndex < len(self.drumKit))):
+            raise BadTimeError()
         return staff.getItemAtPosition(position)
 
     def getStaff(self, index):
@@ -557,13 +560,6 @@ class Score(object):
                 position.measureIndex += 1
         finally:
             self.turnOnCallBacks()
-
-    def getNote(self, position):
-        if not (0 <= position.staffIndex < self.numStaffs()):
-            raise BadTimeError(position)
-        if not (0 <= position.drumIndex < len(self.drumKit)):
-            raise BadTimeError(position)
-        return self.getStaff(position.staffIndex).getNote(position)
 
     def addNote(self, position, head = None):
         if not (0 <= position.staffIndex < self.numStaffs()):

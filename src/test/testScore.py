@@ -174,34 +174,34 @@ class TestNoteControl(unittest.TestCase):
             self.score.addEmptyMeasure(16)
         self.score.gridFormatScore(80)
 
-    def testGetNote(self):
-        self.assertEqual(self.score.getNote(NotePosition(0, 0, 0, 0)),
+    def testgetItemAtPosition(self):
+        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
                          EMPTY_NOTE)
 
-    def testGetNote_BadTime(self):
-        self.assertRaises(BadTimeError, self.score.getNote,
+    def testgetItemAtPosition_BadTime(self):
+        self.assertRaises(BadTimeError, self.score.getItemAtPosition,
                           NotePosition(-1, 0, 0, 0))
-        self.assertRaises(BadTimeError, self.score.getNote,
+        self.assertRaises(BadTimeError, self.score.getItemAtPosition,
                           NotePosition(20, 0, 0, 0))
-        self.assertRaises(BadTimeError, self.score.getNote,
+        self.assertRaises(BadTimeError, self.score.getItemAtPosition,
                           NotePosition(0, -1, 0, 0))
-        self.assertRaises(BadTimeError, self.score.getNote,
+        self.assertRaises(BadTimeError, self.score.getItemAtPosition,
                           NotePosition(0, 20, 0, 0))
-        self.assertRaises(BadTimeError, self.score.getNote,
+        self.assertRaises(BadTimeError, self.score.getItemAtPosition,
                           NotePosition(0, 0, -1, 0))
-        self.assertRaises(BadTimeError, self.score.getNote,
+        self.assertRaises(BadTimeError, self.score.getItemAtPosition,
                           NotePosition(0, 0, 20, 0))
 
-    def testGetNote_BadNote(self):
-        self.assertRaises(BadTimeError, self.score.getNote,
+    def testgetItemAtPosition_BadNote(self):
+        self.assertRaises(BadTimeError, self.score.getItemAtPosition,
                           NotePosition(0, 0, 0, -1))
-        self.assertRaises(BadTimeError, self.score.getNote,
+        self.assertRaises(BadTimeError, self.score.getItemAtPosition,
                           NotePosition(0, 0, 0,
                                        len(self.score.drumKit)))
 
     def testAddNote(self):
         self.score.addNote(NotePosition(0, 0, 0, 0), "o")
-        self.assertEqual(self.score.getNote(NotePosition(0, 0, 0, 0)), "o")
+        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)), "o")
 
     def testAddNote_BadTime(self):
         self.assertRaises(BadTimeError,
@@ -227,13 +227,13 @@ class TestNoteControl(unittest.TestCase):
     def testAddNote_DefaultHead(self):
         self.score.addNote(NotePosition(0, 0, 0, 0))
         defaultHead = self.score.drumKit[0].head
-        self.assertEqual(self.score.getNote(NotePosition(0, 0, 0, 0)),
+        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
                          defaultHead)
 
     def testDeleteNote(self):
         self.score.addNote(NotePosition(0, 0, 0, 0), "o")
         self.score.deleteNote(NotePosition(0, 0, 0, 0))
-        self.assertEqual(self.score.getNote(NotePosition(0, 0, 0, 0)),
+        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
                          EMPTY_NOTE)
 
     def testDeleteNote_BadTime(self):
@@ -259,9 +259,9 @@ class TestNoteControl(unittest.TestCase):
 
     def testToggleNote(self):
         self.score.toggleNote(NotePosition(0, 0, 0, 0), "o")
-        self.assertEqual(self.score.getNote(NotePosition(0, 0, 0, 0)), "o")
+        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)), "o")
         self.score.toggleNote(NotePosition(0, 0, 0, 0), "o")
-        self.assertEqual(self.score.getNote(NotePosition(0, 0, 0, 0)),
+        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
                          EMPTY_NOTE)
 
     def testToggleNote_BadTime(self):
@@ -287,10 +287,10 @@ class TestNoteControl(unittest.TestCase):
     def testToggleNote_DefaultHead(self):
         self.score.toggleNote(NotePosition(0, 0, 0, 0))
         defaultHead = self.score.drumKit[0].head
-        self.assertEqual(self.score.getNote(NotePosition(0, 0, 0, 0)),
+        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
                          defaultHead)
         self.score.toggleNote(NotePosition(0, 0, 0, 0))
-        self.assertEqual(self.score.getNote(NotePosition(0, 0, 0, 0)),
+        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
                          EMPTY_NOTE)
 
 class TestCharacterFormatScore(unittest.TestCase):

@@ -133,10 +133,6 @@ class Staff(object):
             return 0
         return (len(self) + self.numMeasures() + 1)
 
-    def getNote(self, position):
-        self._isValidPosition(position)
-        return self[position.measureIndex].getNote(position)
-
     def getItemAtPosition(self, position):
         self._isValidPosition(position)
         measure = self[position.measureIndex]

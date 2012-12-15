@@ -109,7 +109,7 @@ class NoteCommand(ScoreCommand):  # pylint:disable-msg=W0223
                                           "set note")
         if head is None:
             head = self._score.getDefaultHead(notePosition.drumIndex)
-        self._oldHead = self._score.getNote(notePosition)
+        self._oldHead = self._score.getItemAtPosition(notePosition)
         self._head = head
 
     def _undo(self):
@@ -128,7 +128,7 @@ class SetNote(NoteCommand):
 class ToggleNote(NoteCommand):
     def _redo(self):
         self._score.toggleNote(self._np, self._head)
-        newHead = self._score.getNote(self._np)
+        newHead = self._score.getItemAtPosition(self._np)
         if (newHead != DBConstants.EMPTY_NOTE):
             DBMidi.playNote(self._np.drumIndex, self._head)
 
@@ -270,13 +270,13 @@ class RepeatNoteCommand(ScoreCommand):
     def __init__(self, qScore, firstNote, nRepeats, repInterval):
         super(RepeatNoteCommand, self).__init__(qScore, firstNote,
                                                 "repeat note")
-        self._head = self._score.getNote(firstNote)
+        self._head = self._score.getItemAtPosition(firstNote)
         note = copy.copy(firstNote)
-        self._oldNotes = [(note, self._score.getNote(note))]
+        self._oldNotes = [(note, self._score.getItemAtPosition(note))]
         for dummyIndex in range(nRepeats):
             note = copy.copy(note)
             note = self._score.notePlus(note, repInterval)
-            self._oldNotes.append((note, self._score.getNote(note)))
+            self._oldNotes.append((note, self._score.getItemAtPosition(note)))
 
     def _redo(self):
         for np, dummyHead in self._oldNotes:
