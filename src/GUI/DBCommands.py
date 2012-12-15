@@ -33,6 +33,7 @@ class ScoreCommand(QUndoCommand):
     canReformat = True
     def __init__(self, qScore, note, description):
         super(ScoreCommand, self).__init__(description)
+        self.description = description
         self._qScore = qScore
         self._np = copy.copy(note)
         self._score = self._qScore.score

@@ -143,7 +143,7 @@ class QScore(QtGui.QGraphicsScene):
 
     def addCommand(self, command):
         if not self._inMacro:
-            self._undoStack.beginMacro(command.actionText())
+            self._undoStack.beginMacro(command.description)
             self._undoStack.push(CheckUndo(self))
             if command.canReformat:
                 self._addSaveStateCommand()
