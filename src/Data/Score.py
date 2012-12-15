@@ -558,24 +558,6 @@ class Score(object):
         finally:
             self.turnOnCallBacks()
 
-    def setLineBreak(self, position, onOff):
-        if not(0 <= position.staffIndex < self.numStaffs()):
-            raise BadTimeError()
-        staff = self.getStaff(position.staffIndex)
-        staff.setLineBreak(position, onOff)
-
-    def setRepeatEnd(self, position, onOff):
-        if not(0 <= position.staffIndex < self.numStaffs()):
-            raise BadTimeError()
-        staff = self.getStaff(position.staffIndex)
-        staff.setRepeatEnd(position, onOff)
-
-    def setRepeatStart(self, position, onOff):
-        if not(0 <= position.staffIndex < self.numStaffs()):
-            raise BadTimeError()
-        staff = self.getStaff(position.staffIndex)
-        staff.setRepeatStart(position, onOff)
-
     def getNote(self, position):
         if not (0 <= position.staffIndex < self.numStaffs()):
             raise BadTimeError(position)

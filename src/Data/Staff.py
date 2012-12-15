@@ -123,18 +123,6 @@ class Staff(object):
             ok = ok and not measure.isSectionEnd()
         return ok
 
-    def setLineBreak(self, position, onOff):
-        self._isValidPosition(position)
-        self._measures[position.measureIndex].setLineBreak(onOff)
-
-    def setRepeatEnd(self, position, onOff):
-        self._isValidPosition(position)
-        self._measures[position.measureIndex].setRepeatEnd(onOff)
-
-    def setRepeatStart(self, position, onOff):
-        self._isValidPosition(position)
-        self._measures[position.measureIndex].setRepeatStart(onOff)
-
     def clear(self):
         for measure in self:
             measure.clearCallBack()

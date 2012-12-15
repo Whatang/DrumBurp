@@ -26,6 +26,7 @@ import DBMidi
 from Data import DBConstants
 from Data.Score import Score
 from Data.NotePosition import NotePosition
+from Data.Measure import Measure
 import copy
 import DBVersion
 
@@ -381,13 +382,18 @@ class SetMeasureLineCommand(ScoreCommand):
                                                     descr)
         self._onOff = onOff
         self._method = method
+        self._np.drumIndex = None
+        self._np.noteTime = None
+
+    def _getMeasure(self):
+        return self._score.getItemAtPosition(self._np)
 
     def _redo(self):
-        self._method(self._score, self._np, self._onOff)
+        self._method(self._getMeasure(), self._onOff)
         self._qScore.reBuild()
 
     def _undo(self):
-        self._method(self._score, self._np, not self._onOff)
+        self._method(self._getMeasure(), not self._onOff)
         self._qScore.reBuild()
 
 class SetSectionEndCommand(SetMeasureLineCommand):
@@ -395,19 +401,21 @@ class SetSectionEndCommand(SetMeasureLineCommand):
         super(SetSectionEndCommand, self).__init__(qScore,
                                                    "set section end",
                                                    note, onOff,
-                                                   Score.setSectionEnd)
+                                                   None)
         if not onOff:
             self._index = self._score.getSectionIndex(note)
             self._title = self._score.getSectionTitle(self._index)
 
     def _undo(self):
-        super(SetSectionEndCommand, self)._undo()  # IGNORE:W0212
+        self._score.setSectionEnd(self._np, not self._onOff)
+        self._qScore.reBuild()
         if not self._onOff:
             self._score.setSectionTitle(self._index, self._title)
         self._qScore.sectionsChanged.emit()
 
     def _redo(self):
-        super(SetSectionEndCommand, self)._redo()  # IGNORE:W0212
+        self._score.setSectionEnd(self._np, self._onOff)
+        self._qScore.reBuild()
         self._qScore.sectionsChanged.emit()
 
 
@@ -417,7 +425,7 @@ class SetLineBreakCommand(SetMeasureLineCommand):
         super(SetLineBreakCommand, self).__init__(qScore,
                                                   "set line break",
                                                   note, onOff,
-                                                  Score.setLineBreak)
+                                                  Measure.setLineBreak)
 
 class SetRepeatStartCommand(SetMeasureLineCommand):
     canReformat = False
@@ -425,7 +433,7 @@ class SetRepeatStartCommand(SetMeasureLineCommand):
         super(SetRepeatStartCommand, self).__init__(qScore,
                                                     "set repeat start",
                                                     note, onOff,
-                                                    Score.setRepeatStart)
+                                                    Measure.setRepeatStart)
 
 class SetRepeatEndCommand(SetMeasureLineCommand):
     canReformat = False
@@ -433,7 +441,7 @@ class SetRepeatEndCommand(SetMeasureLineCommand):
         super(SetRepeatEndCommand, self).__init__(qScore,
                                                   "set repeat end",
                                                   note, onOff,
-                                                  Score.setRepeatEnd)
+                                                  Measure.setRepeatEnd)
 
 class ClearMeasureCommand(ScoreCommand):
     canReformat = False

@@ -248,30 +248,6 @@ class TestMeasureControl(unittest.TestCase):
         measure = self.staff.getItemAtPosition(self.np)
         self.assertEqual(len(measure), 3)
 
-    def testSetLineBreak(self):
-        measure = self.staff.getItemAtPosition(self.np)
-        self.assertFalse(measure.isLineBreak())
-        self.staff.setLineBreak(self.np, True)
-        self.assertTrue(measure.isLineBreak())
-        self.staff.setLineBreak(self.np, False)
-        self.assertFalse(measure.isLineBreak())
-
-    def testSetRepeatStart(self):
-        measure = self.staff.getItemAtPosition(self.np)
-        self.assertFalse(measure.isRepeatStart())
-        self.staff.setRepeatStart(self.np, True)
-        self.assertTrue(measure.isRepeatStart())
-        self.staff.setRepeatStart(self.np, False)
-        self.assertFalse(measure.isRepeatStart())
-
-    def testSetRepeatEnd(self):
-        measure = self.staff.getItemAtPosition(self.np)
-        self.assertFalse(measure.isRepeatEnd())
-        self.staff.setRepeatEnd(self.np, True)
-        self.assertTrue(measure.isRepeatEnd())
-        self.staff.setRepeatEnd(self.np, False)
-        self.assertFalse(measure.isRepeatEnd())
-
     def testSetSectionEnd(self):
         measure = self.staff.getItemAtPosition(self.np)
         self.assertFalse(measure.isSectionEnd())
