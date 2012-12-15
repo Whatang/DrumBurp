@@ -680,9 +680,6 @@ class Score(object):
             measure.changeKit(newKit, changes)
         self.drumKit = newKit
 
-    def getDefaultHead(self, drumIndex):
-        return self.drumKit.getDefaultHead(drumIndex)
-
     def numVisibleLines(self, index):
         if self.scoreData.emptyLinesVisible:
             return len(self.drumKit)

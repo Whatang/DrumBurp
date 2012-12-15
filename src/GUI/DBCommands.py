@@ -106,7 +106,7 @@ class NoteCommand(ScoreCommand):  # pylint:disable-msg=W0223
         super(NoteCommand, self).__init__(qScore, notePosition,
                                           "set note")
         if head is None:
-            head = self._score.getDefaultHead(notePosition.drumIndex)
+            head = self._score.drumKit.getDefaultHead(notePosition.drumIndex)
         self._oldHead = self._score.getItemAtPosition(notePosition)
         self._head = head
 
