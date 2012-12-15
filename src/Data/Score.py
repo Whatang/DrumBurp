@@ -632,7 +632,7 @@ class Score(object):
     def saveFormatState(self):
         self._formatState = self._getFormatState()
 
-    def gridFormatScore(self, width = None, ignoreErrors = True):
+    def formatScore(self, width = None, ignoreErrors = True):
         if width is None:
             width = self.scoreData.width
         measures = list(self.iterMeasures())
@@ -761,7 +761,7 @@ class Score(object):
                 if not self.drumKit[np.drumIndex].isAllowedHead(head):
                     self.drumKit[np.drumIndex].addNoteHead(head)
         # Format the score appropriately
-        self.gridFormatScore(self.scoreData.width)
+        self.formatScore(self.scoreData.width)
         # Make sure we've got the right number of section titles
         assert(all(staff.isConsistent() for staff in self.iterStaffs()))
         numSections = len([staff for staff in self.iterStaffs()

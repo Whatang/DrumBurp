@@ -242,7 +242,7 @@ class QScore(QtGui.QGraphicsScene):
 
     def _setScore(self, score):
         if score != self._score:
-            score.gridFormatScore(None)
+            score.formatScore(None)
             self._score = score
             if score is not None:
                 self.startUp()
@@ -318,12 +318,12 @@ class QScore(QtGui.QGraphicsScene):
 
     @delayCall
     def reBuild(self):
-        self._score.gridFormatScore(None)
+        self._score.formatScore(None)
         self._build()
         self.invalidate()
 
     def checkFormatting(self):
-        if self._score.gridFormatScore(None):
+        if self._score.formatScore(None):
             self.reBuild()
 
     def __iter__(self):

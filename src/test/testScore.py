@@ -172,7 +172,7 @@ class TestNoteControl(unittest.TestCase):
         self.score.drumKit = DrumKit.getNamedDefaultKit()
         for dummy in range(0, 12):
             self.score.addEmptyMeasure(16)
-        self.score.gridFormatScore(80)
+        self.score.formatScore(80)
 
     def testgetItemAtPosition(self):
         self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
@@ -300,7 +300,7 @@ class TestCharacterFormatScore(unittest.TestCase):
     def testgridFormatScore(self):
         for dummy in range(0, 20):
             self.score.addEmptyMeasure(16)
-        self.score.gridFormatScore(80)
+        self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 5)
         for staff in self.score.iterStaffs():
             self.assertEqual(staff.numMeasures(), 4)
@@ -311,7 +311,7 @@ class TestCharacterFormatScore(unittest.TestCase):
         for dummy in range(0, 20):
             self.score.addEmptyMeasure(16)
         self.score.getMeasure(5).setSectionEnd(True)
-        self.score.gridFormatScore(80)
+        self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 6)
         self.assertEqual(self.score.getStaff(1).gridWidth(), 35)
 
@@ -319,7 +319,7 @@ class TestCharacterFormatScore(unittest.TestCase):
         for dummy in range(0, 20):
             self.score.addEmptyMeasure(16)
         self.score.getMeasure(19).setSectionEnd(True)
-        self.score.gridFormatScore(80)
+        self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 5)
 
     def testgridFormatScoreWithSectionsAndRepeat(self):
@@ -328,7 +328,7 @@ class TestCharacterFormatScore(unittest.TestCase):
         self.score.getMeasure(0).setRepeatStart(True)
         self.score.getMeasure(5).setSectionEnd(True)
         self.score.getMeasure(5).setRepeatEnd(True)
-        self.score.gridFormatScore(80)
+        self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 6)
         self.assertEqual(self.score.getStaff(1).gridWidth(), 35)
 
@@ -338,7 +338,7 @@ class TestCharacterFormatScore(unittest.TestCase):
         self.score.addEmptyMeasure(70)
         for dummy in range(0, 12):
             self.score.addEmptyMeasure(16)
-        self.score.gridFormatScore(80)
+        self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 7)
         self.assertEqual(self.score.getStaff(3).gridWidth(), 72)
 
@@ -348,7 +348,7 @@ class TestCharacterFormatScore(unittest.TestCase):
         self.score.addEmptyMeasure(80)
         for dummy in range(0, 12):
             self.score.addEmptyMeasure(16)
-        self.score.gridFormatScore(80, ignoreErrors = True)
+        self.score.formatScore(80, ignoreErrors = True)
         self.assertEqual(self.score.numStaffs(), 7)
         self.assertEqual(self.score.getStaff(3).gridWidth(), 82)
 
@@ -358,24 +358,24 @@ class TestCharacterFormatScore(unittest.TestCase):
         self.score.addEmptyMeasure(90)
         for dummy in range(0, 12):
             self.score.addEmptyMeasure(16)
-        self.assertRaises(OverSizeMeasure, self.score.gridFormatScore, 80,
+        self.assertRaises(OverSizeMeasure, self.score.formatScore, 80,
                           ignoreErrors = False)
 
     def testgridFormatScore_FewerStaffsAfterDelete(self):
         for dummy in range(0, 9):
             self.score.addEmptyMeasure(16)
-        self.score.gridFormatScore(80)
+        self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 3)
         self.score.deleteMeasureByIndex(6)
-        self.score.gridFormatScore(80)
+        self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 2)
 
     def testgridFormatScore_FewerStaffsOnWiderFormat(self):
         for dummy in range(0, 8):
             self.score.addEmptyMeasure(16)
-        self.score.gridFormatScore(40)
+        self.score.formatScore(40)
         self.assertEqual(self.score.numStaffs(), 4)
-        self.score.gridFormatScore(80)
+        self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 2)
 
 class TestCallBack(unittest.TestCase):
@@ -384,7 +384,7 @@ class TestCallBack(unittest.TestCase):
         self.score.drumKit = DrumKit.getNamedDefaultKit()
         for dummy in range(0, 16):
             self.score.addEmptyMeasure(16)
-        self.score.gridFormatScore(80)
+        self.score.formatScore(80)
         self.calls = []
         def myCallBack(position):
             self.calls.append((position.staffIndex,
