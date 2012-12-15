@@ -251,7 +251,7 @@ class Score(object):
         self._setStaffCallBack(newStaff, self.numStaffs() - 1)
 
 
-    def deleteStaffByIndex(self, index):
+    def _deleteStaffByIndex(self, index):
         if not (0 <= index < self.numStaffs()):
             raise BadTimeError(index)
         staff = self._staffs[index]
@@ -270,9 +270,6 @@ class Score(object):
         self._staffs.pop(index)
         for offset, nextStaff in enumerate(self._staffs[index:]):
             self._setStaffCallBack(nextStaff, index + offset)
-
-    def deleteStaff(self, position):
-        self.deleteStaffByIndex(position.staffIndex)
 
     def insertStaffByIndex(self, index):
         if not (0 <= index <= self.numStaffs()):
@@ -376,7 +373,7 @@ class Score(object):
         for dummyIndex in xrange(numToDelete):
             if position.measureIndex == staff.numMeasures():
                 if staff.numMeasures() == 0:
-                    self.deleteStaff(position)
+                    self._deleteStaffByIndex(position.staffIndex)
                 else:
                     position.staffIndex += 1
                     position.measureIndex = 0
@@ -467,8 +464,8 @@ class Score(object):
                not self.getStaff(startIndex - 1).isSectionEnd()):
             startIndex -= 1
         while not self.getStaff(startIndex).isSectionEnd():
-            self.deleteStaffByIndex(startIndex)
-        self.deleteStaffByIndex(startIndex)
+            self._deleteStaffByIndex(startIndex)
+        self._deleteStaffByIndex(startIndex)
 
     def iterSections(self):
         return iter(self._sections)
