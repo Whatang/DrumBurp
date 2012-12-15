@@ -166,7 +166,7 @@ class QNotationScene(QGraphicsScene):
         if headData.notationEffect == "flam":
             self._effectImage.setVisible(False)
             self._dragImage.setVisible(False)
-            #Draw flams
+            # Draw flams
             self._flamImage.setPixmap(self._flams[headData.stemDirection].get(headData.notationHead,
                                                                               self._heads["default"]))
             flamRect = self._flamImage.boundingRect()
@@ -178,7 +178,7 @@ class QNotationScene(QGraphicsScene):
         elif headData.notationEffect in self._effects:
             self._flamImage.setVisible(False)
             self._dragImage.setVisible(False)
-            #Draw effects
+            # Draw effects
             self._effectImage.setPixmap(self._effects[headData.notationEffect])
             effectRect = self._effectImage.boundingRect()
             effectWidth = effectRect.width()

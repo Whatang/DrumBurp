@@ -20,7 +20,6 @@
 
 @author: Mike
 '''
-import copy
 
 from DBCommands import (ToggleNote, RepeatNoteCommand,
                         EditMeasurePropertiesCommand, SetRepeatCountCommand,
@@ -273,11 +272,11 @@ class RepeatingDragging(FsmState):
             return self
 
     def _makeNotePositions(self):
-        note = copy.copy(self.secondNote)
+        note = self.secondNote.makeCopy()
         notes = [note]
         more = True
         while more:
-            note = copy.copy(note)
+            note = note.makeCopy()
             note = self.score.notePlus(note, self.interval)
             more = (note is not None and
                     ((note.staffIndex < self._lastNote.staffIndex) or

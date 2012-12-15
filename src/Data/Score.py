@@ -35,7 +35,6 @@ from ScoreMetaData import ScoreMetaData
 from FontOptions import FontOptions
 import fileUtils
 import bisect
-import copy
 import hashlib
 from StringIO import StringIO
 
@@ -372,7 +371,7 @@ class Score(object):
         staff.deleteMeasure(position)
 
     def deleteMeasuresAtPosition(self, position, numToDelete):
-        position = copy.copy(position)
+        position = position.makeMeasurePosition()
         staff = self.getStaff(position.staffIndex)
         for dummyIndex in xrange(numToDelete):
             if position.measureIndex == staff.numMeasures():
@@ -396,7 +395,7 @@ class Score(object):
         measure = self.getItemAtPosition(np)
         while ((np.staffIndex > 0 or np.measureIndex > 0)
                and measure.isEmpty()):  # pylint:disable-msg=E1103
-            emptyMeasures.append(copy.copy(np))
+            emptyMeasures.append(np.makeMeasurePosition())
             if np.measureIndex == 0:
                 np.staffIndex -= 1
                 staff = self.getStaff(np.staffIndex)
@@ -544,7 +543,7 @@ class Score(object):
 
     def insertSectionCopy(self, position, sectionIndex):
         self.turnOffCallBacks()
-        position = copy.copy(position)
+        position = position.makeMeasurePosition()
         try:
             if not(0 <= position.staffIndex < self.numStaffs()):
                 raise BadTimeError()
@@ -610,10 +609,8 @@ class Score(object):
         """Calculate the difference in ticks between NotePositions first and 
         second.
         """
-        current = copy.copy(first)
-        current.noteTime = None
-        current.drumIndex = None
-        end = copy.copy(second)
+        current = first.makeMeasurePosition()
+        end = second.makeMeasurePosition()
         end.noteTime = None
         end.drumIndex = None
         ticks = 0

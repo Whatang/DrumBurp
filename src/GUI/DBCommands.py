@@ -24,10 +24,8 @@ Created on 13 Feb 2011
 from PyQt4.QtGui import QUndoCommand
 import DBMidi
 from Data import DBConstants
-from Data.Score import Score
 from Data.NotePosition import NotePosition
 from Data.Measure import Measure
-import copy
 import DBVersion
 
 class ScoreCommand(QUndoCommand):
@@ -36,7 +34,7 @@ class ScoreCommand(QUndoCommand):
         super(ScoreCommand, self).__init__(description)
         self.description = description
         self._qScore = qScore
-        self._np = copy.copy(note)
+        self._np = note.makeCopy()
         self._score = self._qScore.score
 
     def undo(self):
@@ -271,10 +269,10 @@ class RepeatNoteCommand(ScoreCommand):
         super(RepeatNoteCommand, self).__init__(qScore, firstNote,
                                                 "repeat note")
         self._head = self._score.getItemAtPosition(firstNote)
-        note = copy.copy(firstNote)
+        note = firstNote.makeCopy()
         self._oldNotes = [(note, self._score.getItemAtPosition(note))]
         for dummyIndex in range(nRepeats):
-            note = copy.copy(note)
+            note = note.makeCopy()
             note = self._score.notePlus(note, repInterval)
             self._oldNotes.append((note, self._score.getItemAtPosition(note)))
 
@@ -382,8 +380,7 @@ class SetMeasureLineCommand(ScoreCommand):
                                                     descr)
         self._onOff = onOff
         self._method = method
-        self._np.drumIndex = None
-        self._np.noteTime = None
+        self._np = self._np.makeMeasurePosition()
 
     def _getMeasure(self):
         return self._score.getItemAtPosition(self._np)

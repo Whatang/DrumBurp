@@ -40,8 +40,11 @@ class NotePosition(object):
         return ", ".join(str(x) for x in [self.staffIndex, self.measureIndex,
                                           self.noteTime, self.drumIndex])
 
+    def makeCopy(self):
+        return copy.copy(self)
+
     def makeMeasurePosition(self):
-        np = copy.copy(self)
+        np = self.makeCopy()
         np.noteTime = None
         np.drumIndex = None
         return np

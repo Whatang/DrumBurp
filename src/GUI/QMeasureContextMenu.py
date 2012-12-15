@@ -22,7 +22,6 @@ Created on 16 Apr 2011
 @author: Mike Thomas
 
 '''
-import copy
 from PyQt4 import QtGui
 
 from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
@@ -152,13 +151,13 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         self._qScore.sendFsmEvent(MenuSelect())
 
     def _insertMeasureAfter(self):
-        np = copy.copy(self._np)
+        np = self._np.makeMeasurePosition()
         np.measureIndex += 1
         self._insertDefaultMeasure(np, True)
         self._qScore.sendFsmEvent(MenuSelect())
 
     def _insertOtherMeasures(self):
-        np = copy.copy(self._np)
+        np = self._np.makeMeasurePosition()
         counter = self._qScore.defaultCount
         insertDialog = QInsertMeasuresDialog(self._qScore.parent(),
                                              counter,
@@ -193,7 +192,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
             arguments = []
             np.measureIndex = staff.numMeasures() - 1
             while np.measureIndex >= 0:
-                arguments.append((copy.copy(np),))
+                arguments.append((np.makeCopy(),))
                 np.measureIndex -= 1
             self._qScore.addRepeatedCommand("delete staff",
                                             DeleteMeasureCommand, arguments)
@@ -208,7 +207,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                                            QtGui.QMessageBox.Ok,
                                            QtGui.QMessageBox.Cancel)
         if yesNo == QtGui.QMessageBox.Ok:
-            np = copy.copy(self._np)
+            np = self._np.makeMeasurePosition()
             startIndex = score.getSectionStartStaffIndex(np)
             sectionIndex = score.getSectionIndex(np)
             sectionName = score.getSectionTitle(sectionIndex)
@@ -220,7 +219,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
             for np.staffIndex in range(np.staffIndex, startIndex - 1, -1):
                 staff = score.getStaff(np.staffIndex)
                 for np.measureIndex in range(staff.numMeasures() - 1, -1, -1):
-                    arguments.append((copy.copy(np),))
+                    arguments.append((np.makeCopy(),))
                 np.staffIndex -= 1
             self._qScore.addRepeatedCommand("delete section: " + sectionName,
                                             DeleteMeasureCommand, arguments)
