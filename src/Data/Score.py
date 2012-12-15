@@ -260,7 +260,7 @@ class Score(object):
             if index == 0 or self.getStaff(index - 1).isSectionEnd():
                 position = NotePosition(staffIndex = index)
                 sectionIndex = self.getSectionIndex(position)
-                self.deleteSectionTitle(sectionIndex)
+                self._deleteSectionTitle(sectionIndex)
             else:
                 prevStaff = self.getStaff(index - 1)
                 position = NotePosition(staffIndex = index - 1,
@@ -364,7 +364,7 @@ class Score(object):
         if (staff.isSectionEnd()
             and position.measureIndex == staff.numMeasures() - 1):
             sectionIndex = self.getSectionIndex(position)
-            self.deleteSectionTitle(sectionIndex)
+            self._deleteSectionTitle(sectionIndex)
         staff.deleteMeasure(position)
 
     def deleteMeasuresAtPosition(self, position, numToDelete):
@@ -445,7 +445,7 @@ class Score(object):
     def setSectionTitle(self, index, title):
         self._sections[index] = title
 
-    def deleteSectionTitle(self, index):
+    def _deleteSectionTitle(self, index):
         self._sections.pop(index)
 
     def getSectionStartStaffIndex(self, position):
