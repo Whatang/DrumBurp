@@ -271,16 +271,14 @@ class Score(object):
         for offset, nextStaff in enumerate(self._staffs[index:]):
             self._setStaffCallBack(nextStaff, index + offset)
 
-    def insertStaffByIndex(self, index):
+    def _insertStaff(self, position):
+        index = position.staffIndex
         if not (0 <= index <= self.numStaffs()):
             raise BadTimeError(index)
         newStaff = Staff()
         self._staffs.insert(index, newStaff)
         for offset, nextStaff in enumerate(self._staffs[index:]):
             self._setStaffCallBack(nextStaff, index + offset)
-
-    def insertStaff(self, position):
-        self.insertStaffByIndex(position.staffIndex)
 
     def numMeasures(self):
         return sum(staff.numMeasures() for staff in self.iterStaffs())

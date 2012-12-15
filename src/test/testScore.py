@@ -46,7 +46,7 @@ class TestStaffControl(unittest.TestCase):
         self.score._addStaff()
         self.assertEqual(self.score.numStaffs(), 2)
         firstStaff = self.score.getStaff(0)
-        self.score.insertStaff(NotePosition(staffIndex = 0))
+        self.score._insertStaff(NotePosition(staffIndex = 0))
         self.assertEqual(self.score.numStaffs(), 3)
         self.assert_(firstStaff is self.score.getStaff(1))
 
@@ -56,7 +56,7 @@ class TestStaffControl(unittest.TestCase):
         self.assertEqual(self.score.numStaffs(), 2)
         firstStaff = self.score.getStaff(0)
         lastStaff = self.score.getStaff(1)
-        self.score.insertStaff(NotePosition(staffIndex = 1))
+        self.score._insertStaff(NotePosition(staffIndex = 1))
         self.assertEqual(self.score.numStaffs(), 3)
         self.assert_(firstStaff is self.score.getStaff(0))
         self.assert_(lastStaff is self.score.getStaff(2))
@@ -67,7 +67,7 @@ class TestStaffControl(unittest.TestCase):
         self.score._addStaff()
         self.assertEqual(self.score.numStaffs(), 2)
         lastStaff = self.score.getStaff(1)
-        self.score.insertStaff(NotePosition(staffIndex = 2))
+        self.score._insertStaff(NotePosition(staffIndex = 2))
         self.assertEqual(self.score.numStaffs(), 3)
         self.assertFalse(lastStaff is self.score.getStaff(2))
 
