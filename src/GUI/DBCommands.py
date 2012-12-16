@@ -484,16 +484,18 @@ class DeleteMeasureCommand(ScoreCommand):
 
     def _undo(self):
         self._score.turnOffCallBacks()
-        self._score.insertMeasureByIndex(len(self._oldMeasure), self._index)
-        self._score.formatScore()
-        if self._sectionIndex is not None:
-            self._score.setSectionEnd(self._np, True)
-            self._score.setSectionTitle(self._sectionIndex,
-                                        self._sectionTitle)
+        try:
+            self._score.insertMeasureByIndex(len(self._oldMeasure), self._index)
             self._score.formatScore()
-            self._qScore.sectionsChanged.emit()
-        self._score.pasteMeasureByIndex(self._index, self._oldMeasure, True)
-        self._score.turnOnCallBacks()
+            if self._sectionIndex is not None:
+                self._score.setSectionEnd(self._np, True)
+                self._score.setSectionTitle(self._sectionIndex,
+                                            self._sectionTitle)
+                self._score.formatScore()
+                self._qScore.sectionsChanged.emit()
+            self._score.pasteMeasureByIndex(self._index, self._oldMeasure, True)
+        finally:
+            self._score.turnOnCallBacks()
 
 class SetSectionTitleCommand(ScoreCommand):
     canReformat = False
