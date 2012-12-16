@@ -22,6 +22,7 @@ Created on 12 Dec 2010
 @author: Mike Thomas
 '''
 import unittest
+from cStringIO import StringIO
 from Data.Score import Score, InconsistentRepeats
 from Data import DrumKit, Drum
 from Data.DBErrors import BadTimeError, OverSizeMeasure
@@ -755,6 +756,61 @@ class TestVisibleLines(unittest.TestCase):
                           self.score.drumKit[2],
                           self.score.drumKit[3],
                           self.score.drumKit[4]])
+
+class TestWrite(unittest.TestCase):
+    def getOutput(self, score):
+        handle = StringIO()
+        score.write(handle)
+        return handle.getvalue().splitlines()
+
+    def testWrite(self):
+        score = Score()
+        score.insertMeasureByIndex(16)
+        score.setSectionEnd(NotePosition(0, 0), True)
+        score.lilyFill = True
+        self.assertEqual(self.getOutput(score),
+                        ['SCORE_METADATA',
+                         '  TITLE ', 
+                         '  ARTIST ', 
+                         '  ARTISTVISIBLE True',
+                         '  CREATOR ',
+                         '  CREATORVISIBLE True',
+                         '  BPM 120',
+                         '  BPMVISIBLE True',
+                         '  WIDTH 80',
+                         '  KITDATAVISIBLE True',
+                         '  METADATAVISIBLE True',
+                         '  BEATCOUNTVISIBLE True',
+                         '  EMPTYLINESVISIBLE True',
+                         'END_SCORE_METADATA',
+                         'KIT_START',
+                         'KIT_END',
+                         'START_BAR 16',
+                         '  BARLINE NORMAL_BAR,NO_BAR',
+                         '  BARLINE NORMAL_BAR,NO_BAR,SECTION_END',
+                         'END_BAR',
+                         'SECTION_TITLE Section Title',
+                         'PAPER_SIZE Letter',
+                         'LILYSIZE 20',
+                         'LILYPAGES 0',
+                         'LILYFILL YES',
+                         'DEFAULT_COUNT_INFO_START',
+                         '  REPEAT_BEATS 4',
+                         '  BEAT_START',
+                         '    COUNT |^|',
+                         '  BEAT_END',
+                         'COUNT_INFO_END',
+                         'SYSTEM_SPACE 25',
+                         'FONT_OPTIONS_START',
+                         '  NOTEFONT MS Shell Dlg 2',
+                         '  NOTEFONTSIZE 10',
+                         '  SECTIONFONT MS Shell Dlg 2',
+                         '  SECTIONFONTSIZE 14',
+                         '  METADATAFONT MS Shell Dlg 2',
+                         '  METADATAFONTSIZE 16',
+                         'FONT_OPTIONS_END'])
+
+
 
 class TestCallBack(unittest.TestCase):
     def setUp(self):
