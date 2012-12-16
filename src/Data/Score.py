@@ -395,16 +395,6 @@ class Score(object):
             measure = self.getItemAtPosition(np)
         return emptyMeasures
 
-
-    def deleteEmptyMeasures(self):
-        while self.numMeasures() > 1:
-            index = self.numMeasures() - 1
-            measure = self.getMeasure(index)
-            if measure.isEmpty():
-                self.deleteMeasureByIndex(index)
-            else:
-                break
-
     def copyMeasure(self, position):
         if not(0 <= position.staffIndex < self.numStaffs()):
             raise BadTimeError()
