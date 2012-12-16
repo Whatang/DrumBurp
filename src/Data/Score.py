@@ -467,8 +467,9 @@ class Score(object):
     def nextMeasure(self, position):
         self._checkStaffIndex(position.staffIndex)
         staff = self.getStaff(position.staffIndex)
-        self._checkMeasureIndex(position.measureIndex)
-        position = NotePosition(position.staffIndex, position.measureIndex)
+        if not (0 <= position.measureIndex < staff.numMeasures()):
+            raise BadTimeError()
+        position = position.makeMeasurePosition()
         position.measureIndex += 1
         if position.measureIndex == staff.numMeasures():
             position.staffIndex += 1
@@ -477,25 +478,6 @@ class Score(object):
                 position.measureIndex = None
             else:
                 position.measureIndex = 0
-        return position
-
-    def nextMeasurePositionInSection(self, position):
-        self._checkStaffIndex(position.staffIndex)
-        staff = self.getStaff(position.staffIndex)
-        self._checkMeasureIndex(position.measureIndex)
-        position = NotePosition(position.staffIndex, position.measureIndex)
-        if staff[position.measureIndex].isSectionEnd():
-            position.staffIndex = None
-            position.measureIndex = None
-        else:
-            position.measureIndex += 1
-            if position.measureIndex == staff.numMeasures:
-                position.staffIndex += 1
-                if position.staffIndex == self.numStaffs():
-                    position.staffIndex = None
-                    position.measureIndex = None
-                else:
-                    position.measureIndex = 0
         return position
 
     def insertSectionCopy(self, position, sectionIndex):
