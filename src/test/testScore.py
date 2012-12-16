@@ -580,16 +580,61 @@ class TestRelativePositions(unittest.TestCase):
         self.score.formatScore(80)
 
     def testNotePlus(self):
-        pass
+        # Within measure
+        nextNote = self.score.notePlus(NotePosition(0, 0, 0, 0), 1)
+        self.assertEqual(nextNote, NotePosition(0, 0, 1, 0))
+        nextNote = self.score.notePlus(NotePosition(0, 0, 3, 0), 8)
+        self.assertEqual(nextNote, NotePosition(0, 0, 11, 0))
+        # Next measure
+        nextNote = self.score.notePlus(NotePosition(0, 0, 0, 0), 20)
+        self.assertEqual(nextNote, NotePosition(0, 1, 4, 0))
+        # Across multiple measures
+        nextNote = self.score.notePlus(NotePosition(0, 0, 0, 0), 40)
+        self.assertEqual(nextNote, NotePosition(0, 2, 8, 0))
+        # Across staffs
+        nextNote = self.score.notePlus(NotePosition(0, 0, 0, 0), 250)
+        self.assertEqual(nextNote, NotePosition(3, 3, 10, 0))
+        # Too far
+        nextNote = self.score.notePlus(NotePosition(0, 0, 0, 0), 10000)
+        self.assertEqual(nextNote, None)
 
     def testTickDifference(self):
-        pass
+        # Within measure
+        np1 = NotePosition(0, 0, 0, 0)
+        np2 = NotePosition(0, 0, 8, 2)
+        self.assertEqual(self.score.tickDifference(np2, np1), 8)
+        self.assertEqual(self.score.tickDifference(np1, np2), -8)
+        # Next measure
+        np1 = NotePosition(0, 0, 0, 0)
+        np2 = NotePosition(0, 1, 8, 2)
+        self.assertEqual(self.score.tickDifference(np2, np1), 24)
+        self.assertEqual(self.score.tickDifference(np1, np2), -24)
+        # Across multiple measures
+        np1 = NotePosition(0, 0, 0, 0)
+        np2 = NotePosition(0, 2, 8, 2)
+        self.assertEqual(self.score.tickDifference(np2, np1), 40)
+        self.assertEqual(self.score.tickDifference(np1, np2), -40)
+        # Across staffs
+        np1 = NotePosition(0, 0, 0, 0)
+        np2 = NotePosition(3, 2, 8, 2)
+        self.assertEqual(self.score.tickDifference(np2, np1), 232)
+        self.assertEqual(self.score.tickDifference(np1, np2), -232)
 
     def testNextMeasure(self):
-        pass
-
-    def testNextMeasurePositionInSection(self):
-        pass
+        # Within staff
+        nextPos = self.score.nextMeasure(NotePosition(0, 0))
+        self.assertEqual(nextPos, NotePosition(0, 1))
+        # Next staff
+        nextPos = self.score.nextMeasure(NotePosition(0, 3))
+        self.assertEqual(nextPos, NotePosition(1, 0))
+        # At end of score
+        nextPos = self.score.nextMeasure(NotePosition(6, 1))
+        self.assertEqual(nextPos, NotePosition())
+        # Bad input
+        self.assertRaises(BadTimeError, self.score.nextMeasure,
+                          NotePosition(6, 2))
+        self.assertRaises(BadTimeError, self.score.nextMeasure,
+                          NotePosition(8, 3))
 
 class TestVisibleLines(unittest.TestCase):
     def testNumVisibleLines(self):
