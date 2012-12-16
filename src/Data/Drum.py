@@ -141,6 +141,8 @@ class Drum(object):
         return self._noteHeads[index]
 
     def __eq__(self, other):
+        if not isinstance(other, Drum):
+            return False
         return self.name == other.name or self.abbr == other.abbr
 
     def headData(self, head):
