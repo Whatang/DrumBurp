@@ -757,8 +757,13 @@ class QScore(QtGui.QGraphicsScene):
         qMeasure.setPlaying(True)
 
     def editKit(self):
+        emptyDrums = set(self.score.drumKit)
+        for staffIndex in xrange(self.score.numStaffs()):
+            emptyDrums.difference_update(set(self.score.iterVisibleLines(staffIndex)))
+            if not emptyDrums:
+                break
         editDialog = QEditKitDialog(self.score.drumKit,
-                                    self.score.emptyDrums(),
+                                    emptyDrums,
                                     self.parent())
         if not editDialog.exec_():
             return

@@ -679,14 +679,6 @@ class Score(object):
         if count == 0:
             yield self.drumKit[0]
 
-    def emptyDrums(self):
-        emptyDrums = set(self.drumKit)
-        for staffIndex in xrange(self.numStaffs()):
-            emptyDrums.difference_update(set(self.iterVisibleLines(staffIndex)))
-            if not emptyDrums:
-                break
-        return emptyDrums
-
     def write(self, handle):
         indenter = fileUtils.Indenter(handle)
         self.scoreData.save(indenter)
