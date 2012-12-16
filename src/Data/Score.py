@@ -250,7 +250,6 @@ class Score(object):
         self._staffs.append(newStaff)
         self._setStaffCallBack(newStaff, self.numStaffs() - 1)
 
-
     def _deleteStaffByIndex(self, index):
         if not (0 <= index < self.numStaffs()):
             raise BadTimeError(index)
@@ -271,25 +270,8 @@ class Score(object):
         for offset, nextStaff in enumerate(self._staffs[index:]):
             self._setStaffCallBack(nextStaff, index + offset)
 
-    def _insertStaff(self, position):
-        index = position.staffIndex
-        if not (0 <= index <= self.numStaffs()):
-            raise BadTimeError(index)
-        newStaff = Staff()
-        self._staffs.insert(index, newStaff)
-        for offset, nextStaff in enumerate(self._staffs[index:]):
-            self._setStaffCallBack(nextStaff, index + offset)
-
     def numMeasures(self):
         return sum(staff.numMeasures() for staff in self.iterStaffs())
-
-    def addEmptyMeasure(self, width, counter = None):
-        newMeasure = Measure(width)
-        newMeasure.counter = counter
-        if self.numStaffs() == 0:
-            self._addStaff()
-        self.getStaff(-1).addMeasure(newMeasure)
-        return newMeasure
 
     def _staffContainingMeasure(self, index):
         measuresSoFar = 0
@@ -323,7 +305,9 @@ class Score(object):
                             measureIndex = index)
 
 
-    def insertMeasureByIndex(self, width, index, counter = None):
+    def insertMeasureByIndex(self, width, index = None, counter = None):
+        if index is None:
+            index = self.numMeasures()
         if not (0 <= index <= self.numMeasures()):
             raise BadTimeError()
         if self.numStaffs() == 0:
@@ -727,7 +711,7 @@ class Score(object):
         self.lilyFill = False
         def _readMeasure(lineData):
             measureWidth = int(lineData)
-            measure = self.addEmptyMeasure(measureWidth)
+            measure = self.insertMeasureByIndex(measureWidth)
             measure.read(scoreIterator)
         with scoreIterator.section(None, None) as section:
             section.readSubsection("SCORE_METADATA", self.scoreData.load)
@@ -841,7 +825,7 @@ class ScoreFactory(object):
             counter = counter[0][1]
             counter = makeSimpleCount(counter, 4)
         for dummy in range(0, numMeasures):
-            score.addEmptyMeasure(len(counter), counter = counter)
+            score.insertMeasureByIndex(len(counter), counter = counter)
         score.scoreData.makeEmpty()
         return score
 

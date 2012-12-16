@@ -30,47 +30,6 @@ from Data.NotePosition import NotePosition
 
 # pylint: disable-msg=R0904
 
-class TestStaffControl(unittest.TestCase):
-
-    def setUp(self):
-        self.score = Score()
-
-    def testAddStaff(self):
-        self.score._addStaff()
-        self.assertEqual(self.score.numStaffs(), 1)
-        self.score._addStaff()
-        self.assertEqual(self.score.numStaffs(), 2)
-
-    def testInsertStaffAtStart(self):
-        self.score._addStaff()
-        self.score._addStaff()
-        self.assertEqual(self.score.numStaffs(), 2)
-        firstStaff = self.score.getStaff(0)
-        self.score._insertStaff(NotePosition(staffIndex = 0))
-        self.assertEqual(self.score.numStaffs(), 3)
-        self.assert_(firstStaff is self.score.getStaff(1))
-
-    def testInsertStaffInMiddle(self):
-        self.score._addStaff()
-        self.score._addStaff()
-        self.assertEqual(self.score.numStaffs(), 2)
-        firstStaff = self.score.getStaff(0)
-        lastStaff = self.score.getStaff(1)
-        self.score._insertStaff(NotePosition(staffIndex = 1))
-        self.assertEqual(self.score.numStaffs(), 3)
-        self.assert_(firstStaff is self.score.getStaff(0))
-        self.assert_(lastStaff is self.score.getStaff(2))
-        self.assert_(self.score.getStaff(1) not in (firstStaff, lastStaff))
-
-    def testInsertStaffAtEnd(self):
-        self.score._addStaff()
-        self.score._addStaff()
-        self.assertEqual(self.score.numStaffs(), 2)
-        lastStaff = self.score.getStaff(1)
-        self.score._insertStaff(NotePosition(staffIndex = 2))
-        self.assertEqual(self.score.numStaffs(), 3)
-        self.assertFalse(lastStaff is self.score.getStaff(2))
-
 class TestMeasureControl(unittest.TestCase):
     def setUp(self):
         self.score = Score()
@@ -82,38 +41,38 @@ class TestMeasureControl(unittest.TestCase):
         self.assertEqual(len(self.score.drumKit), 0)
 
     def testAddMeasure(self):
-        self.score.addEmptyMeasure(16)
+        self.score.insertMeasureByIndex(16)
         self.assertEqual(len(self.score), 16)
         self.assertEqual(self.score.numStaffs(), 1)
         self.assertEqual(self.score.numMeasures(), 1)
 
     def testGetMeasure(self):
         for i in range(1, 17):
-            self.score.addEmptyMeasure(i)
+            self.score.insertMeasureByIndex(i)
         for i in range(1, 17):
             self.assertEqual(len(self.score.getMeasure(i - 1)), i)
 
     def testGetMeasure_BadIndex(self):
         self.assertRaises(BadTimeError, self.score.getMeasure, 0)
-        self.score.addEmptyMeasure(16)
-        self.score.addEmptyMeasure(16)
-        self.score.addEmptyMeasure(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
         self.assertRaises(BadTimeError, self.score.getMeasure, -1)
         self.assertRaises(BadTimeError, self.score.getMeasure, 3)
 
     def testDeleteMeasure(self):
-        self.score.addEmptyMeasure(16)
-        self.score.addEmptyMeasure(16)
-        self.score.addEmptyMeasure(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
         self.score.deleteMeasureByIndex(1)
         self.assertEqual(len(self.score), 32)
         self.assertEqual(self.score.numStaffs(), 1)
         self.assertEqual(self.score.numMeasures(), 2)
 
     def testDeleteMeasure_EmptySystem(self):
-        self.score.addEmptyMeasure(16)
-        self.score.addEmptyMeasure(16)
-        self.score.addEmptyMeasure(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
         self.score.deleteMeasureByIndex(1)
         self.assertEqual(self.score.numMeasures(), 2)
         self.score.deleteMeasureByIndex(1)
@@ -124,16 +83,16 @@ class TestMeasureControl(unittest.TestCase):
         self.assertEqual(self.score.numMeasures(), 0)
 
     def testDeleteMeasure_BadIndex(self):
-        self.score.addEmptyMeasure(16)
-        self.score.addEmptyMeasure(16)
-        self.score.addEmptyMeasure(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
         self.assertRaises(BadTimeError, self.score.deleteMeasureByIndex, -1)
         self.assertRaises(BadTimeError, self.score.deleteMeasureByIndex, 3)
 
     def testInsertMeasure(self):
-        self.score.addEmptyMeasure(16)
-        self.score.addEmptyMeasure(16)
-        self.score.addEmptyMeasure(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
         self.score.insertMeasureByIndex(8, 2)
         self.assertEqual(self.score.numMeasures(), 4)
         self.assertEqual(len(self.score), 56)
@@ -151,9 +110,9 @@ class TestMeasureControl(unittest.TestCase):
 
     def testInsertMeasure_BadIndex(self):
         self.assertRaises(BadTimeError, self.score.insertMeasureByIndex, 16, -1)
-        self.score.addEmptyMeasure(16)
-        self.score.addEmptyMeasure(16)
-        self.score.addEmptyMeasure(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
         self.assertRaises(BadTimeError, self.score.insertMeasureByIndex, 16, -1)
         self.assertRaises(BadTimeError, self.score.insertMeasureByIndex, 16, 4)
 
@@ -162,7 +121,7 @@ class TestNoteControl(unittest.TestCase):
         self.score = Score()
         self.score.drumKit = DrumKit.getNamedDefaultKit()
         for dummy in range(0, 12):
-            self.score.addEmptyMeasure(16)
+            self.score.insertMeasureByIndex(16)
         self.score.formatScore(80)
 
     def testgetItemAtPosition(self):
@@ -290,7 +249,7 @@ class TestCharacterFormatScore(unittest.TestCase):
 
     def testgridFormatScore(self):
         for dummy in range(0, 20):
-            self.score.addEmptyMeasure(16)
+            self.score.insertMeasureByIndex(16)
         self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 5)
         for staff in self.score.iterStaffs():
@@ -300,7 +259,7 @@ class TestCharacterFormatScore(unittest.TestCase):
 
     def testgridFormatScoreWithSections(self):
         for dummy in range(0, 20):
-            self.score.addEmptyMeasure(16)
+            self.score.insertMeasureByIndex(16)
         self.score.getMeasure(5).setSectionEnd(True)
         self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 6)
@@ -308,14 +267,14 @@ class TestCharacterFormatScore(unittest.TestCase):
 
     def testgridFormatScore_SectionEndAtScoreEnd(self):
         for dummy in range(0, 20):
-            self.score.addEmptyMeasure(16)
+            self.score.insertMeasureByIndex(16)
         self.score.getMeasure(19).setSectionEnd(True)
         self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 5)
 
     def testgridFormatScoreWithSectionsAndRepeat(self):
         for dummy in range(0, 20):
-            self.score.addEmptyMeasure(16)
+            self.score.insertMeasureByIndex(16)
         self.score.getMeasure(0).setRepeatStart(True)
         self.score.getMeasure(5).setSectionEnd(True)
         self.score.getMeasure(5).setRepeatEnd(True)
@@ -325,36 +284,36 @@ class TestCharacterFormatScore(unittest.TestCase):
 
     def testgridFormatScoreWithLargeBar(self):
         for dummy in range(0, 12):
-            self.score.addEmptyMeasure(16)
-        self.score.addEmptyMeasure(70)
+            self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(70)
         for dummy in range(0, 12):
-            self.score.addEmptyMeasure(16)
+            self.score.insertMeasureByIndex(16)
         self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 7)
         self.assertEqual(self.score.getStaff(3).gridWidth(), 72)
 
     def testgridFormatScoreWithOverSizeBar_IgnoreErrors(self):
         for dummy in range(0, 12):
-            self.score.addEmptyMeasure(16)
-        self.score.addEmptyMeasure(80)
+            self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(80)
         for dummy in range(0, 12):
-            self.score.addEmptyMeasure(16)
+            self.score.insertMeasureByIndex(16)
         self.score.formatScore(80, ignoreErrors = True)
         self.assertEqual(self.score.numStaffs(), 7)
         self.assertEqual(self.score.getStaff(3).gridWidth(), 82)
 
     def testgridFormatScoreWithOverSizeBar_DontIgnoreErrors(self):
         for dummy in range(0, 12):
-            self.score.addEmptyMeasure(16)
-        self.score.addEmptyMeasure(90)
+            self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(90)
         for dummy in range(0, 12):
-            self.score.addEmptyMeasure(16)
+            self.score.insertMeasureByIndex(16)
         self.assertRaises(OverSizeMeasure, self.score.formatScore, 80,
                           ignoreErrors = False)
 
     def testgridFormatScore_FewerStaffsAfterDelete(self):
         for dummy in range(0, 9):
-            self.score.addEmptyMeasure(16)
+            self.score.insertMeasureByIndex(16)
         self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 3)
         self.score.deleteMeasureByIndex(6)
@@ -363,7 +322,7 @@ class TestCharacterFormatScore(unittest.TestCase):
 
     def testgridFormatScore_FewerStaffsOnWiderFormat(self):
         for dummy in range(0, 8):
-            self.score.addEmptyMeasure(16)
+            self.score.insertMeasureByIndex(16)
         self.score.formatScore(40)
         self.assertEqual(self.score.numStaffs(), 4)
         self.score.formatScore(80)
@@ -374,7 +333,7 @@ class TestCallBack(unittest.TestCase):
         self.score = Score()
         self.score.drumKit = DrumKit.getNamedDefaultKit()
         for dummy in range(0, 16):
-            self.score.addEmptyMeasure(16)
+            self.score.insertMeasureByIndex(16)
         self.score.formatScore(80)
         self.calls = []
         def myCallBack(position):
