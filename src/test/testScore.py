@@ -568,6 +568,38 @@ class TestSections(unittest.TestCase):
         self.assertRaises(BadTimeError, list,
                           self.score.iterMeasuresInSection(3))
 
+class TestRelativePositions(unittest.TestCase):
+    def setUp(self):
+        self.score = Score()
+        self.score.drumKit = DrumKit.getNamedDefaultKit()
+        for index in range(0, 26):
+            self.score.insertMeasureByIndex(16)
+            measure = self.score.getMeasure(index)
+            measure.addNote(NotePosition(noteTime = 0, drumIndex = 0),
+                            chr(ord("a") + index))
+        self.score.formatScore(80)
+
+    def testNotePlus(self):
+        pass
+
+    def testTickDifference(self):
+        pass
+
+    def testNextMeasure(self):
+        pass
+
+    def testNextMeasurePositionInSection(self):
+        pass
+
+class TestVisibleLines(unittest.TestCase):
+    def testNumVisibleLines(self):
+        pass
+
+    def testNthVisibleLineIndex(self):
+        pass
+
+    def testIterVisibleLines(self):
+        pass
 
 class TestCallBack(unittest.TestCase):
     def setUp(self):
