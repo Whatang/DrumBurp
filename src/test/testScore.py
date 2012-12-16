@@ -22,14 +22,11 @@ Created on 12 Dec 2010
 @author: Mike Thomas
 '''
 import unittest
-import time
-from cStringIO import StringIO
 from Data.Score import Score
-from Data import DrumKit, Drum, MeasureCount
+from Data import DrumKit
 from Data.DBErrors import BadTimeError, OverSizeMeasure
 from Data.DBConstants import EMPTY_NOTE
 from Data.NotePosition import NotePosition
-from Data.ASCIISettings import ASCIISettings
 
 # pylint: disable-msg=R0904
 
@@ -154,7 +151,8 @@ class TestNoteControl(unittest.TestCase):
 
     def testAddNote(self):
         self.score.addNote(NotePosition(0, 0, 0, 0), "o")
-        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)), "o")
+        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
+                         "o")
 
     def testAddNote_BadTime(self):
         self.assertRaises(BadTimeError,
@@ -212,7 +210,8 @@ class TestNoteControl(unittest.TestCase):
 
     def testToggleNote(self):
         self.score.toggleNote(NotePosition(0, 0, 0, 0), "o")
-        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)), "o")
+        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
+                         "o")
         self.score.toggleNote(NotePosition(0, 0, 0, 0), "o")
         self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
                          EMPTY_NOTE)
