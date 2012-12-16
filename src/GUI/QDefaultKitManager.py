@@ -93,12 +93,15 @@ class QDefaultKitManager(Ui_DefaulKitManager, QtGui.QDialog):
     @QtCore.pyqtSignature("")
     def on_saveButton_clicked(self):
         name, ok = QtGui.QInputDialog.getText(self, "Kit name",
-                                              "Enter a name for the new default kit",
+                                              "Enter a name for the "
+                                              "new default kit",
                                               text = "New kit")
         if not ok:
             return
         if self._settings.contains(name):
-            QtGui.QMessageBox.information(self, "Duplicate kit name!", "That kit name already exists.")
+            QtGui.QMessageBox.information(self,
+                                          "Duplicate kit name!",
+                                          "That kit name already exists.")
             return
         index = self.defaultKitList.currentRow()
         self._writeKit(name)
