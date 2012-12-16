@@ -418,6 +418,33 @@ class TestIteration(unittest.TestCase):
         for measure, index in measures:
             self.assertEqual(measure, self.score.getMeasure(index))
 
+    def testAlternatesNoEnd(self):
+        self.score.getMeasure(0).setRepeatStart(True)
+        self.score.getMeasure(1).setRepeatEnd(True)
+        self.score.getMeasure(1).alternateText = "1,3-5."
+        self.score.getMeasure(2).setRepeatEnd(True)
+        self.score.getMeasure(2).alternateText = "2,6."
+        self.score.getMeasure(3).alternateText = "7."
+        measures = list(self.score.iterMeasuresWithRepeats())
+        self.assertEqual([m[1] for m in measures[0:14]],
+                         [0, 1, 0, 2, 0, 1, 0, 1, 0, 1, 0, 2, 0, 3])
+        self.assertEqual([m[1] for m in measures[14:]],
+                         range(4, 26))
+        for measure, index in measures:
+            self.assertEqual(measure, self.score.getMeasure(index))
+
+    def testInconsistentAlternates(self):
+        self.score.getMeasure(0).setRepeatStart(True)
+        self.score.getMeasure(1).setRepeatEnd(True)
+        self.score.getMeasure(1).alternateText = "1,3-5."
+        self.score.getMeasure(2).setRepeatEnd(True)
+        self.score.getMeasure(2).alternateText = "2,6."
+        self.score.getMeasure(3).setRepeatEnd(True)
+        self.score.getMeasure(3).alternateText = "12."
+        self.assertRaises(InconsistentRepeats, list,
+                          self.score.iterMeasuresWithRepeats())
+
+
 class TestSections(unittest.TestCase):
     def setUp(self):
         self.score = Score()
