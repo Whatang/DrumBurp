@@ -22,7 +22,7 @@ Created on 12 Dec 2010
 @author: Mike Thomas
 '''
 import unittest
-from Data.Score import Score
+from Data.Score import Score, InconsistentRepeats
 from Data import DrumKit
 from Data.DBErrors import BadTimeError, OverSizeMeasure
 from Data.DBConstants import EMPTY_NOTE
@@ -335,6 +335,45 @@ class TestFormatScore(unittest.TestCase):
         self.assertEqual(self.score.numStaffs(), 4)
         self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 2)
+
+    def testGetMeasurePosition(self):
+        for dummy in range(0, 8):
+            self.score.insertMeasureByIndex(16)
+        self.score.formatScore(40)
+        self.assertEqual(self.score.getMeasurePosition(0),
+                         NotePosition(0, 0))
+        self.assertEqual(self.score.getMeasurePosition(1),
+                         NotePosition(0, 1))
+        self.assertEqual(self.score.getMeasurePosition(2),
+                         NotePosition(1, 0))
+        self.assertEqual(self.score.getMeasurePosition(3),
+                         NotePosition(1, 1))
+        self.assertEqual(self.score.getMeasurePosition(4),
+                         NotePosition(2, 0))
+        self.assertEqual(self.score.getMeasurePosition(5),
+                         NotePosition(2, 1))
+        self.assertEqual(self.score.getMeasurePosition(6),
+                         NotePosition(3, 0))
+        self.assertEqual(self.score.getMeasurePosition(7),
+                         NotePosition(3, 1))
+        self.assertRaises(BadTimeError, self.score.getMeasurePosition, 8)
+
+    def testGetMeasureIndex(self):
+        for dummy in range(0, 8):
+            self.score.insertMeasureByIndex(16)
+        self.score.formatScore(40)
+        self.assertEqual(self.score.getMeasureIndex(NotePosition(0, 0)), 0)
+        self.assertEqual(self.score.getMeasureIndex(NotePosition(0, 1)), 1)
+        self.assertEqual(self.score.getMeasureIndex(NotePosition(1, 0)), 2)
+        self.assertEqual(self.score.getMeasureIndex(NotePosition(1, 1)), 3)
+        self.assertEqual(self.score.getMeasureIndex(NotePosition(2, 0)), 4)
+        self.assertEqual(self.score.getMeasureIndex(NotePosition(2, 1)), 5)
+        self.assertEqual(self.score.getMeasureIndex(NotePosition(3, 0)), 6)
+        self.assertEqual(self.score.getMeasureIndex(NotePosition(3, 1)), 7)
+        self.assertRaises(BadTimeError,
+                          self.score.getMeasureIndex, NotePosition(4, 4))
+
+
 
 class TestIteration(unittest.TestCase):
     def setUp(self):
