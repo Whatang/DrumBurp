@@ -23,7 +23,7 @@ Created on 12 Dec 2010
 '''
 import unittest
 from Data.Score import Score, InconsistentRepeats
-from Data import DrumKit
+from Data import DrumKit, Drum
 from Data.DBErrors import BadTimeError, OverSizeMeasure
 from Data.DBConstants import EMPTY_NOTE
 from Data.NotePosition import NotePosition
@@ -637,14 +637,124 @@ class TestRelativePositions(unittest.TestCase):
                           NotePosition(8, 3))
 
 class TestVisibleLines(unittest.TestCase):
+    def setUp(self):
+        self.score = Score()
+        kit = DrumKit.DrumKit()
+        kit.addDrum(Drum.Drum("d1", "d1", "x", True))
+        kit.addDrum(Drum.Drum("d2", "d2", "x", False))
+        kit.addDrum(Drum.Drum("d3", "d3", "x", False))
+        kit.addDrum(Drum.Drum("d4", "d4", "x", True))
+        kit.addDrum(Drum.Drum("d5", "d5", "x", False))
+        self.score.drumKit = kit
+        self.score.scoreData.emptyLinesVisible = False
+        for index in range(0, 16):
+            self.score.insertMeasureByIndex(16)
+        self.score.formatScore(80)
+        self.score.addNote(NotePosition(1, 0, 0, 0), "x")
+        self.score.addNote(NotePosition(2, 0, 0, 1), "x")
+        self.score.addNote(NotePosition(3, 0, 0, 0), "x")
+        self.score.addNote(NotePosition(3, 0, 0, 1), "x")
+        self.score.addNote(NotePosition(3, 0, 0, 2), "x")
+        self.score.addNote(NotePosition(3, 0, 0, 3), "x")
+        self.score.addNote(NotePosition(3, 0, 0, 4), "x")
+
     def testNumVisibleLines(self):
-        pass
+        self.score.scoreData.emptyLinesVisible = False
+        self.assertEqual(self.score.numVisibleLines(0), 2)
+        self.assertEqual(self.score.numVisibleLines(1), 2)
+        self.assertEqual(self.score.numVisibleLines(2), 3)
+        self.assertEqual(self.score.numVisibleLines(3), 5)
+        self.score.scoreData.emptyLinesVisible = True
+        self.assertEqual(self.score.numVisibleLines(0), 5)
+        self.assertEqual(self.score.numVisibleLines(1), 5)
+        self.assertEqual(self.score.numVisibleLines(2), 5)
+        self.assertEqual(self.score.numVisibleLines(3), 5)
 
     def testNthVisibleLineIndex(self):
-        pass
+        self.score.scoreData.emptyLinesVisible = False
+        self.assertEqual(self.score.nthVisibleLineIndex(0, 0), 0)
+        self.assertEqual(self.score.nthVisibleLineIndex(0, 1), 3)
+        self.assertRaises(BadTimeError, self.score.nthVisibleLineIndex, 0, 2)
+        self.assertEqual(self.score.nthVisibleLineIndex(1, 0), 0)
+        self.assertEqual(self.score.nthVisibleLineIndex(1, 1), 3)
+        self.assertRaises(BadTimeError, self.score.nthVisibleLineIndex, 1, 2)
+        self.assertEqual(self.score.nthVisibleLineIndex(2, 0), 0)
+        self.assertEqual(self.score.nthVisibleLineIndex(2, 1), 1)
+        self.assertEqual(self.score.nthVisibleLineIndex(2, 2), 3)
+        self.assertRaises(BadTimeError, self.score.nthVisibleLineIndex, 2, 3)
+        self.assertEqual(self.score.nthVisibleLineIndex(3, 0), 0)
+        self.assertEqual(self.score.nthVisibleLineIndex(3, 1), 1)
+        self.assertEqual(self.score.nthVisibleLineIndex(3, 2), 2)
+        self.assertEqual(self.score.nthVisibleLineIndex(3, 3), 3)
+        self.assertEqual(self.score.nthVisibleLineIndex(3, 4), 4)
+        self.assertRaises(BadTimeError, self.score.nthVisibleLineIndex, 3, 5)
+        self.score.scoreData.emptyLinesVisible = True
+        self.assertEqual(self.score.nthVisibleLineIndex(0, 0), 0)
+        self.assertEqual(self.score.nthVisibleLineIndex(0, 1), 1)
+        self.assertEqual(self.score.nthVisibleLineIndex(0, 2), 2)
+        self.assertEqual(self.score.nthVisibleLineIndex(0, 3), 3)
+        self.assertEqual(self.score.nthVisibleLineIndex(0, 4), 4)
+        self.assertRaises(BadTimeError, self.score.nthVisibleLineIndex, 0, 5)
+        self.assertEqual(self.score.nthVisibleLineIndex(1, 0), 0)
+        self.assertEqual(self.score.nthVisibleLineIndex(1, 1), 1)
+        self.assertEqual(self.score.nthVisibleLineIndex(1, 2), 2)
+        self.assertEqual(self.score.nthVisibleLineIndex(1, 3), 3)
+        self.assertEqual(self.score.nthVisibleLineIndex(1, 4), 4)
+        self.assertRaises(BadTimeError, self.score.nthVisibleLineIndex, 1, 5)
+        self.assertEqual(self.score.nthVisibleLineIndex(2, 0), 0)
+        self.assertEqual(self.score.nthVisibleLineIndex(2, 1), 1)
+        self.assertEqual(self.score.nthVisibleLineIndex(2, 2), 2)
+        self.assertEqual(self.score.nthVisibleLineIndex(2, 3), 3)
+        self.assertEqual(self.score.nthVisibleLineIndex(2, 4), 4)
+        self.assertRaises(BadTimeError, self.score.nthVisibleLineIndex, 2, 5)
+        self.assertEqual(self.score.nthVisibleLineIndex(3, 0), 0)
+        self.assertEqual(self.score.nthVisibleLineIndex(3, 1), 1)
+        self.assertEqual(self.score.nthVisibleLineIndex(3, 2), 2)
+        self.assertEqual(self.score.nthVisibleLineIndex(3, 3), 3)
+        self.assertEqual(self.score.nthVisibleLineIndex(3, 4), 4)
+        self.assertRaises(BadTimeError, self.score.nthVisibleLineIndex, 3, 5)
 
     def testIterVisibleLines(self):
-        pass
+        self.score.scoreData.emptyLinesVisible = False
+        self.assertEqual(list(self.score.iterVisibleLines(0)),
+                         [self.score.drumKit[0], self.score.drumKit[3]])
+        self.assertEqual(list(self.score.iterVisibleLines(1)),
+                         [self.score.drumKit[0], self.score.drumKit[3]])
+        self.assertEqual(list(self.score.iterVisibleLines(2)),
+                         [self.score.drumKit[0],
+                          self.score.drumKit[1],
+                          self.score.drumKit[3]])
+        self.assertEqual(list(self.score.iterVisibleLines(3)),
+                         [self.score.drumKit[0],
+                          self.score.drumKit[1],
+                          self.score.drumKit[2],
+                          self.score.drumKit[3],
+                          self.score.drumKit[4]])
+        self.score.scoreData.emptyLinesVisible = True
+        self.assertEqual(list(self.score.iterVisibleLines(0)),
+                         [self.score.drumKit[0],
+                          self.score.drumKit[1],
+                          self.score.drumKit[2],
+                          self.score.drumKit[3],
+                          self.score.drumKit[4]])
+        self.assertEqual(list(self.score.iterVisibleLines(1)),
+                         [self.score.drumKit[0],
+                          self.score.drumKit[1],
+                          self.score.drumKit[2],
+                          self.score.drumKit[3],
+                          self.score.drumKit[4]])
+        self.assertEqual(list(self.score.iterVisibleLines(2)),
+                         [self.score.drumKit[0],
+                          self.score.drumKit[1],
+                          self.score.drumKit[2],
+                          self.score.drumKit[3],
+                          self.score.drumKit[4]])
+        self.assertEqual(list(self.score.iterVisibleLines(3)),
+                         [self.score.drumKit[0],
+                          self.score.drumKit[1],
+                          self.score.drumKit[2],
+                          self.score.drumKit[3],
+                          self.score.drumKit[4]])
 
 class TestCallBack(unittest.TestCase):
     def setUp(self):

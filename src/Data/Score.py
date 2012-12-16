@@ -626,7 +626,8 @@ class Score(object):
         count = -1
         staff = self.getStaff(staffIndex)
         for lineNum, drum in enumerate(self.drumKit):
-            if drum.locked or staff.lineIsVisible(lineNum):
+            if (drum.locked or self.scoreData.emptyLinesVisible
+                or staff.lineIsVisible(lineNum)):
                 count += 1
                 if count == lineIndex:
                     return lineNum
@@ -638,7 +639,8 @@ class Score(object):
         staff = self.getStaff(staffIndex)
         count = 0
         for lineNum, drum in enumerate(self.drumKit):
-            if drum.locked or staff.lineIsVisible(lineNum):
+            if (drum.locked or self.scoreData.emptyLinesVisible
+                or staff.lineIsVisible(lineNum)):
                 count += 1
                 yield drum
         if count == 0:
