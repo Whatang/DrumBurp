@@ -148,9 +148,6 @@ class Drum(object):
             head = self.head
         return self._headData[head]
 
-    def exportASCII(self):
-        return "%2s - %s" % (self.abbr, self.name)
-
     def isAllowedHead(self, head):
         return head in self._headData
 

@@ -44,13 +44,14 @@ from Data.Score import InconsistentRepeats
 from DBFSMEvents import StartPlaying, StopPlaying
 from DBVersion import APPNAME, DB_VERSION
 from Notation.lilypond import LilypondScore, LilypondProblem
-#pylint:disable-msg=R0904
+from Notation import AsciiExport
+# pylint:disable-msg=R0904
 
 class FakeQSettings(object):
-    def value(self, key_): #IGNORE:R0201
+    def value(self, key_):  # IGNORE:R0201
         return QVariant()
 
-    def setValue(self, key_, value_): #IGNORE:R0201
+    def setValue(self, key_, value_):  # IGNORE:R0201
         return
 
 
@@ -462,8 +463,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self._asciiSettings = asciiDialog.getOptions()
         try:
             asciiBuffer = StringIO()
-            self.scoreScene.score.exportASCII(asciiBuffer,
-                                              self._asciiSettings)
+            exporter = AsciiExport.Exporter(self.scoreScene.score,
+                                            self._asciiSettings)
+            exporter.export(asciiBuffer)
         except StandardError:
             QMessageBox.warning(self.parent(), "ASCII generation failed!",
                                 "Could not generate ASCII for this score!")

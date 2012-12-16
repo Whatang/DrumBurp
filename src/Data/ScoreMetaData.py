@@ -84,16 +84,3 @@ class ScoreMetaData(object):
                                       str(self.beatCountVisible))
             indenter("EMPTYLINESVISIBLE",
                                       str(self.emptyLinesVisible))
-
-    def exportASCII(self):
-        metadataString = []
-        metadataString.append("Title     : " + self.title)
-        if self.artistVisible:
-            metadataString.append("Artist    : " + self.artist)
-        if self.bpmVisible:
-            metadataString.append("BPM       : " + str(self.bpm))
-        if self.creatorVisible:
-            metadataString.append("Tabbed by : " + self.creator)
-        metadataString.append("Date      : " + time.strftime("%d %B %Y"))
-        metadataString.append("")
-        return metadataString

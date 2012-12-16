@@ -35,18 +35,6 @@ class Test(unittest.TestCase):
                           "  EMPTYLINESVISIBLE True",
                           "END_SCORE_METADATA"])
 
-    def testExport(self):
-        meta = ScoreMetaData.ScoreMetaData()
-        meta.makeEmpty()
-        ascii = meta.exportASCII()
-        self.assertEqual(ascii,
-                         ["Title     : Untitled",
-                          "Artist    : Unknown",
-                          "BPM       : 120",
-                          "Tabbed by : Nobody",
-                          "Date      : " + time.strftime("%d %B %Y"),
-                          ""])
-
     def testRead(self):
         data = """SCORE_METADATA
                     TITLE Song

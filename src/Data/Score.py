@@ -29,7 +29,6 @@ from Measure import Measure
 from Counter import CounterRegistry
 from MeasureCount import makeSimpleCount
 from DBErrors import BadTimeError, OverSizeMeasure
-from DBConstants import REPEAT_EXTENDER
 from NotePosition import NotePosition
 from ScoreMetaData import ScoreMetaData
 from FontOptions import FontOptions
@@ -742,57 +741,6 @@ class Score(object):
         scoreString.seek(0, 0)
         scoreString = "".join(scoreString)
         return hashlib.md5(str(scoreString)).digest()  # pylint:disable-msg=E1101
-
-    def exportASCII(self, handle, settings):
-        metadataString = self.scoreData.exportASCII()
-        asciiString = []
-        newSection = True
-        sectionIndex = 0
-        isRepeating = False
-        repeatExtender = REPEAT_EXTENDER
-        for staff in self.iterStaffs():
-            assert(staff.isConsistent())
-            if newSection:
-                isRepeating = False
-                newSection = False
-                if sectionIndex < self.numSections():
-                    if len(asciiString) > 0 and settings.emptyLineBeforeSection:
-                        asciiString.append("")
-                    title = self.getSectionTitle(sectionIndex)
-                    asciiString.append(title)
-                    if settings.underline:
-                        asciiString.append("".join(["~"] * len(title)))
-                    if settings.emptyLineAfterSection:
-                        asciiString.append("")
-                    sectionIndex += 1
-            newSection = staff.isSectionEnd()
-            (staffString,
-             isRepeating,
-             repeatExtender) = staff.exportASCII(self.drumKit,
-                                                 settings,
-                                                 isRepeating,
-                                                 repeatExtender)
-            asciiString.extend(staffString)
-            asciiString.append("")
-        asciiString = asciiString[:-1]
-        kitString = []
-        for instr in self.drumKit:
-            kitString.append(instr.exportASCII())
-        kitString.reverse()
-        kitString.append("")
-        print >> handle, ("Tabbed with DrumBurp, "
-                          "a drum tab editor from www.whatang.org")
-        if settings.metadata:
-            for mString in metadataString:
-                print >> handle, mString
-        if settings.kitKey:
-            for iString in kitString:
-                print >> handle, iString
-        for sString in asciiString:
-            print >> handle, sString
-        print >> handle, ""
-        print >> handle, ("Tabbed with DrumBurp, "
-                          "a drum tab editor from www.whatang.org")
 
 class ScoreFactory(object):
     def __call__(self, filename = None,

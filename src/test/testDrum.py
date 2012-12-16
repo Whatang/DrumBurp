@@ -260,11 +260,6 @@ class TestDrum(unittest.TestCase):
         headData = drum.headData(None)
         self.assertEqual(headData.midiNote, 50)
 
-    def testExportASCII(self):
-        drum, first_, second_ = self.makeDrum()
-        exported = drum.exportASCII()
-        self.assertEqual(exported, "td - test")
-
     def testWrite(self):
         drum, first_, second_ = self.makeDrum()
         second_.shortcut = "a"
