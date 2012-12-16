@@ -330,6 +330,88 @@ class TestCharacterFormatScore(unittest.TestCase):
         self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 2)
 
+class TestIteration(unittest.TestCase):
+    def setUp(self):
+        self.score = Score()
+        self.score.drumKit = DrumKit.getNamedDefaultKit()
+        for index in range(0, 26):
+            self.score.insertMeasureByIndex(16)
+            measure = self.score.getMeasure(index)
+            measure.addNote(NotePosition(noteTime = 0, drumIndex = 0),
+                            chr(ord("a") + index))
+        self.score.formatScore(80)
+
+    def testIterMeasures(self):
+        mcount = 0
+        for index, measure in enumerate(self.score.iterMeasures()):
+            self.assertEqual(measure.noteAt(0, 0), chr(ord("a") + index))
+            mcount += 1
+        self.assertEqual(mcount, 26)
+
+    def testIterMeasuresBetween(self):
+        start = NotePosition(0, 3)
+        end = NotePosition(3, 2)
+        mcount = 0
+        for measure, index, np in self.score.iterMeasuresBetween(start, end):
+            self.assertEqual(measure.noteAt(0, 0), chr(ord("a") + index))
+            self.assertEqual(measure, self.score.getItemAtPosition(np))
+            mcount += 1
+        self.assertEqual(mcount, 12)
+
+    def testIterMeasuresBetweenReversed(self):
+        start = NotePosition(0, 3)
+        end = NotePosition(3, 2)
+        mcount = 0
+        for measure, index, np in self.score.iterMeasuresBetween(end, start):
+            self.assertEqual(measure.noteAt(0, 0), chr(ord("a") + index))
+            self.assertEqual(measure, self.score.getItemAtPosition(np))
+            mcount += 1
+        self.assertEqual(mcount, 12)
+
+    def testIterSimpleRepeat(self):
+        self.score.getMeasure(0).setRepeatStart(True)
+        self.score.getMeasure(3).setRepeatEnd(True)
+        self.score.getMeasure(3).repeatCount = 3
+        measures = list(self.score.iterMeasuresWithRepeats())
+        self.assertEqual([m[1] for m in measures[0:12]],
+                         [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3])
+        self.assertEqual([m[1] for m in measures[12:]],
+                         range(4, 26))
+        for measure, index in measures:
+            self.assertEqual(measure, self.score.getMeasure(index))
+
+    def testAlternates(self):
+        self.score.getMeasure(0).setRepeatStart(True)
+        self.score.getMeasure(1).setRepeatEnd(True)
+        self.score.getMeasure(1).alternateText = "1,3-5."
+        self.score.getMeasure(2).setRepeatEnd(True)
+        self.score.getMeasure(2).alternateText = "2,6."
+        self.score.getMeasure(3).setRepeatEnd(True)
+        self.score.getMeasure(3).alternateText = "7."
+        measures = list(self.score.iterMeasuresWithRepeats())
+        self.assertEqual([m[1] for m in measures[0:14]],
+                         [0, 1, 0, 2, 0, 1, 0, 1, 0, 1, 0, 2, 0, 3])
+        self.assertEqual([m[1] for m in measures[14:]],
+                         range(4, 26))
+        for measure, index in measures:
+            self.assertEqual(measure, self.score.getMeasure(index))
+
+    def testAlternatesSectionEnd(self):
+        self.score.getMeasure(0).setRepeatStart(True)
+        self.score.getMeasure(1).setRepeatEnd(True)
+        self.score.getMeasure(1).alternateText = "1,3-5."
+        self.score.getMeasure(2).setRepeatEnd(True)
+        self.score.getMeasure(2).alternateText = "2,6."
+        self.score.getMeasure(3).setSectionEnd(True)
+        self.score.getMeasure(3).alternateText = "7."
+        measures = list(self.score.iterMeasuresWithRepeats())
+        self.assertEqual([m[1] for m in measures[0:14]],
+                         [0, 1, 0, 2, 0, 1, 0, 1, 0, 1, 0, 2, 0, 3])
+        self.assertEqual([m[1] for m in measures[14:]],
+                         range(4, 26))
+        for measure, index in measures:
+            self.assertEqual(measure, self.score.getMeasure(index))
+
 class TestCallBack(unittest.TestCase):
     def setUp(self):
         self.score = Score()
