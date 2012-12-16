@@ -40,6 +40,12 @@ class NotePosition(object):
         return ", ".join(str(x) for x in [self.staffIndex, self.measureIndex,
                                           self.noteTime, self.drumIndex])
 
+    def __repr__(self):
+        return "NotePosition(%s, %s, %s, %s)" % (str(self.staffIndex),
+                                                 str(self.measureIndex),
+                                                 str(self.noteTime),
+                                                 str(self.drumIndex))
+
     def makeCopy(self):
         return copy.copy(self)
 

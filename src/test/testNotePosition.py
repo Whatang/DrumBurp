@@ -117,6 +117,16 @@ class TestNotePosition(unittest.TestCase):
         np = NotePosition(1, 2, 3, 4)
         self.assertEqual(str(np), "1, 2, 3, 4")
 
+    def testRepr(self):
+        self.assertEqual(repr(NotePosition()),
+                         "NotePosition(None, None, None, None)")
+        self.assertEqual(repr(NotePosition(0)),
+                         "NotePosition(0, None, None, None)")
+        self.assertEqual(repr(NotePosition(0, 0)),
+                         "NotePosition(0, 0, None, None)")
+        self.assertEqual(repr(NotePosition(0, 0, 0, 0)),
+                         "NotePosition(0, 0, 0, 0)")
+
     def testMakeMeasurePosition(self):
         np = NotePosition(1, 2, 3, 4).makeMeasurePosition()
         self.assertEqual(np.drumIndex, None)
