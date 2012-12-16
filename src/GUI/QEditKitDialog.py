@@ -269,10 +269,10 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         if len(fname) == 0:
             return
         fname = unicode(fname)
-        indenter = fileUtils.Indenter()
         newKit, unused = self.getNewKit()
         with open(fname, 'w') as handle:
-            newKit.write(handle, indenter)
+            indenter = fileUtils.Indenter(handle)
+            newKit.write(indenter)
         QMessageBox.information(self, "Kit saved", "Successfully saved drumkit")
 
 
