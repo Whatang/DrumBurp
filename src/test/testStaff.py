@@ -147,9 +147,8 @@ class TestNoteControl(unittest.TestCase):
         self.staff.addMeasure(Measure(16))
 
     def testgetItemAtPosition(self):
-        self.assertEqual(self.staff.getItemAtPosition(NotePosition(measureIndex = 0,
-                                                         noteTime = 0,
-                                                         drumIndex = 0)),
+        np = NotePosition(measureIndex = 0, noteTime = 0, drumIndex = 0)
+        self.assertEqual(self.staff.getItemAtPosition(np),
                          EMPTY_NOTE)
 
     def testGetItemAtPosition(self):
@@ -174,11 +173,9 @@ class TestNoteControl(unittest.TestCase):
                                        noteTime = 20, drumIndex = 0))
 
     def testAddNote(self):
-        self.staff.addNote(NotePosition(measureIndex = 0,
-                                        noteTime = 0, drumIndex = 0), "o")
-        self.assertEqual(self.staff.getItemAtPosition(NotePosition(measureIndex = 0,
-                                                         noteTime = 0,
-                                                         drumIndex = 0)), "o")
+        np = NotePosition(measureIndex = 0, noteTime = 0, drumIndex = 0)
+        self.staff.addNote(np, "o")
+        self.assertEqual(self.staff.getItemAtPosition(np), "o")
 
     def testAddNote_BadTime(self):
         self.assertRaises(BadTimeError, self.staff.addNote,

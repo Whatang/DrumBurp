@@ -704,7 +704,8 @@ class Score(object):
             section.readBoolean("LILYFILL", self, "lilyFill")
             section.readSubsection("DEFAULT_COUNT_INFO_START",
                                    lambda i: self.defaultCount.read(i, True))
-            section.readNonNegativeInteger("SYSTEM_SPACE", self, "systemSpacing")
+            section.readNonNegativeInteger("SYSTEM_SPACE", self,
+                                           "systemSpacing")
             section.readSubsection("FONT_OPTIONS_START", self.fontOptions.read)
         # Check that all the note heads are valid
         for measure in self.iterMeasures():
@@ -728,7 +729,7 @@ class Score(object):
         self.write(scoreString)
         scoreString.seek(0, 0)
         scoreString = "".join(scoreString)
-        return hashlib.md5(str(scoreString)).digest()  # pylint:disable-msg=E1101
+        return hashlib.md5(str(scoreString)).digest() #pylint:disable-msg=E1101
 
 class ScoreFactory(object):
     def __call__(self, filename = None,

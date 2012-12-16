@@ -48,6 +48,8 @@ class FontOptions(object):
             section.readString("NOTEFONT", self, "noteFont")
             section.readPositiveInteger("NOTEFONTSIZE", self, "noteFontSize")
             section.readString("SECTIONFONT", self, "sectionFont")
-            section.readPositiveInteger("SECTIONFONTSIZE", self, "sectionFontSize")
+            section.readPositiveInteger("SECTIONFONTSIZE", self,
+                                        "sectionFontSize")
             section.readString("METADATAFONT", self, "metadataFont")
-            section.readPositiveInteger("METADATAFONTSIZE", self, "metadataFontSize")
+            section.readPositiveInteger("METADATAFONTSIZE", self,
+                                        "metadataFontSize")

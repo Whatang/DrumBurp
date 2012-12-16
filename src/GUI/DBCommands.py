@@ -291,7 +291,8 @@ class RepeatNoteCommand(ScoreCommand):
                 self._score.addNote(np, head)
 
 class InsertMeasuresCommand(ScoreCommand):
-    def __init__(self, qScore, notePosition, numMeasures, counter, preserveSections = False):
+    def __init__(self, qScore, notePosition, numMeasures,
+                 counter, preserveSections = False):
         super(InsertMeasuresCommand, self).__init__(qScore, notePosition,
                                                     "insert measures")
         self._index = self._score.getMeasureIndex(self._np)
@@ -311,12 +312,14 @@ class InsertMeasuresCommand(ScoreCommand):
             self._score.insertMeasureByIndex(self._width, self._index,
                                              counter = self._counter)
         if moveEnd:
-            measure = self._score.getMeasure(self._index + self._numMeasures - 1)
+            measure = self._score.getMeasure(self._index +
+                                             self._numMeasures - 1)
             measure.setSectionEnd(True)
 
     def _undo(self):
         if self._preserveSections and self._index > 0:
-            measure = self._score.getMeasure(self._index + self._numMeasures - 1)
+            measure = self._score.getMeasure(self._index +
+                                             self._numMeasures - 1)
             if measure.isSectionEnd():
                 measure.setSectionEnd(False)
                 measure = self._score.getMeasure(self._index - 1)

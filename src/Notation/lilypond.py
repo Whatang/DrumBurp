@@ -470,7 +470,9 @@ class LilypondScore(object):
 
     def _writeHeader(self):
         self.indenter('title = %s' % lilyString(self.scoreData.title))
-        self.indenter(r'tagline = #(string-append "Score created using DrumBurp %s, engraved with Lilypond " (lilypond-version))' % DB_VERSION)
+        self.indenter(r'tagline = #(string-append "Score created using '
+                      'DrumBurp %s, engraved with Lilypond " '
+                      '(lilypond-version))' % DB_VERSION)
         if self.scoreData.artistVisible:
             self.indenter('composer = %s' % lilyString(self.scoreData.artist))
         if self.scoreData.creatorVisible:
@@ -519,13 +521,15 @@ class LilypondScore(object):
                 self._hadRepeatCount = False
                 self.indenter(r'\bar "|"')
                 self.indenter(r"\cadenzaOn")
-                self.indenter(r"\once \override Score.TimeSignature #'stencil = ##f")
+                self.indenter(r"\once \override Score.TimeSignature "
+                              "#'stencil = ##f")
                 self.indenter(r"\time 1/32")
                 self.indenter(r"s32")
                 self.indenter(r'\bar ""')
                 self.indenter(r"\cadenzaOff")
                 if self._timeSig == self._lastTimeSig:
-                    self.indenter(r"\once \override Score.TimeSignature #'stencil = ##f")
+                    self.indenter(r"\once \override Score.TimeSignature "
+                                  "#'stencil = ##f")
                 self.indenter(r"\time %s" % self._timeSig)
                 self._lastTimeSig = self._timeSig
             self.indenter(r'\mark %s' % lilyString(sectionTitle))

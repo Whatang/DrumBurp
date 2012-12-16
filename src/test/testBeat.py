@@ -141,7 +141,8 @@ class TestReadBeats(unittest.TestCase):
         COUNT |^e+a|
         BEAT_END""")
         iterator = fileUtils.dbFileIterator(handle)
-        self.assertRaises(DBErrors.InvalidPositiveInteger, Beat.Beat.read, iterator)
+        self.assertRaises(DBErrors.InvalidPositiveInteger,
+                          Beat.Beat.read, iterator)
 
     def testReadBadLine(self):
         handle = StringIO("""BEAT_START

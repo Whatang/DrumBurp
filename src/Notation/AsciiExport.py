@@ -21,7 +21,9 @@ Created on Dec 15, 2012
 
 @author: Mike Thomas
 '''
-from Data.DBConstants import REPEAT_EXTENDER, BARLINE, DRUM_ABBR_WIDTH, EMPTY_NOTE, REPEAT_END, REPEAT_STARTER, ALTERNATE_EXTENDER
+from Data.DBConstants import (REPEAT_EXTENDER, BARLINE, DRUM_ABBR_WIDTH,
+                              EMPTY_NOTE, REPEAT_END, REPEAT_STARTER,
+                              ALTERNATE_EXTENDER)
 from Data.NotePosition import NotePosition
 import time
 

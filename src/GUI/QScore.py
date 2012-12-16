@@ -759,7 +759,8 @@ class QScore(QtGui.QGraphicsScene):
     def editKit(self):
         emptyDrums = set(self.score.drumKit)
         for staffIndex in xrange(self.score.numStaffs()):
-            emptyDrums.difference_update(set(self.score.iterVisibleLines(staffIndex)))
+            lines = set(self.score.iterVisibleLines(staffIndex))
+            emptyDrums.difference_update(lines)
             if not emptyDrums:
                 break
         editDialog = QEditKitDialog(self.score.drumKit,
@@ -768,10 +769,13 @@ class QScore(QtGui.QGraphicsScene):
         if not editDialog.exec_():
             return
         kit, changes = editDialog.getNewKit()
-        if QtGui.QMessageBox.question(self.parent(),
-                                      "Apply kit changes?",
-                                      "Editing the kit cannot be undone. Proceed?",
-                                      buttons = QtGui.QMessageBox.Yes | QtGui.QMessageBox.No) == QtGui.QMessageBox.Yes:
+        box = QtGui.QMessageBox.question(self.parent(),
+                                         "Apply kit changes?",
+                                         "Editing the kit cannot be undone. "
+                                         "Proceed?",
+                                         buttons = (QtGui.QMessageBox.Yes
+                                                    | QtGui.QMessageBox.No))
+        if box == QtGui.QMessageBox.Yes:
             self.score.changeKit(kit, changes)
             DBMidi.setKit(kit)
             self._undoStack.clear()
