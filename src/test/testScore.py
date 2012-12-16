@@ -127,6 +127,12 @@ class TestNoteControl(unittest.TestCase):
     def testgetItemAtPosition(self):
         self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
                          EMPTY_NOTE)
+        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0)),
+                         self.score.getMeasure(0))
+        self.assertEqual(self.score.getItemAtPosition(NotePosition(0)),
+                         self.score.getStaff(0))
+        self.assertEqual(self.score.getItemAtPosition(NotePosition()),
+                         self.score)
 
     def testgetItemAtPosition_BadTime(self):
         self.assertRaises(BadTimeError, self.score.getItemAtPosition,
@@ -444,7 +450,7 @@ class TestSections(unittest.TestCase):
         self.assertEqual(self.score.getSectionTitle(1), "Section 2")
         self.assertEqual(list(self.score.iterSections()),
                          ["Section 1", "Section 2"])
-        
+
     def testRemoveSection(self):
         np = self.score.getMeasurePosition(3)
         self.score.setSectionEnd(np, True)
@@ -458,7 +464,7 @@ class TestSections(unittest.TestCase):
         self.score.setSectionEnd(np, False)
         self.assertEqual(self.score.numSections(), 1)
         self.assertEqual(self.score.getSectionTitle(0), "Section 2")
-        
+
     def testGetSectionIndex(self):
         np = self.score.getMeasurePosition(3)
         self.score.setSectionEnd(np, True)
@@ -469,7 +475,7 @@ class TestSections(unittest.TestCase):
         self.assertEqual(self.score.getSectionIndex(np), 0)
         np = self.score.getMeasurePosition(10)
         self.assertEqual(self.score.getSectionIndex(np), 1)
-        
+
     def testGetSectionStartStaffIndex(self):
         np = self.score.getMeasurePosition(3)
         self.score.setSectionEnd(np, True)
@@ -496,7 +502,7 @@ class TestSections(unittest.TestCase):
         self.assertRaises(BadTimeError, list,
                           self.score.iterMeasuresInSection(3))
 
-                         
+
 class TestCallBack(unittest.TestCase):
     def setUp(self):
         self.score = Score()
