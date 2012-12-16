@@ -92,6 +92,19 @@ class Score(object):
             self._runCallBack(position)
         staff.setCallBack(wrappedCallBack)
 
+    def _checkStaffIndex(self, index):
+        if not (0 <= index < self.numStaffs()):
+            raise BadTimeError()
+
+    def _checkDrumIndex(self, index):
+        if not(0 <= index < len(self.drumKit)):
+            raise BadTimeError()
+
+    def _checkMeasureIndex(self, index, endOk = False):
+        if not(0 <= index < self.numMeasures()):
+            if not (endOk and index == self.numMeasures()):
+                raise BadTimeError()
+
     def iterStaffs(self):
         return iter(self._staffs)
 
@@ -220,22 +233,19 @@ class Score(object):
                 index += 1
 
     def getMeasure(self, index):
-        if not (0 <= index < self.numMeasures()):
-            raise BadTimeError()
+        self._checkMeasureIndex(index)
         staff, index = self._staffContainingMeasure(index)
         return staff[index]
 
     def getItemAtPosition(self, position):
         if position.staffIndex is None:
             return self
-        if not (0 <= position.staffIndex < self.numStaffs()):
-            raise BadTimeError()
+        self._checkStaffIndex(position.staffIndex)
         staff = self.getStaff(position.staffIndex)
         if position.measureIndex is None:
             return staff
-        if (position.drumIndex is not None and
-            not(0 <= position.drumIndex < len(self.drumKit))):
-            raise BadTimeError()
+        if position.drumIndex is not None:
+            self._checkDrumIndex(position.drumIndex)
         return staff.getItemAtPosition(position)
 
     def getStaff(self, index):
@@ -250,8 +260,7 @@ class Score(object):
         self._setStaffCallBack(newStaff, self.numStaffs() - 1)
 
     def _deleteStaffByIndex(self, index):
-        if not (0 <= index < self.numStaffs()):
-            raise BadTimeError(index)
+        self._checkStaffIndex(index)
         staff = self._staffs[index]
         staff.clearCallBack()
         if staff.isSectionEnd():
@@ -281,8 +290,7 @@ class Score(object):
         raise BadTimeError()
 
     def getMeasureIndex(self, position):
-        if not(0 <= position.staffIndex < self.numStaffs()):
-            raise BadTimeError()
+        self._checkStaffIndex(position.staffIndex)
         index = 0
         for staffIndex in range(0, position.staffIndex):
             index += self.getStaff(staffIndex).numMeasures()
@@ -307,8 +315,7 @@ class Score(object):
     def insertMeasureByIndex(self, width, index = None, counter = None):
         if index is None:
             index = self.numMeasures()
-        if not (0 <= index <= self.numMeasures()):
-            raise BadTimeError()
+        self._checkMeasureIndex(index, True)
         if self.numStaffs() == 0:
             self._addStaff()
             staff = self.getStaff(0)
@@ -324,8 +331,7 @@ class Score(object):
         return newMeasure
 
     def insertMeasureByPosition(self, width, position, counter = None):
-        if not(0 <= position.staffIndex < self.numStaffs()):
-            raise BadTimeError()
+        self._checkStaffIndex(position.staffIndex)
         newMeasure = Measure(width)
         newMeasure.counter = counter
         staff = self.getStaff(position.staffIndex)
@@ -333,14 +339,12 @@ class Score(object):
         return newMeasure
 
     def deleteMeasureByIndex(self, index):
-        if not (0 <= index < self.numMeasures()):
-            raise BadTimeError()
+        self._checkMeasureIndex(index)
         np = self.getMeasurePosition(index)
         self.deleteMeasureByPosition(np)
 
     def deleteMeasureByPosition(self, position):
-        if not(0 <= position.staffIndex < self.numStaffs()):
-            raise BadTimeError()
+        self._checkStaffIndex(position.staffIndex)
         staff = self.getStaff(position.staffIndex)
         if (staff.isSectionEnd()
             and position.measureIndex == staff.numMeasures() - 1):
@@ -379,14 +383,12 @@ class Score(object):
         return emptyMeasures
 
     def copyMeasure(self, position):
-        if not(0 <= position.staffIndex < self.numStaffs()):
-            raise BadTimeError()
+        self._checkStaffIndex(position.staffIndex)
         staff = self.getStaff(position.staffIndex)
         return staff.copyMeasure(position)
 
     def pasteMeasure(self, position, notes, copyMeasureDecorations = False):
-        if not(0 <= position.staffIndex < self.numStaffs()):
-            raise BadTimeError()
+        self._checkStaffIndex(position.staffIndex)
         staff = self.getStaff(position.staffIndex)
         return staff.pasteMeasure(position, notes, copyMeasureDecorations)
 
@@ -442,8 +444,7 @@ class Score(object):
         return iter(self._sections)
 
     def setSectionEnd(self, position, onOff):
-        if not(0 <= position.staffIndex < self.numStaffs()):
-            raise BadTimeError()
+        self._checkStaffIndex(position.staffIndex)
         staff = self.getStaff(position.staffIndex)
         sectionIndex = self.getSectionIndex(position)
         if onOff:
@@ -468,11 +469,9 @@ class Score(object):
                 inSection = (thisSection == sectionIndex)
 
     def nextMeasure(self, position):
-        if not(0 <= position.staffIndex < self.numStaffs()):
-            raise BadTimeError()
+        self._checkStaffIndex(position.staffIndex)
         staff = self.getStaff(position.staffIndex)
-        if not (0 <= position.measureIndex < staff.numMeasures()):
-            raise BadTimeError()
+        self._checkMeasureIndex(position.measureIndex)
         position = NotePosition(position.staffIndex, position.measureIndex)
         position.measureIndex += 1
         if position.measureIndex == staff.numMeasures():
@@ -485,11 +484,9 @@ class Score(object):
         return position
 
     def nextMeasurePositionInSection(self, position):
-        if not(0 <= position.staffIndex < self.numStaffs()):
-            raise BadTimeError()
+        self._checkStaffIndex(position.staffIndex)
         staff = self.getStaff(position.staffIndex)
-        if not (0 <= position.measureIndex < staff.numMeasures()):
-            raise BadTimeError()
+        self._checkMeasureIndex(position.measureIndex)
         position = NotePosition(position.staffIndex, position.measureIndex)
         if staff[position.measureIndex].isSectionEnd():
             position.staffIndex = None
@@ -509,8 +506,7 @@ class Score(object):
         self.turnOffCallBacks()
         position = position.makeMeasurePosition()
         try:
-            if not(0 <= position.staffIndex < self.numStaffs()):
-                raise BadTimeError()
+            self._checkStaffIndex(position.staffIndex)
             sectionMeasures = list(self.iterMeasuresInSection(sectionIndex))
             sectionTitle = "Copy of " + self.getSectionTitle(sectionIndex)
             newIndex = self.getSectionIndex(position)
@@ -525,35 +521,27 @@ class Score(object):
             self.turnOnCallBacks()
 
     def addNote(self, position, head = None):
-        if not (0 <= position.staffIndex < self.numStaffs()):
-            raise BadTimeError(position)
-        if not (0 <= position.drumIndex < len(self.drumKit)):
-            raise BadTimeError(position)
+        self._checkStaffIndex(position.staffIndex)
+        self._checkDrumIndex(position.drumIndex)
         if head is None:
             head = self.drumKit[position.drumIndex].head
         self.getStaff(position.staffIndex).addNote(position, head)
 
     def deleteNote(self, position):
-        if not (0 <= position.staffIndex < self.numStaffs()):
-            raise BadTimeError(position)
-        if not (0 <= position.drumIndex < len(self.drumKit)):
-            raise BadTimeError(position)
+        self._checkStaffIndex(position.staffIndex)
+        self._checkDrumIndex(position.drumIndex)
         self.getStaff(position.staffIndex).deleteNote(position)
 
     def toggleNote(self, position, head = None):
-        if not (0 <= position.staffIndex < self.numStaffs()):
-            raise BadTimeError(position)
-        if not (0 <= position.drumIndex < len(self.drumKit)):
-            raise BadTimeError(position)
+        self._checkStaffIndex(position.staffIndex)
+        self._checkDrumIndex(position.drumIndex)
         if head is None:
             head = self.drumKit[position.drumIndex].head
         self.getStaff(position.staffIndex).toggleNote(position, head)
 
     def notePlus(self, pos, ticks):
-        if not (0 <= pos.staffIndex < self.numStaffs()):
-            raise BadTimeError(pos)
-        if not (0 <= pos.drumIndex < len(self.drumKit)):
-            raise BadTimeError(pos)
+        self._checkStaffIndex(pos.staffIndex)
+        self._checkDrumIndex(pos.drumIndex)
         staff = self.getStaff(pos.staffIndex)
         measure = staff[pos.measureIndex]
         pos.noteTime += ticks
