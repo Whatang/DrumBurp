@@ -412,6 +412,91 @@ class TestIteration(unittest.TestCase):
         for measure, index in measures:
             self.assertEqual(measure, self.score.getMeasure(index))
 
+class TestSections(unittest.TestCase):
+    def setUp(self):
+        self.score = Score()
+        self.score.drumKit = DrumKit.getNamedDefaultKit()
+        for index in range(0, 26):
+            self.score.insertMeasureByIndex(16)
+            measure = self.score.getMeasure(index)
+            measure.addNote(NotePosition(noteTime = 0, drumIndex = 0),
+                            chr(ord("a") + index))
+        self.score.formatScore(80)
+
+    def testNoSections(self):
+        self.assertEqual(self.score.numSections(), 0)
+
+    def testAddSection(self):
+        np = self.score.getMeasurePosition(3)
+        self.score.setSectionEnd(np, True)
+        self.assertEqual(self.score.numSections(), 1)
+        self.assertEqual(self.score.getSectionTitle(0), "Section Title")
+
+    def testSetSectionTitle(self):
+        np = self.score.getMeasurePosition(3)
+        self.score.setSectionEnd(np, True)
+        self.score.setSectionTitle(0, "Section 1")
+        np = self.score.getMeasurePosition(15)
+        self.score.setSectionEnd(np, True)
+        self.assertEqual(self.score.numSections(), 2)
+        self.score.setSectionTitle(1, "Section 2")
+        self.assertEqual(self.score.getSectionTitle(0), "Section 1")
+        self.assertEqual(self.score.getSectionTitle(1), "Section 2")
+        self.assertEqual(list(self.score.iterSections()),
+                         ["Section 1", "Section 2"])
+        
+    def testRemoveSection(self):
+        np = self.score.getMeasurePosition(3)
+        self.score.setSectionEnd(np, True)
+        self.assertEqual(self.score.numSections(), 1)
+        self.score.setSectionTitle(0, "Section 1")
+        np = self.score.getMeasurePosition(15)
+        self.score.setSectionEnd(np, True)
+        self.assertEqual(self.score.numSections(), 2)
+        self.score.setSectionTitle(1, "Section 2")
+        np = self.score.getMeasurePosition(3)
+        self.score.setSectionEnd(np, False)
+        self.assertEqual(self.score.numSections(), 1)
+        self.assertEqual(self.score.getSectionTitle(0), "Section 2")
+        
+    def testGetSectionIndex(self):
+        np = self.score.getMeasurePosition(3)
+        self.score.setSectionEnd(np, True)
+        np = self.score.getMeasurePosition(19)
+        self.score.setSectionEnd(np, True)
+        self.assertEqual(self.score.numSections(), 2)
+        np = self.score.getMeasurePosition(2)
+        self.assertEqual(self.score.getSectionIndex(np), 0)
+        np = self.score.getMeasurePosition(10)
+        self.assertEqual(self.score.getSectionIndex(np), 1)
+        
+    def testGetSectionStartStaffIndex(self):
+        np = self.score.getMeasurePosition(3)
+        self.score.setSectionEnd(np, True)
+        np = self.score.getMeasurePosition(19)
+        self.score.setSectionEnd(np, True)
+        self.assertEqual(self.score.numSections(), 2)
+        np = self.score.getMeasurePosition(2)
+        self.assertEqual(self.score.getSectionStartStaffIndex(np), 0)
+        np = self.score.getMeasurePosition(10)
+        self.assertEqual(self.score.getSectionStartStaffIndex(np), 1)
+
+    def testIterMeasuresInSection(self):
+        np = self.score.getMeasurePosition(3)
+        self.score.setSectionEnd(np, True)
+        np = self.score.getMeasurePosition(19)
+        self.score.setSectionEnd(np, True)
+        self.assertEqual(self.score.numSections(), 2)
+        measureIndexes = [ord(measure.noteAt(0, 0)) - ord('a') for measure
+                          in self.score.iterMeasuresInSection(0)]
+        self.assertEqual(measureIndexes, [0, 1, 2, 3])
+        measureIndexes = [ord(measure.noteAt(0, 0)) - ord('a') for measure
+                          in self.score.iterMeasuresInSection(1)]
+        self.assertEqual(measureIndexes, range(4, 20))
+        self.assertRaises(BadTimeError, list,
+                          self.score.iterMeasuresInSection(3))
+
+                         
 class TestCallBack(unittest.TestCase):
     def setUp(self):
         self.score = Score()

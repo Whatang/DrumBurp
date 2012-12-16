@@ -405,11 +405,7 @@ class Score(object):
             assert(staff.isConsistent())
             if staff.isSectionEnd():
                 ends.append(staffIndex)
-        try:
-            assert(len(ends) == self.numSections())
-        except:
-            print len(ends), self.numSections()
-            raise
+        assert(len(ends) == self.numSections())
         return bisect.bisect_left(ends, position.staffIndex)
 
     def getSectionTitle(self, index):
