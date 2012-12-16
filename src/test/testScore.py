@@ -117,6 +117,36 @@ class TestMeasureControl(unittest.TestCase):
         self.assertRaises(BadTimeError, self.score.insertMeasureByIndex, 16, -1)
         self.assertRaises(BadTimeError, self.score.insertMeasureByIndex, 16, 4)
 
+    def testInsertMeasureByPosition(self):
+        self.score.insertMeasureByPosition(16)
+        self.score.insertMeasureByPosition(16)
+        self.score.insertMeasureByPosition(16)
+        self.score.insertMeasureByPosition(8, NotePosition(0, 2))
+        self.assertEqual(self.score.numMeasures(), 4)
+        self.assertEqual(len(self.score), 56)
+        self.assertEqual(len(self.score.getMeasure(2)), 8)
+        self.score.insertMeasureByPosition(24, NotePosition(0, 4))
+        self.assertEqual(self.score.numMeasures(), 5)
+        self.assertEqual(len(self.score), 80)
+        self.assertEqual(len(self.score.getMeasure(4)), 24)
+
+    def testInsertMeasureByPosition_IntoEmptyScore(self):
+        self.score.insertMeasureByPosition(16)
+        self.assertEqual(self.score.numMeasures(), 1)
+        self.assertEqual(len(self.score), 16)
+        self.assertEqual(len(self.score.getMeasure(0)), 16)
+
+    def testInsertMeasureByPosition_BadIndex(self):
+        self.assertRaises(BadTimeError, self.score.insertMeasureByPosition, 16,
+                          NotePosition(0,-1))
+        self.score.insertMeasureByPosition(16)
+        self.score.insertMeasureByPosition(16)
+        self.score.insertMeasureByPosition(16)
+        self.assertRaises(BadTimeError, self.score.insertMeasureByPosition,
+                          16, NotePosition(1, 0))
+        self.assertRaises(BadTimeError, self.score.insertMeasureByPosition,
+                          16, NotePosition(0, 4))
+
 class TestNoteControl(unittest.TestCase):
     def setUp(self):
         self.score = Score()
@@ -770,8 +800,8 @@ class TestWrite(unittest.TestCase):
         score.lilyFill = True
         self.assertEqual(self.getOutput(score),
                         ['SCORE_METADATA',
-                         '  TITLE ', 
-                         '  ARTIST ', 
+                         '  TITLE ',
+                         '  ARTIST ',
                          '  ARTISTVISIBLE True',
                          '  CREATOR ',
                          '  CREATORVISIBLE True',

@@ -330,7 +330,13 @@ class Score(object):
                             newMeasure)
         return newMeasure
 
-    def insertMeasureByPosition(self, width, position, counter = None):
+    def insertMeasureByPosition(self, width, position = None, counter = None):
+        if position is None:
+            if self.numStaffs() == 0:
+                self._addStaff()
+            position = NotePosition(self.numStaffs() - 1)
+            staff = self.getStaff(self.numStaffs() - 1)
+            position.measureIndex = staff.numMeasures()
         self._checkStaffIndex(position.staffIndex)
         newMeasure = Measure(width)
         newMeasure.counter = counter
