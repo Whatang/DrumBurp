@@ -251,11 +251,11 @@ class TestNoteControl(unittest.TestCase):
         self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
                          EMPTY_NOTE)
 
-class TestCharacterFormatScore(unittest.TestCase):
+class TestFormatScore(unittest.TestCase):
     def setUp(self):
         self.score = Score()
 
-    def testgridFormatScore(self):
+    def testFormatScore(self):
         for dummy in range(0, 20):
             self.score.insertMeasureByIndex(16)
         self.score.formatScore(80)
@@ -265,7 +265,7 @@ class TestCharacterFormatScore(unittest.TestCase):
             self.assertEqual(len(staff), 64)
             self.assertEqual(staff.gridWidth(), 69)
 
-    def testgridFormatScoreWithSections(self):
+    def testFormatScoreWithSections(self):
         for dummy in range(0, 20):
             self.score.insertMeasureByIndex(16)
         self.score.getMeasure(5).setSectionEnd(True)
@@ -273,14 +273,14 @@ class TestCharacterFormatScore(unittest.TestCase):
         self.assertEqual(self.score.numStaffs(), 6)
         self.assertEqual(self.score.getStaff(1).gridWidth(), 35)
 
-    def testgridFormatScore_SectionEndAtScoreEnd(self):
+    def testFormatScore_SectionEndAtScoreEnd(self):
         for dummy in range(0, 20):
             self.score.insertMeasureByIndex(16)
         self.score.getMeasure(19).setSectionEnd(True)
         self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 5)
 
-    def testgridFormatScoreWithSectionsAndRepeat(self):
+    def testFormatScoreWithSectionsAndRepeat(self):
         for dummy in range(0, 20):
             self.score.insertMeasureByIndex(16)
         self.score.getMeasure(0).setRepeatStart(True)
@@ -290,7 +290,7 @@ class TestCharacterFormatScore(unittest.TestCase):
         self.assertEqual(self.score.numStaffs(), 6)
         self.assertEqual(self.score.getStaff(1).gridWidth(), 35)
 
-    def testgridFormatScoreWithLargeBar(self):
+    def testFormatScoreWithLargeBar(self):
         for dummy in range(0, 12):
             self.score.insertMeasureByIndex(16)
         self.score.insertMeasureByIndex(70)
@@ -300,7 +300,7 @@ class TestCharacterFormatScore(unittest.TestCase):
         self.assertEqual(self.score.numStaffs(), 7)
         self.assertEqual(self.score.getStaff(3).gridWidth(), 72)
 
-    def testgridFormatScoreWithOverSizeBar_IgnoreErrors(self):
+    def testFormatScoreWithOverSizeBar_IgnoreErrors(self):
         for dummy in range(0, 12):
             self.score.insertMeasureByIndex(16)
         self.score.insertMeasureByIndex(80)
@@ -310,7 +310,7 @@ class TestCharacterFormatScore(unittest.TestCase):
         self.assertEqual(self.score.numStaffs(), 7)
         self.assertEqual(self.score.getStaff(3).gridWidth(), 82)
 
-    def testgridFormatScoreWithOverSizeBar_DontIgnoreErrors(self):
+    def testFormatScoreWithOverSizeBar_DontIgnoreErrors(self):
         for dummy in range(0, 12):
             self.score.insertMeasureByIndex(16)
         self.score.insertMeasureByIndex(90)
@@ -319,7 +319,7 @@ class TestCharacterFormatScore(unittest.TestCase):
         self.assertRaises(OverSizeMeasure, self.score.formatScore, 80,
                           ignoreErrors = False)
 
-    def testgridFormatScore_FewerStaffsAfterDelete(self):
+    def testFormatScore_FewerStaffsAfterDelete(self):
         for dummy in range(0, 9):
             self.score.insertMeasureByIndex(16)
         self.score.formatScore(80)
@@ -328,7 +328,7 @@ class TestCharacterFormatScore(unittest.TestCase):
         self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 2)
 
-    def testgridFormatScore_FewerStaffsOnWiderFormat(self):
+    def testFormatScore_FewerStaffsOnWiderFormat(self):
         for dummy in range(0, 8):
             self.score.insertMeasureByIndex(16)
         self.score.formatScore(40)
