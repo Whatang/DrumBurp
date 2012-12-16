@@ -388,5 +388,18 @@ class TestCallBack(unittest.TestCase):
                                         drumIndex = 0), "x")
         self.assertEqual(len(self.calls), 0)
 
+    def testTurnOnOff(self):
+        np = NotePosition(1, 0, 0, 0)
+        self.score.toggleNote(np, "x")
+        self.assertEqual(len(self.calls), 1)
+        self.score.turnOffCallBacks()
+        np = NotePosition(1, 0, 0, 0)
+        self.score.toggleNote(np, "x")
+        self.assertEqual(len(self.calls), 1)
+        self.score.turnOnCallBacks()
+        np = NotePosition(1, 0, 0, 0)
+        self.score.toggleNote(np, "x")
+        self.assertEqual(len(self.calls), 2)
+
 if __name__ == "__main__":
     unittest.main()
