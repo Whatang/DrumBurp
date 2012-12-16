@@ -22,7 +22,6 @@ Created on 23 Jan 2011
 @author: Mike Thomas
 
 '''
-import time
 
 class ScoreMetaData(object):
     '''

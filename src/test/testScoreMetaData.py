@@ -4,7 +4,6 @@ Created on 12 Dec 2012
 @author: Mike Thomas
 '''
 import unittest
-import time
 from cStringIO import StringIO
 
 # pylint: disable-msg=R0904

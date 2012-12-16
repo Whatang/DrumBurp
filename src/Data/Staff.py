@@ -23,10 +23,6 @@ Created on 12 Dec 2010
 
 '''
 from DBErrors import BadTimeError
-from DBConstants import (EMPTY_NOTE, DRUM_ABBR_WIDTH,
-                         REPEAT_STARTER, REPEAT_END, BARLINE,
-                         REPEAT_EXTENDER, ALTERNATE_EXTENDER)
-from NotePosition import NotePosition
 
 # pylint:disable-msg=R0904
 class Staff(object):

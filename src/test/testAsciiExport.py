@@ -4,7 +4,6 @@ Created on Dec 15, 2012
 @author: Mike
 '''
 import unittest
-import time
 from cStringIO import StringIO
 from Data.ASCIISettings import ASCIISettings
 from Data import DrumKit, Drum, MeasureCount
