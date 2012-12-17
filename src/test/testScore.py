@@ -404,6 +404,26 @@ class TestFormatScore(unittest.TestCase):
         self.assertRaises(BadTimeError,
                           self.score.getMeasureIndex, NotePosition(4, 4))
 
+    def testTrailingMeasures(self):
+        self.score.drumKit = DrumKit.getNamedDefaultKit()
+        for dummy in range(0, 8):
+            self.score.insertMeasureByIndex(16)
+        self.score.formatScore(40)
+        self.score.addNote(NotePosition(0, 1, 0, 0), "x")
+        trailing = self.score.trailingEmptyMeasures()
+        self.assertEqual(trailing,
+                         [self.score.getMeasurePosition(i)
+                          for i in xrange(7, 1, -1)])
+
+    def testTrailingMeasuresEmptyScore(self):
+        for dummy in range(0, 8):
+            self.score.insertMeasureByIndex(16)
+        self.score.formatScore(40)
+        trailing = self.score.trailingEmptyMeasures()
+        self.assertEqual(trailing,
+                         [self.score.getMeasurePosition(i)
+                          for i in xrange(7, 0, -1)])
+
 
 
 class TestIteration(unittest.TestCase):
