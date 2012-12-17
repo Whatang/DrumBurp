@@ -698,7 +698,7 @@ class TestVisibleLines(unittest.TestCase):
         kit.addDrum(Drum.Drum("d5", "d5", "x", False))
         self.score.drumKit = kit
         self.score.scoreData.emptyLinesVisible = False
-        for index in range(0, 16):
+        for unused in range(0, 16):
             self.score.insertMeasureByIndex(16)
         self.score.formatScore(80)
         self.score.addNote(NotePosition(1, 0, 0, 0), "x")
@@ -808,7 +808,8 @@ class TestVisibleLines(unittest.TestCase):
                           self.score.drumKit[4]])
 
 class TestWrite(unittest.TestCase):
-    def getOutput(self, score):
+    @staticmethod
+    def getOutput(score):
         handle = StringIO()
         score.write(handle)
         return handle.getvalue().splitlines()
