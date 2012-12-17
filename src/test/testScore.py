@@ -23,7 +23,7 @@ Created on 12 Dec 2010
 '''
 import unittest
 from cStringIO import StringIO
-from Data.Score import Score, InconsistentRepeats
+from Data.Score import Score, InconsistentRepeats, ScoreFactory
 from Data import DrumKit, Drum
 from Data.DBErrors import BadTimeError, OverSizeMeasure
 from Data.DBConstants import EMPTY_NOTE
@@ -1146,6 +1146,16 @@ class TestRead(unittest.TestCase):
         self.assertEqual(score.scoreData.title, "Sample")
         self.assertEqual(score.getSectionTitle(0), "A title")
         self.assert_(score.drumKit[1].isAllowedHead('q'))
+
+class TestScoreFactory(unittest.TestCase):
+    def testMakeEmptyDefault(self):
+        score = ScoreFactory.makeEmptyScore(16, None, None)
+        self.assertEqual(score.numMeasures(), 16)
+
+    def testFactory(self):
+        factory = ScoreFactory()
+        score = factory()
+        self.assertEqual(score.numMeasures(), 32)
 
 if __name__ == "__main__":
     unittest.main()
