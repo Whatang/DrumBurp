@@ -315,7 +315,6 @@ class Score(object):
     def insertMeasureByIndex(self, width, index = None, counter = None):
         if index is None:
             index = self.numMeasures()
-        self._checkMeasureIndex(index, True)
         if self.numStaffs() == 0:
             self._addStaff()
             staff = self.getStaff(0)
