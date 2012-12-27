@@ -506,6 +506,23 @@ class TestFormatScore(unittest.TestCase):
                          [self.score.getMeasurePosition(i)
                           for i in xrange(7, 0, -1)])
 
+class TestCopyPaste(unittest.TestCase):
+    def setUp(self):
+        self.score = Score()
+        self.score.kit = DrumKit.getNamedDefaultKit()
+        for width in range(0, 8):
+            self.score.insertMeasureByIndex(width + 8)
+        self.score.formatScore(40)
+
+    def testCopyPasteByPosition(self):
+        copied = self.score.copyMeasure(NotePosition(0, 0))
+        self.score.pasteMeasure(NotePosition(0, 2), copied)
+        self.assertEqual(len(self.score.getItemAtPosition(NotePosition(0, 2))), 8)
+
+    def testCopyPasteByIndex(self):
+        copied = self.score.copyMeasure(NotePosition(0, 0))
+        self.score.pasteMeasureByIndex(2, copied)
+        self.assertEqual(len(self.score.getItemAtPosition(NotePosition(0, 2))), 8)
 
 
 class TestIteration(unittest.TestCase):
