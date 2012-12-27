@@ -637,7 +637,7 @@ class Score(object):
                 count += 1
                 if count == lineIndex:
                     return lineNum
-        if count == -1:
+        if count == -1 and lineIndex == 0:
             return 0
         raise BadTimeError(staffIndex)
 

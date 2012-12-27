@@ -709,6 +709,24 @@ class TestVisibleLines(unittest.TestCase):
         self.score.addNote(NotePosition(3, 0, 0, 3), "x")
         self.score.addNote(NotePosition(3, 0, 0, 4), "x")
 
+    def testNoLockedOrVisible(self):
+        self.score = Score()
+        kit = DrumKit.DrumKit()
+        kit.addDrum(Drum.Drum("d1", "d1", "x", False))
+        kit.addDrum(Drum.Drum("d2", "d2", "x", False))
+        kit.addDrum(Drum.Drum("d3", "d3", "x", False))
+        kit.addDrum(Drum.Drum("d4", "d4", "x", False))
+        kit.addDrum(Drum.Drum("d5", "d5", "x", False))
+        self.score.drumKit = kit
+        self.score.scoreData.emptyLinesVisible = False
+        for unused in range(0, 16):
+            self.score.insertMeasureByIndex(16)
+        self.score.formatScore(80)
+        self.assertEqual(self.score.numVisibleLines(0), 1)
+        self.assertEqual(self.score.nthVisibleLineIndex(0, 0), 0)
+        self.assertRaises(BadTimeError, self.score.nthVisibleLineIndex, 0, 1)
+        self.assertEqual(list(self.score.iterVisibleLines(0)), [kit[0]])
+
     def testNumVisibleLines(self):
         self.score.scoreData.emptyLinesVisible = False
         self.assertEqual(self.score.numVisibleLines(0), 2)
