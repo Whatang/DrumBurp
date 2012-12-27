@@ -936,6 +936,18 @@ class TestCallBack(unittest.TestCase):
         self.score.toggleNote(np, "x")
         self.assertEqual(len(self.calls), 2)
 
+class TestHash(unittest.TestCase):
+    def setUp(self):
+        self.score = Score()
+        self.score.drumKit = DrumKit.getNamedDefaultKit()
+        for dummy in range(0, 16):
+            self.score.insertMeasureByIndex(16)
+
+    def testEmpty(self):
+        hash_val = self.score.hashScore()
+        self.assertEqual(hash_val.encode("hex"),
+                         "a46c295927eee37f253c22bb90735eaf")
+
 class TestRead(unittest.TestCase):
     def testRead(self):
         data = """
