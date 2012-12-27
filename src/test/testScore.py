@@ -286,6 +286,16 @@ class TestFormatScore(unittest.TestCase):
     def setUp(self):
         self.score = Score()
 
+    def testFormatScoreDefaultWidth(self):
+        for dummy in range(0, 20):
+            self.score.insertMeasureByIndex(16)
+        self.score.formatScore()
+        self.assertEqual(self.score.numStaffs(), 5)
+        for staff in self.score.iterStaffs():
+            self.assertEqual(staff.numMeasures(), 4)
+            self.assertEqual(len(staff), 64)
+            self.assertEqual(staff.gridWidth(), 69)
+
     def testFormatScore(self):
         for dummy in range(0, 20):
             self.score.insertMeasureByIndex(16)
