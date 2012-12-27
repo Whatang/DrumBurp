@@ -89,7 +89,7 @@ class TestMeasureControl(unittest.TestCase):
         self.score.insertMeasureByIndex(16)
         self.assertRaises(BadTimeError, self.score.deleteMeasureByIndex, -1)
         self.assertRaises(BadTimeError, self.score.deleteMeasureByIndex, 3)
-        
+
     def testDeleteMeasureByPosition(self):
         self.score.insertMeasureByIndex(16)
         self.score.insertMeasureByIndex(16)
@@ -120,6 +120,47 @@ class TestMeasureControl(unittest.TestCase):
                           NotePosition(0, 3))
         self.assertRaises(BadTimeError, self.score.deleteMeasureByPosition,
                           NotePosition(1, 1))
+
+    def testDeleteMeasuresAtPosition_SingleStaff(self):
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.assertEqual(self.score.numMeasures(), 6)
+        self.assertEqual(self.score.numStaffs(), 1)
+        self.score.deleteMeasuresAtPosition(NotePosition(0, 1), 3)
+        self.assertEqual(self.score.numMeasures(), 3)
+        self.assertEqual(self.score.numStaffs(), 1)
+
+    def testDeleteMeasuresAtPosition_MultipleStaffs(self):
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.formatScore(60)
+        self.assertEqual(self.score.numMeasures(), 6)
+        self.assertEqual(self.score.numStaffs(), 2)
+        self.score.deleteMeasuresAtPosition(NotePosition(0, 1), 3)
+        self.assertEqual(self.score.numMeasures(), 3)
+        self.assertEqual(self.score.numStaffs(), 2)
+
+    def testDeleteMeasuresAtPosition_MultipleStaffs_EmptyStaff(self):
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.formatScore(60)
+        self.assertEqual(self.score.numMeasures(), 6)
+        self.assertEqual(self.score.numStaffs(), 2)
+        self.score.deleteMeasuresAtPosition(NotePosition(0, 0), 4)
+        self.assertEqual(self.score.numMeasures(), 2)
+        self.assertEqual(self.score.numStaffs(), 1)
 
     def testInsertMeasure(self):
         self.score.insertMeasureByIndex(16)
