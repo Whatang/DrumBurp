@@ -89,6 +89,37 @@ class TestMeasureControl(unittest.TestCase):
         self.score.insertMeasureByIndex(16)
         self.assertRaises(BadTimeError, self.score.deleteMeasureByIndex, -1)
         self.assertRaises(BadTimeError, self.score.deleteMeasureByIndex, 3)
+        
+    def testDeleteMeasureByPosition(self):
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.deleteMeasureByPosition(NotePosition(0, 1))
+        self.assertEqual(len(self.score), 32)
+        self.assertEqual(self.score.numStaffs(), 1)
+        self.assertEqual(self.score.numMeasures(), 2)
+
+    def testDeleteMeasureByPosition_EmptySystem(self):
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.deleteMeasureByPosition(NotePosition(0, 1))
+        self.assertEqual(self.score.numMeasures(), 2)
+        self.score.deleteMeasureByPosition(NotePosition(0, 1))
+        self.assertEqual(self.score.numMeasures(), 1)
+        self.score.deleteMeasureByPosition(NotePosition(0, 0))
+        self.assertEqual(len(self.score), 0)
+        self.assertEqual(self.score.numStaffs(), 1)
+        self.assertEqual(self.score.numMeasures(), 0)
+
+    def testDeleteMeasureByPosition_BadPosition(self):
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.score.insertMeasureByIndex(16)
+        self.assertRaises(BadTimeError, self.score.deleteMeasureByPosition,
+                          NotePosition(0, 3))
+        self.assertRaises(BadTimeError, self.score.deleteMeasureByPosition,
+                          NotePosition(1, 1))
 
     def testInsertMeasure(self):
         self.score.insertMeasureByIndex(16)
