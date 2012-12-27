@@ -61,7 +61,7 @@ class TestMeasureControl(unittest.TestCase):
         self.assertRaises(BadTimeError, self.score.getMeasure, -1)
         self.assertRaises(BadTimeError, self.score.getMeasure, 3)
 
-    def testDeleteMeasure(self):
+    def testDeleteMeasureByIndex(self):
         self.score.insertMeasureByIndex(16)
         self.score.insertMeasureByIndex(16)
         self.score.insertMeasureByIndex(16)
@@ -70,7 +70,7 @@ class TestMeasureControl(unittest.TestCase):
         self.assertEqual(self.score.numStaffs(), 1)
         self.assertEqual(self.score.numMeasures(), 2)
 
-    def testDeleteMeasure_EmptySystem(self):
+    def testDeleteMeasureByIndex_EmptySystem(self):
         self.score.insertMeasureByIndex(16)
         self.score.insertMeasureByIndex(16)
         self.score.insertMeasureByIndex(16)
@@ -83,7 +83,7 @@ class TestMeasureControl(unittest.TestCase):
         self.assertEqual(self.score.numStaffs(), 1)
         self.assertEqual(self.score.numMeasures(), 0)
 
-    def testDeleteMeasure_BadIndex(self):
+    def testDeleteMeasureByIndex_BadIndex(self):
         self.score.insertMeasureByIndex(16)
         self.score.insertMeasureByIndex(16)
         self.score.insertMeasureByIndex(16)
