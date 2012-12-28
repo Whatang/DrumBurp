@@ -143,6 +143,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         mc = self._qScore.defaultCount
         command = InsertMeasuresCommand(self._qScore, np, 1,
                                         mc, preserveSectionEnd)
+        self._qScore.clearDragSelection()
         self._qScore.addCommand(command)
         self._qScore.sendFsmEvent(MenuSelect())
 
@@ -170,11 +171,13 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                 preserve = True
             command = InsertMeasuresCommand(self._qScore, np, nMeasures,
                                             counter, preserve)
+            self._qScore.clearDragSelection()
             self._qScore.addCommand(command)
         self._qScore.sendFsmEvent(MenuSelect())
 
     def _copySection(self, sectionIndex):
         command = InsertSectionCommand(self._qScore, self._np, sectionIndex)
+        self._qScore.clearDragSelection()
         self._qScore.addCommand(command)
         self._qScore.sendFsmEvent(MenuSelect())
 
@@ -194,6 +197,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
             while np.measureIndex >= 0:
                 arguments.append((np.makeCopy(),))
                 np.measureIndex -= 1
+            self._qScore.clearDragSelection()
             self._qScore.addRepeatedCommand("delete staff",
                                             DeleteMeasureCommand, arguments)
         self._qScore.sendFsmEvent(MenuSelect())
@@ -221,6 +225,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                 for np.measureIndex in range(staff.numMeasures() - 1, -1, -1):
                     arguments.append((np.makeCopy(),))
                 np.staffIndex -= 1
+            self._qScore.clearDragSelection()
             self._qScore.addRepeatedCommand("delete section: " + sectionName,
                                             DeleteMeasureCommand, arguments)
         self._qScore.sendFsmEvent(MenuSelect())
@@ -236,6 +241,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         if yesNo == QtGui.QMessageBox.Ok:
             positions = score.trailingEmptyMeasures()
             arguments = [(np,) for np in positions]
+            self._qScore.clearDragSelection()
             self._qScore.addRepeatedCommand("delete empty measures",
                                             DeleteMeasureCommand, arguments)
         self._qScore.sendFsmEvent(MenuSelect())

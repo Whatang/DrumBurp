@@ -377,6 +377,7 @@ class EditMeasurePropertiesState(DialogState):
             command = EditMeasurePropertiesCommand(self.qscore,
                                                    self.measurePosition,
                                                    newCounter)
+            self.qscore.clearDragSelection()
             self.qscore.addCommand(command)
         super(EditMeasurePropertiesState, self)._accepted()  # IGNORE:W0212
 

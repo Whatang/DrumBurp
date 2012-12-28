@@ -204,6 +204,7 @@ class QScore(QtGui.QGraphicsScene):
             return
         if self.scoreWidth != value:
             command = ScoreWidthCommand(self, value)
+            self.clearDragSelection()
             self.addCommand(command)
     scoreWidth = property(fget = _getscoreWidth,
                           fset = _setscoreWidth)
@@ -547,6 +548,7 @@ class QScore(QtGui.QGraphicsScene):
     def insertMeasures(self, np):
         if len(self.measureClipboard) > 0:
             command = InsertAndPasteMeasures(self, np, self.measureClipboard)
+            self.clearDragSelection()
             self.addCommand(command)
 
     @delayCall
@@ -557,6 +559,7 @@ class QScore(QtGui.QGraphicsScene):
         measureIndex = self._score.getMeasureIndex(start)
         sourceLength = len(self.measureClipboard)
         targetLength = len(list(self.iterDragSelection()))
+        self.clearDragSelection()
         self.beginMacro("paste over measures")
         measureCount = 0
         clearPositions = []
