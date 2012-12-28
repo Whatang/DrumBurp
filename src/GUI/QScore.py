@@ -322,7 +322,6 @@ class QScore(QtGui.QGraphicsScene):
     def reBuild(self):
         self._score.formatScore(None)
         self._build()
-        self.invalidate()
 
     def checkFormatting(self):
         if self._score.formatScore(None):
