@@ -316,6 +316,7 @@ class QScore(QtGui.QGraphicsScene):
         for title in self._score.iterSections():
             self._addSection(title)
         self.placeStaffs()
+        self.invalidate()
 
     @delayCall
     def reBuild(self):
