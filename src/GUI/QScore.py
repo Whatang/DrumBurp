@@ -528,14 +528,16 @@ class QScore(QtGui.QGraphicsScene):
     def deleteMeasures(self, np = None):
         if np is not None:
             command = DeleteMeasureCommand(self, np)
+            self.clearDragSelection()
             self.addCommand(command)
         else:
             if not self.hasDragSelection():
                 return
             start = self._dragSelection[0]
             measureIndex = self._score.getMeasureIndex(start)
-            self.beginMacro("delete measures")
             measures = list(self.iterDragSelection())
+            self.clearDragSelection()
+            self.beginMacro("delete measures")
             for unused in measures:
                 command = DeleteMeasureCommand(self, start, measureIndex)
                 self.addCommand(command)
