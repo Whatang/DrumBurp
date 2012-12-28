@@ -640,16 +640,22 @@ class Score(object):
             return 0
         raise BadTimeError(staffIndex)
 
-    def iterVisibleLines(self, staffIndex):
+    def _iterLinesLockedOrWithNotes(self, staffIndex):
         staff = self.getStaff(staffIndex)
         count = 0
         for lineNum, drum in enumerate(self.drumKit):
-            if (drum.locked or self.scoreData.emptyLinesVisible
+            if (drum.locked
                 or staff.lineIsVisible(lineNum)):
                 count += 1
                 yield drum
         if count == 0:
             yield self.drumKit[0]
+
+    def iterVisibleLines(self, staffIndex, forceIgnoreEmpty = False):
+        if self.scoreData.emptyLinesVisible and not forceIgnoreEmpty:
+            return iter(self.drumKit)
+        else:
+            return self._iterLinesLockedOrWithNotes(staffIndex)
 
     def write(self, handle):
         indenter = fileUtils.Indenter(handle)

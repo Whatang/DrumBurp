@@ -764,7 +764,7 @@ class QScore(QtGui.QGraphicsScene):
     def editKit(self):
         emptyDrums = set(self.score.drumKit)
         for staffIndex in xrange(self.score.numStaffs()):
-            lines = set(self.score.iterVisibleLines(staffIndex))
+            lines = set(self.score.iterVisibleLines(staffIndex, True))
             emptyDrums.difference_update(lines)
             if not emptyDrums:
                 break
