@@ -87,7 +87,7 @@ class QNotationScene(QGraphicsScene):
 
     @classmethod
     def _loadNoteHead(cls, headname):
-        imageName = headname.capitalize()
+        imageName = headname.title()
         imageName = headname[0] + imageName[1:]
         imageName = imageName.replace(" ", "")
         image = QPixmap(":/heads/GUI/Notation/%sHead.png" % imageName)
