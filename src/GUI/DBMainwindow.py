@@ -29,7 +29,7 @@ from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QFileDialog, QMessageBox,
                          QPrintPreviewDialog, QWhatsThis,
                          QPrinterInfo, QLabel, QFrame,
-                         QPrinter, QDesktopServices, QDialog)
+                         QPrinter, QDesktopServices)
 from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer
 from QScore import QScore
 from QDisplayProperties import QDisplayProperties
