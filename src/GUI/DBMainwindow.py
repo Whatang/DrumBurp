@@ -29,13 +29,14 @@ from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QFileDialog, QMessageBox,
                          QPrintPreviewDialog, QWhatsThis,
                          QPrinterInfo, QLabel, QFrame,
-                         QPrinter, QDesktopServices)
+                         QPrinter, QDesktopServices, QDialog)
 from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer
 from QScore import QScore
 from QDisplayProperties import QDisplayProperties
 from QNewScoreDialog import QNewScoreDialog
 from QAsciiExportDialog import QAsciiExportDialog
 from QEditMeasureDialog import QEditMeasureDialog
+from QVersionDownloader import QVersionDownloader
 from DBInfoDialog import DBInfoDialog
 import DBIcons
 import os
@@ -110,7 +111,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self._initializeState()
         self.setSections()
         QTimer.singleShot(0, self._startUp)
-
+        self.actionCheckOnStartup.setChecked(settings.value("CheckOnStartup").toBool())
 
     def _connectSignals(self, props, scene):
         # Connect signals
@@ -205,6 +206,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreView.startUp()
         self.updateStatus("Welcome to %s v%s" % (APPNAME, DB_VERSION))
         self.scoreView.setFocus()
+        self.on_actionCheckForUpdates_triggered()
 
 
     def _makeQSettings(self):
@@ -298,6 +300,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                               QVariant(self.saveGeometry()))
             settings.setValue("MainWindow/State",
                               QVariant(self.saveState()))
+            settings.setValue("CheckOnStartup",
+                              QVariant(self.actionCheckOnStartup.isChecked()))
             self.songProperties.save(settings)
         else:
             event.ignore()
@@ -821,3 +825,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if lilyFill != self.lilyFillButton.isChecked():
             self.lilyFillButton.setChecked(lilyFill)
 
+    @pyqtSignature("")
+    def on_actionCheckForUpdates_triggered(self):
+        dialog = QVersionDownloader(self)
+        dialog.exec_()

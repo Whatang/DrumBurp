@@ -537,6 +537,9 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <addaction name="actionWhatsThis"/>
     <addaction name="actionOnlineManual"/>
     <addaction name="separator"/>
+    <addaction name="actionCheckForUpdates"/>
+    <addaction name="actionCheckOnStartup"/>
+    <addaction name="separator"/>
     <addaction name="actionAboutDrumBurp"/>
    </widget>
    <addaction name="menuFile"/>
@@ -1753,6 +1756,19 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Export this score to a Lilypond file.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Lilypond is a TeX based music typesetting system available from &lt;a href=&quot;http://www.lilypond.org&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;lilypond.org&lt;/span&gt;&lt;/a&gt;. DrumBurp can export its scores to the Lilypond input format. Run Lilypond on the resulting files to have your score set in notation rather than as tab.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionCheckForUpdates">
+   <property name="text">
+    <string>Check for updates</string>
+   </property>
+  </action>
+  <action name="actionCheckOnStartup">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Check on startup</string>
    </property>
   </action>
  </widget>
