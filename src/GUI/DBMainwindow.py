@@ -206,7 +206,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreView.startUp()
         self.updateStatus("Welcome to %s v%s" % (APPNAME, DB_VERSION))
         self.scoreView.setFocus()
-        self.on_actionCheckForUpdates_triggered()
+        if self.actionCheckOnStartup.isChecked():
+            self.on_actionCheckForUpdates_triggered()
 
 
     def _makeQSettings(self):
