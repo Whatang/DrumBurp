@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike\workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Mon Nov 12 09:54:09 2012
+# Created: Sun Mar 31 18:52:32 2013
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -833,6 +833,21 @@ class Ui_DrumBurpWindow(object):
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Lilypond is a TeX based music typesetting system available from <a href=\"http://www.lilypond.org\"><span style=\" text-decoration: underline; color:#0000ff;\">lilypond.org</span></a>. DrumBurp can export its scores to the Lilypond input format. Run Lilypond on the resulting files to have your score set in notation rather than as tab.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExportLilypond.setObjectName(_fromUtf8("actionExportLilypond"))
+        self.actionCheckForUpdates = QtGui.QAction(DrumBurpWindow)
+        self.actionCheckForUpdates.setText(QtGui.QApplication.translate("DrumBurpWindow", "Check for updates", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCheckForUpdates.setObjectName(_fromUtf8("actionCheckForUpdates"))
+        self.actionCheckOnStartup = QtGui.QAction(DrumBurpWindow)
+        self.actionCheckOnStartup.setCheckable(True)
+        self.actionCheckOnStartup.setText(QtGui.QApplication.translate("DrumBurpWindow", "Check on startup", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCheckOnStartup.setObjectName(_fromUtf8("actionCheckOnStartup"))
+        self.actionShowMeasureCounts = QtGui.QAction(DrumBurpWindow)
+        self.actionShowMeasureCounts.setCheckable(True)
+        icon29 = QtGui.QIcon()
+        icon29.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/accessories-calculator.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionShowMeasureCounts.setIcon(icon29)
+        self.actionShowMeasureCounts.setText(QtGui.QApplication.translate("DrumBurpWindow", "Show Measure Counts", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShowMeasureCounts.setToolTip(QtGui.QApplication.translate("DrumBurpWindow", "Show/Hide Measure Counts", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShowMeasureCounts.setObjectName(_fromUtf8("actionShowMeasureCounts"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.menuRecentScores.menuAction())
@@ -873,6 +888,9 @@ class Ui_DrumBurpWindow(object):
         self.menuHelp.addAction(self.actionWhatsThis)
         self.menuHelp.addAction(self.actionOnlineManual)
         self.menuHelp.addSeparator()
+        self.menuHelp.addAction(self.actionCheckForUpdates)
+        self.menuHelp.addAction(self.actionCheckOnStartup)
+        self.menuHelp.addSeparator()
         self.menuHelp.addAction(self.actionAboutDrumBurp)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuEdit.menuAction())
@@ -889,6 +907,7 @@ class Ui_DrumBurpWindow(object):
         self.displayToolBar.addAction(self.actionShowDrumKey)
         self.displayToolBar.addAction(self.actionShowEmptyLines)
         self.displayToolBar.addAction(self.actionShowBeatCount)
+        self.displayToolBar.addAction(self.actionShowMeasureCounts)
         self.exportToolBar.addAction(self.actionPrint)
         self.exportToolBar.addAction(self.actionExportASCII)
         self.exportToolBar.addAction(self.actionExportPDF)
@@ -937,6 +956,7 @@ class Ui_DrumBurpWindow(object):
         QtCore.QObject.connect(self.lilypondSize, QtCore.SIGNAL(_fromUtf8("valueChanged(int)")), self.scoreView.setLilypondSize)
         QtCore.QObject.connect(self.lilyPagesBox, QtCore.SIGNAL(_fromUtf8("valueChanged(int)")), self.scoreView.setLilypondPages)
         QtCore.QObject.connect(self.lilyFillButton, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.scoreView.setLilyFill)
+        QtCore.QObject.connect(self.actionShowMeasureCounts, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.scoreView.setMeasureCountsVisible)
         QtCore.QMetaObject.connectSlotsByName(DrumBurpWindow)
         DrumBurpWindow.setTabOrder(self.lineSpaceSlider, self.fontsButton)
         DrumBurpWindow.setTabOrder(self.fontsButton, self.sectionNavigator)

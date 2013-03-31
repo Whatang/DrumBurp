@@ -45,6 +45,7 @@ class ScoreMetaData(object):
         self.metadataVisible = True
         self.beatCountVisible = True
         self.emptyLinesVisible = True
+        self.measureCountsVisible = False
 
     def makeEmpty(self):
         self.title = "Untitled"
@@ -66,6 +67,8 @@ class ScoreMetaData(object):
             section.readBoolean("METADATAVISIBLE", self, "metadataVisible")
             section.readBoolean("BEATCOUNTVISIBLE", self, "beatCountVisible")
             section.readBoolean("EMPTYLINESVISIBLE", self, "emptyLinesVisible")
+            section.readBoolean("MEASURECOUNTSVISIBLE", self,
+                                "measureCountsVisible")
 
     def save(self, indenter):
         with indenter.section("SCORE_METADATA", "END_SCORE_METADATA"):
@@ -83,3 +86,5 @@ class ScoreMetaData(object):
                                       str(self.beatCountVisible))
             indenter("EMPTYLINESVISIBLE",
                                       str(self.emptyLinesVisible))
+            indenter("MEASURECOUNTSVISIBLE",
+                                      str(self.measureCountsVisible))

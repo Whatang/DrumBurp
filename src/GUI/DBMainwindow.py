@@ -36,6 +36,7 @@ from QDisplayProperties import QDisplayProperties
 from QNewScoreDialog import QNewScoreDialog
 from QAsciiExportDialog import QAsciiExportDialog
 from QEditMeasureDialog import QEditMeasureDialog
+from QVersionDownloader import QVersionDownloader
 from DBInfoDialog import DBInfoDialog
 import DBIcons
 import os
@@ -110,7 +111,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self._initializeState()
         self.setSections()
         QTimer.singleShot(0, self._startUp)
-
+        self.actionCheckOnStartup.setChecked(settings.value("CheckOnStartup").toBool())
 
     def _connectSignals(self, props, scene):
         # Connect signals
@@ -137,6 +138,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
+        props.measureCountsVisibleChanged.connect(self._setMeasureCountsVisible)
         props.metadataVisibilityChanged.connect(self._setMetadataVisible)
         props.beatCountVisibleChanged.connect(self._setBeatCountVisible)
         DBMidi.SONGEND_SIGNAL.connect(self.musicDone)
@@ -175,6 +177,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.actionShowEmptyLines.setChecked(props.emptyLinesVisible)
         self.actionShowScoreInfo.setChecked(props.metadataVisible)
         self.actionShowBeatCount.setChecked(props.beatCountVisible)
+        self.actionShowMeasureCounts.setChecked(props.measureCountsVisible)
         # Set doable actions
         self.actionPlayOnce.setEnabled(False)
         self.actionLoopBars.setEnabled(False)
@@ -205,6 +208,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreView.startUp()
         self.updateStatus("Welcome to %s v%s" % (APPNAME, DB_VERSION))
         self.scoreView.setFocus()
+        if self.actionCheckOnStartup.isChecked():
+            self.on_actionCheckForUpdates_triggered()
 
 
     def _makeQSettings(self):
@@ -256,6 +261,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if props.beatCountVisible != self.actionShowBeatCount.isChecked():
             self.actionShowBeatCount.setChecked(props.beatCountVisible)
 
+    def _setMeasureCountsVisible(self):
+        props = self.songProperties
+        if props.measureCountsVisible != self.actionShowMeasureCounts.isChecked():
+            self.actionShowMeasureCounts.setChecked(props.measureCountsVisible)
+
     def updateStatus(self, message):
         self.statusBar().showMessage(message, 5000)
         if self.filename is not None:
@@ -298,6 +308,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                               QVariant(self.saveGeometry()))
             settings.setValue("MainWindow/State",
                               QVariant(self.saveState()))
+            settings.setValue("CheckOnStartup",
+                              QVariant(self.actionCheckOnStartup.isChecked()))
             self.songProperties.save(settings)
         else:
             event.ignore()
@@ -821,3 +833,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if lilyFill != self.lilyFillButton.isChecked():
             self.lilyFillButton.setChecked(lilyFill)
 
+    @pyqtSignature("")
+    def on_actionCheckForUpdates_triggered(self):
+        dialog = QVersionDownloader(self)
+        dialog.exec_()

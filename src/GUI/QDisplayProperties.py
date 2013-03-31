@@ -64,6 +64,7 @@ class QDisplayProperties(QObject):
         self._kitDataVisible = False
         self._beatCountVisible = True
         self._emptyLinesVisible = True
+        self._measureCountsVisible = False
         self._head = None
         self._width = 80
         self._counterRegistry = CounterRegistry()
@@ -82,6 +83,7 @@ class QDisplayProperties(QObject):
     kitDataVisibleChanged = pyqtSignal()
     beatCountVisibleChanged = pyqtSignal()
     emptyLinesVisibleChanged = pyqtSignal()
+    measureCountsVisibleChanged = pyqtSignal()
 
     def newScore(self, qScore):
         self._score = qScore.score
@@ -101,6 +103,7 @@ class QDisplayProperties(QObject):
         self.kitDataVisibleChanged.connect(qScore.kitDataVisibleChanged)
         self.beatCountVisibleChanged.connect(qScore.reBuild)
         self.emptyLinesVisibleChanged.connect(qScore.reBuild)
+        self.measureCountsVisibleChanged.connect(qScore.reBuild)
         self.newScore(qScore)
 
     def _getxSpacing(self):
@@ -258,6 +261,7 @@ class QDisplayProperties(QObject):
             self.metadataVisible = options.metadataVisible
             self.beatCountVisible = options.beatCountVisible
             self.emptyLinesVisible = options.emptyLinesVisible
+            self.measureCountsVisible = options.measureCountsVisible
 
     def _gethead(self):
         return self._head
@@ -305,6 +309,17 @@ class QDisplayProperties(QObject):
             self.emptyLinesVisibleChanged.emit()
     emptyLinesVisible = property(fget = _getemptyLinesVisible,
                                  fset = _setemptyLinesVisible)
+
+    def _getmeasureCountsVisible(self):
+        return self._measureCountsVisible
+    def _setmeasureCountsVisible(self, value):
+        if self._measureCountsVisible != value:
+            self._measureCountsVisible = value
+            self._score.scoreData.measureCountsVisible = value
+            self.measureCountsVisibleChanged.emit()
+    measureCountsVisible = property(fget = _getmeasureCountsVisible,
+                                    fset = _setmeasureCountsVisible)
+
 
     def maxColumns(self, widthInPixels):
         widthInPixels -= 2 * (self.xMargins + self.xSpacing)

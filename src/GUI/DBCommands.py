@@ -445,6 +445,12 @@ class SetRepeatEndCommand(SetMeasureLineCommand):
                                                   "set repeat end",
                                                   note, onOff,
                                                   Measure.setRepeatEnd)
+        self._repeatCount = self._getMeasure().repeatCount
+
+    def _undo(self):
+        super(SetRepeatEndCommand, self)._undo()
+        if not self._onOff:
+            self._getMeasure().repeatCount = self._repeatCount
 
 class ClearMeasureCommand(ScoreCommand):
     canReformat = False
