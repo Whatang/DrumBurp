@@ -141,9 +141,8 @@ class LilyMeasure(object):
     _ACCENT_STRING = r"\accent"
     _CHOKE_STRING = r"\staccatissimo"
 
-    def __init__(self, score, measure, kit):
+    def __init__(self, measure, kit):
         self.measure = measure
-        self.score = score
         self.kit = kit
         self._beats = list(self.measure.counter.iterBeatTicks())
         self._voices = {DrumKit.UP:[], DrumKit.DOWN:[]}
@@ -165,7 +164,6 @@ class LilyMeasure(object):
                 notes[direction])
             for tick in self.measure.counter.iterBeatTickPositions():
                 timeSet.add(tick)
-
             timeSet.add(len(self._beats))
             noteTimes[direction] = list(timeSet)
             noteTimes[direction].sort()
@@ -598,7 +596,7 @@ class LilypondScore(object):
                           % " ".join(repeatCommands))
 
     def _writeMeasure(self, measure):
-        parsed = LilyMeasure(self.score, measure, self._lilyKit)
+        parsed = LilyMeasure(measure, self._lilyKit)
         with LILY_CONTEXT(self.indenter, r'\new DrumVoice'):
             self.indenter(r'\voiceOne')
             parsed.voiceOne(self.indenter)
