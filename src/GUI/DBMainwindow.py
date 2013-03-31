@@ -138,6 +138,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
+        props.measureCountsVisibleChanged.connect(self._setMeasureCountsVisible)
         props.metadataVisibilityChanged.connect(self._setMetadataVisible)
         props.beatCountVisibleChanged.connect(self._setBeatCountVisible)
         DBMidi.SONGEND_SIGNAL.connect(self.musicDone)
@@ -176,6 +177,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.actionShowEmptyLines.setChecked(props.emptyLinesVisible)
         self.actionShowScoreInfo.setChecked(props.metadataVisible)
         self.actionShowBeatCount.setChecked(props.beatCountVisible)
+        self.actionShowMeasureCounts.setChecked(props.measureCountsVisible)
         # Set doable actions
         self.actionPlayOnce.setEnabled(False)
         self.actionLoopBars.setEnabled(False)
@@ -258,6 +260,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         props = self.songProperties
         if props.beatCountVisible != self.actionShowBeatCount.isChecked():
             self.actionShowBeatCount.setChecked(props.beatCountVisible)
+
+    def _setMeasureCountsVisible(self):
+        props = self.songProperties
+        if props.measureCountsVisible != self.actionShowMeasureCounts.isChecked():
+            self.actionShowMeasureCounts.setChecked(props.measureCountsVisible)
 
     def updateStatus(self, message):
         self.statusBar().showMessage(message, 5000)

@@ -607,6 +607,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
    <addaction name="actionShowDrumKey"/>
    <addaction name="actionShowEmptyLines"/>
    <addaction name="actionShowBeatCount"/>
+   <addaction name="actionShowMeasureCounts"/>
   </widget>
   <widget class="QToolBar" name="exportToolBar">
    <property name="windowTitle">
@@ -1771,6 +1772,21 @@ p, li { white-space: pre-wrap; }
     <string>Check on startup</string>
    </property>
   </action>
+  <action name="actionShowMeasureCounts">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/accessories-calculator.png</normaloff>:/Icons/Icons/accessories-calculator.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Measure Counts</string>
+   </property>
+   <property name="toolTip">
+    <string>Show/Hide Measure Counts</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -1806,8 +1822,8 @@ p, li { white-space: pre-wrap; }
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>167</x>
-     <y>62</y>
+     <x>135</x>
+     <y>54</y>
     </hint>
    </hints>
   </connection>
@@ -1818,8 +1834,8 @@ p, li { white-space: pre-wrap; }
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>167</x>
-     <y>62</y>
+     <x>135</x>
+     <y>54</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -1886,8 +1902,8 @@ p, li { white-space: pre-wrap; }
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>509</x>
-     <y>62</y>
+     <x>506</x>
+     <y>54</y>
     </hint>
    </hints>
   </connection>
@@ -1898,8 +1914,8 @@ p, li { white-space: pre-wrap; }
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>509</x>
-     <y>62</y>
+     <x>506</x>
+     <y>54</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -1918,8 +1934,8 @@ p, li { white-space: pre-wrap; }
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>638</x>
-     <y>62</y>
+     <x>611</x>
+     <y>54</y>
     </hint>
    </hints>
   </connection>
@@ -1930,8 +1946,8 @@ p, li { white-space: pre-wrap; }
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>638</x>
-     <y>62</y>
+     <x>611</x>
+     <y>54</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -1978,8 +1994,8 @@ p, li { white-space: pre-wrap; }
    <slot>setFont(QFont)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>78</x>
-     <y>215</y>
+     <x>88</x>
+     <y>208</y>
     </hint>
     <hint type="destinationlabel">
      <x>454</x>
@@ -1995,7 +2011,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>193</x>
-     <y>215</y>
+     <y>208</y>
     </hint>
     <hint type="destinationlabel">
      <x>349</x>
@@ -2011,7 +2027,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>193</x>
-     <y>432</y>
+     <y>428</y>
     </hint>
     <hint type="destinationlabel">
      <x>349</x>
@@ -2026,8 +2042,8 @@ p, li { white-space: pre-wrap; }
    <slot>setSectionFont(QFont)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>78</x>
-     <y>432</y>
+     <x>88</x>
+     <y>428</y>
     </hint>
     <hint type="destinationlabel">
      <x>320</x>
@@ -2042,8 +2058,8 @@ p, li { white-space: pre-wrap; }
    <slot>setMetadataFont(QFont)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>78</x>
-     <y>650</y>
+     <x>88</x>
+     <y>648</y>
     </hint>
     <hint type="destinationlabel">
      <x>351</x>
@@ -2059,7 +2075,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>193</x>
-     <y>650</y>
+     <y>648</y>
     </hint>
     <hint type="destinationlabel">
      <x>323</x>
@@ -2142,8 +2158,8 @@ p, li { white-space: pre-wrap; }
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>78</x>
-     <y>650</y>
+     <x>88</x>
+     <y>648</y>
     </hint>
    </hints>
   </connection>
@@ -2159,7 +2175,7 @@ p, li { white-space: pre-wrap; }
     </hint>
     <hint type="destinationlabel">
      <x>193</x>
-     <y>650</y>
+     <y>648</y>
     </hint>
    </hints>
   </connection>
@@ -2170,8 +2186,8 @@ p, li { white-space: pre-wrap; }
    <slot>setWidth(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>371</x>
-     <y>105</y>
+     <x>373</x>
+     <y>99</y>
     </hint>
     <hint type="destinationlabel">
      <x>488</x>
@@ -2187,7 +2203,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>475</x>
-     <y>109</y>
+     <y>101</y>
     </hint>
     <hint type="destinationlabel">
      <x>661</x>
@@ -2206,8 +2222,8 @@ p, li { white-space: pre-wrap; }
      <y>130</y>
     </hint>
     <hint type="destinationlabel">
-     <x>371</x>
-     <y>105</y>
+     <x>373</x>
+     <y>99</y>
     </hint>
    </hints>
   </connection>
@@ -2219,7 +2235,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>661</x>
-     <y>109</y>
+     <y>101</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -2251,7 +2267,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>745</x>
-     <y>107</y>
+     <y>99</y>
     </hint>
     <hint type="destinationlabel">
      <x>876</x>
@@ -2299,7 +2315,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>856</x>
-     <y>109</y>
+     <y>101</y>
     </hint>
     <hint type="destinationlabel">
      <x>815</x>
@@ -2315,7 +2331,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>808</x>
-     <y>109</y>
+     <y>101</y>
     </hint>
     <hint type="destinationlabel">
      <x>913</x>
@@ -2330,12 +2346,28 @@ p, li { white-space: pre-wrap; }
    <slot>setLilyFill(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>873</x>
-     <y>101</y>
+     <x>944</x>
+     <y>99</y>
     </hint>
     <hint type="destinationlabel">
      <x>852</x>
      <y>163</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowMeasureCounts</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setMeasureCountsVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>593</x>
+     <y>430</y>
     </hint>
    </hints>
   </connection>
