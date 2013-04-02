@@ -136,12 +136,12 @@ class QStaff(QtGui.QGraphicsItemGroup):
         xOffset += self._lineLabels[0].cellWidth()
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
-            qMeasureLine.setPos(xOffset, self._qScore.ySpacing)
+            qMeasureLine.setPos(xOffset, base + self._qScore.ySpacing)
             qMeasureLine.setDimensions()
             xOffset += qMeasureLine.width()
             qMeasure.setPos(xOffset, 0)
             xOffset += qMeasure.width()
-        self._measureLines[-1].setPos(xOffset, self._qScore.ySpacing)
+        self._measureLines[-1].setPos(xOffset, base + self._qScore.ySpacing)
         self._measureLines[-1].setDimensions()
         self._width = xOffset + self._measureLines[-1].width()
         self._height = max(element.height()
@@ -154,14 +154,14 @@ class QStaff(QtGui.QGraphicsItemGroup):
             label.xSpacingChanged()
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
-            qMeasureLine.setPos(xOffset, self._qScore.ySpacing)
+            qMeasureLine.setX(xOffset)
             qMeasureLine.xSpacingChanged()
             xOffset += qMeasureLine.width()
-            qMeasure.setPos(xOffset, 0)
+            qMeasure.setX(xOffset)
             qMeasure.xSpacingChanged()
             xOffset += qMeasure.width()
         self._measureLines[-1].xSpacingChanged()
-        self._measureLines[-1].setPos(xOffset, self._qScore.ySpacing)
+        self._measureLines[-1].setX(xOffset)
         self._width = xOffset + self._measureLines[-1].width()
 
     def ySpacingChanged(self):
@@ -176,8 +176,10 @@ class QStaff(QtGui.QGraphicsItemGroup):
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
             qMeasureLine.ySpacingChanged()
+            qMeasureLine.setY(base + self._qScore.ySpacing)
             qMeasure.ySpacingChanged()
         self._measureLines[-1].ySpacingChanged()
+        self._measureLines[-1].setY(base + self._qScore.ySpacing)
         self._height = max(element.height()
                            for element in
                            itertools.chain(self._measures, self._measureLines))

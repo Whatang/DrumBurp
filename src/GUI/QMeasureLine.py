@@ -71,9 +71,6 @@ class QMeasureLine(QtGui.QGraphicsItem):
             score = self._qScore.score
             self._height = (self._qScore.ySpacing *
                             score.numVisibleLines(self._staffIndex))
-        if self._props.measureCountsVisible:
-            self._base = self._props.measureCountHeight()
-        self._height += self._base
 
     def setDimensions(self):
         self.prepareGeometryChange()
