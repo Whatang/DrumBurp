@@ -110,7 +110,8 @@ class QStaff(QtGui.QGraphicsItemGroup):
 
     def _addMeasure(self, measure):
         qMeasure = QMeasure(self.numMeasures(), self._qScore,
-                            measure, parent = self)
+                            measure,
+                            parent = self)
         self._measures.append(qMeasure)
         self.addToGroup(qMeasure)
 
@@ -128,7 +129,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
         xOffset = 0
         base = 0
         if self._props.measureCountsVisible:
-            base = self._props.ySpacing
+            base = self._props.measureCountHeight()
         for yOffset, label in zip(lineOffsets[-len(self._lineLabels):],
                                   self._lineLabels):
             label.setPos(xOffset, yOffset + base)
@@ -167,7 +168,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
         lineOffsets = self._qScore.lineOffsets
         base = 0
         if self._props.measureCountsVisible:
-            base = self._props.ySpacing
+            base = self._props.measureCountHeight()
         for yOffset, label in zip(lineOffsets[-len(self._lineLabels):],
                                   self._lineLabels):
             label.setY(yOffset + base)

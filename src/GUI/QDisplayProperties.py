@@ -320,6 +320,9 @@ class QDisplayProperties(QObject):
     measureCountsVisible = property(fget = _getmeasureCountsVisible,
                                     fset = _setmeasureCountsVisible)
 
+    def measureCountHeight(self):
+        return self._ySpacing + 2
+
 
     def maxColumns(self, widthInPixels):
         widthInPixels -= 2 * (self.xMargins + self.xSpacing)
