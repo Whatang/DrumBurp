@@ -236,7 +236,7 @@ class QScore(QtGui.QGraphicsScene):
 
     @property
     def lineOffsets(self):
-        yOffsets = [(drumIndex + 1) * self.ySpacing
+        yOffsets = [drumIndex * self.ySpacing
                     for drumIndex in range(0, self.kitSize)]
         yOffsets.reverse()
         return yOffsets

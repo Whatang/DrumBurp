@@ -127,21 +127,21 @@ class QStaff(QtGui.QGraphicsItemGroup):
     def placeMeasures(self):
         lineOffsets = self._qScore.lineOffsets
         xOffset = 0
-        base = 0
+        base = self.alternateHeight()
         if self._props.measureCountsVisible:
-            base = self._props.measureCountHeight()
+            base += self._props.measureCountHeight()
         for yOffset, label in zip(lineOffsets[-len(self._lineLabels):],
                                   self._lineLabels):
             label.setPos(xOffset, yOffset + base)
         xOffset += self._lineLabels[0].cellWidth()
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
-            qMeasureLine.setPos(xOffset, base + self._qScore.ySpacing)
+            qMeasureLine.setPos(xOffset, base)
             qMeasureLine.setDimensions()
             xOffset += qMeasureLine.width()
             qMeasure.setPos(xOffset, 0)
             xOffset += qMeasure.width()
-        self._measureLines[-1].setPos(xOffset, base + self._qScore.ySpacing)
+        self._measureLines[-1].setPos(xOffset, base)
         self._measureLines[-1].setDimensions()
         self._width = xOffset + self._measureLines[-1].width()
         self._height = max(element.height()
@@ -166,9 +166,9 @@ class QStaff(QtGui.QGraphicsItemGroup):
 
     def ySpacingChanged(self):
         lineOffsets = self._qScore.lineOffsets
-        base = 0
+        base = self.alternateHeight()
         if self._props.measureCountsVisible:
-            base = self._props.measureCountHeight()
+            base += self._props.measureCountHeight()
         for yOffset, label in zip(lineOffsets[-len(self._lineLabels):],
                                   self._lineLabels):
             label.setY(yOffset + base)
@@ -176,10 +176,10 @@ class QStaff(QtGui.QGraphicsItemGroup):
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
             qMeasureLine.ySpacingChanged()
-            qMeasureLine.setY(base + self._qScore.ySpacing)
+            qMeasureLine.setY(base)
             qMeasure.ySpacingChanged()
         self._measureLines[-1].ySpacingChanged()
-        self._measureLines[-1].setY(base + self._qScore.ySpacing)
+        self._measureLines[-1].setY(base)
         self._height = max(element.height()
                            for element in
                            itertools.chain(self._measures, self._measureLines))
@@ -220,3 +220,5 @@ class QStaff(QtGui.QGraphicsItemGroup):
     def getQMeasure(self, np):
         return self._measures[np.measureIndex]
 
+    def alternateHeight(self):
+        return self._props.alternateHeight()

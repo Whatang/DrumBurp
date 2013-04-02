@@ -320,6 +320,9 @@ class QDisplayProperties(QObject):
     measureCountsVisible = property(fget = _getmeasureCountsVisible,
                                     fset = _setmeasureCountsVisible)
 
+    def alternateHeight(self):
+        return self._ySpacing + 2
+
     def measureCountHeight(self):
         return self._ySpacing + 2
 
