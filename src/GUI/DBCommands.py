@@ -357,10 +357,14 @@ class SetRepeatCountCommand(ScoreCommand):
     def _redo(self):
         measure = self._score.getItemAtPosition(self._np)
         measure.repeatCount = self._newCount
+        if self._qScore.getQStaff(self._np).checkAlternate():
+            self._qScore.reBuild()
 
     def _undo(self):
         measure = self._score.getItemAtPosition(self._np)
         measure.repeatCount = self._oldCount
+        if self._qScore.getQStaff(self._np).checkAlternate():
+            self._qScore.reBuild()
 
 class EditMeasurePropertiesCommand(ScoreCommand):
     def __init__(self, qScore, note, newCounter):
@@ -546,11 +550,15 @@ class SetAlternateCommand(ScoreCommand):
         measure = self._score.getItemAtPosition(self._np)
         measure.alternateText = self._alternate
         self._qScore.dataChanged(self._np)
+        if self._qScore.getQStaff(self._np).checkAlternate():
+            self._qScore.reBuild()
 
     def _undo(self):
         measure = self._score.getItemAtPosition(self._np)
         measure.alternateText = self._oldAlternate
         self._qScore.dataChanged(self._np)
+        if self._qScore.getQStaff(self._np).checkAlternate():
+            self._qScore.reBuild()
 
 class SetPaperSizeCommand(ScoreCommand):
     def __init__(self, qScore, newPaperSize):

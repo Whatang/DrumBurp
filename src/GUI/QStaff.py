@@ -51,6 +51,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self._measureLines = []
         self._width = 0
         self._height = 0
+        self._hasAlternate = False
         self._setStaff(staff)
         self.setHandlesChildEvents(False)
 
@@ -98,6 +99,10 @@ class QStaff(QtGui.QGraphicsItemGroup):
             self._addMeasureLine(lastMeasure, measure)
             self._addMeasure(measure)
             lastMeasure = measure
+            if (not self._hasAlternate and
+                (measure.alternateText or
+                 (measure.isRepeatEnd() and measure.repeatCount > 2))):
+                self._hasAlternate = True
         self._addMeasureLine(lastMeasure, None)
 
     def numMeasures(self):
@@ -221,4 +226,16 @@ class QStaff(QtGui.QGraphicsItemGroup):
         return self._measures[np.measureIndex]
 
     def alternateHeight(self):
-        return self._props.alternateHeight()
+        if self._hasAlternate:
+            return self._props.alternateHeight()
+        else:
+            return 0
+
+    def checkAlternate(self):
+        newAlternate = False
+        for measure in self._staff:
+            if (measure.alternateText or
+                (measure.isRepeatEnd() and measure.repeatCount > 2)):
+                newAlternate = True
+                break
+        return self._hasAlternate != newAlternate
