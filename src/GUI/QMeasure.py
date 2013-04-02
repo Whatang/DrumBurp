@@ -52,6 +52,7 @@ class QMeasure(QtGui.QGraphicsItem):
         self._index = index
         self._width = 0
         self._height = 0
+        self._base = 0
         self._highlight = None
         self._rect = QtCore.QRectF(0, 0, 0, 0)
         self._repeatCountRect = None
@@ -77,6 +78,10 @@ class QMeasure(QtGui.QGraphicsItem):
         self._height = (self.numLines() + 1) * self._qScore.ySpacing
         if self._props.beatCountVisible:
             self._height += self._qScore.ySpacing
+        self._base = 0
+        if self._props.measureCountsVisible:
+            self._base = self._qScore.ySpacing
+        self._height += self._base
         self._rect.setBottomRight(QtCore.QPointF(self._width, self._height))
 
     def boundingRect(self):
@@ -97,7 +102,7 @@ class QMeasure(QtGui.QGraphicsItem):
     def _paintNotes(self, painter, xValues):
         font = painter.font()
         fontMetric = QtGui.QFontMetrics(font)
-        baseline = self.numLines() * self._qScore.ySpacing
+        baseline = self.numLines() * self._qScore.ySpacing + self._base
         dot = self._qScore.scale
         potential = False
         for drumIndex in range(0, self.numLines()):
@@ -128,8 +133,8 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def _paintHighlight(self, painter, xValues):
         noteTime, drumIndex = self._highlight
-        baseline = (self.numLines() - drumIndex) * self._qScore.ySpacing
-        countLine = (self.numLines() + 1) * self._qScore.ySpacing
+        baseline = (self.numLines() - drumIndex) * self._qScore.ySpacing + self._base
+        countLine = (self.numLines() + 1) * self._qScore.ySpacing + self._base
         x = xValues[noteTime]
         painter.setPen(QtCore.Qt.NoPen)
         painter.setBrush(QtGui.QColor(QtCore.Qt.yellow).lighter())
@@ -143,7 +148,7 @@ class QMeasure(QtGui.QGraphicsItem):
     def _paintBeatCount(self, painter, xValues):
         font = painter.font()
         fontMetric = QtGui.QFontMetrics(font)
-        baseline = (self.numLines() + 1) * self._qScore.ySpacing
+        baseline = (self.numLines() + 1) * self._qScore.ySpacing + self._base
         for noteTime, count in enumerate(self._measure.count()):
             x = xValues[noteTime]
             br = fontMetric.tightBoundingRect(count)
@@ -156,19 +161,19 @@ class QMeasure(QtGui.QGraphicsItem):
         repeatText = '%dx' % self._measure.repeatCount
         textWidth = QtGui.QFontMetrics(painter.font()).width(repeatText)
         textLocation = QtCore.QPointF(self.width() - textWidth,
-                                      self._qScore.ySpacing)
+                                      self._qScore.ySpacing + self._base)
         painter.drawText(textLocation, repeatText)
         if self._repeatCountRect is None:
             self._repeatCountRect = QtCore.QRectF(0, 0, 0, 0)
         self._repeatCountRect.setSize(QtCore.QSizeF(textWidth,
                                                     self._qScore.ySpacing))
-        self._repeatCountRect.setTopRight(QtCore.QPointF(self.width(), 0))
+        self._repeatCountRect.setTopRight(QtCore.QPointF(self.width(), self._base))
 
     def _paintAlternate(self, painter):
         spacing = self._qScore.scale
         painter.setPen(self._qScore.palette().text().color())
-        painter.drawLine(0, 0, self.width() - spacing * 2, 0)
-        painter.drawLine(0, 0, 0, self._qScore.ySpacing - spacing * 2)
+        painter.drawLine(0, self._base, self.width() - spacing * 2, self._base)
+        painter.drawLine(0, self._base, 0, self._qScore.ySpacing - spacing * 2 + self._base)
         font = painter.font()
         isItalic = font.italic()
         font.setItalic(True)
@@ -178,9 +183,9 @@ class QMeasure(QtGui.QGraphicsItem):
         text = self._measure.alternateText
         textWidth = QtGui.QFontMetrics(font).width(text)
         self._alternate.setSize(QtCore.QSizeF(textWidth, self._qScore.ySpacing))
-        bottomLeft = QtCore.QPointF(spacing, self._qScore.ySpacing - spacing)
+        bottomLeft = QtCore.QPointF(spacing, self._qScore.ySpacing - spacing + self._base)
         self._alternate.setBottomLeft(bottomLeft)
-        painter.drawText(1, self._qScore.ySpacing - spacing, text)
+        painter.drawText(1, self._qScore.ySpacing - spacing + self._base, text)
         font.setItalic(isItalic)
         painter.setFont(font)
 

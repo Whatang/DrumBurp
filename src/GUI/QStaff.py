@@ -126,9 +126,12 @@ class QStaff(QtGui.QGraphicsItemGroup):
     def placeMeasures(self):
         lineOffsets = self._qScore.lineOffsets
         xOffset = 0
+        base = 0
+        if self._props.measureCountsVisible:
+            base = self._props.ySpacing
         for yOffset, label in zip(lineOffsets[-len(self._lineLabels):],
                                   self._lineLabels):
-            label.setPos(xOffset, yOffset)
+            label.setPos(xOffset, yOffset + base)
         xOffset += self._lineLabels[0].cellWidth()
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
@@ -162,9 +165,12 @@ class QStaff(QtGui.QGraphicsItemGroup):
 
     def ySpacingChanged(self):
         lineOffsets = self._qScore.lineOffsets
+        base = 0
+        if self._props.measureCountsVisible:
+            base = self._props.ySpacing
         for yOffset, label in zip(lineOffsets[-len(self._lineLabels):],
                                   self._lineLabels):
-            label.setY(yOffset)
+            label.setY(yOffset + base)
             label.ySpacingChanged()
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
