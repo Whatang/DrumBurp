@@ -146,7 +146,7 @@ class QMeasure(QtGui.QGraphicsItem):
     def _paintHighlight(self, painter, xValues):
         noteTime, drumIndex = self._highlight
         baseline = (self.numLines() - drumIndex - 1) * self._qScore.ySpacing + self._base + self.parentItem().alternateHeight()
-        countLine = (self.numLines() + 1) * self._qScore.ySpacing + self._base
+        countLine = (self.numLines() * self._qScore.ySpacing) + self._base + self.parentItem().alternateHeight()
         x = xValues[noteTime]
         painter.setPen(QtCore.Qt.NoPen)
         painter.setBrush(QtGui.QColor(QtCore.Qt.yellow).lighter())
