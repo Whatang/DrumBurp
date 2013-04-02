@@ -324,7 +324,7 @@ class QDisplayProperties(QObject):
         return self._ySpacing + 2
 
     def measureCountHeight(self):
-        return self._ySpacing + 2
+        return self._ySpacing + 4
 
 
     def maxColumns(self, widthInPixels):

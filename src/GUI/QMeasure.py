@@ -217,7 +217,7 @@ class QMeasure(QtGui.QGraphicsItem):
         font = painter.font()
         font.setItalic(True)
         painter.setFont(font)
-        painter.drawText(1, self._base, "%d" % self._measureCount)
+        painter.drawText(1, self._base - 2, "%d" % (1 + self._measureCount))
 
     def paint(self, painter, dummyOption, dummyWidget = None):
         painter.save()
