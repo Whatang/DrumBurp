@@ -32,6 +32,7 @@ class Test(unittest.TestCase):
                           "  METADATAVISIBLE True",
                           "  BEATCOUNTVISIBLE True",
                           "  EMPTYLINESVISIBLE True",
+                          "  MEASURECOUNTSVISIBLE False",
                           "END_SCORE_METADATA"])
 
     def testRead(self):
@@ -48,6 +49,7 @@ class Test(unittest.TestCase):
                     METADATAVISIBLE False
                     BEATCOUNTVISIBLE False
                     EMPTYLINESVISIBLE False
+                    MEASURECOUNTSVISIBLE True
                   END_SCORE_METADATA"""
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
@@ -65,6 +67,7 @@ class Test(unittest.TestCase):
         self.assertEqual(meta.metadataVisible, False)
         self.assertEqual(meta.beatCountVisible, False)
         self.assertEqual(meta.emptyLinesVisible, False)
+        self.assertEqual(meta.measureCountsVisible, True)
 
     def testBadRead(self):
         data = """SCORE_METADATA

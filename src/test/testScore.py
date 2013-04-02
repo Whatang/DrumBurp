@@ -1050,6 +1050,7 @@ class TestWrite(unittest.TestCase):
                          '  METADATAVISIBLE True',
                          '  BEATCOUNTVISIBLE True',
                          '  EMPTYLINESVISIBLE True',
+                         '  MEASURECOUNTSVISIBLE False',
                          'END_SCORE_METADATA',
                          'KIT_START',
                          'KIT_END',
@@ -1163,7 +1164,7 @@ class TestHash(unittest.TestCase):
     def testEmpty(self):
         hash_val = self.score.hashScore()
         self.assertEqual(hash_val.encode("hex"),
-                         "a46c295927eee37f253c22bb90735eaf")
+                         "99267bec6f2fd30506a6d54501e350c6")
 
 class TestRead(unittest.TestCase):
     def testRead(self):
