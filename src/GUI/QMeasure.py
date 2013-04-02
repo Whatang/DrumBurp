@@ -171,17 +171,18 @@ class QMeasure(QtGui.QGraphicsItem):
 
     @_painter_saver
     def _paintRepeatCount(self, painter):
+        spacing = self._qScore.scale
         painter.setPen(self._qScore.palette().text().color())
         repeatText = '%dx' % self._measure.repeatCount
         textWidth = QtGui.QFontMetrics(painter.font()).width(repeatText)
-        textLocation = QtCore.QPointF(self.width() - textWidth,
-                                      self.parentItem().alternateHeight() + self._base)
+        textLocation = QtCore.QPointF(self.width() - textWidth - 2 * spacing,
+                                      self.parentItem().alternateHeight() + self._base - spacing)
         painter.drawText(textLocation, repeatText)
         if self._repeatCountRect is None:
             self._repeatCountRect = QtCore.QRectF(0, 0, 0, 0)
         self._repeatCountRect.setSize(QtCore.QSizeF(textWidth,
                                                     self.parentItem().alternateHeight()))
-        self._repeatCountRect.setTopRight(QtCore.QPointF(self.width(), self._base))
+        self._repeatCountRect.setTopRight(QtCore.QPointF(self.width() - 2 * spacing, self._base - spacing))
 
     @_painter_saver
     def _paintAlternate(self, painter):
