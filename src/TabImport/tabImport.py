@@ -39,8 +39,8 @@ class DrumStaffGuess(object):
         return True
 
     def iterMeasures(self):
-        bar_iterator = itertools.izip(self._barPositions[:-1], self._barPositions[1:])
-        for start, end in bar_iterator:
+        barIterator = itertools.izip(self._barPositions[:-1], self._barPositions[1:])
+        for start, end in barIterator:
             yield [DrumLineGuess(line.prefix, line.line[start + 1:end])
                    for line in self]
 
@@ -79,20 +79,20 @@ class DrumKitGuess(object):
     def note_heads(self, prefix):
         return list(self._heads[prefix])
 
-    def add_drum(self, prefix):
+    def addDrum(self, prefix):
         if prefix in self._order:
             return
         self._order.append(prefix)
         self._heads[prefix] = []
 
-    def add_note_head(self, prefix, note_head):
-        if note_head not in self._heads[prefix]:
-            self._heads[prefix].append(note_head)
+    def addNoteHead(self, prefix, noteHead):
+        if noteHead not in self._heads[prefix]:
+            self._heads[prefix].append(noteHead)
 
     def drumIndex(self, prefix):
         return self._order.index(prefix)
 
-def guess_staffs(lines):
+def guessStaffs(lines):
     staffs = []
     currentStaff = None
     for line in itertools.imap(str.strip, lines):
@@ -111,38 +111,38 @@ def guess_staffs(lines):
         staffs.append(currentStaff)
     return staffs
 
-def guess_drums(staff_guesses):
+def guessDrums(staff_guesses):
     kit = DrumKitGuess()
     for staff in staff_guesses:
         for line in staff:
             if line.prefix in kit:
                 continue
-            kit.add_drum(line.prefix)
+            kit.addDrum(line.prefix)
             for char in line.line:
                 if char not in (line.BARLINE, line.EMPTY_NOTE):
-                    kit.add_note_head(line.prefix, char)
+                    kit.addNoteHead(line.prefix, char)
     return kit
 
-def guess_score(staffs, drums):
+def guessScore(staffs, drums):
     kit = DrumKit()
     for prefix in drums:
         heads = drums.note_heads(prefix)
         print prefix, heads
-        default_head = heads[0]
-        drum = Drum(prefix, prefix, default_head, False)
+        defaultHead = heads[0]
+        drum = Drum(prefix, prefix, defaultHead, False)
         headData = HeadData()
-        drum.addNoteHead(default_head, headData)
+        drum.addNoteHead(defaultHead, headData)
         for head in heads[1:]:
             drum.addNoteHead(head)
         kit.addDrum(drum)
     score = ScoreFactory.makeEmptyScore(0, None, kit)
-    for staff_guess in staffs:
-        for measure_lines in staff_guess.iterMeasures():
-            if not measure_lines:
+    for staffGuess in staffs:
+        for measureLines in staffGuess.iterMeasures():
+            if not measureLines:
                 continue
-            width = len(measure_lines[0].line)
+            width = len(measureLines[0].line)
             measure = score.insertMeasureByIndex(width)
-            for line in measure_lines:
+            for line in measureLines:
                 drumIndex = drums.drumIndex(line.prefix)
                 for noteTime, head in enumerate(line.line):
                     if head in (line.BARLINE, line.EMPTY_NOTE):
@@ -151,36 +151,36 @@ def guess_score(staffs, drums):
                                     head)
     return score
 
-def guess_counts(score):
+def guessCounts(score):
     for measure in score.iterMeasures():
         width = len(measure)
         if width == 4:
-            beat_len = 1
+            beatLength = 1
         elif width == 8:
-            beat_len = 2
+            beatLength = 2
         elif width == 16:
-            beat_len = 4
+            beatLength = 4
         elif width == 6:
-            beat_len = 3
+            beatLength = 3
         elif width == 12:
-            beat_len = 3
+            beatLength = 3
         elif width == 24:
-            beat_len = 6
+            beatLength = 6
         elif width % 4 == 0:
-            beat_len = 4
+            beatLength = 4
         elif width % 2 == 0:
-            beat_len = 2
+            beatLength = 2
         else:
-            beat_len = 1
-        counter = MeasureCount.counterMaker(beat_len, width)
+            beatLength = 1
+        counter = MeasureCount.counterMaker(beatLength, width)
         measure.counter = counter
 
 def main():
     lines = open(r"C:\Users\mike_000\Dropbox\Drum music\Take Me Out.txt").readlines()
-    staff_guesses = guess_staffs(lines)
-    drums = guess_drums(staff_guesses)
-    score = guess_score(staff_guesses, drums)
-    guess_counts(score)
+    staffGuesses = guessStaffs(lines)
+    drums = guessDrums(staffGuesses)
+    score = guessScore(staffGuesses, drums)
+    guessCounts(score)
     import sys
     score.write(sys.stdout)
     score.write(open(r"C:\Users\mike_000\Dropbox\Drum music\Take Me Out.brp", 'wb'))
