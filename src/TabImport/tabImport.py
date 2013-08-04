@@ -39,7 +39,8 @@ class DrumStaffGuess(object):
         return True
 
     def iterMeasures(self):
-        barIterator = itertools.izip(self._barPositions[:-1], self._barPositions[1:])
+        barIterator = itertools.izip(self._barPositions[:-1],
+                                     self._barPositions[1:])
         for start, end in barIterator:
             yield [DrumLineGuess(line.prefix, line.line[start + 1:end])
                    for line in self]
@@ -127,7 +128,6 @@ def guessScore(staffs, drums):
     kit = DrumKit()
     for prefix in drums:
         heads = drums.note_heads(prefix)
-        print prefix, heads
         defaultHead = heads[0]
         drum = Drum(prefix, prefix, defaultHead, False)
         headData = HeadData()
