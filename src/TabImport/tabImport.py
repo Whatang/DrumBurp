@@ -175,15 +175,26 @@ def guessCounts(score):
         counter = MeasureCount.counterMaker(beatLength, width)
         measure.counter = counter
 
-def main():
-    lines = open(r"C:\Users\mike_000\Dropbox\Drum music\Take Me Out.txt").readlines()
+def importTab(handle):
+    lines = handle.readlines()
     staffGuesses = guessStaffs(lines)
     drums = guessDrums(staffGuesses)
     score = guessScore(staffGuesses, drums)
     guessCounts(score)
+    return score
+
+def main():
     import sys
+    if len(sys.argv) == 1:
+        infile = r"C:\Users\mike_000\Dropbox\Drum music\Take Me Out.txt"
+        outfile = r"C:\Users\mike_000\Dropbox\Drum music\Take Me Out.brp"
+    elif len(sys.argv) == 2:
+        infile = sys.argv[1]
+        outfile = infile + ".brp"
+    with open(infile) as handle:
+        score = importTab(handle)
     score.write(sys.stdout)
-    score.write(open(r"C:\Users\mike_000\Dropbox\Drum music\Take Me Out.brp", 'wb'))
+    score.write(open(outfile, 'wb'))
 
 if __name__ == '__main__':
     main()
