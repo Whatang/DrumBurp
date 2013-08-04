@@ -74,6 +74,7 @@ class DrumKitGuess(object):
         self._heads = {}
         self._order = []
         self._readGuesses(staffGuesses)
+        self._fixOrder(staffGuesses)
 
     def _readGuesses(self, staffGuesses):
         for staff in staffGuesses:
@@ -84,6 +85,19 @@ class DrumKitGuess(object):
                 for char in line.line:
                     if char not in (line.BARLINE, line.EMPTY_NOTE):
                         self._addNoteHead(line.prefix, char)
+
+    def _fixOrder(self, staffGuesses):
+        order = self._order
+        for staff in staffGuesses:
+            for first, line1 in enumerate(staff):
+                for second, line2 in enumerate(staff):
+                    if second <= first:
+                        continue
+                    left = order.index(line1.prefix)
+                    right = order.index(line2.prefix)
+                    if left > right:
+                        order[left], order[right] = order[right], order[left]
+        self._order = list(reversed(order))
 
     def __iter__(self):
         return iter(self._order)
