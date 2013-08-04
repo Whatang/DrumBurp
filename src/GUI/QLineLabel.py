@@ -40,13 +40,13 @@ class QLineLabel(QtGui.QGraphicsItem):
         self.setCursor(QtCore.Qt.PointingHandCursor)
         self.setAcceptsHoverEvents(True)
 
-    def hoverEnterEvent(self, *args, **kwargs):
+    def hoverEnterEvent(self, event):
         self._qScore.setStatusMessage("Double click to edit kit information.")
-        return super(QLineLabel, self).hoverEnterEvent(*args, **kwargs)
+        event.accept()
 
-    def hoverLeaveEvent(self, *args, **kwargs):
+    def hoverLeaveEvent(self, event):
         self._qScore.setStatusMessage()
-        return super(QLineLabel, self).hoverLeaveEvent(*args, **kwargs)
+        event.accept()
 
     def cellHeight(self):
         return self.scene().ySpacing
