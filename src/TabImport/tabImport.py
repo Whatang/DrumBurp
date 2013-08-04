@@ -70,9 +70,20 @@ class DrumLineGuess(object):
         return cls(prefix, lineData)
 
 class DrumKitGuess(object):
-    def __init__(self):
+    def __init__(self, staffGuesses):
         self._heads = {}
         self._order = []
+        self._readGuesses(staffGuesses)
+
+    def _readGuesses(self, staffGuesses):
+        for staff in staffGuesses:
+            for line in staff:
+                if line.prefix in self._heads:
+                    continue
+                self._addDrum(line.prefix)
+                for char in line.line:
+                    if char not in (line.BARLINE, line.EMPTY_NOTE):
+                        self._addNoteHead(line.prefix, char)
 
     def __iter__(self):
         return iter(self._order)
@@ -80,13 +91,13 @@ class DrumKitGuess(object):
     def note_heads(self, prefix):
         return list(self._heads[prefix])
 
-    def addDrum(self, prefix):
+    def _addDrum(self, prefix):
         if prefix in self._order:
             return
         self._order.append(prefix)
         self._heads[prefix] = []
 
-    def addNoteHead(self, prefix, noteHead):
+    def _addNoteHead(self, prefix, noteHead):
         if noteHead not in self._heads[prefix]:
             self._heads[prefix].append(noteHead)
 
@@ -112,17 +123,6 @@ def guessStaffs(lines):
         staffs.append(currentStaff)
     return staffs
 
-def guessDrums(staff_guesses):
-    kit = DrumKitGuess()
-    for staff in staff_guesses:
-        for line in staff:
-            if line.prefix in kit:
-                continue
-            kit.addDrum(line.prefix)
-            for char in line.line:
-                if char not in (line.BARLINE, line.EMPTY_NOTE):
-                    kit.addNoteHead(line.prefix, char)
-    return kit
 
 def guessScore(staffs, drums):
     kit = DrumKit()
@@ -178,7 +178,7 @@ def guessCounts(score):
 def importTab(handle):
     lines = handle.readlines()
     staffGuesses = guessStaffs(lines)
-    drums = guessDrums(staffGuesses)
+    drums = DrumKitGuess(staffGuesses)
     score = guessScore(staffGuesses, drums)
     guessCounts(score)
     return score
