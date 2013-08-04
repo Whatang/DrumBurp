@@ -327,16 +327,19 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def hoverEnterEvent(self, event):
         self._hovering(event)
+        event.accept()
 
     def hoverMoveEvent(self, event):
         self._hovering(event)
+        event.accept()
 
-    def hoverLeaveEvent(self, event_):
+    def hoverLeaveEvent(self, event):
         self._highlight = None
         self.update()
         self.parentItem().clearHighlight()
         self._qScore.setCurrentHeads(None)
         self.setCursor(QtCore.Qt.ArrowCursor)
+        event.accept()
 
     def mousePressEvent(self, event):
         point = self.mapFromScene(event.scenePos())
