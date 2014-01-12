@@ -62,29 +62,38 @@ class DrumLineGuess(object):
         if barCount < 2:
             return None
         start = line.index(cls.BARLINE)
+        startEmpty = line.find(cls.EMPTY_NOTE)
+        if startEmpty != -1 and startEmpty < start:
+            start = startEmpty
         end = line.rindex(cls.BARLINE)
+        endEmpty = line.rfind(cls.BARLINE)
+        if endEmpty > end:
+            end = endEmpty
         lineData = line[start:end + 1]
+        lineData = lineData.replace(" ", "")
         for char in lineData:
             if char in cls.FORBIDDEN:
                 return None
         prefix = line[:start].strip()
         if not prefix:
             return None
+        prefix = prefix.rstrip(":").strip()
         return cls(prefix, lineData)
 
 class DrumKitGuess(object):
     def __init__(self, staffGuesses):
         self._heads = {}
         self._order = []
+        self._abbr = {}
         self._readGuesses(staffGuesses)
         self._fixOrder(staffGuesses)
+        self._checkDrums()
 
     def _readGuesses(self, staffGuesses):
         for staff in staffGuesses:
             for line in staff:
-                if line.prefix in self._heads:
-                    continue
-                self._addDrum(line.prefix)
+                if line.prefix not in self._heads:
+                    self._addDrum(line.prefix)
                 for char in line.line:
                     if char not in (line.BARLINE, line.EMPTY_NOTE):
                         self._addNoteHead(line.prefix, char)
@@ -101,6 +110,46 @@ class DrumKitGuess(object):
                     if left > right:
                         order[left], order[right] = order[right], order[left]
         self._order = list(reversed(order))
+
+    def _checkDrums(self):
+        abbrs = set()
+        for prefix in self:
+            if not self._heads[prefix]:
+                self._addNoteHead(prefix, "x")
+            if len(prefix) <= 2:
+                abbr = prefix
+            else:
+                if prefix[-1] in '0123456789':
+                    abbr = prefix[0] + prefix[-1]
+                else:
+                    abbr = prefix[:2]
+            if abbr not in abbrs:
+                self._abbr[prefix] = abbr
+                abbrs.add(abbr)
+            else:
+                count = 0
+                looped = False
+                while abbr in abbrs:
+                    abbr = prefix[:1]
+                    if count == 9:
+                        if abbr == 'z' or ord(abbr[0]) == 0x7e:
+                            abbr = 'A'
+                            if looped:
+                                raise TabImportError("Could not assign abbreviation for drum %s" % abbr)
+                            looped = True
+                        elif abbr == 'Z':
+                            abbr = 'a'
+                        else:
+                            abbr = chr(ord(prefix) + 1)
+                    count += 1
+                    abbr += str(count)
+                self._abbr[prefix] = abbr
+                abbrs.add(abbr)
+
+    def abbr(self, prefix):
+        return self._abbr[prefix]
+
+
 
     def __iter__(self):
         return iter(self._order)
@@ -146,7 +195,7 @@ def guessScore(staffs, drums):
     for prefix in drums:
         heads = drums.note_heads(prefix)
         defaultHead = heads[0]
-        drum = Drum(prefix, prefix, defaultHead, False)
+        drum = Drum(prefix, drums.abbr(prefix), defaultHead, False)
         headData = HeadData()
         drum.addNoteHead(defaultHead, headData)
         for head in heads[1:]:
