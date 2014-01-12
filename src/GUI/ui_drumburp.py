@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\mike_000\workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sun Jan 12 19:07:17 2014
+# Created: Sun Jan 12 21:12:25 2014
 #      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -526,6 +526,9 @@ class Ui_DrumBurpWindow(object):
         self.actionShowMeasureCounts.setIcon(icon29)
         self.actionShowMeasureCounts.setObjectName(_fromUtf8("actionShowMeasureCounts"))
         self.actionImportTab = QtGui.QAction(DrumBurpWindow)
+        icon30 = QtGui.QIcon()
+        icon30.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/format-indent-less.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionImportTab.setIcon(icon30)
         self.actionImportTab.setObjectName(_fromUtf8("actionImportTab"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionLoad)
