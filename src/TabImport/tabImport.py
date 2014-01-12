@@ -199,12 +199,15 @@ def importTab(handle):
 
 def main():
     import sys
-    if len(sys.argv) == 1:
-        infile = r"C:\Users\mike_000\Dropbox\Drum music\Take Me Out.txt"
-        outfile = r"C:\Users\mike_000\Dropbox\Drum music\Take Me Out.brp"
-    elif len(sys.argv) == 2:
+    if len(sys.argv) == 2:
         infile = sys.argv[1]
-        outfile = infile + ".brp"
+    else:
+        print "Usage: tabimport infilename"
+        return
+    outfile = unicode(infile)
+    if outfile.endswith(u".txt"):
+        outfile = outfile[:-4]
+    outfile += ".brp"
     with open(infile) as handle:
         score = importTab(handle)
     score.write(sys.stdout)
