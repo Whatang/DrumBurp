@@ -849,17 +849,19 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         else:
             loc = QDesktopServices.HomeLocation
             directory = QDesktopServices.storageLocation(loc)
-        fname = QFileDialog.getOpenFileName(parent=self,
-                                            caption=caption,
-                                            directory=directory,
-                                            filter="Text files(*.txt);; All files (*)")
+        filter = "Text files(*.txt);; All files (*)"
+        fname = QFileDialog.getOpenFileName(parent = self,
+                                            caption = caption,
+                                            directory = directory,
+                                            filter = filter)
         if len(fname) == 0:
             return
         try:
             with open(fname, 'rU') as handle:
                 score = tabImport.importTab(handle)
         except Exception, exc:
-            QMessageBox.warning(self, "Failed import", "Could not import from %s:\n%s" % (fname, exc))
+            QMessageBox.warning(self, "Failed import",
+                                "Could not import from %s:\n%s" % (fname, exc))
             raise
         self.scoreScene.setScore(score)
         self._beatChanged(self.scoreScene.defaultCount)
