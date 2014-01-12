@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>965</width>
+    <width>1012</width>
     <height>769</height>
    </rect>
   </property>
@@ -448,8 +448,8 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>965</width>
-     <height>21</height>
+     <width>1012</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -479,6 +479,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <addaction name="menuRecentScores"/>
     <addaction name="actionSave"/>
     <addaction name="actionSaveAs"/>
+    <addaction name="actionImportTab"/>
     <addaction name="separator"/>
     <addaction name="actionPrint"/>
     <addaction name="actionExportASCII"/>
@@ -577,6 +578,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
    <addaction name="actionLoad"/>
    <addaction name="actionSave"/>
    <addaction name="actionSaveAs"/>
+   <addaction name="actionImportTab"/>
   </widget>
   <widget class="QToolBar" name="displayToolBar">
    <property name="windowTitle">
@@ -1785,6 +1787,17 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="toolTip">
     <string>Show/Hide Measure Counts</string>
+   </property>
+  </action>
+  <action name="actionImportTab">
+   <property name="text">
+    <string>&amp;Import Tab</string>
+   </property>
+   <property name="toolTip">
+    <string>Import a plain text tab file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
  </widget>

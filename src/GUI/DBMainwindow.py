@@ -46,6 +46,7 @@ from DBFSMEvents import StartPlaying, StopPlaying
 from DBVersion import APPNAME, DB_VERSION
 from Notation.lilypond import LilypondScore, LilypondProblem
 from Notation import AsciiExport
+from TabImport import tabImport
 # pylint:disable-msg=R0904
 
 class FakeQSettings(object):
@@ -837,3 +838,33 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def on_actionCheckForUpdates_triggered(self):
         dialog = QVersionDownloader(self)
         dialog.exec_()
+
+    @pyqtSignature("")
+    def on_actionImportTab_triggered(self):
+        if not self.okToContinue():
+            return
+        caption = "Select a tab file to import"
+        if len(self.recentFiles) > 0:
+            directory = os.path.dirname(self.recentFiles[-1])
+        else:
+            loc = QDesktopServices.HomeLocation
+            directory = QDesktopServices.storageLocation(loc)
+        fname = QFileDialog.getOpenFileName(parent=self,
+                                            caption=caption,
+                                            directory=directory,
+                                            filter="Text files(*.txt);; All files (*)")
+        if len(fname) == 0:
+            return
+        try:
+            with open(fname, 'rU') as handle:
+                score = tabImport.importTab(handle)
+        except Exception, exc:
+            QMessageBox.warning(self, "Failed import", "Could not import from %s:\n%s" % (fname, exc))
+            raise
+        self.scoreScene.setScore(score)
+        self._beatChanged(self.scoreScene.defaultCount)
+        self.lilypondSize.setValue(self.scoreScene.score.lilysize)
+        self.lilyPagesBox.setValue(self.scoreScene.score.lilypages)
+        self.filename = None
+        self.scoreScene.dirty = True
+        self.updateStatus("Imported from %s" % fname)

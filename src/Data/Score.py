@@ -746,6 +746,7 @@ class ScoreFactory(object):
         for dummy in range(0, numMeasures):
             score.insertMeasureByIndex(len(counter), counter = counter)
         score.scoreData.makeEmpty()
+        score.defaultCount = counter
         return score
 
     @classmethod

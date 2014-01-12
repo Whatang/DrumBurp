@@ -12,6 +12,9 @@ from Data import MeasureCount
 
 import itertools
 
+class TabImportError(RuntimeError):
+    pass
+
 class DrumStaffGuess(object):
     def __init__(self):
         self._lines = []
@@ -195,6 +198,8 @@ def importTab(handle):
     drums = DrumKitGuess(staffGuesses)
     score = guessScore(staffGuesses, drums)
     guessCounts(score)
+    if score.numMeasures() == 0:
+        raise TabImportError("No measures found!")
     return score
 
 def main():

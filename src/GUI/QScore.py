@@ -241,7 +241,7 @@ class QScore(QtGui.QGraphicsScene):
         yOffsets.reverse()
         return yOffsets
 
-    def _setScore(self, score):
+    def setScore(self, score):
         if score != self._score:
             score.formatScore(None)
             self._score = score
@@ -268,6 +268,7 @@ class QScore(QtGui.QGraphicsScene):
                 view.setWidth(self.scoreWidth)
             self.reBuild()
             self.dirty = False
+            self._saved = False
             self._state = Waiting(self)
 
     @property
@@ -618,7 +619,7 @@ class QScore(QtGui.QGraphicsScene):
             return False
         except StandardError, exc:
             raise
-        self._setScore(newScore)
+        self.setScore(newScore)
         self._saved = True
         return True
 
@@ -646,7 +647,7 @@ class QScore(QtGui.QGraphicsScene):
         newScore = _SCORE_FACTORY(numMeasures = numMeasures,
                                   counter = counter,
                                   kit = kit)
-        self._setScore(newScore)
+        self.setScore(newScore)
 
     def numPages(self, pageHeight):
         topLeft = QtCore.QPointF(self.xMargins, self.yMargins)
