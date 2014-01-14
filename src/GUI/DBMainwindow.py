@@ -99,7 +99,16 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.updateRecentFiles()
         self.songProperties = QDisplayProperties()
         # Create scene
-        self.scoreScene = QScore(self)
+        try:
+            self.scoreScene = QScore(self)
+        except:
+            try:
+                self.recentFiles.remove(self.filename)
+            except ValueError:
+                pass
+            self.filename = None
+            self.scoreScene = QScore(self)
+
         self.restoreGeometry(settings.value("Geometry").toByteArray())
         self.restoreState(settings.value("MainWindow/State").toByteArray())
         self.statusbar.addPermanentWidget(QFrame())
