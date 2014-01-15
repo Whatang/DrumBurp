@@ -111,7 +111,7 @@ class QScore(QtGui.QGraphicsScene):
         self._kitData.setPos(self.xMargins, 0)
         self._kitData.setVisible(self._properties.kitDataVisible)
         if parent.filename is not None:
-            if not self.loadScore(parent.filename, quiet = True):
+            if not self.loadScore(parent.filename, quiet = False):
                 parent.filename = None
                 self.newScore(None)
         else:

@@ -99,9 +99,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.updateRecentFiles()
         self.songProperties = QDisplayProperties()
         # Create scene
+        errored_files = []
         try:
             self.scoreScene = QScore(self)
         except:
+            errored_files.append(self.filename)
             try:
                 self.recentFiles.remove(self.filename)
             except ValueError:
@@ -119,7 +121,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.statusbar.addPermanentWidget(self._infoBar)
         self._initializeState()
         self.setSections()
-        QTimer.singleShot(0, self._startUp)
+        QTimer.singleShot(0, lambda : self._startUp(errored_files))
         self.actionCheckOnStartup.setChecked(settings.value("CheckOnStartup").toBool())
 
     def _connectSignals(self, props, scene):
@@ -213,12 +215,15 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.lilyFillButton.setChecked(scene.score.lilyFill)
 
 
-    def _startUp(self):
+    def _startUp(self, errored_files):
         self.scoreView.startUp()
         self.updateStatus("Welcome to %s v%s" % (APPNAME, DB_VERSION))
         self.scoreView.setFocus()
         if self.actionCheckOnStartup.isChecked():
             self.on_actionCheckForUpdates_triggered()
+        if errored_files:
+            QMessageBox.warning(self, "Problem during startup",
+                                "Error opening files:\n %s" % "\n".join(errored_files))
 
 
     def _makeQSettings(self):
