@@ -97,6 +97,7 @@ class QScore(QtGui.QGraphicsScene):
         self._undoStack = QtGui.QUndoStack(self)
         self._inMacro = False
         self._macroCanReformat = False
+        self._shortcut_memo = {}
         self._undoStack.canUndoChanged.connect(self.canUndoChanged)
         self._undoStack.undoTextChanged.connect(self.undoTextChanged)
         self._undoStack.canRedoChanged.connect(self.canRedoChanged)
@@ -481,10 +482,12 @@ class QScore(QtGui.QGraphicsScene):
             self._currentHeads = {}
             self._headOrder = []
         else:
-            currentHeads = self.score.drumKit.shortcutsAndNoteHeads(drumIndex)
-            self._currentHeads = dict((unicode(x), y) for (x, y)
-                                       in currentHeads)
-            self._headOrder = [unicode(x) for (x, y_) in currentHeads]
+            if drumIndex not in self._shortcut_memo:
+                currentHeads = self.score.drumKit.shortcutsAndNoteHeads(drumIndex)
+                headDict = dict((unicode(x), y) for (x, y) in currentHeads)
+                headOrder = [unicode(x) for (x, y_) in currentHeads]
+                self._shortcut_memo[drumIndex] = (headDict, headOrder)
+            self._currentHeads, self._headOrder = self._shortcut_memo[drumIndex]
         self._highlightCurrentKeyHead()
 
     def _keyString(self, head):
@@ -784,6 +787,7 @@ class QScore(QtGui.QGraphicsScene):
                                          buttons = (QtGui.QMessageBox.Yes
                                                     | QtGui.QMessageBox.No))
         if box == QtGui.QMessageBox.Yes:
+            self._shortcut_memo = {}
             self.score.changeKit(kit, changes)
             DBMidi.setKit(kit)
             self._undoStack.clear()
