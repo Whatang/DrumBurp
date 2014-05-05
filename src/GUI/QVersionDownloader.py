@@ -38,14 +38,19 @@ class QVersionDownloader(QDialog, Ui_VersionDownloader):
     def _download(self):
         newer = doesNewerVersionExist()
         self.resultBox.setEnabled(True)
-        self.message.setText("Finished.")
+        self.message.setText("Finished checking for new version at www.whatang.org.")
         if newer is None:
-            self.resultLabel.setText("Could not access version information.")
+            self.resultLabel.setText('<span style="color:#ff0000;"><b>'
+                                     'Failed :Could not access version information.'
+                                     '</b></span>')
         elif newer == "":
-            self.resultLabel.setText("No newer version is available.")
+            self.resultLabel.setText('<span style="color:#298018;">'
+                                     'No newer version is available.'
+                                     '<span>')
         else:
-            self.resultLabel.setText("DrumBurp version %s is now available "
+            self.resultLabel.setText('<span style="color:#183080;"><b>'
+                                     "DrumBurp version %s is now available "
                                      "from <a href='http://www.whatang.org'>"
-                                     "www.whatang.org</a>" % newer)
+                                     "www.whatang.org</a></b></span>" % newer)
 
 
