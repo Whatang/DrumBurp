@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\mike_000\workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Mon May 05 14:25:09 2014
+# Created: Tue May 06 00:22:49 2014
 #      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -550,6 +550,7 @@ class Ui_DrumBurpWindow(object):
         self.menuView.addAction(self.actionShowDrumKey)
         self.menuView.addAction(self.actionShowEmptyLines)
         self.menuView.addAction(self.actionShowBeatCount)
+        self.menuView.addAction(self.actionShowMeasureCounts)
         self.menuView.addSeparator()
         self.menuView.addAction(self.actionDisplayOptionsIsVisible)
         self.menuView.addAction(self.menuShowToolBars.menuAction())
@@ -977,8 +978,11 @@ class Ui_DrumBurpWindow(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Lilypond is a TeX based music typesetting system available from <a href=\"http://www.lilypond.org\"><span style=\" text-decoration: underline; color:#0000ff;\">lilypond.org</span></a>. DrumBurp can export its scores to the Lilypond input format. Run Lilypond on the resulting files to have your score set in notation rather than as tab.</p></body></html>", None))
         self.actionCheckForUpdates.setText(_translate("DrumBurpWindow", "Check for updates", None))
         self.actionCheckOnStartup.setText(_translate("DrumBurpWindow", "Check on startup", None))
-        self.actionShowMeasureCounts.setText(_translate("DrumBurpWindow", "Show Measure Counts", None))
-        self.actionShowMeasureCounts.setToolTip(_translate("DrumBurpWindow", "Show/Hide Measure Counts", None))
+        self.actionShowMeasureCounts.setText(_translate("DrumBurpWindow", "Show Measure Indexes", None))
+        self.actionShowMeasureCounts.setIconText(_translate("DrumBurpWindow", "Show Measure Indexes", None))
+        self.actionShowMeasureCounts.setToolTip(_translate("DrumBurpWindow", "Show/Hide Measure Indexes", None))
+        self.actionShowMeasureCounts.setStatusTip(_translate("DrumBurpWindow", "Show/Hide Measure Indexes", None))
+        self.actionShowMeasureCounts.setWhatsThis(_translate("DrumBurpWindow", "Show/Hide Measure Indexes", None))
 
 from Widgets.ScoreView_plugin import ScoreView
 import DrumBurp_rc

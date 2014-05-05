@@ -512,6 +512,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <addaction name="actionShowDrumKey"/>
     <addaction name="actionShowEmptyLines"/>
     <addaction name="actionShowBeatCount"/>
+    <addaction name="actionShowMeasureCounts"/>
     <addaction name="separator"/>
     <addaction name="actionDisplayOptionsIsVisible"/>
     <addaction name="menuShowToolBars"/>
@@ -1784,10 +1785,19 @@ p, li { white-space: pre-wrap; }
      <normaloff>:/Icons/Icons/accessories-calculator.png</normaloff>:/Icons/Icons/accessories-calculator.png</iconset>
    </property>
    <property name="text">
-    <string>Show Measure Counts</string>
+    <string>Show Measure Indexes</string>
+   </property>
+   <property name="iconText">
+    <string>Show Measure Indexes</string>
    </property>
    <property name="toolTip">
-    <string>Show/Hide Measure Counts</string>
+    <string>Show/Hide Measure Indexes</string>
+   </property>
+   <property name="statusTip">
+    <string>Show/Hide Measure Indexes</string>
+   </property>
+   <property name="whatsThis">
+    <string>Show/Hide Measure Indexes</string>
    </property>
   </action>
  </widget>
