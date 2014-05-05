@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>965</width>
+    <width>1012</width>
     <height>769</height>
    </rect>
   </property>
@@ -448,8 +448,8 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>965</width>
-     <height>21</height>
+     <width>1012</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1044,6 +1044,9 @@ The score editing window uses the font selected here to display the score inform
    </property>
    <property name="statusTip">
     <string>Quit DrumBurp</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
   <action name="actionNew">
