@@ -141,6 +141,7 @@ class QMeasure(QtGui.QGraphicsItem):
                     painter.setPen(QtGui.QColor(QtCore.Qt.black))
                     potential = False
             baseline -= self._qScore.ySpacing
+#         painter.drawRect(self._rect) # Draw bounding box
 
     @_painter_saver
     def _paintHighlight(self, painter, xValues):
@@ -268,12 +269,11 @@ class QMeasure(QtGui.QGraphicsItem):
         self._setDimensions()
         self.update()
 
-    def _isOverNotes(self, point):
-        return (0 <= ((point.y() - self._base - self.parentItem().alternateHeight()) / self._qScore.ySpacing)
-                < self.numLines())
+    def _isOverNotes(self, lineIndex):
+        return (0 <= lineIndex < self.numLines())
 
-    def _isOverCount(self, point):
-        return ((point.y() - self._base - self.parentItem().alternateHeight()) / self._qScore.ySpacing) >= self.numLines() + 1
+    def _isOverCount(self, lineIndex):
+        return lineIndex == -1
 
     def _isOverRepeatCount(self, point):
         return (self._repeatCountRect is not None
@@ -283,11 +283,15 @@ class QMeasure(QtGui.QGraphicsItem):
         return (self._alternate is not None
                 and self._alternate.contains(point))
 
+    def _getMouseLine(self, point):
+        offset = point.y() - self._base - self.parentItem().alternateHeight()
+        if offset < 0:
+            return self.numLines()
+        else:
+            return self.numLines() - int(offset / self._qScore.ySpacing) - 1
 
     def _getMouseCoords(self, point):
-        x = self._getNoteTime(point)
-        y = self.numLines() - int((point.y() - self._base - self.parentItem().alternateHeight()) / self._qScore.ySpacing) - 1
-        return x, y
+        return self._getNoteTime(point), self._getMouseLine(point)
 
     def _getNotePosition(self, point):
         x, y = self._getMouseCoords(point)
@@ -299,19 +303,19 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def _hovering(self, event):
         point = self.mapFromScene(event.scenePos())
-        if self._isOverNotes(point):
-            newPlace = self._getMouseCoords(point)
-            if newPlace != self._highlight:
-                self._highlight = newPlace
+        noteTime, lineIndex = self._getMouseCoords(point)
+        if self._isOverNotes(lineIndex):
+            if (noteTime, lineIndex) != self._highlight:
+                self._highlight = noteTime, lineIndex
                 self.update()
-                self.parentItem().setLineHighlight(newPlace[1])
-                realIndex = self.parentItem().lineIndex(newPlace[1])
+                self.parentItem().setLineHighlight(lineIndex)
+                realIndex = self.parentItem().lineIndex(lineIndex)
                 self._qScore.setCurrentHeads(realIndex)
         elif self._highlight != None:
             self._highlight = None
             self.parentItem().clearHighlight()
             self.update()
-        if self._isOverCount(point):
+        if self._isOverCount(lineIndex):
             self._qScore.setStatusMessage("Double click to edit measure count.")
             self.setCursor(QtCore.Qt.PointingHandCursor)
         elif self._isOverRepeatCount(point):
@@ -345,7 +349,7 @@ class QMeasure(QtGui.QGraphicsItem):
         point = self.mapFromScene(event.scenePos())
         eventType = LeftPress
         np = None
-        if self._isOverNotes(point):
+        if self._isOverNotes(self._getMouseLine(point)):
             noteTime, drumIndex = self._getNotePosition(point)
             np = self.makeNotePosition(noteTime, drumIndex)
             if event.button() == QtCore.Qt.MidButton:
@@ -358,7 +362,7 @@ class QMeasure(QtGui.QGraphicsItem):
         item = self._qScore.itemAt(event.scenePos())
         if item is self:
             point = self.mapFromScene(event.scenePos())
-            if self._isOverNotes(point):
+            if self._isOverNotes(self._getMouseLine(point)):
                 np = self._getNotePosition(point)
                 np = self.makeNotePosition(*np)
                 self._qScore.sendFsmEvent(MouseMove(self, np))
@@ -368,14 +372,15 @@ class QMeasure(QtGui.QGraphicsItem):
     def mouseReleaseEvent(self, event):
         point = self.mapFromScene(event.scenePos())
         np = None
-        if self._isOverNotes(point):
+        if self._isOverNotes(self._getMouseLine(point)):
             noteTime, drumIndex = self._getNotePosition(point)
             np = self.makeNotePosition(noteTime, drumIndex)
         self._qScore.sendFsmEvent(MouseRelease(self, np))
 
     def mouseDoubleClickEvent(self, event):
         point = self.mapFromScene(event.scenePos())
-        if self._isOverCount(point):
+        lineIndex = self._getMouseLine(point)
+        if self._isOverCount(lineIndex):
             counter = self._measure.counter
             fsmEvent = EditMeasureProperties(counter,
                                              self._props.counterRegistry,

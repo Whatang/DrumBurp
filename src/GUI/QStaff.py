@@ -94,15 +94,16 @@ class QStaff(QtGui.QGraphicsItemGroup):
             iterable = self._qScore.score.iterVisibleLines(self._index)
         for drum in iterable:
             self._addLineLabel(drum)
+        for measure in self._staff:
+            if (not self._hasAlternate and
+                (measure.alternateText or
+                 (measure.isRepeatEnd() and measure.repeatCount > 2))):
+                self._hasAlternate = True
         lastMeasure = None
         for measure in self._staff:
             self._addMeasureLine(lastMeasure, measure)
             self._addMeasure(measure)
             lastMeasure = measure
-            if (not self._hasAlternate and
-                (measure.alternateText or
-                 (measure.isRepeatEnd() and measure.repeatCount > 2))):
-                self._hasAlternate = True
         self._addMeasureLine(lastMeasure, None)
 
     def numMeasures(self):
