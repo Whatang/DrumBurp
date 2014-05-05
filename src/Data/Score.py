@@ -736,7 +736,7 @@ class Score(object):
         scoreString = StringIO()
         self.write(scoreString)
         scoreString = scoreString.getvalue()
-        return hashlib.md5(scoreString).digest() #pylint:disable-msg=E1101
+        return hashlib.md5(scoreString).digest()  # pylint:disable-msg=E1121
 
 class ScoreFactory(object):
     def __call__(self, filename = None,
