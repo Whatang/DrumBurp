@@ -26,28 +26,35 @@ import DBErrors
 
 class dbFileIterator(object):
     class _Section(object):
-        def __init__(self, iterator, startLine, endLine, convertNone = None):
+        def __init__(self, iterator, startLine, endLine, convertNone = None, readLines = None):
             self._iterator = iterator
             self._startLine = startLine
             self._endLine = endLine
             self._convertNone = convertNone
             self._lines = {}
+            self._readLines = readLines
 
         def __enter__(self):
             return self
 
         def _process(self):
+            linesRead = 0
             for lineType, lineData in self._iterator:
                 if lineData == None:
                     lineData = self._convertNone
                 if lineType == self._startLine:
-                    continue
+                    pass
                 elif lineType == self._endLine:
                     break
                 elif lineType in self._lines:
                     self._lines[lineType](lineData)
                 else:
                     raise DBErrors.UnrecognisedLine(lineType)
+                if self._readLines is not None:
+                    linesRead += 1
+                    if linesRead == self._readLines:
+                        break
+
 
         @staticmethod
         def _parseInteger(data, lineName):
@@ -138,8 +145,8 @@ class dbFileIterator(object):
             lineType = lineType.upper()
             yield lineType, lineData
 
-    def section(self, startLine, endLine, convertNone = None):
-        return self._Section(self, startLine, endLine, convertNone)
+    def section(self, startLine, endLine, convertNone = None, readLines = None):
+        return self._Section(self, startLine, endLine, convertNone, readLines)
 
 
 class Indenter(object):
