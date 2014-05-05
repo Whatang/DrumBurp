@@ -24,7 +24,7 @@ Created on 12 Dec 2010
 import unittest
 from cStringIO import StringIO
 from Data.Score import Score, InconsistentRepeats, ScoreFactory
-from Data import DrumKit, Drum
+from Data import DrumKit, Drum, DBErrors
 from Data.DBErrors import BadTimeError, OverSizeMeasure
 from Data.DBConstants import EMPTY_NOTE
 from Data.NotePosition import NotePosition
@@ -1037,7 +1037,8 @@ class TestWrite(unittest.TestCase):
         score.setSectionEnd(NotePosition(0, 0), True)
         score.lilyFill = True
         self.assertEqual(self.getOutput(score),
-                        ['SCORE_METADATA',
+                        ['DB_FILE_FORMAT 0',
+                         'SCORE_METADATA',
                          '  TITLE ',
                          '  ARTIST ',
                          '  ARTISTVISIBLE True',
@@ -1164,210 +1165,211 @@ class TestHash(unittest.TestCase):
     def testEmpty(self):
         hash_val = self.score.hashScore()
         self.assertEqual(hash_val.encode("hex"),
-                         "99267bec6f2fd30506a6d54501e350c6")
+                         "cba71883bc214fefb62ca2b86c0f23ae")
 
 class TestRead(unittest.TestCase):
-    def testRead(self):
-        data = """
-        SCORE_METADATA
-          TITLE Sample
-        END_SCORE_METADATA
-        KIT_START
-          DRUM Foot pedal,Hf,x,False
-            NOTEHEAD x 44,96,normal,cross,-5,none,1,x
-          DRUM Kick,Bd,o,True
-            NOTEHEAD o 36,96,normal,default,-3,none,1,a
-            NOTEHEAD O 36,127,accent,default,-3,accent,1,o
-            NOTEHEAD g 36,50,ghost,default,-3,ghost,1,g
-            NOTEHEAD d 36,96,drag,default,-3,drag,1,d
-          DRUM Floor Tom,FT,o,False
-            NOTEHEAD o 43,96,normal,default,-1,none,1,a
-            NOTEHEAD O 43,127,accent,default,-1,accent,1,o
-            NOTEHEAD g 43,50,ghost,default,-1,ghost,1,g
-            NOTEHEAD f 43,96,flam,default,-1,flam,1,f
-            NOTEHEAD d 43,96,drag,default,-1,drag,1,d
-          DRUM Snare,Sn,o,True
-            NOTEHEAD o 38,96,normal,default,1,none,1,a
-            NOTEHEAD O 38,127,accent,default,1,accent,1,o
-            NOTEHEAD g 38,50,ghost,default,1,ghost,1,g
-            NOTEHEAD x 37,96,normal,cross,1,none,1,x
-            NOTEHEAD f 38,96,flam,default,1,flam,1,f
-            NOTEHEAD d 38,96,drag,default,1,drag,1,d
-          DRUM Mid Tom,MT,o,False
-            NOTEHEAD o 47,96,normal,default,2,none,1,a
-            NOTEHEAD O 47,127,accent,default,2,accent,1,o
-            NOTEHEAD g 47,50,ghost,default,2,ghost,1,g
-            NOTEHEAD f 47,96,flam,default,2,flam,1,f
-            NOTEHEAD d 47,96,drag,default,2,drag,1,d
-          DRUM High Tom,HT,o,False
-            NOTEHEAD o 50,96,normal,default,3,none,1,a
-            NOTEHEAD O 50,127,accent,default,3,accent,1,o
-            NOTEHEAD g 50,50,ghost,default,3,ghost,1,g
-            NOTEHEAD f 50,96,flam,default,3,flam,1,f
-            NOTEHEAD d 50,96,drag,default,3,drag,1,d
-          DRUM Ride,Ri,x,False
-            NOTEHEAD x 51,96,normal,cross,4,none,0,a
-            NOTEHEAD X 51,127,accent,cross,4,accent,0,x
-            NOTEHEAD b 53,96,normal,triangle,4,none,0,b
-            NOTEHEAD d 51,96,drag,cross,4,drag,0,d
-          DRUM HiHat,Hh,x,False
-            NOTEHEAD x 42,96,normal,cross,5,none,0,b
-            NOTEHEAD X 42,127,accent,cross,5,accent,0,x
-            NOTEHEAD o 46,96,normal,cross,5,open,0,o
-            NOTEHEAD O 46,127,accent,cross,5,accent,0,a
-            NOTEHEAD d 42,96,drag,cross,5,drag,0,d
-            NOTEHEAD + 42,96,choke,cross,5,stopped,0,s
-            NOTEHEAD # 42,96,choke,cross,5,choke,0,c
-          DRUM Crash,Cr,x,False
-            NOTEHEAD x 49,96,normal,cross,6,none,0,a
-            NOTEHEAD X 49,127,accent,cross,6,accent,0,x
-            NOTEHEAD # 49,96,choke,cross,6,stopped,0,c
-        KIT_END
-        START_BAR 8
-          COUNT_INFO_START
-            REPEAT_BEATS 4
-            BEAT_START
-              COUNT |^+|
-            BEAT_END
-          COUNT_INFO_END
-          BARLINE NORMAL_BAR,REPEAT_START,NO_BAR
-          BARLINE NORMAL_BAR,NO_BAR,REPEAT_END
-          REPEAT_COUNT 3
-        END_BAR
-        START_BAR 8
-          COUNT_INFO_START
-            REPEAT_BEATS 4
-            BEAT_START
-              COUNT |^+|
-            BEAT_END
-          COUNT_INFO_END
-          BARLINE NORMAL_BAR,NO_BAR
-          NOTE 5,3,o
-          NOTE 6,3,o
-          BARLINE NORMAL_BAR,NO_BAR
-        END_BAR
-        START_BAR 8
-          COUNT_INFO_START
-            REPEAT_BEATS 4
-            BEAT_START
-              COUNT |^+|
-            BEAT_END
-          COUNT_INFO_END
-          BARLINE NORMAL_BAR,REPEAT_START,NO_BAR
-          NOTE 0,1,q
-          NOTE 0,7,x
-          NOTE 2,3,o
-          NOTE 2,7,x
-          NOTE 4,1,o
-          NOTE 4,7,x
-          NOTE 6,3,o
-          NOTE 6,7,x
-          BARLINE NORMAL_BAR,NO_BAR
-        END_BAR
-        START_BAR 8
-          COUNT_INFO_START
-            REPEAT_BEATS 4
-            BEAT_START
-              COUNT |^+|
-            BEAT_END
-          COUNT_INFO_END
-          BARLINE NORMAL_BAR,NO_BAR
-          NOTE 0,1,o
-          NOTE 0,7,x
-          NOTE 2,3,o
-          NOTE 2,7,x
-          NOTE 3,1,o
-          NOTE 4,7,x
-          NOTE 5,1,o
-          NOTE 6,3,o
-          NOTE 6,7,x
-          BARLINE NORMAL_BAR,NO_BAR,REPEAT_END
-          REPEAT_COUNT 10
-        END_BAR
-        START_BAR 8
-          COUNT_INFO_START
-            REPEAT_BEATS 4
-            BEAT_START
-              COUNT |^+|
-            BEAT_END
-          COUNT_INFO_END
-          BARLINE NORMAL_BAR,REPEAT_START,NO_BAR
-          NOTE 0,1,o
-          NOTE 0,6,x
-          NOTE 2,3,o
-          NOTE 2,6,x
-          NOTE 4,1,o
-          NOTE 4,6,x
-          NOTE 6,3,o
-          NOTE 6,6,x
-          NOTE 7,1,o
-          BARLINE NORMAL_BAR,NO_BAR
-        END_BAR
-        START_BAR 8
-          COUNT_INFO_START
-            REPEAT_BEATS 4
-            BEAT_START
-              COUNT |^+|
-            BEAT_END
-          COUNT_INFO_END
-          BARLINE NORMAL_BAR,NO_BAR
-          NOTE 0,6,x
-          NOTE 1,1,o
-          NOTE 2,3,o
-          NOTE 2,6,x
-          NOTE 4,1,o
-          NOTE 4,6,x
-          NOTE 6,3,o
-          NOTE 6,6,x
-          BARLINE NORMAL_BAR,NO_BAR,REPEAT_END
-          REPEAT_COUNT 2
-          ALTERNATE 1-14.
-        END_BAR
-        START_BAR 8
-          COUNT_INFO_START
-            REPEAT_BEATS 4
-            BEAT_START
-              COUNT |^+|
-            BEAT_END
-          COUNT_INFO_END
-          BARLINE NORMAL_BAR,NO_BAR
-          NOTE 0,6,x
-          NOTE 1,1,o
-          NOTE 2,3,o
-          NOTE 2,6,x
-          NOTE 4,6,x
-          NOTE 5,1,o
-          NOTE 6,3,f
-          BARLINE NORMAL_BAR,NO_BAR,SECTION_END
-          ALTERNATE 15.
-        END_BAR
-        SECTION_TITLE A title
-        SECTION_TITLE Bridge
-        SECTION_TITLE Chorus 1
-        SECTION_TITLE Middle
-        SECTION_TITLE Bridge & Chorus 2
-        SECTION_TITLE Outro
-        PAPER_SIZE Letter
-        LILYSIZE 20
-        LILYPAGES 0
-        LILYFILL YES
-        DEFAULT_COUNT_INFO_START
-          REPEAT_BEATS 4
-          BEAT_START
-            COUNT |^+|
-          BEAT_END
-        COUNT_INFO_END
-        SYSTEM_SPACE 25
-        FONT_OPTIONS_START
-          NOTEFONT MS Shell Dlg 2
-          NOTEFONTSIZE 10
-          SECTIONFONT MS Shell Dlg 2
-          SECTIONFONTSIZE 14
-          METADATAFONT MS Shell Dlg 2
-          METADATAFONTSIZE 16
-        FONT_OPTIONS_END
-        """
-        handle = StringIO(data)
+    ff_zero_data = """
+    SCORE_METADATA
+      TITLE Sample
+    END_SCORE_METADATA
+    KIT_START
+      DRUM Foot pedal,Hf,x,False
+        NOTEHEAD x 44,96,normal,cross,-5,none,1,x
+      DRUM Kick,Bd,o,True
+        NOTEHEAD o 36,96,normal,default,-3,none,1,a
+        NOTEHEAD O 36,127,accent,default,-3,accent,1,o
+        NOTEHEAD g 36,50,ghost,default,-3,ghost,1,g
+        NOTEHEAD d 36,96,drag,default,-3,drag,1,d
+      DRUM Floor Tom,FT,o,False
+        NOTEHEAD o 43,96,normal,default,-1,none,1,a
+        NOTEHEAD O 43,127,accent,default,-1,accent,1,o
+        NOTEHEAD g 43,50,ghost,default,-1,ghost,1,g
+        NOTEHEAD f 43,96,flam,default,-1,flam,1,f
+        NOTEHEAD d 43,96,drag,default,-1,drag,1,d
+      DRUM Snare,Sn,o,True
+        NOTEHEAD o 38,96,normal,default,1,none,1,a
+        NOTEHEAD O 38,127,accent,default,1,accent,1,o
+        NOTEHEAD g 38,50,ghost,default,1,ghost,1,g
+        NOTEHEAD x 37,96,normal,cross,1,none,1,x
+        NOTEHEAD f 38,96,flam,default,1,flam,1,f
+        NOTEHEAD d 38,96,drag,default,1,drag,1,d
+      DRUM Mid Tom,MT,o,False
+        NOTEHEAD o 47,96,normal,default,2,none,1,a
+        NOTEHEAD O 47,127,accent,default,2,accent,1,o
+        NOTEHEAD g 47,50,ghost,default,2,ghost,1,g
+        NOTEHEAD f 47,96,flam,default,2,flam,1,f
+        NOTEHEAD d 47,96,drag,default,2,drag,1,d
+      DRUM High Tom,HT,o,False
+        NOTEHEAD o 50,96,normal,default,3,none,1,a
+        NOTEHEAD O 50,127,accent,default,3,accent,1,o
+        NOTEHEAD g 50,50,ghost,default,3,ghost,1,g
+        NOTEHEAD f 50,96,flam,default,3,flam,1,f
+        NOTEHEAD d 50,96,drag,default,3,drag,1,d
+      DRUM Ride,Ri,x,False
+        NOTEHEAD x 51,96,normal,cross,4,none,0,a
+        NOTEHEAD X 51,127,accent,cross,4,accent,0,x
+        NOTEHEAD b 53,96,normal,triangle,4,none,0,b
+        NOTEHEAD d 51,96,drag,cross,4,drag,0,d
+      DRUM HiHat,Hh,x,False
+        NOTEHEAD x 42,96,normal,cross,5,none,0,b
+        NOTEHEAD X 42,127,accent,cross,5,accent,0,x
+        NOTEHEAD o 46,96,normal,cross,5,open,0,o
+        NOTEHEAD O 46,127,accent,cross,5,accent,0,a
+        NOTEHEAD d 42,96,drag,cross,5,drag,0,d
+        NOTEHEAD + 42,96,choke,cross,5,stopped,0,s
+        NOTEHEAD # 42,96,choke,cross,5,choke,0,c
+      DRUM Crash,Cr,x,False
+        NOTEHEAD x 49,96,normal,cross,6,none,0,a
+        NOTEHEAD X 49,127,accent,cross,6,accent,0,x
+        NOTEHEAD # 49,96,choke,cross,6,stopped,0,c
+    KIT_END
+    START_BAR 8
+      COUNT_INFO_START
+        REPEAT_BEATS 4
+        BEAT_START
+          COUNT |^+|
+        BEAT_END
+      COUNT_INFO_END
+      BARLINE NORMAL_BAR,REPEAT_START,NO_BAR
+      BARLINE NORMAL_BAR,NO_BAR,REPEAT_END
+      REPEAT_COUNT 3
+    END_BAR
+    START_BAR 8
+      COUNT_INFO_START
+        REPEAT_BEATS 4
+        BEAT_START
+          COUNT |^+|
+        BEAT_END
+      COUNT_INFO_END
+      BARLINE NORMAL_BAR,NO_BAR
+      NOTE 5,3,o
+      NOTE 6,3,o
+      BARLINE NORMAL_BAR,NO_BAR
+    END_BAR
+    START_BAR 8
+      COUNT_INFO_START
+        REPEAT_BEATS 4
+        BEAT_START
+          COUNT |^+|
+        BEAT_END
+      COUNT_INFO_END
+      BARLINE NORMAL_BAR,REPEAT_START,NO_BAR
+      NOTE 0,1,q
+      NOTE 0,7,x
+      NOTE 2,3,o
+      NOTE 2,7,x
+      NOTE 4,1,o
+      NOTE 4,7,x
+      NOTE 6,3,o
+      NOTE 6,7,x
+      BARLINE NORMAL_BAR,NO_BAR
+    END_BAR
+    START_BAR 8
+      COUNT_INFO_START
+        REPEAT_BEATS 4
+        BEAT_START
+          COUNT |^+|
+        BEAT_END
+      COUNT_INFO_END
+      BARLINE NORMAL_BAR,NO_BAR
+      NOTE 0,1,o
+      NOTE 0,7,x
+      NOTE 2,3,o
+      NOTE 2,7,x
+      NOTE 3,1,o
+      NOTE 4,7,x
+      NOTE 5,1,o
+      NOTE 6,3,o
+      NOTE 6,7,x
+      BARLINE NORMAL_BAR,NO_BAR,REPEAT_END
+      REPEAT_COUNT 10
+    END_BAR
+    START_BAR 8
+      COUNT_INFO_START
+        REPEAT_BEATS 4
+        BEAT_START
+          COUNT |^+|
+        BEAT_END
+      COUNT_INFO_END
+      BARLINE NORMAL_BAR,REPEAT_START,NO_BAR
+      NOTE 0,1,o
+      NOTE 0,6,x
+      NOTE 2,3,o
+      NOTE 2,6,x
+      NOTE 4,1,o
+      NOTE 4,6,x
+      NOTE 6,3,o
+      NOTE 6,6,x
+      NOTE 7,1,o
+      BARLINE NORMAL_BAR,NO_BAR
+    END_BAR
+    START_BAR 8
+      COUNT_INFO_START
+        REPEAT_BEATS 4
+        BEAT_START
+          COUNT |^+|
+        BEAT_END
+      COUNT_INFO_END
+      BARLINE NORMAL_BAR,NO_BAR
+      NOTE 0,6,x
+      NOTE 1,1,o
+      NOTE 2,3,o
+      NOTE 2,6,x
+      NOTE 4,1,o
+      NOTE 4,6,x
+      NOTE 6,3,o
+      NOTE 6,6,x
+      BARLINE NORMAL_BAR,NO_BAR,REPEAT_END
+      REPEAT_COUNT 2
+      ALTERNATE 1-14.
+    END_BAR
+    START_BAR 8
+      COUNT_INFO_START
+        REPEAT_BEATS 4
+        BEAT_START
+          COUNT |^+|
+        BEAT_END
+      COUNT_INFO_END
+      BARLINE NORMAL_BAR,NO_BAR
+      NOTE 0,6,x
+      NOTE 1,1,o
+      NOTE 2,3,o
+      NOTE 2,6,x
+      NOTE 4,6,x
+      NOTE 5,1,o
+      NOTE 6,3,f
+      BARLINE NORMAL_BAR,NO_BAR,SECTION_END
+      ALTERNATE 15.
+    END_BAR
+    SECTION_TITLE A title
+    SECTION_TITLE Bridge
+    SECTION_TITLE Chorus 1
+    SECTION_TITLE Middle
+    SECTION_TITLE Bridge & Chorus 2
+    SECTION_TITLE Outro
+    PAPER_SIZE Letter
+    LILYSIZE 20
+    LILYPAGES 0
+    LILYFILL YES
+    DEFAULT_COUNT_INFO_START
+      REPEAT_BEATS 4
+      BEAT_START
+        COUNT |^+|
+      BEAT_END
+    COUNT_INFO_END
+    SYSTEM_SPACE 25
+    FONT_OPTIONS_START
+      NOTEFONT MS Shell Dlg 2
+      NOTEFONTSIZE 10
+      SECTIONFONT MS Shell Dlg 2
+      SECTIONFONTSIZE 14
+      METADATAFONT MS Shell Dlg 2
+      METADATAFONTSIZE 16
+    FONT_OPTIONS_END
+    """
+
+    def testReadVersionZeroNoFileFormatNumber(self):
+        handle = StringIO(self.ff_zero_data)
         score = Score()
         score.read(handle)
         self.assert_(score.lilyFill)
@@ -1376,6 +1378,25 @@ class TestRead(unittest.TestCase):
         self.assertEqual(score.scoreData.title, "Sample")
         self.assertEqual(score.getSectionTitle(0), "A title")
         self.assert_(score.drumKit[1].isAllowedHead('q'))
+
+    def testReadVersionZeroWithFileFormatNumber(self):
+        handle = StringIO("""DB_FILE_FORMAT 0
+        """ + self.ff_zero_data)
+        score = Score()
+        score.read(handle)
+        self.assert_(score.lilyFill)
+        self.assertEqual(score.lilypages, 0)
+        self.assertEqual(score.lilysize, 20)
+        self.assertEqual(score.scoreData.title, "Sample")
+        self.assertEqual(score.getSectionTitle(0), "A title")
+        self.assert_(score.drumKit[1].isAllowedHead('q'))
+
+    def testReadTooHighVersionNumber(self):
+        data = """DB_FILE_FORMAT 10000
+        """ + self.ff_zero_data
+        handle = StringIO(data)
+        score = Score()
+        self.assertRaises(DBErrors.DBVersionError, score.read, handle)
 
 class TestScoreFactory(unittest.TestCase):
     def testMakeEmptyDefault(self):

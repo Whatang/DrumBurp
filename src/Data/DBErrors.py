@@ -58,3 +58,5 @@ class TooManyBarLines(DbReadError):
 class BadCount(DbReadError):
     "The given count is not recognised."
 
+class DBVersionError(DbReadError):
+    "This DrumBurp file is a newer format which cannot be read"

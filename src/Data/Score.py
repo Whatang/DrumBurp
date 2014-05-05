@@ -28,7 +28,7 @@ from Staff import Staff
 from Measure import Measure
 from Counter import CounterRegistry
 from MeasureCount import makeSimpleCount
-from DBErrors import BadTimeError, OverSizeMeasure
+from DBErrors import BadTimeError, OverSizeMeasure, DBVersionError
 from NotePosition import NotePosition
 from ScoreMetaData import ScoreMetaData
 from FontOptions import FontOptions
@@ -36,8 +36,10 @@ import fileUtils
 import bisect
 import hashlib
 import gzip
+import itertools
 from StringIO import StringIO
 
+CURRENT_FILE_FORMAT = 0
 
 class InconsistentRepeats(StandardError):
     "Bad repeat data"
@@ -660,6 +662,7 @@ class Score(object):
 
     def write(self, handle):
         indenter = fileUtils.Indenter(handle)
+        indenter("DB_FILE_FORMAT", CURRENT_FILE_FORMAT)
         self.scoreData.save(indenter)
         self.drumKit.write(indenter)
         for measure in self.iterMeasures():
@@ -677,8 +680,21 @@ class Score(object):
 
 
     def read(self, handle):
-        # Read from the input file
+        # Check the file format version
+        handle, handle_copy = itertools.tee(handle)
+        firstline = handle_copy.next()
+        del handle_copy
         scoreIterator = fileUtils.dbFileIterator(handle)
+        if firstline.startswith("DB_FILE_FORMAT"):
+            versionDict = {}
+            with scoreIterator.section(None, None, readLines = 1) as section:
+                section.readNonNegativeInteger("DB_FILE_FORMAT", versionDict, "fileVersion")
+            fileVersion = versionDict.get("fileVersion", 0)
+        else:
+            fileVersion = 0
+        if fileVersion > CURRENT_FILE_FORMAT:
+            raise DBVersionError()
+        # Read from the input file
         self.lilyFill = False
         def _readMeasure(lineData):
             measureWidth = int(lineData)
