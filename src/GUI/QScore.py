@@ -50,6 +50,71 @@ from DBFSM import Waiting
 from DBFSMEvents import Escape
 _SCORE_FACTORY = ScoreFactory()
 
+class _HeadShortcut(object):
+    def __init__(self, currentHeads):
+        self._headDict = dict((unicode(x), y) for (x, y) in currentHeads)
+        self._headOrder = [unicode(x) for (x, y_) in currentHeads]
+        self._textMemo = {}
+
+    def text(self, currentKey):
+        if currentKey not in self._headDict:
+            currentKey = None
+        if currentKey not in self._textMemo:
+            self._textMemo[currentKey] = self._shortcutString(currentKey)
+        return self._textMemo[currentKey]
+
+    def getCurrentHead(self, currentKey):
+        return self._headDict.get(currentKey, None)
+
+    def _keyString(self, head):
+        if head == unicode(self._headDict[head]):
+            return head
+        else:
+            return u"%s(%s)" % (self._headDict[head], head)
+
+    def _shortcutString(self, currentKey):
+        if len(self._headOrder) > 1:
+            headText = []
+            for head in self._headOrder[1:]:  # Do not display default
+                if head == currentKey:
+                    headText.append(u'<span style="background-color:#55aaff;">'
+                                    + self._keyString(head) + u"</span>")
+                else:
+                    headText.append(self._keyString(head))
+            headText = "Head (Shortcut): " + u" ".join(headText)
+        else:
+            headText = ""
+        return headText
+
+class _HeadShortcutsMap(object):
+    def __init__(self, drumkit):
+        self.drumkit = drumkit
+        self._shortcuts = {}
+        self._current = None
+
+    def setDrumKit(self, drumkit):
+        self.drumkit = drumkit
+        self._shortcuts = {}
+
+    def setDrumIndex(self, index):
+        if index is None:
+            self._current = None
+            return
+        if index not in self._shortcuts:
+            currentHeads = self.drumkit.shortcutsAndNoteHeads(index)
+            self._shortcuts[index] = _HeadShortcut(currentHeads)
+        self._current = self._shortcuts[index]
+
+    def getShortcutText(self, currentKey):
+        if self._current is None:
+            return ""
+        return self._current.text(currentKey)
+
+    def getCurrentHead(self, currentKey):
+        if self._current is None:
+            return None
+        return self._current.getCurrentHead(currentKey)
+
 def delayCall(method):
     @functools.wraps(method)
     def delayer(*args, **kwargs):
@@ -84,8 +149,6 @@ class QScore(QtGui.QGraphicsScene):
         self._score = None
         self._dirty = None
         self._currentKey = None
-        self._currentHeads = {}
-        self._headOrder = []
         self._ignoreNext = False
         self.measureClipboard = []
         self._playingMeasure = None
@@ -97,7 +160,6 @@ class QScore(QtGui.QGraphicsScene):
         self._undoStack = QtGui.QUndoStack(self)
         self._inMacro = False
         self._macroCanReformat = False
-        self._shortcut_memo = {}
         self._undoStack.canUndoChanged.connect(self.canUndoChanged)
         self._undoStack.undoTextChanged.connect(self.undoTextChanged)
         self._undoStack.canRedoChanged.connect(self.canRedoChanged)
@@ -122,6 +184,7 @@ class QScore(QtGui.QGraphicsScene):
         self.sectionsChanged.connect(parent.setSections)
         self._properties.connectScore(self)
         self._potentials = []
+        self._shortcutMemo = _HeadShortcutsMap(self._score.drumKit)
         self._state = Waiting(self)
 
     canUndoChanged = QtCore.pyqtSignal(bool)
@@ -246,6 +309,7 @@ class QScore(QtGui.QGraphicsScene):
         if score != self._score:
             score.formatScore(None)
             self._score = score
+            self._shortcutMemo = _HeadShortcutsMap(score.drumKit)
             if score is not None:
                 self.startUp()
             self._score.setCallBack(self.dataChanged)
@@ -475,39 +539,14 @@ class QScore(QtGui.QGraphicsScene):
         return super(QScore, self).keyReleaseEvent(event)
 
     def getCurrentHead(self):
-        return self._currentHeads.get(self._currentKey, None)
+        return self._shortcutMemo.getCurrentHead(self._currentKey)
 
     def setCurrentHeads(self, drumIndex):
-        if drumIndex is None:
-            self._currentHeads = {}
-            self._headOrder = []
-        else:
-            if drumIndex not in self._shortcut_memo:
-                currentHeads = self.score.drumKit.shortcutsAndNoteHeads(drumIndex)
-                headDict = dict((unicode(x), y) for (x, y) in currentHeads)
-                headOrder = [unicode(x) for (x, y_) in currentHeads]
-                self._shortcut_memo[drumIndex] = (headDict, headOrder)
-            self._currentHeads, self._headOrder = self._shortcut_memo[drumIndex]
+        self._shortcutMemo.setDrumIndex(drumIndex)
         self._highlightCurrentKeyHead()
 
-    def _keyString(self, head):
-        if head == unicode(self._currentHeads[head]):
-            return head
-        else:
-            return u"%s(%s)" % (self._currentHeads[head], head)
-
     def _highlightCurrentKeyHead(self):
-        if len(self._currentHeads) > 1:
-            headText = []
-            for head in self._headOrder[1:]:  # Do not display default
-                if head == self._currentKey:
-                    headText.append(u'<span style="background-color:#55aaff;">'
-                                    + self._keyString(head) + u"</span>")
-                else:
-                    headText.append(self._keyString(head))
-            headText = "Head (Shortcut): " + u" ".join(headText)
-        else:
-            headText = ""
+        headText = self._shortcutMemo.getShortcutText(self._currentKey)
         self.currentHeadsChanged.emit(QtCore.QString(headText))
 
     def copyMeasures(self, np = None):
@@ -787,9 +826,9 @@ class QScore(QtGui.QGraphicsScene):
                                          buttons = (QtGui.QMessageBox.Yes
                                                     | QtGui.QMessageBox.No))
         if box == QtGui.QMessageBox.Yes:
-            self._shortcut_memo = {}
             self.score.changeKit(kit, changes)
             DBMidi.setKit(kit)
+            self._shortcutMemo = _HeadShortcutsMap(kit)
             self._undoStack.clear()
             self._saved = False
             self.reBuild()
