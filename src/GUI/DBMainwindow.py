@@ -30,7 +30,7 @@ from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QPrintPreviewDialog, QWhatsThis,
                          QPrinterInfo, QLabel, QFrame,
                          QPrinter, QDesktopServices)
-from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer
+from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer, QThread
 from QScore import QScore
 from QDisplayProperties import QDisplayProperties
 from QNewScoreDialog import QNewScoreDialog
@@ -43,7 +43,7 @@ import os
 import DBMidi
 from Data.Score import InconsistentRepeats
 from DBFSMEvents import StartPlaying, StopPlaying
-from DBVersion import APPNAME, DB_VERSION
+from DBVersion import APPNAME, DB_VERSION, doesNewerVersionExist
 from Notation.lilypond import LilypondScore, LilypondProblem
 from Notation import AsciiExport
 # pylint:disable-msg=R0904
@@ -121,6 +121,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.statusbar.addPermanentWidget(self._infoBar)
         self._initializeState()
         self.setSections()
+        self._versionThread = VersionCheckThread()
+        self._versionThread.finished.connect(self._finishedVersionCheck)
         QTimer.singleShot(0, lambda : self._startUp(errored_files))
         self.actionCheckOnStartup.setChecked(settings.value("CheckOnStartup").toBool())
 
@@ -220,7 +222,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.updateStatus("Welcome to %s v%s" % (APPNAME, DB_VERSION))
         self.scoreView.setFocus()
         if self.actionCheckOnStartup.isChecked():
-            self.on_actionCheckForUpdates_triggered()
+#             self.on_actionCheckForUpdates_triggered()
+            self._versionThread.start()
         if errored_files:
             QMessageBox.warning(self, "Problem during startup",
                                 "Error opening files:\n %s" % "\n".join(errored_files))
@@ -325,6 +328,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             settings.setValue("CheckOnStartup",
                               QVariant(self.actionCheckOnStartup.isChecked()))
             self.songProperties.save(settings)
+            self._versionThread.exit()
+            self._versionThread.wait(1000)
+            if not self._versionThread.isFinished():
+                self._versionThread.terminate()
         else:
             event.ignore()
 
@@ -849,5 +856,23 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionCheckForUpdates_triggered(self):
-        dialog = QVersionDownloader(self)
+        dialog = QVersionDownloader(newer = None, parent = self)
         dialog.exec_()
+        
+    def _finishedVersionCheck(self):
+        newer = self._versionThread.newVersionInfo
+        if newer:
+            dialog = QVersionDownloader(newer = newer, parent = self)
+            dialog.exec_()
+        elif newer is None:
+            self.statusbar.showMessage("Failed to get latest version info from www.whatang.org", 5000)
+        else:
+            self.statusbar.showMessage("Check successful: You have the latest version of DrumBurp", 5000)
+
+class VersionCheckThread(QThread):
+    def __init__(self, parent = None):
+        super(VersionCheckThread, self).__init__(parent = parent)
+        self.newVersionInfo = None
+
+    def run(self):
+        self.newVersionInfo = doesNewerVersionExist()
