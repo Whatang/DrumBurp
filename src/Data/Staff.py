@@ -37,6 +37,7 @@ class Staff(object):
         '''
         self._measures = []
         self._callBack = None
+        self._visibleLines = {}
 
     def _runCallBack(self, position):
         if self._callBack is not None:
@@ -75,16 +76,19 @@ class Staff(object):
     def addMeasure(self, measure):
         self._measures.append(measure)
         self._setMeasureCallBack(self._measures[-1], len(self._measures) - 1)
+        self._visibleLines = {}
 
     def deleteLastMeasure(self):
         if self.numMeasures() > 0:
             measure = self._measures.pop()
             measure.clearCallBack()
+            self._visibleLines = {}
 
     def deleteMeasure(self, position):
         self._isValidPosition(position)
         measure = self._measures.pop(position.measureIndex)
         measure.clearCallBack()
+        self._visibleLines = {}
         iterator = enumerate(self._measures[position.measureIndex:])
         for index, nextMeasure in iterator:
             self._setMeasureCallBack(nextMeasure,
@@ -93,6 +97,7 @@ class Staff(object):
     def insertMeasure(self, position, measure):
         self._isValidPosition(position, True)
         self._measures.insert(position.measureIndex, measure)
+        self._visibleLines = {}
         for index in range(position.measureIndex, self.numMeasures()):
             nextMeasure = self[index]
             self._setMeasureCallBack(nextMeasure, index)
@@ -103,6 +108,7 @@ class Staff(object):
 
     def pasteMeasure(self, position, notes, copyMeasureDecorations = False):
         self._isValidPosition(position)
+        self._visibleLines = {}
         return self[position.measureIndex].pasteMeasure(notes,
                                                         copyMeasureDecorations)
 
@@ -123,6 +129,7 @@ class Staff(object):
         for measure in self:
             measure.clearCallBack()
         self._measures = []
+        self._visibleLines = {}
 
     def gridWidth(self):
         if self.numMeasures() == 0:
@@ -139,14 +146,23 @@ class Staff(object):
     def addNote(self, position, head):
         self._isValidPosition(position)
         self[position.measureIndex].addNote(position, head)
+        if position.drumIndex in self._visibleLines:
+            self._visibleLines.pop(position.drumIndex)
 
     def deleteNote(self, position):
         self._isValidPosition(position)
         self[position.measureIndex].deleteNote(position)
+        if position.drumIndex in self._visibleLines:
+            self._visibleLines.pop(position.drumIndex)
 
     def toggleNote(self, position, head):
         self._isValidPosition(position)
         self[position.measureIndex].toggleNote(position, head)
+        if position.drumIndex in self._visibleLines:
+            self._visibleLines.pop(position.drumIndex)
 
     def lineIsVisible(self, index):
-        return any(measure.lineIsVisible(index) for measure in self)
+        if index not in self._visibleLines:
+            visible = any(measure.lineIsVisible(index) for measure in self)
+            self._visibleLines[index] = visible
+        return self._visibleLines[index]
