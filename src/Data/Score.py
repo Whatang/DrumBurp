@@ -693,7 +693,7 @@ class Score(object):
         else:
             fileVersion = 0
         if fileVersion > CURRENT_FILE_FORMAT:
-            raise DBVersionError()
+            raise DBVersionError(scoreIterator)
         # Read from the input file
         self.lilyFill = False
         def _readMeasure(lineData):

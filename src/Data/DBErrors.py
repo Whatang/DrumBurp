@@ -39,9 +39,16 @@ class OverSizeMeasure(StandardError):
 
 class DbReadError(StandardError):
     "There was an error reading the score."
+    
+    def __init__(self, scoreIterator):
+        self.lineNumber = scoreIterator.lineNumber
+        self.line = scoreIterator.currentLine
 
-class UnrecognisedLine(StandardError):
-    "The line type was not recognised."
+    def __str__(self):
+        return "\n".join(self.__doc__, "", "Line %d" % self.lineNumber, self.line)
+
+class UnrecognisedLine(DbReadError):
+    "Unrecognised line type."
 
 class InvalidInteger(DbReadError):
     "The value must be an integer."
@@ -59,4 +66,7 @@ class BadCount(DbReadError):
     "The given count is not recognised."
 
 class DBVersionError(DbReadError):
-    "This DrumBurp file is a newer format which cannot be read"
+    "This file is a newer format which cannot be read by this version of DrumBurp. Check www.whatang.org for a newer DrumBurp release."
+
+    def __str__(self):
+        return self.__doc__

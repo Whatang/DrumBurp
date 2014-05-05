@@ -364,10 +364,11 @@ class Measure(object):
         def doNothing(dummy):
             pass
 
-        def __init__(self, measure):
+        def __init__(self, measure, iterator):
             self.measure = measure
             self.seenStartLine = False
             self.seenEndLine = False
+            self._iterator = iterator
             self.mapping = {"NO_BAR" : self.doNothing,
                             "NORMAL_BAR" : self.doNothing,
                             "REPEAT_START": measure.setRepeatStart,
@@ -389,7 +390,7 @@ class Measure(object):
                     self.mapping[barType](True)
                 self.seenEndLine = True
             else:
-                raise TooManyBarLines("Too many bar lines")
+                raise TooManyBarLines(self._iterator)
 
     def _readNote(self, lineData):
         noteTime, drumIndex, head = lineData.split(",")
@@ -407,7 +408,7 @@ class Measure(object):
         self.setBeatCount(counter)
 
     def read(self, scoreIterator):
-        tracker = self._BarlineTracker(self)
+        tracker = self._BarlineTracker(self, scoreIterator)
         self.counter = MeasureCount.MeasureCount()
         with scoreIterator.section("START_BAR", "END_BAR") as section:
             section.readCallback("BARLINE", tracker.processBarline)

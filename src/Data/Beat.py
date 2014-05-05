@@ -88,7 +88,7 @@ class Beat(object):
             try:
                 targetValues["counter"] = registry.findMaster(lineData)
             except KeyError:
-                raise DBErrors.BadCount(lineData)
+                raise DBErrors.BadCount(scoreIterator)
         with scoreIterator.section("BEAT_START", "BEAT_END") as section:
             section.readPositiveInteger("NUM_TICKS", targetValues, "numTicks")
             section.readCallback("COUNT", readCount)

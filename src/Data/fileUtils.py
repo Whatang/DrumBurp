@@ -33,6 +33,8 @@ class dbFileIterator(object):
             self._convertNone = convertNone
             self._lines = {}
             self._readLines = readLines
+            self.lineNumber = 0
+            self.currentLine = ""
 
         def __enter__(self):
             return self
@@ -49,33 +51,30 @@ class dbFileIterator(object):
                 elif lineType in self._lines:
                     self._lines[lineType](lineData)
                 else:
-                    raise DBErrors.UnrecognisedLine(lineType)
+                    raise DBErrors.UnrecognisedLine(self._iterator)
                 if self._readLines is not None:
                     linesRead += 1
                     if linesRead == self._readLines:
                         break
 
 
-        @staticmethod
-        def _parseInteger(data, lineName):
+        def _parseInteger(self, data, lineName):
             try:
                 data = int(data)
             except (TypeError, ValueError):
-                raise DBErrors.InvalidInteger(lineName, data)
+                raise DBErrors.InvalidInteger(self._iterator)
             return data
 
-        @classmethod
-        def _parsePositiveInteger(cls, data, lineName):
-            data = cls._parseInteger(data, lineName)
+        def _parsePositiveInteger(self, data, lineName):
+            data = self._parseInteger(data, lineName)
             if data <= 0:
-                raise DBErrors.InvalidPositiveInteger(lineName, data)
+                raise DBErrors.InvalidPositiveInteger(self._iterator)
             return data
 
-        @classmethod
-        def _parseNonNegativeInteger(cls, data, lineName):
-            data = cls._parseInteger(data, lineName)
+        def _parseNonNegativeInteger(self, data, lineName):
+            data = self._parseInteger(data, lineName)
             if data < 0:
-                raise DBErrors.InvalidNonNegativeInteger(lineName, data)
+                raise DBErrors.InvalidNonNegativeInteger(self._iterator)
             return data
 
         @staticmethod
@@ -133,8 +132,10 @@ class dbFileIterator(object):
         self._handle = handle
 
     def __iter__(self):
-        for line in self._handle:
+        for line_number, line in enumerate(self._handle):
+            self.lineNumber = line_number
             line = line.strip()
+            self.currentLine = line
             fields = line.split(None, 1)
             if len(fields) == 1:
                 fields.append(None)

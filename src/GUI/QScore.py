@@ -616,7 +616,7 @@ class QScore(QtGui.QGraphicsScene):
                                           "Score load error",
                                           msg + "\n" + str(exc))
             return False
-        except StandardError, exc:
+        except Exception, exc:
             raise
         self._setScore(newScore)
         self._saved = True
