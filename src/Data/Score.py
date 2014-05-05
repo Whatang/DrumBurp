@@ -35,6 +35,7 @@ from FontOptions import FontOptions
 import fileUtils
 import bisect
 import hashlib
+import gzip
 from StringIO import StringIO
 
 
@@ -751,13 +752,18 @@ class ScoreFactory(object):
     @classmethod
     def loadScore(cls, filename):
         score = Score()
-        with open(filename, 'rU') as handle:
-            score.read(handle)
+        try:
+            with gzip.open(filename, 'rb') as handle:
+                score.read(handle)
+        except IOError, exc:
+            score = Score()
+            with open(filename, 'rU') as handle:
+                score.read(handle)
         return score
 
     @classmethod
     def saveScore(cls, score, filename):
         scoreBuffer = StringIO()
         score.write(scoreBuffer)
-        with open(filename, 'w') as handle:
+        with gzip.open(filename, 'wb') as handle:
             handle.write(scoreBuffer.getvalue())
