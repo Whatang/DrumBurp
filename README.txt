@@ -1,4 +1,4 @@
-DrumBurp Copyright (C) 2011-12 Michael Thomas
+DrumBurp Copyright (C) 2011-14 Michael Thomas
 
 DrumBurp is a simple GUI for creating and editing music notation for drum kit.
 
