@@ -355,7 +355,7 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def editMeasureProperties(self):
         counter = self._measure.counter
-        defCounter = self._props.defaultCounter
+        defCounter = self._qScore.defaultCount
         editDialog = QEditMeasureDialog(counter,
                                         defCounter,
                                         self._props.counterRegistry,

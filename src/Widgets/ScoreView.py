@@ -139,3 +139,9 @@ class ScoreView(QtGui.QGraphicsView):
         else:
             event.ignore()
             return super(ScoreView, self).keyPressEvent(event)
+
+    @QtCore.pyqtSlot(int)
+    def showSection(self, sectionIndex):
+        section = self.scene().getQSection(sectionIndex)
+        self.centerOn(section)
+

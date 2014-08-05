@@ -29,7 +29,8 @@ from QSection import QSection
 from QMetaData import QMetaData
 from QKitData import QKitData
 from Data.Score import ScoreFactory
-from DBCommands import MetaDataCommand, ScoreWidthCommand, PasteMeasure
+from DBCommands import (MetaDataCommand, ScoreWidthCommand, PasteMeasure,
+                        SetPaperSizeCommand, SetDefaultCountCommand)
 import functools
 _SCORE_FACTORY = ScoreFactory()
 
@@ -83,6 +84,7 @@ class QScore(QtGui.QGraphicsScene):
                               self.yMargins)
         self._metaData.setVisible(self._properties.metadataVisible)
         self.metadataChanged.connect(lambda n_, v_: self.reBuild())
+        self.paperSizeChanged.connect(parent.setPaperSize)
         self._kitData = QKitData(self)
         self._kitData.setPos(self.xMargins, 0)
         self._kitData.setVisible(self._properties.kitDataVisible)
@@ -92,6 +94,8 @@ class QScore(QtGui.QGraphicsScene):
                 self.newScore()
         else:
             self.newScore()
+        self.defaultCountChanged.connect(parent.setDefaultCount)
+        self.sectionsChanged.connect(parent.setSections)
         self._properties.connectScore(self)
 
     canUndoChanged = QtCore.pyqtSignal(bool)
@@ -99,6 +103,9 @@ class QScore(QtGui.QGraphicsScene):
     undoTextChanged = QtCore.pyqtSignal(str)
     redoTextChanged = QtCore.pyqtSignal(str)
     metadataChanged = QtCore.pyqtSignal(str, object)
+    paperSizeChanged = QtCore.pyqtSignal(str)
+    defaultCountChanged = QtCore.pyqtSignal(object)
+    sectionsChanged = QtCore.pyqtSignal()
 
     def addCommand(self, command):
         self._undoStack.push(command)
@@ -185,6 +192,9 @@ class QScore(QtGui.QGraphicsScene):
             self.dirty = False
             self._undoStack.clear()
             self._undoStack.setClean()
+            self.paperSizeChanged.emit(self._score.paperSize)
+            self.defaultCountChanged.emit(self._score.defaultCount)
+            self.sectionsChanged.emit()
 
     @_readOnly
     def score(self):
@@ -266,6 +276,25 @@ class QScore(QtGui.QGraphicsScene):
     def setSectionTitle(self, index, title):
         qSection = self._qSections[index]
         qSection.setTitle(title)
+
+    def setPaperSize(self, newPaperSize):
+        if newPaperSize != self._score.paperSize:
+            command = SetPaperSizeCommand(self,
+                                          newPaperSize)
+            self.addCommand(command)
+
+    def getQSection(self, sectionIndex):
+        if 0 <= sectionIndex < len(self._qSections):
+            return self._qSections[sectionIndex]
+
+    def _getdefaultCount(self):
+        return self._score.defaultCount
+    def _setdefaultCount(self, newCount):
+        if newCount != self._score.defaultCount:
+            command = SetDefaultCountCommand(self, newCount)
+            self.addCommand(command)
+    defaultCount = property(_getdefaultCount,
+                            _setdefaultCount)
 
     def _placeStaffs(self, staffCall = QStaff.placeMeasures):
         xMargins = self.xMargins
@@ -383,7 +412,7 @@ class QScore(QtGui.QGraphicsScene):
     def newScore(self, numMeasures = 16,
                  counter = None):
         if counter is None:
-            counter = self._properties.defaultCounter
+            counter = self.defaultCount
         newScore = _SCORE_FACTORY(numMeasures = numMeasures,
                                   counter = counter)
         self._setScore(newScore)
@@ -391,7 +420,7 @@ class QScore(QtGui.QGraphicsScene):
     def printScore(self, qprinter, scoreView):
         painter = QtGui.QPainter(qprinter)
         rect = qprinter.pageRect()
-        printerDpi = qprinter.resolution()
+        printerDpi = float(qprinter.resolution())
         painter.save()
         painter.setFont(self._properties.metadataFont)
         fm = QtGui.QFontMetrics(painter.font())

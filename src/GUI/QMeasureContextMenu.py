@@ -121,7 +121,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
             self._qScore.addCommand(command)
 
     def _insertDefaultMeasure(self, np):
-        mc = self._props.defaultCounter
+        mc = self._qScore.defaultCount
         command = InsertMeasuresCommand(self._qScore, np, 1,
                                         mc)
         self._qScore.addCommand(command)
@@ -136,7 +136,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
 
     def _insertOtherMeasures(self):
         np = copy.copy(self._np)
-        counter = self._props.defaultCounter
+        counter = self._qScore.defaultCount
         insertDialog = QInsertMeasuresDialog(self._qScore.parent(),
                                              counter,
                                              self._props.counterRegistry)

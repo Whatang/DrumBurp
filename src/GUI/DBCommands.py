@@ -24,6 +24,7 @@ Created on 13 Feb 2011
 from PyQt4.QtGui import QUndoCommand
 from Data import DBConstants
 from Data.Score import Score
+from Data.NotePosition import NotePosition
 import copy
 
 class ScoreCommand(QUndoCommand):
@@ -183,9 +184,11 @@ class InsertSectionCommand(_COMMAND_CLASS):
     def _redo(self):
         self._score.insertSectionCopy(self._np,
                                       self._index)
+        self._qScore.sectionsChanged.emit()
 
     def _undo(self):
         self._score.deleteSection(self._np)
+        self._qScore.sectionsChanged.emit()
 
 class SetRepeatCountCommand(_COMMAND_CLASS):
     def __init__(self, qScore, notePosition, oldCount, newCount):
@@ -247,6 +250,12 @@ class SetSectionEndCommand(SetMeasureLineCommand):
         super(SetSectionEndCommand, self)._undo()
         if not self._onOff:
             self._score.setSectionTitle(self._index, self._title)
+        self._qScore.sectionsChanged.emit()
+
+    def _redo(self):
+        super(SetSectionEndCommand, self)._redo()
+        self._qScore.sectionsChanged.emit()
+
 
 
 class SetLineBreakCommand(SetMeasureLineCommand):
@@ -284,6 +293,8 @@ class DeleteMeasureCommand(_COMMAND_CLASS):
 
     def _redo(self):
         self._score.deleteMeasureByIndex(self._index)
+        if self._sectionIndex:
+            self._qScore.sectionsChanged.emit()
 
     def _undo(self):
         self._score.turnOffCallBacks()
@@ -294,6 +305,7 @@ class DeleteMeasureCommand(_COMMAND_CLASS):
             self._score.setSectionTitle(self._sectionIndex,
                                         self._sectionTitle)
             self._score.gridFormatScore()
+            self._qScore.sectionsChanged.emit()
         self._score.pasteMeasureByIndex(self._index, self._oldMeasure, True)
         self._score.turnOnCallBacks()
 
@@ -311,12 +323,14 @@ class SetSectionTitleCommand(_COMMAND_CLASS):
                                     self._title)
         self._qScore.setSectionTitle(self._index,
                                      self._title)
+        self._qScore.sectionsChanged.emit()
 
     def _undo(self):
         self._score.setSectionTitle(self._index,
                                     self._oldTitle)
         self._qScore.setSectionTitle(self._index,
                                      self._oldTitle)
+        self._qScore.sectionsChanged.emit()
 
 class SetAlternateCommand(_COMMAND_CLASS):
     def __init__(self, qScore, np, alternate):
@@ -338,3 +352,35 @@ class SetAlternateCommand(_COMMAND_CLASS):
         measure = self._score.getItemAtPosition(self._np)
         measure.alternateText = self._oldAlternate
         self._qScore.dataChanged(self._np)
+
+class SetPaperSizeCommand(_COMMAND_CLASS):
+    def __init__(self, qScore, newPaperSize):
+        super(SetPaperSizeCommand, self).__init__(qScore,
+                                                  NotePosition(),
+                                                  "Set Page Size")
+        self._new = newPaperSize
+        self._old = self._score.paperSize
+
+    def _redo(self):
+        self._score.paperSize = self._new
+        self._qScore.paperSizeChanged.emit(self._new)
+
+    def _undo(self):
+        self._score.paperSize = self._old
+        self._qScore.paperSizeChanged.emit(self._old)
+
+class SetDefaultCountCommand(_COMMAND_CLASS):
+    def __init__(self, qScore, newCount):
+        super(SetDefaultCountCommand, self).__init__(qScore,
+                                                     NotePosition(),
+                                                     "Set Default Count")
+        self._new = newCount
+        self._old = self._score.defaultCount
+
+    def _redo(self):
+        self._score.defaultCount = self._new
+        self._qScore.defaultCountChanged.emit(self._new)
+
+    def _undo(self):
+        self._score.defaultCount = self._old
+        self._qScore.defaultCountChanged.emit(self._old)
