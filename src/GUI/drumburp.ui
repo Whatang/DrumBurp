@@ -1,0 +1,1563 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DrumBurpWindow</class>
+ <widget class="QMainWindow" name="DrumBurpWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>769</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>DrumBurp</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="DrumBurp.qrc">
+    <normaloff>:/Icons/Icons/drumburp.png</normaloff>:/Icons/Icons/drumburp.png</iconset>
+  </property>
+  <property name="animated">
+   <bool>true</bool>
+  </property>
+  <property name="dockNestingEnabled">
+   <bool>true</bool>
+  </property>
+  <property name="dockOptions">
+   <set>QMainWindow::AllowNestedDocks|QMainWindow::AnimatedDocks</set>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="ScoreView" name="scoreView">
+      <property name="contextMenuPolicy">
+       <enum>Qt::NoContextMenu</enum>
+      </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
+      <property name="lineWidth">
+       <number>1</number>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      </property>
+      <property name="dragMode">
+       <enum>QGraphicsView::RubberBandDrag</enum>
+      </property>
+      <property name="transformationAnchor">
+       <enum>QGraphicsView::NoAnchor</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="statusTip">
+     <string>Operations on the DrumBurp Score</string>
+    </property>
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuRecentScores">
+     <property name="toolTip">
+      <string>Recently opened scores</string>
+     </property>
+     <property name="statusTip">
+      <string>Open recently visited scores</string>
+     </property>
+     <property name="title">
+      <string>Recent Scores...</string>
+     </property>
+     <property name="icon">
+      <iconset resource="DrumBurp.qrc">
+       <normaloff>:/Icons/Icons/folder.png</normaloff>:/Icons/Icons/folder.png</iconset>
+     </property>
+    </widget>
+    <addaction name="actionNew"/>
+    <addaction name="actionLoad"/>
+    <addaction name="menuRecentScores"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSaveAs"/>
+    <addaction name="separator"/>
+    <addaction name="actionPrint"/>
+    <addaction name="actionExportASCII"/>
+    <addaction name="actionExportPDF"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="statusTip">
+     <string>Options affecting the view</string>
+    </property>
+    <property name="title">
+     <string>View</string>
+    </property>
+    <widget class="QMenu" name="menuShow">
+     <property name="statusTip">
+      <string>Select visible components</string>
+     </property>
+     <property name="title">
+      <string>Show...</string>
+     </property>
+     <addaction name="actionDisplayOptionsIsVisible"/>
+    </widget>
+    <widget class="QMenu" name="menuShowToolBars">
+     <property name="title">
+      <string>Tool Bars...</string>
+     </property>
+     <addaction name="actionFileToolbarIsVisible"/>
+     <addaction name="actionDisplayToolBarIsVisible"/>
+     <addaction name="actionExportToolBarIsVisible"/>
+     <addaction name="actionHelpToolBarIsVisible"/>
+    </widget>
+    <addaction name="actionFitInWindow"/>
+    <addaction name="actionFitPage"/>
+    <addaction name="separator"/>
+    <addaction name="actionShowScoreInfo"/>
+    <addaction name="actionShowDrumKey"/>
+    <addaction name="actionShowEmptyLines"/>
+    <addaction name="actionShowBeatCount"/>
+    <addaction name="separator"/>
+    <addaction name="menuShow"/>
+    <addaction name="menuShowToolBars"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionWhatsThis"/>
+    <addaction name="actionAboutDrumBurp"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuView"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="fileToolBar">
+   <property name="contextMenuPolicy">
+    <enum>Qt::DefaultContextMenu</enum>
+   </property>
+   <property name="windowTitle">
+    <string>File</string>
+   </property>
+   <property name="movable">
+    <bool>true</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::TopToolBarArea</set>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionNew"/>
+   <addaction name="actionLoad"/>
+   <addaction name="actionSave"/>
+   <addaction name="actionSaveAs"/>
+  </widget>
+  <widget class="QToolBar" name="displayToolBar">
+   <property name="windowTitle">
+    <string>Display</string>
+   </property>
+   <property name="movable">
+    <bool>true</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::TopToolBarArea</set>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionFitInWindow"/>
+   <addaction name="actionFitPage"/>
+   <addaction name="separator"/>
+   <addaction name="actionShowScoreInfo"/>
+   <addaction name="actionShowDrumKey"/>
+   <addaction name="actionShowEmptyLines"/>
+   <addaction name="actionShowBeatCount"/>
+  </widget>
+  <widget class="QToolBar" name="exportToolBar">
+   <property name="windowTitle">
+    <string>Print &amp;&amp; Export</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionPrint"/>
+   <addaction name="actionExportASCII"/>
+   <addaction name="actionExportPDF"/>
+  </widget>
+  <widget class="QToolBar" name="helpToolBar">
+   <property name="windowTitle">
+    <string>Help</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionWhatsThis"/>
+   <addaction name="actionAboutDrumBurp"/>
+  </widget>
+  <widget class="QDockWidget" name="diplayOptionsDock">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="toolTip">
+    <string>Display Options</string>
+   </property>
+   <property name="statusTip">
+    <string>Options affecting how the Score is displayed</string>
+   </property>
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Display Options</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QGroupBox" name="groupBox_4">
+       <property name="title">
+        <string>Note Font</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QFontComboBox" name="fontComboBox">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>60</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>187</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="baseSize">
+           <size>
+            <width>100</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="statusTip">
+           <string>The font used to display notes in the Score</string>
+          </property>
+          <property name="editable">
+           <bool>false</bool>
+          </property>
+          <property name="maxVisibleItems">
+           <number>20</number>
+          </property>
+          <property name="fontFilters">
+           <set>QFontComboBox::ScalableFonts</set>
+          </property>
+          <property name="currentFont">
+           <font>
+            <family>BatangChe</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="noteSizeSpinBox">
+          <property name="statusTip">
+           <string>Size of notes.</string>
+          </property>
+          <property name="minimum">
+           <number>6</number>
+          </property>
+          <property name="maximum">
+           <number>30</number>
+          </property>
+          <property name="value">
+           <number>10</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_5">
+       <property name="title">
+        <string>Section Title Font</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QFontComboBox" name="sectionFontCombo">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>60</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>187</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="baseSize">
+           <size>
+            <width>100</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="statusTip">
+           <string>The font used to display section titles in the Score</string>
+          </property>
+          <property name="editable">
+           <bool>false</bool>
+          </property>
+          <property name="maxVisibleItems">
+           <number>20</number>
+          </property>
+          <property name="fontFilters">
+           <set>QFontComboBox::ScalableFonts</set>
+          </property>
+          <property name="currentFont">
+           <font>
+            <family>BatangChe</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="sectionFontSizeSpinbox">
+          <property name="statusTip">
+           <string>Size of section titles.</string>
+          </property>
+          <property name="minimum">
+           <number>8</number>
+          </property>
+          <property name="maximum">
+           <number>48</number>
+          </property>
+          <property name="value">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_6">
+       <property name="title">
+        <string>Song Properties Font</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QFontComboBox" name="metadataFontCombo">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>60</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>187</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="baseSize">
+           <size>
+            <width>100</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="statusTip">
+           <string>The font used to display section titles in the Score</string>
+          </property>
+          <property name="editable">
+           <bool>false</bool>
+          </property>
+          <property name="maxVisibleItems">
+           <number>20</number>
+          </property>
+          <property name="fontFilters">
+           <set>QFontComboBox::ScalableFonts</set>
+          </property>
+          <property name="currentFont">
+           <font>
+            <family>BatangChe</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="metadataFontSizeSpinbox">
+          <property name="statusTip">
+           <string>Size of section titles.</string>
+          </property>
+          <property name="minimum">
+           <number>8</number>
+          </property>
+          <property name="maximum">
+           <number>48</number>
+          </property>
+          <property name="value">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_3">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>300</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>100</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="title">
+        <string>System Spacing</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QSlider" name="lineSpaceSlider">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>Inter-system distance</string>
+          </property>
+          <property name="statusTip">
+           <string>The distance between each system in the Score</string>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="tracking">
+           <bool>false</bool>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="tickPosition">
+           <enum>QSlider::TicksBelow</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Default Measure Options</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="measureTabs" name="defaultMeasureTabs">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>200</width>
+         <height>0</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_2">
+       <property name="title">
+        <string>Score Width</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Columns:</string>
+            </property>
+            <property name="buddy">
+             <cstring>widthSpinBox</cstring>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="widthSpinBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Score width</string>
+            </property>
+            <property name="statusTip">
+             <string>The number of columns to display the Score on</string>
+            </property>
+            <property name="minimum">
+             <number>10</number>
+            </property>
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+            <property name="value">
+             <number>80</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="1">
+         <widget class="QPushButton" name="fitWindowButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>Fit Score In Window</string>
+          </property>
+          <property name="statusTip">
+           <string>Attempt to make the score as wide as possible within the current window.</string>
+          </property>
+          <property name="text">
+           <string>Fit Window</string>
+          </property>
+          <property name="icon">
+           <iconset resource="DrumBurp.qrc">
+            <normaloff>:/Icons/Icons/video-display.png</normaloff>:/Icons/Icons/video-display.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QComboBox" name="paperBox">
+          <item>
+           <property name="text">
+            <string>A4</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Letter</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QPushButton" name="fitPageButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>Fit Score to Page</string>
+          </property>
+          <property name="statusTip">
+           <string>Attempt to make the score as wide as possible within a standard page</string>
+          </property>
+          <property name="text">
+           <string>Fit Page</string>
+          </property>
+          <property name="icon">
+           <iconset resource="DrumBurp.qrc">
+            <normaloff>:/Icons/Icons/fit-page</normaloff>:/Icons/Icons/fit-page</iconset>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="actionQuit">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/system-log-out.png</normaloff>:/Icons/Icons/system-log-out.png</iconset>
+   </property>
+   <property name="text">
+    <string>Quit</string>
+   </property>
+   <property name="toolTip">
+    <string>Quit DrumBurp</string>
+   </property>
+   <property name="statusTip">
+    <string>Quit DrumBurp</string>
+   </property>
+  </action>
+  <action name="actionNew">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/document-new.png</normaloff>:/Icons/Icons/document-new.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;New</string>
+   </property>
+   <property name="iconText">
+    <string>New</string>
+   </property>
+   <property name="toolTip">
+    <string>New Score</string>
+   </property>
+   <property name="statusTip">
+    <string>Create a new blank score</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionLoad">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/document-open.png</normaloff>:/Icons/Icons/document-open.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open</string>
+   </property>
+   <property name="toolTip">
+    <string>Open Score</string>
+   </property>
+   <property name="statusTip">
+    <string>Load a saved DrumBurp score</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/document-save.png</normaloff>:/Icons/Icons/document-save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="statusTip">
+    <string>Save this DrumBurp score</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionSaveAs">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/document-save-as.png</normaloff>:/Icons/Icons/document-save-as.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save As</string>
+   </property>
+   <property name="statusTip">
+    <string>Save this DrumBurp score with a new name</string>
+   </property>
+  </action>
+  <action name="actionExportASCII">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/format-text-bold.png</normaloff>:/Icons/Icons/format-text-bold.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Export ASCII</string>
+   </property>
+   <property name="statusTip">
+    <string>Write an ASCII representation of this score to a file</string>
+   </property>
+   <property name="whatsThis">
+    <string>Export this Score to an ASCII file.
+
+Writes this Score as a plain .txt file.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionDisplayOptionsIsVisible">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display Options</string>
+   </property>
+   <property name="toolTip">
+    <string>Change visibility of display options</string>
+   </property>
+   <property name="statusTip">
+    <string>Change visibility of display options</string>
+   </property>
+  </action>
+  <action name="actionFileToolbarIsVisible">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>File</string>
+   </property>
+   <property name="toolTip">
+    <string>Change visibility of File tool bar</string>
+   </property>
+   <property name="statusTip">
+    <string>Change visibility of tool bar</string>
+   </property>
+  </action>
+  <action name="actionFitInWindow">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/video-display.png</normaloff>:/Icons/Icons/video-display.png</iconset>
+   </property>
+   <property name="text">
+    <string>Fit Window</string>
+   </property>
+   <property name="statusTip">
+    <string>Attempt to make the score as wide as possible within the current window.</string>
+   </property>
+  </action>
+  <action name="actionToolbars">
+   <property name="text">
+    <string>Toolbars</string>
+   </property>
+  </action>
+  <action name="actionDisplayToolBarIsVisible">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display</string>
+   </property>
+   <property name="toolTip">
+    <string>Change visibility of Display tool bar</string>
+   </property>
+  </action>
+  <action name="actionPrint">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/document-print.png</normaloff>:/Icons/Icons/document-print.png</iconset>
+   </property>
+   <property name="text">
+    <string>Print</string>
+   </property>
+   <property name="toolTip">
+    <string>Print this Score</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionWhatsThis">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/help-browser.png</normaloff>:/Icons/Icons/help-browser.png</iconset>
+   </property>
+   <property name="text">
+    <string>What's this?</string>
+   </property>
+   <property name="toolTip">
+    <string>Get help on DrumBurp elements</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F1</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/edit-undo.png</normaloff>:/Icons/Icons/edit-undo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Undo</string>
+   </property>
+   <property name="toolTip">
+    <string>Undo the last action</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/edit-redo.png</normaloff>:/Icons/Icons/edit-redo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Redo</string>
+   </property>
+   <property name="toolTip">
+    <string>Redo the last undone action</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Y</string>
+   </property>
+  </action>
+  <action name="actionExportPDF">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/pdf.png</normaloff>:/Icons/Icons/pdf.png</iconset>
+   </property>
+   <property name="text">
+    <string>Export PDF</string>
+   </property>
+   <property name="toolTip">
+    <string>Export PDF</string>
+   </property>
+   <property name="statusTip">
+    <string>Export this score to a PDF file</string>
+   </property>
+  </action>
+  <action name="actionAboutDrumBurp">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/drumburp.png</normaloff>:/Icons/Icons/drumburp.png</iconset>
+   </property>
+   <property name="text">
+    <string>About DrumBurp</string>
+   </property>
+  </action>
+  <action name="actionExportToolBarIsVisible">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Print &amp;&amp; Export</string>
+   </property>
+   <property name="toolTip">
+    <string>Change visibility of Print &amp; Export Tool Bar</string>
+   </property>
+  </action>
+  <action name="actionHelpToolBarIsVisible">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Help</string>
+   </property>
+   <property name="toolTip">
+    <string>Change the visibility of the Help Tool Bar</string>
+   </property>
+  </action>
+  <action name="actionShowEmptyLines">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/format-justify-fill.png</normaloff>:/Icons/Icons/format-justify-fill.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Empty Lines</string>
+   </property>
+   <property name="statusTip">
+    <string>Show or hide empty lines in the score.</string>
+   </property>
+  </action>
+  <action name="actionShowDrumKey">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/1299815323_HAL-9000 Brain Room Key.png</normaloff>:/Icons/Icons/1299815323_HAL-9000 Brain Room Key.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Drum Key</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Drum Key</string>
+   </property>
+  </action>
+  <action name="actionShowScoreInfo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/applications-multimedia.png</normaloff>:/Icons/Icons/applications-multimedia.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Score Info</string>
+   </property>
+  </action>
+  <action name="actionShowBeatCount">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/1299814882_Black_Numbered-List.png</normaloff>:/Icons/Icons/1299814882_Black_Numbered-List.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Beat Count</string>
+   </property>
+  </action>
+  <action name="actionFitPage">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/fit-page</normaloff>:/Icons/Icons/fit-page</iconset>
+   </property>
+   <property name="text">
+    <string>Fit Page...</string>
+   </property>
+   <property name="toolTip">
+    <string>Fit Score to Page</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>measureTabs</class>
+   <extends>QWidget</extends>
+   <header>Widgets.measureTabs_plugin</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ScoreView</class>
+   <extends>QGraphicsView</extends>
+   <header>Widgets.ScoreView_plugin</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>fontComboBox</tabstop>
+  <tabstop>noteSizeSpinBox</tabstop>
+  <tabstop>sectionFontCombo</tabstop>
+  <tabstop>sectionFontSizeSpinbox</tabstop>
+  <tabstop>metadataFontCombo</tabstop>
+  <tabstop>metadataFontSizeSpinbox</tabstop>
+  <tabstop>lineSpaceSlider</tabstop>
+  <tabstop>widthSpinBox</tabstop>
+  <tabstop>fitPageButton</tabstop>
+  <tabstop>scoreView</tabstop>
+ </tabstops>
+ <resources>
+  <include location="DrumBurp.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>actionFileToolbarIsVisible</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>fileToolBar</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>167</x>
+     <y>62</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fileToolBar</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionFileToolbarIsVisible</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>167</x>
+     <y>62</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>displayToolBar</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionDisplayToolBarIsVisible</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>210</x>
+     <y>53</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDisplayToolBarIsVisible</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>displayToolBar</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>210</x>
+     <y>53</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionQuit</sender>
+   <signal>triggered()</signal>
+   <receiver>DrumBurpWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionExportToolBarIsVisible</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>exportToolBar</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>509</x>
+     <y>62</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>exportToolBar</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionExportToolBarIsVisible</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>509</x>
+     <y>62</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionHelpToolBarIsVisible</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>helpToolBar</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>714</x>
+     <y>41</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>helpToolBar</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionHelpToolBarIsVisible</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>714</x>
+     <y>41</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fitWindowButton</sender>
+   <signal>clicked()</signal>
+   <receiver>actionFitInWindow</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>206</x>
+     <y>648</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>widthSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setWidth(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>110</x>
+     <y>631</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>575</x>
+     <y>688</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lineSpaceSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scoreView</receiver>
+   <slot>systemSpacingChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>141</x>
+     <y>317</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>431</x>
+     <y>547</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>diplayOptionsDock</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionDisplayOptionsIsVisible</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>112</x>
+     <y>467</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDisplayOptionsIsVisible</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>diplayOptionsDock</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>112</x>
+     <y>430</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fontComboBox</sender>
+   <signal>currentFontChanged(QFont)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setFont(QFont)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>162</x>
+     <y>136</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>454</x>
+     <y>570</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>noteSizeSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setNoteFontSize(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>210</x>
+     <y>136</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>349</x>
+     <y>447</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sectionFontSizeSpinbox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setSectionFontSize(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>210</x>
+     <y>195</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>349</x>
+     <y>528</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sectionFontCombo</sender>
+   <signal>currentFontChanged(QFont)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setSectionFont(QFont)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>139</x>
+     <y>195</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>320</x>
+     <y>600</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scoreView</sender>
+   <signal>widthChanged(int)</signal>
+   <receiver>widthSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>638</x>
+     <y>188</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>110</x>
+     <y>631</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fitPageButton</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>actionFitPage</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>206</x>
+     <y>618</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>metadataFontCombo</sender>
+   <signal>currentFontChanged(QFont)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setMetadataFont(QFont)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>95</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>351</x>
+     <y>427</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>metadataFontSizeSpinbox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setMetadataFontSize(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>210</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>323</x>
+     <y>472</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowScoreInfo</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setMetadataVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>541</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowDrumKey</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setKitDataVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>541</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowEmptyLines</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setEmptyLinesVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>541</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowBeatCount</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setBeatCountVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>541</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowScoreInfo</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>metadataFontCombo</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>124</x>
+     <y>254</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShowScoreInfo</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>metadataFontSizeSpinbox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>210</x>
+     <y>254</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
