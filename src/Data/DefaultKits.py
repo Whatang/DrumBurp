@@ -21,6 +21,8 @@ Created on 17 Sep 2011
 
 @author: Mike Thomas
 '''
+#pylint:disable-msg=C0301
+
 STEM_UP = 0
 STEM_DOWN = 1
 
@@ -40,7 +42,6 @@ DEFAULT_VOLUME = 96
 GHOST_VOLUME = 50
 DEFAULT_NOTE = 71
 
-#pylint:disable-msg=C0301
 # {Abbr: [(Head, MIDI note or None for default, MIDI volume or None for default, Midi effect, lilypond symbol, lilypond effect, keyboard shortcut)*]}
 DEFAULT_EXTRA_HEADS = {"FT": [("O", None, ACCENT_VOLUME, "accent", "default", "accent", "o"),
                               ("g", None, GHOST_VOLUME, "ghost", "default", "ghost", "g"),

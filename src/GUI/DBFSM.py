@@ -20,7 +20,6 @@
 
 @author: Mike
 '''
-import copy
 
 from DBCommands import (ToggleNote, RepeatNoteCommand,
                         EditMeasurePropertiesCommand, SetRepeatCountCommand,
@@ -211,7 +210,7 @@ class Repeating(FsmState):
                 self.statusBar.showMessage("Cannot repeat notes backwards!",
                                            5000)
                 return Waiting(self.qscore)
-            head = self.qscore.score.getNote(self.note)
+            head = self.qscore.score.getItemAtPosition(self.note)
             return RepeatingDragging(self.qscore, self.note,
                                      event.note, interval, head)
         elif msgType == Event.Escape:
@@ -273,11 +272,11 @@ class RepeatingDragging(FsmState):
             return self
 
     def _makeNotePositions(self):
-        note = copy.copy(self.secondNote)
+        note = self.secondNote.makeCopy()
         notes = [note]
         more = True
         while more:
-            note = copy.copy(note)
+            note = note.makeCopy()
             note = self.score.notePlus(note, self.interval)
             more = (note is not None and
                     ((note.staffIndex < self._lastNote.staffIndex) or
@@ -378,8 +377,9 @@ class EditMeasurePropertiesState(DialogState):
             command = EditMeasurePropertiesCommand(self.qscore,
                                                    self.measurePosition,
                                                    newCounter)
+            self.qscore.clearDragSelection()
             self.qscore.addCommand(command)
-        super(EditMeasurePropertiesState, self)._accepted() #IGNORE:W0212
+        super(EditMeasurePropertiesState, self)._accepted()  # IGNORE:W0212
 
 class RepeatCountState(DialogState):
     def __init__(self, qscore, repeatCount, position):
@@ -396,7 +396,7 @@ class RepeatCountState(DialogState):
                                             self.oldCount,
                                             newCount)
             self.qscore.addCommand(command)
-        super(RepeatCountState, self)._accepted() #IGNORE:W0212
+        super(RepeatCountState, self)._accepted()  # IGNORE:W0212
 
 class SetAlternateState(DialogState):
     def __init__(self, qscore, alternateText, position):
@@ -411,4 +411,4 @@ class SetAlternateState(DialogState):
             command = SetAlternateCommand(self.qscore, self.measurePosition,
                                           newText)
             self.qscore.addCommand(command)
-        super(SetAlternateState, self)._accepted() #IGNORE:W0212
+        super(SetAlternateState, self)._accepted()  # IGNORE:W0212

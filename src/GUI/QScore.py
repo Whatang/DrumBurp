@@ -32,6 +32,7 @@ from QMeasure import QMeasure
 from QMetaData import QMetaData
 from QKitData import QKitData
 from QEditKitDialog import QEditKitDialog
+from Data import DBErrors
 from Data.Score import ScoreFactory
 from Data.NotePosition import NotePosition
 from DBCommands import (MetaDataCommand, ScoreWidthCommand,
@@ -41,11 +42,78 @@ from DBCommands import (MetaDataCommand, ScoreWidthCommand,
                         SetSystemSpacingCommand, InsertMeasuresCommand,
                         SetFontCommand, SetFontSizeCommand,
                         SetVisibilityCommand, SetLilypondSizeCommand,
-                        SetLilypondPagesCommand, SetLilypondFillCommand)
+                        SetLilypondPagesCommand, SetLilypondFillCommand,
+                        SaveFormatStateCommand, CheckFormatStateCommand,
+                        CheckUndo)
 import DBMidi
 from DBFSM import Waiting
 from DBFSMEvents import Escape
 _SCORE_FACTORY = ScoreFactory()
+
+class _HeadShortcut(object):
+    def __init__(self, currentHeads):
+        self._headDict = dict((unicode(x), y) for (x, y) in currentHeads)
+        self._headOrder = [unicode(x) for (x, y_) in currentHeads]
+        self._textMemo = {}
+
+    def text(self, currentKey):
+        if currentKey not in self._headDict:
+            currentKey = None
+        if currentKey not in self._textMemo:
+            self._textMemo[currentKey] = self._shortcutString(currentKey)
+        return self._textMemo[currentKey]
+
+    def getCurrentHead(self, currentKey):
+        return self._headDict.get(currentKey, None)
+
+    def _keyString(self, head):
+        if head == unicode(self._headDict[head]):
+            return head
+        else:
+            return u"%s(%s)" % (self._headDict[head], head)
+
+    def _shortcutString(self, currentKey):
+        if len(self._headOrder) > 1:
+            headText = []
+            for head in self._headOrder[1:]:  # Do not display default
+                if head == currentKey:
+                    headText.append(u'<span style="background-color:#55aaff;">'
+                                    + self._keyString(head) + u"</span>")
+                else:
+                    headText.append(self._keyString(head))
+            headText = "Head (Shortcut): " + u" ".join(headText)
+        else:
+            headText = ""
+        return headText
+
+class _HeadShortcutsMap(object):
+    def __init__(self, drumkit):
+        self.drumkit = drumkit
+        self._shortcuts = {}
+        self._current = None
+
+    def setDrumKit(self, drumkit):
+        self.drumkit = drumkit
+        self._shortcuts = {}
+
+    def setDrumIndex(self, index):
+        if index is None:
+            self._current = None
+            return
+        if index not in self._shortcuts:
+            currentHeads = self.drumkit.shortcutsAndNoteHeads(index)
+            self._shortcuts[index] = _HeadShortcut(currentHeads)
+        self._current = self._shortcuts[index]
+
+    def getShortcutText(self, currentKey):
+        if self._current is None:
+            return ""
+        return self._current.text(currentKey)
+
+    def getCurrentHead(self, currentKey):
+        if self._current is None:
+            return None
+        return self._current.getCurrentHead(currentKey)
 
 def delayCall(method):
     @functools.wraps(method)
@@ -62,7 +130,6 @@ def _metaDataProperty(varname):
                                       self.metadataChanged, value)
             self.addCommand(command)
     return property(fget = _getData, fset = _setData)
-
 
 class QScore(QtGui.QGraphicsScene):
     '''
@@ -82,8 +149,6 @@ class QScore(QtGui.QGraphicsScene):
         self._score = None
         self._dirty = None
         self._currentKey = None
-        self._currentHeads = {}
-        self._headOrder = []
         self._ignoreNext = False
         self.measureClipboard = []
         self._playingMeasure = None
@@ -93,6 +158,8 @@ class QScore(QtGui.QGraphicsScene):
         self._dragged = []
         self._saved = False
         self._undoStack = QtGui.QUndoStack(self)
+        self._inMacro = False
+        self._macroCanReformat = False
         self._undoStack.canUndoChanged.connect(self.canUndoChanged)
         self._undoStack.undoTextChanged.connect(self.undoTextChanged)
         self._undoStack.canRedoChanged.connect(self.canRedoChanged)
@@ -107,7 +174,7 @@ class QScore(QtGui.QGraphicsScene):
         self._kitData.setPos(self.xMargins, 0)
         self._kitData.setVisible(self._properties.kitDataVisible)
         if parent.filename is not None:
-            if not self.loadScore(parent.filename, quiet = True):
+            if not self.loadScore(parent.filename, quiet = False):
                 parent.filename = None
                 self.newScore(None)
         else:
@@ -117,6 +184,7 @@ class QScore(QtGui.QGraphicsScene):
         self.sectionsChanged.connect(parent.setSections)
         self._properties.connectScore(self)
         self._potentials = []
+        self._shortcutMemo = _HeadShortcutsMap(self._score.drumKit)
         self._state = Waiting(self)
 
     canUndoChanged = QtCore.pyqtSignal(bool)
@@ -138,20 +206,45 @@ class QScore(QtGui.QGraphicsScene):
     lilyFillChanged = QtCore.pyqtSignal(bool)
 
     def addCommand(self, command):
+        if not self._inMacro:
+            self._undoStack.beginMacro(command.description)
+            self._undoStack.push(CheckUndo(self))
+            if command.canReformat:
+                self._addSaveStateCommand()
         self._undoStack.push(command)
+        if not self._inMacro:
+            if command.canReformat:
+                self._addCheckStateCommand()
+            self._undoStack.endMacro()
         self.dirty = not (self._undoStack.isClean() and self._saved)
 
     def addRepeatedCommand(self, name, command, arguments):
-        self._undoStack.beginMacro(name)
+        self.beginMacro(name, command.canReformat)
         for args in arguments:
             self.addCommand(command(self, *args))
-        self._undoStack.endMacro()
+        self.endMacro()
 
-    def beginMacro(self, name):
+    def beginMacro(self, name, canReformat = True):
         self._undoStack.beginMacro(name)
+        self._inMacro = True
+        self._undoStack.push(CheckUndo(self))
+        self._macroCanReformat = canReformat
+        if canReformat:
+            self._addSaveStateCommand()
 
     def endMacro(self):
+        if self._macroCanReformat:
+            self._addCheckStateCommand()
         self._undoStack.endMacro()
+        self._inMacro = False
+
+    def _addSaveStateCommand(self):
+        command = SaveFormatStateCommand(self)
+        self._undoStack.push(command)
+
+    def _addCheckStateCommand(self):
+        command = CheckFormatStateCommand(self)
+        self._undoStack.push(command)
 
     def undo(self):
         self._undoStack.undo()
@@ -175,6 +268,7 @@ class QScore(QtGui.QGraphicsScene):
             return
         if self.scoreWidth != value:
             command = ScoreWidthCommand(self, value)
+            self.clearDragSelection()
             self.addCommand(command)
     scoreWidth = property(fget = _getscoreWidth,
                           fset = _setscoreWidth)
@@ -206,15 +300,16 @@ class QScore(QtGui.QGraphicsScene):
 
     @property
     def lineOffsets(self):
-        yOffsets = [(drumIndex + 1) * self.ySpacing
+        yOffsets = [drumIndex * self.ySpacing
                     for drumIndex in range(0, self.kitSize)]
         yOffsets.reverse()
         return yOffsets
 
     def _setScore(self, score):
         if score != self._score:
-            score.gridFormatScore(None)
+            score.formatScore(None)
             self._score = score
+            self._shortcutMemo = _HeadShortcutsMap(score.drumKit)
             if score is not None:
                 self.startUp()
             self._score.setCallBack(self.dataChanged)
@@ -233,6 +328,7 @@ class QScore(QtGui.QGraphicsScene):
             DBMidi.setKit(score.drumKit)
             self._undoStack.clear()
             self._undoStack.setClean()
+            self._inMacro = False
             for view in self.views():
                 view.setWidth(self.scoreWidth)
             self.reBuild()
@@ -285,15 +381,15 @@ class QScore(QtGui.QGraphicsScene):
         for title in self._score.iterSections():
             self._addSection(title)
         self.placeStaffs()
+        self.invalidate()
 
     @delayCall
     def reBuild(self):
-        self._score.gridFormatScore(None)
+        self._score.formatScore(None)
         self._build()
-        self.invalidate()
 
     def checkFormatting(self):
-        if self._score.gridFormatScore(None):
+        if self._score.formatScore(None):
             self.reBuild()
 
     def __iter__(self):
@@ -443,37 +539,14 @@ class QScore(QtGui.QGraphicsScene):
         return super(QScore, self).keyReleaseEvent(event)
 
     def getCurrentHead(self):
-        return self._currentHeads.get(self._currentKey, None)
+        return self._shortcutMemo.getCurrentHead(self._currentKey)
 
     def setCurrentHeads(self, drumIndex):
-        if drumIndex is None:
-            self._currentHeads = {}
-            self._headOrder = []
-        else:
-            currentHeads = self.score.drumKit.shortcutsAndNoteHeads(drumIndex)
-            self._currentHeads = dict((unicode(x), y) for (x, y)
-                                       in currentHeads)
-            self._headOrder = [unicode(x) for (x, y_) in currentHeads]
+        self._shortcutMemo.setDrumIndex(drumIndex)
         self._highlightCurrentKeyHead()
 
-    def _keyString(self, head):
-        if head == unicode(self._currentHeads[head]):
-            return head
-        else:
-            return u"%s(%s)" % (self._currentHeads[head], head)
-
     def _highlightCurrentKeyHead(self):
-        if len(self._currentHeads) > 1:
-            headText = []
-            for head in self._headOrder[1:]: # Do not display default
-                if head == self._currentKey:
-                    headText.append(u'<span style="background-color:#55aaff;">'
-                                    + self._keyString(head) + u"</span>")
-                else:
-                    headText.append(self._keyString(head))
-            headText = "Head (Shortcut): " + u" ".join(headText)
-        else:
-            headText = ""
+        headText = self._shortcutMemo.getShortcutText(self._currentKey)
         self.currentHeadsChanged.emit(QtCore.QString(headText))
 
     def copyMeasures(self, np = None):
@@ -498,14 +571,16 @@ class QScore(QtGui.QGraphicsScene):
     def deleteMeasures(self, np = None):
         if np is not None:
             command = DeleteMeasureCommand(self, np)
+            self.clearDragSelection()
             self.addCommand(command)
         else:
             if not self.hasDragSelection():
                 return
             start = self._dragSelection[0]
             measureIndex = self._score.getMeasureIndex(start)
-            self.beginMacro("delete measures")
             measures = list(self.iterDragSelection())
+            self.clearDragSelection()
+            self.beginMacro("delete measures")
             for unused in measures:
                 command = DeleteMeasureCommand(self, start, measureIndex)
                 self.addCommand(command)
@@ -515,6 +590,7 @@ class QScore(QtGui.QGraphicsScene):
     def insertMeasures(self, np):
         if len(self.measureClipboard) > 0:
             command = InsertAndPasteMeasures(self, np, self.measureClipboard)
+            self.clearDragSelection()
             self.addCommand(command)
 
     @delayCall
@@ -525,6 +601,7 @@ class QScore(QtGui.QGraphicsScene):
         measureIndex = self._score.getMeasureIndex(start)
         sourceLength = len(self.measureClipboard)
         targetLength = len(list(self.iterDragSelection()))
+        self.clearDragSelection()
         self.beginMacro("paste over measures")
         measureCount = 0
         clearPositions = []
@@ -563,7 +640,7 @@ class QScore(QtGui.QGraphicsScene):
                 command = InsertMeasuresCommand(self,
                                                 position,
                                                 sourceLength - measureCount,
-                                                self.defaultCount)
+                                                self.defaultCount, True)
                 self.addCommand(command)
             measureData = self.measureClipboard
             measureData = measureData[:sourceLength]
@@ -574,14 +651,14 @@ class QScore(QtGui.QGraphicsScene):
     def loadScore(self, filename, quiet = False):
         try:
             newScore = _SCORE_FACTORY(filename = filename)
-        except IOError, exc:
+        except DBErrors.DbReadError, exc:
             if not quiet:
                 msg = "Error loading DrumBurp file %s" % filename
                 QtGui.QMessageBox.warning(self.parent(),
                                           "Score load error",
                                           msg + "\n" + str(exc))
             return False
-        except StandardError, exc:
+        except Exception, exc:
             raise
         self._setScore(newScore)
         self._saved = True
@@ -714,6 +791,9 @@ class QScore(QtGui.QGraphicsScene):
     def getQMeasure(self, position):
         return self._qStaffs[position.staffIndex].getQMeasure(position)
 
+    def getQStaff(self, possition):
+        return self._qStaffs[possition.staffIndex]
+
     def highlightPlayingMeasure(self, position):
         if position == self._playingMeasure:
             return
@@ -727,18 +807,28 @@ class QScore(QtGui.QGraphicsScene):
         qMeasure.setPlaying(True)
 
     def editKit(self):
+        emptyDrums = set(self.score.drumKit)
+        for staffIndex in xrange(self.score.numStaffs()):
+            lines = set(self.score.iterVisibleLines(staffIndex, True))
+            emptyDrums.difference_update(lines)
+            if not emptyDrums:
+                break
         editDialog = QEditKitDialog(self.score.drumKit,
-                                    self.score.emptyDrums(),
+                                    emptyDrums,
                                     self.parent())
         if not editDialog.exec_():
             return
         kit, changes = editDialog.getNewKit()
-        if QtGui.QMessageBox.question(self.parent(),
-                                      "Apply kit changes?",
-                                      "Editing the kit cannot be undone. Proceed?",
-                                      buttons = QtGui.QMessageBox.Yes | QtGui.QMessageBox.No) == QtGui.QMessageBox.Yes:
+        box = QtGui.QMessageBox.question(self.parent(),
+                                         "Apply kit changes?",
+                                         "Editing the kit cannot be undone. "
+                                         "Proceed?",
+                                         buttons = (QtGui.QMessageBox.Yes
+                                                    | QtGui.QMessageBox.No))
+        if box == QtGui.QMessageBox.Yes:
             self.score.changeKit(kit, changes)
             DBMidi.setKit(kit)
+            self._shortcutMemo = _HeadShortcutsMap(kit)
             self._undoStack.clear()
             self._saved = False
             self.reBuild()
@@ -763,10 +853,10 @@ class QScore(QtGui.QGraphicsScene):
         newDragged = [(index, position) for (unused, index, position) in
                       self.score.iterMeasuresBetween(*self._dragSelection)]
         for index, position in newDragged:
-            if all(x[0] != index for x in self._dragged): # Turn on
+            if all(x[0] != index for x in self._dragged):  # Turn on
                 self._setDragHighlight(position, True)
         for index, position in self._dragged:
-            if all(x[0] != index for x in newDragged): # Turn off
+            if all(x[0] != index for x in newDragged):  # Turn off
                 self._setDragHighlight(position, False)
         self._dragged = newDragged
 

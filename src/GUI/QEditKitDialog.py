@@ -269,10 +269,10 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         if len(fname) == 0:
             return
         fname = unicode(fname)
-        indenter = fileUtils.Indenter()
         newKit, unused = self.getNewKit()
         with open(fname, 'w') as handle:
-            newKit.write(handle, indenter)
+            indenter = fileUtils.Indenter(handle)
+            newKit.write(indenter)
         QMessageBox.information(self, "Kit saved", "Successfully saved drumkit")
 
 
@@ -540,10 +540,16 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
 
     def accept(self):
         if all(old == -1 for old in self._oldLines.itervalues()):
-            if QMessageBox.question(self.parent(),
-                                    "Discard all existing notes?",
-                                    "Warning! You have changed the kit, but none of the old drums are being converted to new drums. This will discard all notes currently in the score. Are you sure you want to proceed?",
-                                    buttons = QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+            qtext = ("Discard all existing notes?",
+                     "Warning! You have changed the kit, "
+                     "but none of the old drums are being "
+                     "converted to new drums. This will discard "
+                     "all notes currently in the score. Are you "
+                     "sure you want to proceed?")
+            question = QMessageBox.question(self.parent(), qtext,
+                                            buttons = (QMessageBox.Yes
+                                                       | QMessageBox.No))
+            if question == QMessageBox.No:
                 return
         super(QEditKitDialog, self).accept()
 
@@ -633,7 +639,8 @@ def main():
             line = indent
             headData = drum.headData(drum.head)
             values = (drum.name, drum.abbr, drum.head, str(drum.locked),
-                      headData.midiNote, headData.notationHead, headData.notationLine,
+                      headData.midiNote, headData.notationHead,
+                      headData.notationLine,
                       "UP" if headData.stemDirection == DrumKit.STEM_UP
                       else "DOWN")
             line += '(("%s", "%s", "%s", %s), %d, "%s", %d, STEM_%s)' % values

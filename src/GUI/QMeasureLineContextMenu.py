@@ -74,6 +74,7 @@ class QMeasureLineContextMenu(QMenuIgnoreCancelClick):
         command = SetSectionEndCommand(self._qScore,
                                        self._endNotePosition,
                                        onOff)
+        self._qScore.clearDragSelection()
         self._qScore.addCommand(command)
         self._qScore.sendFsmEvent(MenuSelect())
 
@@ -81,6 +82,7 @@ class QMeasureLineContextMenu(QMenuIgnoreCancelClick):
         command = SetLineBreakCommand(self._qScore,
                                       self._endNotePosition,
                                       onOff)
+        self._qScore.clearDragSelection()
         self._qScore.addCommand(command)
         self._qScore.sendFsmEvent(MenuSelect())
 
@@ -88,6 +90,7 @@ class QMeasureLineContextMenu(QMenuIgnoreCancelClick):
         command = SetRepeatEndCommand(self._qScore,
                                       self._endNotePosition,
                                       onOff)
+        self._qScore.clearDragSelection()
         self._qScore.addCommand(command)
         self._qScore.sendFsmEvent(MenuSelect())
 
@@ -96,6 +99,7 @@ class QMeasureLineContextMenu(QMenuIgnoreCancelClick):
         command = SetRepeatStartCommand(self._qScore,
                                         self._startNotePosition,
                                         onOff)
+        self._qScore.clearDragSelection()
         self._qScore.addCommand(command)
         self._qScore.sendFsmEvent(MenuSelect())
 

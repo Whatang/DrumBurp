@@ -33,36 +33,23 @@ class FontOptions(object):
         self.metadataFontSize = 16
         self.metadataFont = "MS Shell Dlg 2"
 
-    def write(self, handle, indenter):
-        print >> handle, indenter("FONT_OPTIONS_START")
-        indenter.increase()
-        print >> handle, indenter("NOTEFONT", self.noteFont)
-        print >> handle, indenter("NOTEFONTSIZE %d"
-                                  % self.noteFontSize)
-        print >> handle, indenter("SECTIONFONT", self.sectionFont)
-        print >> handle, indenter("SECTIONFONTSIZE %d"
-                                  % self.sectionFontSize)
-        print >> handle, indenter("METADATAFONT", self.metadataFont)
-        print >> handle, indenter("METADATAFONTSIZE %d"
-                                  % self.metadataFontSize)
-        indenter.decrease()
-        print >> handle, indenter("FONT_OPTIONS_END")
+    def write(self, indenter):
+        with indenter.section("FONT_OPTIONS_START", "FONT_OPTIONS_END"):
+            indenter("NOTEFONT", self.noteFont)
+            indenter("NOTEFONTSIZE %d" % self.noteFontSize)
+            indenter("SECTIONFONT", self.sectionFont)
+            indenter("SECTIONFONTSIZE %d" % self.sectionFontSize)
+            indenter("METADATAFONT", self.metadataFont)
+            indenter("METADATAFONTSIZE %d" % self.metadataFontSize)
 
     def read(self, scoreIterator):
-        for lineType, lineData in scoreIterator:
-            if lineType == "FONT_OPTIONS_END":
-                break
-            elif lineType == "NOTEFONT":
-                self.noteFont = lineData
-            elif lineType == "NOTEFONTSIZE":
-                self.noteFontSize = int(lineData)
-            elif lineType == "SECTIONFONT":
-                self.sectionFont = lineData
-            elif lineType == "SECTIONFONTSIZE":
-                self.sectionFontSize = int(lineData)
-            elif lineType == "METADATAFONT":
-                self.metadataFont = lineData
-            elif lineType == "METADATAFONTSIZE":
-                self.metadataFontSize = int(lineData)
-            else:
-                raise IOError("Font information not recognised.")
+        with scoreIterator.section("FONT_OPTIONS_START",
+                                   "FONT_OPTIONS_END") as section:
+            section.readString("NOTEFONT", self, "noteFont")
+            section.readPositiveInteger("NOTEFONTSIZE", self, "noteFontSize")
+            section.readString("SECTIONFONT", self, "sectionFont")
+            section.readPositiveInteger("SECTIONFONTSIZE", self,
+                                        "sectionFontSize")
+            section.readString("METADATAFONT", self, "metadataFont")
+            section.readPositiveInteger("METADATAFONTSIZE", self,
+                                        "metadataFontSize")

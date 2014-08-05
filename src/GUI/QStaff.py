@@ -51,6 +51,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self._measureLines = []
         self._width = 0
         self._height = 0
+        self._hasAlternate = False
         self._setStaff(staff)
         self.setHandlesChildEvents(False)
 
@@ -93,6 +94,11 @@ class QStaff(QtGui.QGraphicsItemGroup):
             iterable = self._qScore.score.iterVisibleLines(self._index)
         for drum in iterable:
             self._addLineLabel(drum)
+        for measure in self._staff:
+            if (not self._hasAlternate and
+                (measure.alternateText or
+                 (measure.isRepeatEnd() and measure.repeatCount > 2))):
+                self._hasAlternate = True
         lastMeasure = None
         for measure in self._staff:
             self._addMeasureLine(lastMeasure, measure)
@@ -110,7 +116,8 @@ class QStaff(QtGui.QGraphicsItemGroup):
 
     def _addMeasure(self, measure):
         qMeasure = QMeasure(self.numMeasures(), self._qScore,
-                            measure, parent = self)
+                            measure,
+                            parent = self)
         self._measures.append(qMeasure)
         self.addToGroup(qMeasure)
 
@@ -126,18 +133,21 @@ class QStaff(QtGui.QGraphicsItemGroup):
     def placeMeasures(self):
         lineOffsets = self._qScore.lineOffsets
         xOffset = 0
+        base = self.alternateHeight()
+        if self._props.measureCountsVisible:
+            base += self._props.measureCountHeight()
         for yOffset, label in zip(lineOffsets[-len(self._lineLabels):],
                                   self._lineLabels):
-            label.setPos(xOffset, yOffset)
+            label.setPos(xOffset, yOffset + base)
         xOffset += self._lineLabels[0].cellWidth()
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
-            qMeasureLine.setPos(xOffset, self._qScore.ySpacing)
+            qMeasureLine.setPos(xOffset, base)
             qMeasureLine.setDimensions()
             xOffset += qMeasureLine.width()
             qMeasure.setPos(xOffset, 0)
             xOffset += qMeasure.width()
-        self._measureLines[-1].setPos(xOffset, self._qScore.ySpacing)
+        self._measureLines[-1].setPos(xOffset, base)
         self._measureLines[-1].setDimensions()
         self._width = xOffset + self._measureLines[-1].width()
         self._height = max(element.height()
@@ -150,27 +160,32 @@ class QStaff(QtGui.QGraphicsItemGroup):
             label.xSpacingChanged()
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
-            qMeasureLine.setPos(xOffset, self._qScore.ySpacing)
+            qMeasureLine.setX(xOffset)
             qMeasureLine.xSpacingChanged()
             xOffset += qMeasureLine.width()
-            qMeasure.setPos(xOffset, 0)
+            qMeasure.setX(xOffset)
             qMeasure.xSpacingChanged()
             xOffset += qMeasure.width()
         self._measureLines[-1].xSpacingChanged()
-        self._measureLines[-1].setPos(xOffset, self._qScore.ySpacing)
+        self._measureLines[-1].setX(xOffset)
         self._width = xOffset + self._measureLines[-1].width()
 
     def ySpacingChanged(self):
         lineOffsets = self._qScore.lineOffsets
+        base = self.alternateHeight()
+        if self._props.measureCountsVisible:
+            base += self._props.measureCountHeight()
         for yOffset, label in zip(lineOffsets[-len(self._lineLabels):],
                                   self._lineLabels):
-            label.setY(yOffset)
+            label.setY(yOffset + base)
             label.ySpacingChanged()
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
             qMeasureLine.ySpacingChanged()
+            qMeasureLine.setY(base)
             qMeasure.ySpacingChanged()
         self._measureLines[-1].ySpacingChanged()
+        self._measureLines[-1].setY(base)
         self._height = max(element.height()
                            for element in
                            itertools.chain(self._measures, self._measureLines))
@@ -211,3 +226,17 @@ class QStaff(QtGui.QGraphicsItemGroup):
     def getQMeasure(self, np):
         return self._measures[np.measureIndex]
 
+    def alternateHeight(self):
+        if self._hasAlternate:
+            return self._props.alternateHeight()
+        else:
+            return 0
+
+    def checkAlternate(self):
+        newAlternate = False
+        for measure in self._staff:
+            if (measure.alternateText or
+                (measure.isRepeatEnd() and measure.repeatCount > 2)):
+                newAlternate = True
+                break
+        return self._hasAlternate != newAlternate

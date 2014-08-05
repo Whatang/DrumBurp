@@ -24,16 +24,16 @@ Created on 12 Dec 2010
 '''
 
 from collections import defaultdict
-from DBConstants import EMPTY_NOTE, BARLINE, BAR_TYPES
-from DBErrors import BadTimeError
+from DBConstants import EMPTY_NOTE, BAR_TYPES
+from DBErrors import BadTimeError, TooManyBarLines
 from NotePosition import NotePosition
 from Data import MeasureCount
 import copy
 
-class NoteDictionary(object):
+class _NoteDictionary(object):
     def __init__(self):
-        self._notes = defaultdict(lambda:defaultdict(dict))
-        self._notesOnLine = defaultdict(lambda : 0)
+        self._notes = defaultdict(defaultdict)
+        self._notesOnLine = defaultdict(int)
         self._noteTimes = []
 
     def __len__(self):
@@ -119,20 +119,13 @@ class Measure(object):
 
     def __init__(self, width = 0):
         self._width = width
-        self._notes = NoteDictionary()
+        self._notes = _NoteDictionary()
         self.startBar = BAR_TYPES["NORMAL_BAR"]
         self.endBar = BAR_TYPES["NORMAL_BAR"]
         self._callBack = None
         self._info = MeasureInfo()
         self.counter = None
         self.alternateText = None
-
-    @staticmethod
-    def barString(first, second):
-        if first is None and second is None:
-            return ""
-        else:
-            return BARLINE
 
     def _getrepeatCount(self):
         return self._info.repeatCount
@@ -166,7 +159,7 @@ class Measure(object):
         self._callBack = None
 
     def isEmpty(self):
-        return (len(list(self)) == 0
+        return (len(self._notes) == 0
                 and not (self.isRepeatEnd() or
                          self.isSectionEnd()))
 
@@ -218,30 +211,33 @@ class Measure(object):
     def getNote(self, position):
         return self.noteAt(position.noteTime, position.drumIndex)
 
-    def noteAt(self, noteTime, drumIndex):
+    def _checkValidNoteTime(self, noteTime):
         if not(0 <= noteTime < len(self)):
             raise BadTimeError(noteTime)
+
+    def _checkValidPosition(self, position):
+        self._checkValidNoteTime(position.noteTime)
+
+    def noteAt(self, noteTime, drumIndex):
+        self._checkValidNoteTime(noteTime)
         return self._notes.getNote(noteTime, drumIndex)
 
     def clear(self):
-        for pos, dummyHead in list(self):
-            self.deleteNote(pos)
+        self._notes.clear()
+        self._runCallBack(NotePosition())
 
     def addNote(self, position, head):
-        if not(0 <= position.noteTime < len(self)):
-            raise BadTimeError(position)
+        self._checkValidPosition(position)
         if self._notes.setNote(position.noteTime, position.drumIndex, head):
             self._runCallBack(position)
 
     def deleteNote(self, position):
-        if not(0 <= position.noteTime < len(self)):
-            raise BadTimeError(position)
+        self._checkValidPosition(position)
         if self._notes.delNote(position.noteTime, position.drumIndex):
             self._runCallBack(position)
 
     def toggleNote(self, position, head):
-        if not(0 <= position.noteTime < len(self)):
-            raise BadTimeError(position)
+        self._checkValidPosition(position)
         oldHead = self._notes.getNote(position.noteTime, position.drumIndex)
         if (oldHead == head):
             self.deleteNote(position)
@@ -261,6 +257,10 @@ class Measure(object):
 
     def setBeatCount(self, counter):
         if counter == self.counter:
+            return
+        if self.counter is None:
+            self.counter = counter
+            self._setWidth(len(counter))
             return
         oldNotes = copy.deepcopy(self._notes)
         oldTimes = list(self.counter.iterTime())
@@ -308,13 +308,11 @@ class Measure(object):
     def pasteMeasure(self, other, copyMeasureDecorations = False):
         oldMeasure = self.copyMeasure()
         self.clear()
-        self._setWidth(len(other))
-        self.counter = other.counter
+        if other.counter is None:
+            self._setWidth(len(other))
+        self.setBeatCount(other.counter)
         for pos, head in other:
-            try:
-                self.addNote(pos, head)
-            except BadTimeError:
-                continue
+            self.addNote(pos, head)
         if copyMeasureDecorations:
             self.setRepeatStart(other.isRepeatStart())
             self.setRepeatEnd(other.isRepeatEnd())
@@ -344,73 +342,78 @@ class Measure(object):
     def lineIsVisible(self, index):
         return (self._notes.notesOnLine(index) > 0)
 
-    def write(self, handle, indenter):
-        print >> handle, indenter("START_BAR %d" % len(self))
-        indenter.increase()
-        if self.counter is not None:
-            self.counter.write(handle, indenter)
-        startString = [name for name, value in BAR_TYPES.iteritems()
-                       if (self.startBar & value) == value]
-        print >> handle, indenter("BARLINE %s" % ",".join(startString))
-        for pos, head in self:
-            print >> handle, indenter("NOTE %d,%d,%s" % (pos.noteTime,
-                                                         pos.drumIndex,
-                                                         head))
-        endString = [name for name, value in BAR_TYPES.iteritems()
-                     if (self.endBar & value) == value ]
-        print >> handle, indenter("BARLINE %s" % ",".join(endString))
-        if self.repeatCount != 1:
-            print >> handle, indenter("REPEAT_COUNT %d" % self.repeatCount)
-        if self.alternateText is not None:
-            print >> handle, indenter("ALTERNATE %s" % self.alternateText)
-        indenter.decrease()
-        print >> handle, indenter("END_BAR")
+    def write(self, indenter):
+        with indenter.section("START_BAR %d" % len(self), "END_BAR"):
+            if self.counter is not None:
+                self.counter.write(indenter)
+            startString = [name for name, value in BAR_TYPES.iteritems()
+                           if (self.startBar & value) == value]
+            indenter("BARLINE %s" % ",".join(startString))
+            for pos, head in self:
+                indenter("NOTE %d,%d,%s" % (pos.noteTime, pos.drumIndex, head))
+            endString = [name for name, value in BAR_TYPES.iteritems()
+                         if (self.endBar & value) == value ]
+            indenter("BARLINE %s" % ",".join(endString))
+            if self.repeatCount != 1:
+                indenter("REPEAT_COUNT %d" % self.repeatCount)
+            if self.alternateText is not None:
+                indenter("ALTERNATE %s" % self.alternateText)
 
-    def read(self, scoreIterator):
-        seenStartLine = False
-        seenEndLine = False
+    class _BarlineTracker(object):
+        @staticmethod
         def doNothing(dummy):
             pass
-        mapping = {"NO_BAR" : doNothing,
-                   "NORMAL_BAR" : doNothing,
-                   "REPEAT_START": self.setRepeatStart,
-                   "REPEAT_END": self.setRepeatEnd,
-                   "SECTION_END": self.setSectionEnd,
-                   "LINE_BREAK": self.setLineBreak}
-        for lineType, lineData in scoreIterator:
-            if  lineType == "BARLINE":
-                if not seenStartLine:
-                    self.startBar = 0
-                    for barType in lineData.split(","):
-                        self.startBar |= BAR_TYPES[barType]
-                        mapping[barType](True)
-                    seenStartLine = True
-                elif not seenEndLine:
-                    self.endBar = 0
-                    for barType in lineData.split(","):
-                        self.endBar |= BAR_TYPES[barType]
-                        mapping[barType](True)
-                    seenEndLine = True
-                else:
-                    raise IOError("Too many bar lines")
-            elif lineType == "NOTE":
-                noteTime, drumIndex, head = lineData.split(",")
-                pos = NotePosition(noteTime = int(noteTime),
-                                   drumIndex = int(drumIndex))
-                self.addNote(pos, head)
-            elif lineType == "END_BAR":
-                break
-            elif lineType == "BEATLENGTH":
-                # Old-style count information
-                self.counter = MeasureCount.counterMaker(int(lineData),
-                                                         len(self))
-            elif lineType == "COUNT_INFO_START":
-                # New-style count information
-                self.counter = MeasureCount.MeasureCount()
-                self.counter.read(scoreIterator)
-            elif lineType == "REPEAT_COUNT":
-                self.repeatCount = int(lineData)
-            elif lineType == "ALTERNATE":
-                self.alternateText = lineData
+
+        def __init__(self, measure, iterator):
+            self.measure = measure
+            self.seenStartLine = False
+            self.seenEndLine = False
+            self._iterator = iterator
+            self.mapping = {"NO_BAR" : self.doNothing,
+                            "NORMAL_BAR" : self.doNothing,
+                            "REPEAT_START": measure.setRepeatStart,
+                            "REPEAT_END": measure.setRepeatEnd,
+                            "SECTION_END": measure.setSectionEnd,
+                            "LINE_BREAK": measure.setLineBreak}
+
+        def processBarline(self, lineData):
+            if not self.seenStartLine:
+                self.measure.startBar = 0
+                for barType in lineData.split(","):
+                    self.measure.startBar |= BAR_TYPES[barType]
+                    self.mapping[barType](True)
+                self.seenStartLine = True
+            elif not self.seenEndLine:
+                self.measure.endBar = 0
+                for barType in lineData.split(","):
+                    self.measure.endBar |= BAR_TYPES[barType]
+                    self.mapping[barType](True)
+                self.seenEndLine = True
             else:
-                raise IOError("Unrecognised line type")
+                raise TooManyBarLines(self._iterator)
+
+    def _readNote(self, lineData):
+        noteTime, drumIndex, head = lineData.split(",")
+        pos = NotePosition(noteTime = int(noteTime),
+                           drumIndex = int(drumIndex))
+        self.addNote(pos, head)
+
+    def _makeOldMeasure(self, lineData):
+        self.counter = MeasureCount.counterMaker(int(lineData),
+                                                 len(self))
+
+    def _readCounter(self, scoreIterator):
+        counter = MeasureCount.MeasureCount()
+        counter.read(scoreIterator)
+        self.setBeatCount(counter)
+
+    def read(self, scoreIterator):
+        tracker = self._BarlineTracker(self, scoreIterator)
+        self.counter = MeasureCount.MeasureCount()
+        with scoreIterator.section("START_BAR", "END_BAR") as section:
+            section.readCallback("BARLINE", tracker.processBarline)
+            section.readCallback("NOTE", self._readNote)
+            section.readSubsection("COUNT_INFO_START", self._readCounter)
+            section.readCallback("BEATLENGTH", self._makeOldMeasure)
+            section.readPositiveInteger("REPEAT_COUNT", self, "repeatCount")
+            section.readString("ALTERNATE", self, "alternateText")

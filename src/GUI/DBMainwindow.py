@@ -30,27 +30,29 @@ from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QPrintPreviewDialog, QWhatsThis,
                          QPrinterInfo, QLabel, QFrame,
                          QPrinter, QDesktopServices)
-from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer
+from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer, QThread
 from QScore import QScore
 from QDisplayProperties import QDisplayProperties
 from QNewScoreDialog import QNewScoreDialog
 from QAsciiExportDialog import QAsciiExportDialog
 from QEditMeasureDialog import QEditMeasureDialog
+from QVersionDownloader import QVersionDownloader
 from DBInfoDialog import DBInfoDialog
 import DBIcons
 import os
 import DBMidi
 from Data.Score import InconsistentRepeats
 from DBFSMEvents import StartPlaying, StopPlaying
-from DBVersion import APPNAME, DB_VERSION
+from DBVersion import APPNAME, DB_VERSION, doesNewerVersionExist
 from Notation.lilypond import LilypondScore, LilypondProblem
-#pylint:disable-msg=R0904
+from Notation import AsciiExport
+# pylint:disable-msg=R0904
 
 class FakeQSettings(object):
-    def value(self, key_): #IGNORE:R0201
+    def value(self, key_):  # IGNORE:R0201
         return QVariant()
 
-    def setValue(self, key_, value_): #IGNORE:R0201
+    def setValue(self, key_, value_):  # IGNORE:R0201
         return
 
 
@@ -97,7 +99,18 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.updateRecentFiles()
         self.songProperties = QDisplayProperties()
         # Create scene
-        self.scoreScene = QScore(self)
+        errored_files = []
+        try:
+            self.scoreScene = QScore(self)
+        except:
+            errored_files.append(self.filename)
+            try:
+                self.recentFiles.remove(self.filename)
+            except ValueError:
+                pass
+            self.filename = None
+            self.scoreScene = QScore(self)
+
         self.restoreGeometry(settings.value("Geometry").toByteArray())
         self.restoreState(settings.value("MainWindow/State").toByteArray())
         self.statusbar.addPermanentWidget(QFrame())
@@ -108,8 +121,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.statusbar.addPermanentWidget(self._infoBar)
         self._initializeState()
         self.setSections()
-        QTimer.singleShot(0, self._startUp)
-
+        self._versionThread = VersionCheckThread()
+        self._versionThread.finished.connect(self._finishedVersionCheck)
+        QTimer.singleShot(0, lambda : self._startUp(errored_files))
+        self.actionCheckOnStartup.setChecked(settings.value("CheckOnStartup").toBool())
 
     def _connectSignals(self, props, scene):
         # Connect signals
@@ -136,6 +151,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
+        props.measureCountsVisibleChanged.connect(self._setMeasureCountsVisible)
         props.metadataVisibilityChanged.connect(self._setMetadataVisible)
         props.beatCountVisibleChanged.connect(self._setBeatCountVisible)
         DBMidi.SONGEND_SIGNAL.connect(self.musicDone)
@@ -174,6 +190,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.actionShowEmptyLines.setChecked(props.emptyLinesVisible)
         self.actionShowScoreInfo.setChecked(props.metadataVisible)
         self.actionShowBeatCount.setChecked(props.beatCountVisible)
+        self.actionShowMeasureCounts.setChecked(props.measureCountsVisible)
         # Set doable actions
         self.actionPlayOnce.setEnabled(False)
         self.actionLoopBars.setEnabled(False)
@@ -182,6 +199,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.actionFillPasteMeasures.setEnabled(False)
         self.actionClearMeasures.setEnabled(False)
         self.actionDeleteMeasures.setEnabled(False)
+        self.MIDIToolBar.setEnabled(DBMidi.HAS_MIDI)
         # Undo/redo
         self.actionUndo.setEnabled(False)
         self.actionRedo.setEnabled(False)
@@ -199,10 +217,16 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.lilyFillButton.setChecked(scene.score.lilyFill)
 
 
-    def _startUp(self):
+    def _startUp(self, errored_files):
         self.scoreView.startUp()
         self.updateStatus("Welcome to %s v%s" % (APPNAME, DB_VERSION))
         self.scoreView.setFocus()
+        if self.actionCheckOnStartup.isChecked():
+#             self.on_actionCheckForUpdates_triggered()
+            self._versionThread.start()
+        if errored_files:
+            QMessageBox.warning(self, "Problem during startup",
+                                "Error opening files:\n %s" % "\n".join(errored_files))
 
 
     def _makeQSettings(self):
@@ -254,6 +278,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if props.beatCountVisible != self.actionShowBeatCount.isChecked():
             self.actionShowBeatCount.setChecked(props.beatCountVisible)
 
+    def _setMeasureCountsVisible(self):
+        props = self.songProperties
+        if props.measureCountsVisible != self.actionShowMeasureCounts.isChecked():
+            self.actionShowMeasureCounts.setChecked(props.measureCountsVisible)
+
     def updateStatus(self, message):
         self.statusBar().showMessage(message, 5000)
         if self.filename is not None:
@@ -296,8 +325,13 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                               QVariant(self.saveGeometry()))
             settings.setValue("MainWindow/State",
                               QVariant(self.saveState()))
+            settings.setValue("CheckOnStartup",
+                              QVariant(self.actionCheckOnStartup.isChecked()))
             self.songProperties.save(settings)
-            DBMidi.cleanup()
+            self._versionThread.exit()
+            self._versionThread.wait(1000)
+            if not self._versionThread.isFinished():
+                self._versionThread.terminate()
         else:
             event.ignore()
 
@@ -462,8 +496,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self._asciiSettings = asciiDialog.getOptions()
         try:
             asciiBuffer = StringIO()
-            self.scoreScene.score.exportASCII(asciiBuffer,
-                                              self._asciiSettings)
+            exporter = AsciiExport.Exporter(self.scoreScene.score,
+                                            self._asciiSettings)
+            exporter.export(asciiBuffer)
         except StandardError:
             QMessageBox.warning(self.parent(), "ASCII generation failed!",
                                 "Could not generate ASCII for this score!")
@@ -819,3 +854,25 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if lilyFill != self.lilyFillButton.isChecked():
             self.lilyFillButton.setChecked(lilyFill)
 
+    @pyqtSignature("")
+    def on_actionCheckForUpdates_triggered(self):
+        dialog = QVersionDownloader(newer = None, parent = self)
+        dialog.exec_()
+        
+    def _finishedVersionCheck(self):
+        newer = self._versionThread.newVersionInfo
+        if newer:
+            dialog = QVersionDownloader(newer = newer, parent = self)
+            dialog.exec_()
+        elif newer is None:
+            self.statusbar.showMessage("Failed to get latest version info from www.whatang.org", 5000)
+        else:
+            self.statusbar.showMessage("Check successful: You have the latest version of DrumBurp", 5000)
+
+class VersionCheckThread(QThread):
+    def __init__(self, parent = None):
+        super(VersionCheckThread, self).__init__(parent = parent)
+        self.newVersionInfo = None
+
+    def run(self):
+        self.newVersionInfo = doesNewerVersionExist()

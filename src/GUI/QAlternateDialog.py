@@ -47,9 +47,7 @@ class QAlternateDialog(QtGui.QDialog, Ui_AlternateDialog):
         repeats = [repeat.strip() for repeat in alternate.split(",")]
         for repeat in repeats:
             if "-" in repeat:
-                startVal, endVal = map(int,
-                                       map(lambda x : x.strip("."),
-                                           repeat.split("-")))
+                startVal, endVal = [int(x.strip(".")) for x in repeat.split("-")]
                 isRange = True
             else:
                 startVal = int(repeat.strip().strip("."))

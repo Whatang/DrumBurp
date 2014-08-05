@@ -22,37 +22,70 @@ Created on 17 Sep 2011
 @author: Mike Thomas
 
 '''
+import copy
 
-import pygame
-import pygame.midi
+HAS_MIDI = True
+_PERCUSSION_CHANNEL = 0x09
+_NOTE_ON = 0x90
+_NOTE_OFF = 0x80
+_CHOKE = 0xB0
+_CHOKE_MSG = 120
+_CHOKE_VELOCITY = 0
+_PERCUSSION_NOTE_ON = _PERCUSSION_CHANNEL | _NOTE_ON
+_PERCUSSION_NOTE_OFF = _PERCUSSION_CHANNEL | _NOTE_OFF
+_PERCUSSION_CHOKE = _PERCUSSION_CHANNEL | _CHOKE
+_BUFSIZE = 1024
+_LATENCY = 1
+
+_FREQ = 44100    # audio CD quality
+_BITSIZE = -16   # unsigned 16 bit
+_CHANNELS = 2    # 1 is mono, 2 is stereo
+_NUMSAMPLES = 4096    # number of samples
+
+FLAM_TIME_CONSTANT = 32
+FLAM_VOLUME_CONSTANT = 2
+DRAG_TIME_CONSTANT = 96
+
+try:
+    import pygame
+    import pygame.midi
+    pygame.init()
+    pygame.midi.init()
+    pygame.mixer.init(_FREQ, _BITSIZE, _CHANNELS, _NUMSAMPLES)
+    pygame.mixer.music.set_volume(0.8)
+
+    def get_default_id():
+        return pygame.midi.get_default_output_id()
+
+    def cleanup():
+        _PLAYER.cleanup()
+        pygame.mixer.quit()
+        pygame.midi.quit()
+        pygame.quit()
+
+except ImportError:
+    HAS_MIDI = False
+    def get_default_id():
+        return -1
+
+    def cleanup():
+        _PLAYER.cleanup()
+
 import atexit
+atexit.register(cleanup)
 import time
 import StringIO
 
 from PyQt4.QtCore import QTimer, pyqtSignal, QObject
 from Data.MeasureCount import MIDITICKSPERBEAT
 
-
-pygame.init()
-pygame.midi.init()
-
-_PERCUSSION = 0x99
-_BUFSIZE = 1024
-
-_FREQ = 44100    # audio CD quality
-_BITSIZE = -16   # unsigned 16 bit
-_CHANNELS = 2    # 1 is mono, 2 is stereo
-_NUMSAMPLES = 4096    # number of samples
-pygame.mixer.init(_FREQ, _BITSIZE, _CHANNELS, _NUMSAMPLES)
-
-# optional volume 0 to 1.0
-pygame.mixer.music.set_volume(0.8)
-
 class _midi(QObject):
     def __init__(self):
         super(_midi, self).__init__()
-        self._port = pygame.midi.get_default_output_id()
-        self._midiOut = pygame.midi.Output(self._port, 0, _BUFSIZE)
+        self._port = get_default_id()
+        self._midiOut = None
+        if self._port != -1:
+            self._midiOut = pygame.midi.Output(self._port, _LATENCY, _BUFSIZE)
         self.timer = QTimer()
         self.timer.setSingleShot(True)
         self._measureDetails = []
@@ -64,6 +97,9 @@ class _midi(QObject):
         self._musicPlaying = False
         self.kit = None
 
+    def isGood(self):
+        return self._port != -1 and self._midiOut is not None
+
     def setMute(self, onOff):
         self._mute = onOff
 
@@ -73,23 +109,54 @@ class _midi(QObject):
     highlightMeasure = pyqtSignal(int)
 
     def playNote(self, drumIndex, head):
-        if self.kit is None or self._mute or self._midiOut is None:
+        if self.kit is None or self._mute:
             return
         headData = self.kit[drumIndex].headData(head)
         self.playHeadData(headData)
 
     def playHeadData(self, headData):
-        if self._midiOut:
-            self._midiOut.write([[[_PERCUSSION, headData.midiNote,
+        if not self._midiOut:
+            return
+        now = pygame.midi.time()
+        if headData.effect == "flam":
+            self._midiOut.write([[[_PERCUSSION_NOTE_ON,
+                                   headData.midiNote,
+                                   headData.midiVolume / FLAM_VOLUME_CONSTANT],
+                                  now]])
+            self._midiOut.write([[[_PERCUSSION_NOTE_ON,
+                                   headData.midiNote,
                                    headData.midiVolume],
-                                  pygame.midi.time()]])
+                                  now + FLAM_TIME_CONSTANT]])
+        elif headData.effect == "drag":
+            self._midiOut.write([[[_PERCUSSION_NOTE_ON,
+                                   headData.midiNote,
+                                   headData.midiVolume ],
+                                  now]])
+            self._midiOut.write([[[_PERCUSSION_NOTE_ON,
+                                   headData.midiNote,
+                                   headData.midiVolume],
+                                  now + DRAG_TIME_CONSTANT]])
+        elif headData.effect == "choke":
+            self._midiOut.write([[[_PERCUSSION_NOTE_ON,
+                                   headData.midiNote,
+                                   headData.midiVolume ],
+                                  now]])
+            self._midiOut.write([[[_PERCUSSION_CHOKE,
+                                   _CHOKE_MSG,
+                                   _CHOKE_VELOCITY],
+                                  now + DRAG_TIME_CONSTANT]])
+        else:
+            self._midiOut.write([[[_PERCUSSION_NOTE_ON,
+                                   headData.midiNote,
+                                   headData.midiVolume],
+                                  now]])
 
     def playScore(self, score):
         measureList = list(score.iterMeasuresWithRepeats())
         self._playMIDINow(measureList, score)
 
     def _playMIDINow(self, measureList, score):
-        if self.kit is None:
+        if self.kit is None or self._midiOut is None:
             return
         baseTime = 0
         msPerBeat = 60000.0 / score.scoreData.bpm
@@ -130,13 +197,14 @@ class _midi(QObject):
             if self._midiOut:
                 del self._midiOut
             pygame.mixer.music.stop()
-            self._midiOut = pygame.midi.Output(self._port, 0, _BUFSIZE)
+            self._midiOut = pygame.midi.Output(self._port, _LATENCY, _BUFSIZE)
             self._musicPlaying = False
 
     def cleanup(self):
         if self._midiOut is not None:
             self._midiOut.abort()
             del self._midiOut
+            self._midiOut = None
 
     def _highlight(self):
         delay = -1
@@ -153,6 +221,7 @@ class _midi(QObject):
 
 
 _PLAYER = _midi()
+HAS_MIDI = HAS_MIDI and _PLAYER.isGood()
 
 SONGEND_SIGNAL = _PLAYER.timer.timeout
 HIGHLIGHT_SIGNAL = _PLAYER.highlightMeasure
@@ -184,7 +253,7 @@ def isMuted():
 def encodeSevenBitDelta(delta, midiData):
     values = []
     lastByte = True
-    if delta == 0:
+    if delta <= 0:
         midiData.append(0)
         return
     while delta:
@@ -203,18 +272,31 @@ def exportMidi(measureIterator, score, handle):
     handle.write("%c" % chr((MIDITICKSPERBEAT >> 8) & 0xFF))
     handle.write("%c" % chr((MIDITICKSPERBEAT >> 0) & 0xFF))
     notes = []
+    msPerBeat = int(60000000 / score.scoreData.bpm)
     baseTime = 1
     for measure, unusedIndex in measureIterator:
+        measureNotes = []
         times = list(measure.counter.iterMidiTicks())
         for notePos, head in measure:
             drumData = score.drumKit[notePos.drumIndex]
             headData = drumData.headData(head)
             if headData is not None:
                 noteTime = baseTime + times[notePos.noteTime]
-                notes.append((noteTime, headData))
+                divisionTicks = times[notePos.noteTime + 1] - times[notePos.noteTime]
+                if headData.effect == "flam":
+                    headCopy = copy.copy(headData)
+                    headCopy.midiVolume = headData.midiVolume / FLAM_VOLUME_CONSTANT
+                    measureNotes.append((noteTime - (MIDITICKSPERBEAT / FLAM_TIME_CONSTANT),
+                                         headCopy))
+                elif headData.effect == "drag":
+                    measureNotes.append((noteTime + divisionTicks / 2, headData))
+                elif headData.effect == "choke":
+                    measureNotes.append((noteTime + divisionTicks / 2, "choke"))
+                measureNotes.append((noteTime, headData))
         baseTime += times[-1]
+        measureNotes.sort()
+        notes.extend(measureNotes)
     lastNoteTime = 0
-    msPerBeat = int(60000000 / score.scoreData.bpm)
     midiData = [0, 0xff, 0x51, 03, (msPerBeat >> 16) & 0xff,
                 (msPerBeat >> 8) & 0xff, msPerBeat & 0xff]
     signature = "Created with DrumBurp"
@@ -224,14 +306,17 @@ def exportMidi(measureIterator, score, handle):
         deltaTime = noteTime - lastNoteTime
         lastNoteTime = noteTime
         encodeSevenBitDelta(deltaTime, midiData)
-        midiData.extend([_PERCUSSION,
-                         headData.midiNote,
-                         headData.midiVolume])
+        if headData == "choke":
+            midiData.extend([_PERCUSSION_CHOKE, _CHOKE_MSG, _CHOKE_VELOCITY])
+        else:
+            midiData.extend([_PERCUSSION_NOTE_ON,
+                             headData.midiNote,
+                             headData.midiVolume])
     # Turn off drum notes
     deltaTime = baseTime - lastNoteTime
-    encodeSevenBitDelta(deltaTime + 4 * MIDITICKSPERBEAT, midiData)
-    midiData.extend([0x89, 38, 0])
     # Insert a delay before the end of the track.
+    encodeSevenBitDelta(deltaTime + 4 * MIDITICKSPERBEAT, midiData)
+    midiData.extend([_PERCUSSION_NOTE_OFF, 38, 0])
     encodeSevenBitDelta(0, midiData)
     midiData.extend([0xFF, 0x2F, 0])
     numBytes = len(midiData)
@@ -240,10 +325,3 @@ def exportMidi(measureIterator, score, handle):
     handle.write("MTrk")
     for byte in midiData:
         handle.write("%c" % byte)
-
-
-def cleanup():
-    _PLAYER.cleanup()
-    pygame.mixer.quit()
-    pygame.midi.quit()
-    pygame.quit()

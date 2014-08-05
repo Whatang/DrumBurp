@@ -26,17 +26,16 @@ Created on 16 Apr 2011
 import itertools
 from Counter import CounterRegistry
 from DBConstants import BEAT_COUNT
+import DBErrors
 
 class Beat(object):
+    '''A Beat is a measured instance of a Counter. 
+    
+    A Beat may be less than the full length of the corresponding Counter to 
+    reflect partial beats at the end of a Measure. A sequence of Beats makes
+    up a MeasureCount.
     '''
-    classdocs
-    '''
-
-
     def __init__(self, counter, numTicks = None):
-        '''
-        Constructor
-        '''
         self.counter = counter
         if numTicks is None:
             numTicks = self.ticksPerBeat
@@ -59,7 +58,7 @@ class Beat(object):
         return str(self.counter)
 
     def iterTicks(self):
-        return iter(range(0, self.numTicks))
+        return xrange(self.numTicks)
 
     def numBeats(self):
         return self._beatLength
@@ -72,31 +71,26 @@ class Beat(object):
     def numTicks(self):
         return self._numTicks
 
-    def write(self, handle, indenter):
-        print >> handle, indenter("BEAT_START")
-        indenter.increase()
-        if self.numTicks != self.ticksPerBeat:
-            print >> handle, indenter("NUM_TICKS", self.numTicks)
-        self.counter.write(handle, indenter)
-        indenter.decrease()
-        print >> handle, indenter("BEAT_END")
+    def write(self, indenter):
+        with indenter.section("BEAT_START", "BEAT_END"):
+            if self.numTicks != self.ticksPerBeat:
+                indenter("NUM_TICKS", self.numTicks)
+            self.counter.write(indenter)
 
     @staticmethod
     def read(scoreIterator):
-        numTicks = None
-        counter = None
+        targetValues = {"numTicks" : None, "counter" : None }
         registry = CounterRegistry()
-        for lineType, lineData in scoreIterator:
-            if lineType == "BEAT_END":
-                return Beat(counter, numTicks)
-            elif lineType == "NUM_TICKS":
-                numTicks = int(lineData)
-            elif lineType == "COUNT":
-                if lineData[0] == "|" and lineData[-1] == "|":
-                    lineData = lineData[1:-1]
-                lineData = BEAT_COUNT + lineData[1:]
-                counter = registry.findMaster(lineData)
-            else:
-                raise IOError("Unrecognised line type")
-
+        def readCount(lineData):
+            if lineData[0] == "|" and lineData[-1] == "|":
+                lineData = lineData[1:-1]
+            lineData = BEAT_COUNT + lineData[1:]
+            try:
+                targetValues["counter"] = registry.findMaster(lineData)
+            except KeyError:
+                raise DBErrors.BadCount(scoreIterator)
+        with scoreIterator.section("BEAT_START", "BEAT_END") as section:
+            section.readPositiveInteger("NUM_TICKS", targetValues, "numTicks")
+            section.readCallback("COUNT", readCount)
+        return Beat(targetValues["counter"], targetValues["numTicks"])
 

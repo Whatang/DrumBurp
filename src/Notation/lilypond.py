@@ -30,7 +30,7 @@ from DBVersion import DB_VERSION
 
 import sys
 
-class Indenter(object):
+class LilyIndenter(object):
     def __init__(self, spaces = 2):
         self._spaces = spaces
         self._level = 0
@@ -141,9 +141,8 @@ class LilyMeasure(object):
     _ACCENT_STRING = r"\accent"
     _CHOKE_STRING = r"\staccatissimo"
 
-    def __init__(self, score, measure, kit):
+    def __init__(self, measure, kit):
         self.measure = measure
-        self.score = score
         self.kit = kit
         self._beats = list(self.measure.counter.iterBeatTicks())
         self._voices = {DrumKit.UP:[], DrumKit.DOWN:[]}
@@ -163,9 +162,8 @@ class LilyMeasure(object):
         for direction in notes:
             timeSet = set(notePos.noteTime for (notePos, head) in
                 notes[direction])
-            for tick in self.measure.counter.iterBeatTimes():
+            for tick in self.measure.counter.iterBeatTickPositions():
                 timeSet.add(tick)
-
             timeSet.add(len(self._beats))
             noteTimes[direction] = list(timeSet)
             noteTimes[direction].sort()
@@ -439,7 +437,7 @@ class LilypondScore(object):
         self._lilysize = score.lilysize
         self._numPages = score.lilypages
         self._lilyFill = score.lilyFill
-        self.indenter = Indenter()
+        self.indenter = LilyIndenter()
         self._timeSig = None
         self._lastTimeSig = None
         self._hadRepeatCount = False
@@ -470,7 +468,9 @@ class LilypondScore(object):
 
     def _writeHeader(self):
         self.indenter('title = %s' % lilyString(self.scoreData.title))
-        self.indenter(r'tagline = #(string-append "Score created using DrumBurp %s, engraved with Lilypond " (lilypond-version))' % DB_VERSION)
+        self.indenter(r'tagline = #(string-append "Score created using '
+                      'DrumBurp %s, engraved with Lilypond " '
+                      '(lilypond-version))' % DB_VERSION)
         if self.scoreData.artistVisible:
             self.indenter('composer = %s' % lilyString(self.scoreData.artist))
         if self.scoreData.creatorVisible:
@@ -519,13 +519,15 @@ class LilypondScore(object):
                 self._hadRepeatCount = False
                 self.indenter(r'\bar "|"')
                 self.indenter(r"\cadenzaOn")
-                self.indenter(r"\once \override Score.TimeSignature #'stencil = ##f")
+                self.indenter(r"\once \override Score.TimeSignature "
+                              "#'stencil = ##f")
                 self.indenter(r"\time 1/32")
                 self.indenter(r"s32")
                 self.indenter(r'\bar ""')
                 self.indenter(r"\cadenzaOff")
                 if self._timeSig == self._lastTimeSig:
-                    self.indenter(r"\once \override Score.TimeSignature #'stencil = ##f")
+                    self.indenter(r"\once \override Score.TimeSignature "
+                                  "#'stencil = ##f")
                 self.indenter(r"\time %s" % self._timeSig)
                 self._lastTimeSig = self._timeSig
             self.indenter(r'\mark %s' % lilyString(sectionTitle))
@@ -594,7 +596,7 @@ class LilypondScore(object):
                           % " ".join(repeatCommands))
 
     def _writeMeasure(self, measure):
-        parsed = LilyMeasure(self.score, measure, self._lilyKit)
+        parsed = LilyMeasure(measure, self._lilyKit)
         with LILY_CONTEXT(self.indenter, r'\new DrumVoice'):
             self.indenter(r'\voiceOne')
             parsed.voiceOne(self.indenter)

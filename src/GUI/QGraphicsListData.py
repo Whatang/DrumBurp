@@ -94,10 +94,11 @@ class QGraphicsListData(QGraphicsItem):
         self.setRect()
         super(QGraphicsListData, self).update()
 
-    def hoverEnterEvent(self, *args, **kwargs):
-        self._qScore.setStatusMessage("Double click to edit %s." % self._editName)
-        return super(QGraphicsListData, self).hoverEnterEvent(*args, **kwargs)
+    def hoverEnterEvent(self, event):
+        self._qScore.setStatusMessage("Double click to edit %s."
+                                      % self._editName)
+        event.accept()
 
-    def hoverLeaveEvent(self, *args, **kwargs):
+    def hoverLeaveEvent(self, event):
         self._qScore.setStatusMessage()
-        return super(QGraphicsListData, self).hoverLeaveEvent(*args, **kwargs)
+        event.accept()

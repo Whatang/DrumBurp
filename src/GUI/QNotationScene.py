@@ -86,45 +86,46 @@ class QNotationScene(QGraphicsScene):
         self._dragImage.setVisible(False)
 
     @classmethod
+    def _loadNoteHead(cls, headname):
+        imageName = headname.title()
+        imageName = headname[0] + imageName[1:]
+        imageName = imageName.replace(" ", "")
+        image = QPixmap(":/heads/GUI/Notation/%sHead.png" % imageName)
+        image.setMask(image.createHeuristicMask())
+        cls._heads[headname] = image
+
+    @classmethod
+    def _loadEffect(cls, effectname):
+        imageName = effectname.capitalize()
+        image = QPixmap(":/heads/GUI/Notation/Effect_%s.png" % imageName)
+        image.setMask(image.createHeuristicMask())
+        cls._effects[effectname] = image
+
+    @classmethod
+    def _loadFlam(cls, headname):
+        if STEM_UP not in cls._flams:
+            cls._flams[STEM_UP] = {}
+        if STEM_DOWN not in cls._flams:
+            cls._flams[STEM_DOWN] = {}
+        imageName = headname.capitalize()
+        imageName = imageName.replace(" ", "")
+        image = QPixmap(":/heads/GUI/Notation/Flam_Up_%s.png" % imageName)
+        image.setMask(image.createHeuristicMask())
+        cls._flams[STEM_UP][headname] = image
+        image = QPixmap(":/heads/GUI/Notation/Flam_Down_%s.png" % imageName)
+        image.setMask(image.createHeuristicMask())
+        cls._flams[STEM_DOWN][headname] = image
+
+    @classmethod
     def _loadHeads(cls):
         if cls._heads:
             return
-        cls._heads["default"] = QPixmap(":/heads/GUI/Notation/defaultHead.png")
-        cls._heads["cross"] = QPixmap(":/heads/GUI/Notation/crossHead.png")
-        cls._heads["diamond"] = QPixmap(":/heads/GUI/Notation/diamondHead.png")
-        cls._heads["harmonic black"] = QPixmap(":/heads/GUI/Notation/harmonicBlackHead.png")
-        cls._heads["harmonic"] = QPixmap(":/heads/GUI/Notation/harmonicHead.png")
-        cls._heads["triangle"] = QPixmap(":/heads/GUI/Notation/triangleHead.png")
-        cls._heads["xcircle"] = QPixmap(":/heads/GUI/Notation/xcircleHead.png")
-        for image in cls._heads.itervalues():
-            image.setMask(image.createHeuristicMask())
-        cls._effects["ghost"] = QPixmap(":/heads/GUI/Notation/Effect_Ghost.png")
-        cls._effects["accent"] = QPixmap(":/heads/GUI/Notation/Effect_Accent.png")
-        cls._effects["stopped"] = QPixmap(":/heads/GUI/Notation/Effect_Closed.png")
-        cls._effects["open"] = QPixmap(":/heads/GUI/Notation/Effect_Open.png")
-        cls._effects["choke"] = QPixmap(":/heads/GUI/Notation/Effect_Choke.png")
-        for image in cls._effects.itervalues():
-            image.setMask(image.createHeuristicMask())
-        cls._flams[STEM_UP] = {}
-        cls._flams[STEM_UP]["default"] = QPixmap(":/heads/GUI/Notation/Flam_Up_Default.png")
-        cls._flams[STEM_UP]["cross"] = QPixmap(":/heads/GUI/Notation/Flam_Up_Cross.png")
-        cls._flams[STEM_UP]["diamond"] = QPixmap(":/heads/GUI/Notation/Flam_Up_Diamond.png")
-        cls._flams[STEM_UP]["harmonic black"] = QPixmap(":/heads/GUI/Notation/Flam_Up_HarmonicBlack.png")
-        cls._flams[STEM_UP]["harmonic"] = QPixmap(":/heads/GUI/Notation/Flam_Up_Harmonic.png")
-        cls._flams[STEM_UP]["triangle"] = QPixmap(":/heads/GUI/Notation/Flam_Up_Triangle.png")
-        cls._flams[STEM_UP]["xcircle"] = QPixmap(":/heads/GUI/Notation/Flam_Up_Xcircle.png")
-        for image in cls._flams[STEM_UP].itervalues():
-            image.setMask(image.createHeuristicMask())
-        cls._flams[STEM_DOWN] = {}
-        cls._flams[STEM_DOWN]["default"] = QPixmap(":/heads/GUI/Notation/Flam_Down_Default.png")
-        cls._flams[STEM_DOWN]["cross"] = QPixmap(":/heads/GUI/Notation/Flam_Down_Cross.png")
-        cls._flams[STEM_DOWN]["diamond"] = QPixmap(":/heads/GUI/Notation/Flam_Down_Diamond.png")
-        cls._flams[STEM_DOWN]["harmonic black"] = QPixmap(":/heads/GUI/Notation/Flam_Down_HarmonicBlack.png")
-        cls._flams[STEM_DOWN]["harmonic"] = QPixmap(":/heads/GUI/Notation/Flam_Down_Harmonic.png")
-        cls._flams[STEM_DOWN]["triangle"] = QPixmap(":/heads/GUI/Notation/Flam_Down_Triangle.png")
-        cls._flams[STEM_DOWN]["xcircle"] = QPixmap(":/heads/GUI/Notation/Flam_Down_Xcircle.png")
-        for image in cls._flams[STEM_DOWN].itervalues():
-            image.setMask(image.createHeuristicMask())
+        for headname in ("default", "cross", "diamond", "harmonic black",
+                         "harmonic", "triangle", "xcircle"):
+            cls._loadNoteHead(headname)
+            cls._loadFlam(headname)
+        for effectname in ("ghost", "accent", "stopped", "open", "choke"):
+            cls._loadEffect(effectname)
         cls._drag = QPixmap(":/heads/GUI/Notation/Effect_Drag.png")
 
 
@@ -166,9 +167,11 @@ class QNotationScene(QGraphicsScene):
         if headData.notationEffect == "flam":
             self._effectImage.setVisible(False)
             self._dragImage.setVisible(False)
-            #Draw flams
-            self._flamImage.setPixmap(self._flams[headData.stemDirection].get(headData.notationHead,
-                                                                              self._heads["default"]))
+            # Draw flams
+            flamHeads = self._flams[headData.stemDirection]
+            image = flamHeads.get(headData.notationHead,
+                                  self._heads["default"])
+            self._flamImage.setPixmap(image)
             flamRect = self._flamImage.boundingRect()
             self._flamImage.setX(left - flamRect.width() - 2)
             self._flamImage.setY(middle)
@@ -178,7 +181,7 @@ class QNotationScene(QGraphicsScene):
         elif headData.notationEffect in self._effects:
             self._flamImage.setVisible(False)
             self._dragImage.setVisible(False)
-            #Draw effects
+            # Draw effects
             self._effectImage.setPixmap(self._effects[headData.notationEffect])
             effectRect = self._effectImage.boundingRect()
             effectWidth = effectRect.width()
@@ -197,9 +200,11 @@ class QNotationScene(QGraphicsScene):
             dragRect = self._dragImage.boundingRect()
             self._dragImage.setX(stemLeft - dragRect.width() / 2)
             if headData.stemDirection == STEM_UP:
-                self._dragImage.setY(self._stem.y() + 10 - dragRect.height() / 2)
+                self._dragImage.setY(self._stem.y() + 10
+                                     - dragRect.height() / 2)
             else:
-                self._dragImage.setY(self._stem.y() + STEM_LENGTH - 10 - dragRect.height() / 2)
+                self._dragImage.setY(self._stem.y() + STEM_LENGTH - 10
+                                     - dragRect.height() / 2)
             self._dragImage.setVisible(True)
         else:
             self._dragImage.setVisible(False)

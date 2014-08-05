@@ -24,35 +24,55 @@ Created on 13 Feb 2011
 from PyQt4.QtGui import QUndoCommand
 import DBMidi
 from Data import DBConstants
-from Data.Score import Score
 from Data.NotePosition import NotePosition
-import copy
+from Data.Measure import Measure
 import DBVersion
 
 class ScoreCommand(QUndoCommand):
+    canReformat = True
     def __init__(self, qScore, note, description):
         super(ScoreCommand, self).__init__(description)
+        self.description = description
         self._qScore = qScore
-        self._np = copy.copy(note)
+        if note is not None:
+            self._np = note.makeCopy()
+        else:
+            self._np = note
         self._score = self._qScore.score
 
     def undo(self):
-        self._score.saveFormatState()
         self._undo()
-        self._qScore.checkFormatting()
 
     def _undo(self):
         raise NotImplementedError()
 
     def redo(self):
-        self._score.saveFormatState()
         self._redo()
-        self._qScore.checkFormatting()
 
     def _redo(self):
         raise NotImplementedError()
 
-class DebugScoreCommand(ScoreCommand): #pylint:disable-msg=W0223
+class CheckUndo(ScoreCommand):
+    def __init__(self, qScore):
+        super(CheckUndo, self).__init__(qScore, None, None)
+        self._hash = None
+
+    if DBVersion.FULL_RELEASE:
+        def _undo(self):
+            pass
+
+        def _redo(self):
+            pass
+    else:
+        def _undo(self):
+            newHash = self._score.hashScore()
+            print newHash.encode('hex'), self._hash.encode('hex')
+            assert(newHash == self._hash)
+
+        def _redo(self):
+            self._hash = self._score.hashScore()
+
+class DebugScoreCommand(ScoreCommand):  # pylint:disable-msg=W0223
     def __init__(self, qScore, note, description):
         super(DebugScoreCommand, self).__init__(qScore, note, description)
         self._hash = self._score.hashScore()
@@ -63,17 +83,34 @@ class DebugScoreCommand(ScoreCommand): #pylint:disable-msg=W0223
         print newHash.encode('hex'), self._hash.encode('hex')
         assert(newHash == self._hash)
 
-_COMMAND_CLASS = DebugScoreCommand
-if DBVersion.FULL_RELEASE:
-    _COMMAND_CLASS = ScoreCommand
+class SaveFormatStateCommand(ScoreCommand):
+    def __init__(self, qscore):
+        super(SaveFormatStateCommand, self).__init__(qscore, None, None)
 
-class NoteCommand(_COMMAND_CLASS): #pylint:disable-msg=W0223
+    def _undo(self):
+        self._qScore.checkFormatting()
+
+    def _redo(self):
+        self._score.saveFormatState()
+
+class CheckFormatStateCommand(ScoreCommand):
+    def __init__(self, qscore):
+        super(CheckFormatStateCommand, self).__init__(qscore, None, None)
+
+    def _undo(self):
+        self._score.saveFormatState()
+
+    def _redo(self):
+        self._qScore.checkFormatting()
+
+class NoteCommand(ScoreCommand):  # pylint:disable-msg=W0223
+    canReformat = False
     def __init__(self, qScore, notePosition, head = None):
         super(NoteCommand, self).__init__(qScore, notePosition,
                                           "set note")
         if head is None:
-            head = self._score.getDefaultHead(notePosition.drumIndex)
-        self._oldHead = self._score.getNote(notePosition)
+            head = self._score.drumKit.getDefaultHead(notePosition.drumIndex)
+        self._oldHead = self._score.getItemAtPosition(notePosition)
         self._head = head
 
     def _undo(self):
@@ -92,11 +129,12 @@ class SetNote(NoteCommand):
 class ToggleNote(NoteCommand):
     def _redo(self):
         self._score.toggleNote(self._np, self._head)
-        newHead = self._score.getNote(self._np)
+        newHead = self._score.getItemAtPosition(self._np)
         if (newHead != DBConstants.EMPTY_NOTE):
             DBMidi.playNote(self._np.drumIndex, self._head)
 
-class MetaDataCommand(_COMMAND_CLASS):
+class MetaDataCommand(ScoreCommand):
+    canReformat = False
     def __init__(self, qScore, varName, signal, value):
         super(MetaDataCommand, self).__init__(qScore, None,
                                               "edit metadata")
@@ -116,7 +154,8 @@ class MetaDataCommand(_COMMAND_CLASS):
             setattr(self._score.scoreData, self._varname, self._oldValue)
             self._signal.emit(self._varname, self._oldValue)
 
-class SetLilypondSizeCommand(_COMMAND_CLASS):
+class SetLilypondSizeCommand(ScoreCommand):
+    canReformat = False
     def __init__(self, qScore, size):
         super(SetLilypondSizeCommand, self).__init__(qScore, None,
                                                      "set Lilypond size")
@@ -133,7 +172,8 @@ class SetLilypondSizeCommand(_COMMAND_CLASS):
             self._score.lilysize = self._oldValue
             self._qScore.lilysizeChanged.emit(self._oldValue)
 
-class SetLilypondPagesCommand(_COMMAND_CLASS):
+class SetLilypondPagesCommand(ScoreCommand):
+    canReformat = False
     def __init__(self, qScore, numPages):
         super(SetLilypondPagesCommand, self).__init__(qScore, None,
                                                      "set Lilypond pages")
@@ -150,7 +190,8 @@ class SetLilypondPagesCommand(_COMMAND_CLASS):
             self._score.lilypages = self._oldValue
             self._qScore.lilypagesChanged.emit(self._oldValue)
 
-class SetLilypondFillCommand(_COMMAND_CLASS):
+class SetLilypondFillCommand(ScoreCommand):
+    canReformat = False
     def __init__(self, qScore, lilyFill):
         super(SetLilypondFillCommand, self).__init__(qScore, None,
                                                      "set Lilypond fill")
@@ -167,7 +208,7 @@ class SetLilypondFillCommand(_COMMAND_CLASS):
             self._score.lilyFill = self._oldValue
             self._qScore.lilyFillChanged.emit(self._oldValue)
 
-class ScoreWidthCommand(_COMMAND_CLASS):
+class ScoreWidthCommand(ScoreCommand):
     def __init__(self, qScore, value):
         super(ScoreWidthCommand, self).__init__(qScore, None,
                                                 "set width")
@@ -184,7 +225,7 @@ class ScoreWidthCommand(_COMMAND_CLASS):
         for view in self._qScore.views():
             view.setWidth(self._oldValue)
 
-class InsertAndPasteMeasures(_COMMAND_CLASS):
+class InsertAndPasteMeasures(ScoreCommand):
     def __init__(self, qScore, startPosition, measureData):
         super(InsertAndPasteMeasures, self).__init__(qScore, startPosition,
                                                      "insert copied measures")
@@ -202,7 +243,7 @@ class InsertAndPasteMeasures(_COMMAND_CLASS):
         self._score.deleteMeasuresAtPosition(self._startPosition,
                                              len(self._measureData))
 
-class PasteMeasuresCommand(_COMMAND_CLASS):
+class PasteMeasuresCommand(ScoreCommand):
     def __init__(self, qScore, startPosition, measureData):
         super(PasteMeasuresCommand, self).__init__(qScore, startPosition,
                                                      "paste measures")
@@ -225,17 +266,18 @@ class PasteMeasuresCommand(_COMMAND_CLASS):
         self._measureData = self._exchange()
 
 
-class RepeatNoteCommand(_COMMAND_CLASS):
+class RepeatNoteCommand(ScoreCommand):
+    canReformat = False
     def __init__(self, qScore, firstNote, nRepeats, repInterval):
         super(RepeatNoteCommand, self).__init__(qScore, firstNote,
                                                 "repeat note")
-        self._head = self._score.getNote(firstNote)
-        note = copy.copy(firstNote)
-        self._oldNotes = [(note, self._score.getNote(note))]
+        self._head = self._score.getItemAtPosition(firstNote)
+        note = firstNote.makeCopy()
+        self._oldNotes = [(note, self._score.getItemAtPosition(note))]
         for dummyIndex in range(nRepeats):
-            note = copy.copy(note)
+            note = note.makeCopy()
             note = self._score.notePlus(note, repInterval)
-            self._oldNotes.append((note, self._score.getNote(note)))
+            self._oldNotes.append((note, self._score.getItemAtPosition(note)))
 
     def _redo(self):
         for np, dummyHead in self._oldNotes:
@@ -248,25 +290,45 @@ class RepeatNoteCommand(_COMMAND_CLASS):
             else:
                 self._score.addNote(np, head)
 
-class InsertMeasuresCommand(_COMMAND_CLASS):
-    def __init__(self, qScore, notePosition, numMeasures, counter):
+class InsertMeasuresCommand(ScoreCommand):
+    def __init__(self, qScore, notePosition, numMeasures,
+                 counter, preserveSections = False):
         super(InsertMeasuresCommand, self).__init__(qScore, notePosition,
                                                     "insert measures")
         self._index = self._score.getMeasureIndex(self._np)
         self._numMeasures = numMeasures
         self._width = len(counter)
         self._counter = counter
+        self._preserveSections = preserveSections
 
     def _redo(self):
+        moveEnd = False
+        if self._preserveSections and self._index > 0:
+            measure = self._score.getMeasure(self._index - 1)
+            moveEnd = measure.isSectionEnd()
+            if moveEnd:
+                measure.setSectionEnd(False)
         for dummyMeasureIndex in range(self._numMeasures):
             self._score.insertMeasureByIndex(self._width, self._index,
                                              counter = self._counter)
+        if moveEnd:
+            measure = self._score.getMeasure(self._index +
+                                             self._numMeasures - 1)
+            measure.setSectionEnd(True)
 
     def _undo(self):
+        if self._preserveSections and self._index > 0:
+            measure = self._score.getMeasure(self._index +
+                                             self._numMeasures - 1)
+            if measure.isSectionEnd():
+                measure.setSectionEnd(False)
+                measure = self._score.getMeasure(self._index - 1)
+                measure.setSectionEnd(True)
         for dummyMeasureIndex in range(self._numMeasures):
             self._score.deleteMeasureByIndex(self._index)
 
-class InsertSectionCommand(_COMMAND_CLASS):
+
+class InsertSectionCommand(ScoreCommand):
     def __init__(self, qScore, note, sectionIndex):
         super(InsertSectionCommand, self).__init__(qScore, note,
                                                    "insert section copy")
@@ -284,7 +346,8 @@ class InsertSectionCommand(_COMMAND_CLASS):
         self._score.deleteSection(self._np)
         self._qScore.sectionsChanged.emit()
 
-class SetRepeatCountCommand(_COMMAND_CLASS):
+class SetRepeatCountCommand(ScoreCommand):
+    canReformat = False
     def __init__(self, qScore, notePosition, oldCount, newCount):
         super(SetRepeatCountCommand, self).__init__(qScore, notePosition,
                                                     "set repeat count")
@@ -294,12 +357,16 @@ class SetRepeatCountCommand(_COMMAND_CLASS):
     def _redo(self):
         measure = self._score.getItemAtPosition(self._np)
         measure.repeatCount = self._newCount
+        if self._qScore.getQStaff(self._np).checkAlternate():
+            self._qScore.reBuild()
 
     def _undo(self):
         measure = self._score.getItemAtPosition(self._np)
         measure.repeatCount = self._oldCount
+        if self._qScore.getQStaff(self._np).checkAlternate():
+            self._qScore.reBuild()
 
-class EditMeasurePropertiesCommand(_COMMAND_CLASS):
+class EditMeasurePropertiesCommand(ScoreCommand):
     def __init__(self, qScore, note, newCounter):
         name = "edit measure properties"
         super(EditMeasurePropertiesCommand, self).__init__(qScore,
@@ -317,19 +384,23 @@ class EditMeasurePropertiesCommand(_COMMAND_CLASS):
         self._score.pasteMeasureByIndex(self._measureIndex, self._oldMeasure,
                                         True)
 
-class SetMeasureLineCommand(_COMMAND_CLASS):
+class SetMeasureLineCommand(ScoreCommand):
     def __init__(self, qScore, descr, note, onOff, method):
         super(SetMeasureLineCommand, self).__init__(qScore, note,
                                                     descr)
         self._onOff = onOff
         self._method = method
+        self._np = self._np.makeMeasurePosition()
+
+    def _getMeasure(self):
+        return self._score.getItemAtPosition(self._np)
 
     def _redo(self):
-        self._method(self._score, self._np, self._onOff)
+        self._method(self._getMeasure(), self._onOff)
         self._qScore.reBuild()
 
     def _undo(self):
-        self._method(self._score, self._np, not self._onOff)
+        self._method(self._getMeasure(), not self._onOff)
         self._qScore.reBuild()
 
 class SetSectionEndCommand(SetMeasureLineCommand):
@@ -337,19 +408,21 @@ class SetSectionEndCommand(SetMeasureLineCommand):
         super(SetSectionEndCommand, self).__init__(qScore,
                                                    "set section end",
                                                    note, onOff,
-                                                   Score.setSectionEnd)
+                                                   None)
         if not onOff:
             self._index = self._score.getSectionIndex(note)
             self._title = self._score.getSectionTitle(self._index)
 
     def _undo(self):
-        super(SetSectionEndCommand, self)._undo() #IGNORE:W0212
+        self._score.setSectionEnd(self._np, not self._onOff)
+        self._qScore.reBuild()
         if not self._onOff:
             self._score.setSectionTitle(self._index, self._title)
         self._qScore.sectionsChanged.emit()
 
     def _redo(self):
-        super(SetSectionEndCommand, self)._redo() #IGNORE:W0212
+        self._score.setSectionEnd(self._np, self._onOff)
+        self._qScore.reBuild()
         self._qScore.sectionsChanged.emit()
 
 
@@ -359,39 +432,48 @@ class SetLineBreakCommand(SetMeasureLineCommand):
         super(SetLineBreakCommand, self).__init__(qScore,
                                                   "set line break",
                                                   note, onOff,
-                                                  Score.setLineBreak)
+                                                  Measure.setLineBreak)
 
 class SetRepeatStartCommand(SetMeasureLineCommand):
+    canReformat = False
     def __init__(self, qScore, note, onOff):
         super(SetRepeatStartCommand, self).__init__(qScore,
                                                     "set repeat start",
                                                     note, onOff,
-                                                    Score.setRepeatStart)
+                                                    Measure.setRepeatStart)
 
 class SetRepeatEndCommand(SetMeasureLineCommand):
+    canReformat = False
     def __init__(self, qScore, note, onOff):
         super(SetRepeatEndCommand, self).__init__(qScore,
                                                   "set repeat end",
                                                   note, onOff,
-                                                  Score.setRepeatEnd)
+                                                  Measure.setRepeatEnd)
+        self._repeatCount = self._getMeasure().repeatCount
 
-class ClearMeasureCommand(_COMMAND_CLASS):
+    def _undo(self):
+        super(SetRepeatEndCommand, self)._undo()
+        if not self._onOff:
+            self._getMeasure().repeatCount = self._repeatCount
+
+class ClearMeasureCommand(ScoreCommand):
+    canReformat = False
     def __init__(self, qScore, positions):
         super(ClearMeasureCommand, self).__init__(qScore, NotePosition(),
                                                   "clear measures")
-        self._positions = positions
+        self._positions = [np.makeMeasurePosition() for np in positions]
         self._oldMeasures = [self._score.copyMeasure(note)
                              for note in positions]
 
     def _redo(self):
         for np in self._positions:
-            self._score.clearMeasure(np)
+            self._score.getItemAtPosition(np).clear()
 
     def _undo(self):
         for np, data in zip(self._positions, self._oldMeasures):
             self._score.pasteMeasure(np, data)
 
-class DeleteMeasureCommand(_COMMAND_CLASS):
+class DeleteMeasureCommand(ScoreCommand):
     def __init__(self, qScore, note, measureIndex = None):
         if measureIndex is None:
             measureIndex = qScore.score.getMeasureIndex(note)
@@ -415,22 +497,25 @@ class DeleteMeasureCommand(_COMMAND_CLASS):
 
     def _undo(self):
         self._score.turnOffCallBacks()
-        self._score.insertMeasureByIndex(len(self._oldMeasure), self._index)
-        self._score.gridFormatScore()
-        if self._sectionIndex is not None:
-            self._score.setSectionEnd(self._np, True)
-            self._score.setSectionTitle(self._sectionIndex,
-                                        self._sectionTitle)
-            self._score.gridFormatScore()
-            self._qScore.sectionsChanged.emit()
-        self._score.pasteMeasureByIndex(self._index, self._oldMeasure, True)
-        self._score.turnOnCallBacks()
+        try:
+            self._score.insertMeasureByIndex(len(self._oldMeasure), self._index)
+            self._score.formatScore()
+            if self._sectionIndex is not None:
+                self._score.setSectionEnd(self._np, True)
+                self._score.setSectionTitle(self._sectionIndex,
+                                            self._sectionTitle)
+                self._score.formatScore()
+                self._qScore.sectionsChanged.emit()
+            self._score.pasteMeasureByIndex(self._index, self._oldMeasure, True)
+        finally:
+            self._score.turnOnCallBacks()
 
-class SetSectionTitleCommand(_COMMAND_CLASS):
+class SetSectionTitleCommand(ScoreCommand):
+    canReformat = False
     def __init__(self, qScore, sectionIndex, title):
         super(SetSectionTitleCommand, self).__init__(qScore,
                                                      None,
-                                                     "set section tSitle")
+                                                     "set section title")
         self._index = sectionIndex
         self._oldTitle = self._score.getSectionTitle(sectionIndex)
         self._title = title
@@ -449,7 +534,8 @@ class SetSectionTitleCommand(_COMMAND_CLASS):
                                      self._oldTitle)
         self._qScore.sectionsChanged.emit()
 
-class SetAlternateCommand(_COMMAND_CLASS):
+class SetAlternateCommand(ScoreCommand):
+    canReformat = False
     def __init__(self, qScore, note, alternate):
         super(SetAlternateCommand, self).__init__(qScore,
                                                   note,
@@ -464,13 +550,17 @@ class SetAlternateCommand(_COMMAND_CLASS):
         measure = self._score.getItemAtPosition(self._np)
         measure.alternateText = self._alternate
         self._qScore.dataChanged(self._np)
+        if self._qScore.getQStaff(self._np).checkAlternate():
+            self._qScore.reBuild()
 
     def _undo(self):
         measure = self._score.getItemAtPosition(self._np)
         measure.alternateText = self._oldAlternate
         self._qScore.dataChanged(self._np)
+        if self._qScore.getQStaff(self._np).checkAlternate():
+            self._qScore.reBuild()
 
-class SetPaperSizeCommand(_COMMAND_CLASS):
+class SetPaperSizeCommand(ScoreCommand):
     def __init__(self, qScore, newPaperSize):
         super(SetPaperSizeCommand, self).__init__(qScore,
                                                   NotePosition(),
@@ -486,7 +576,8 @@ class SetPaperSizeCommand(_COMMAND_CLASS):
         self._score.paperSize = self._old
         self._qScore.paperSizeChanged.emit(self._old)
 
-class SetDefaultCountCommand(_COMMAND_CLASS):
+class SetDefaultCountCommand(ScoreCommand):
+    canReformat = False
     def __init__(self, qScore, newCount):
         super(SetDefaultCountCommand, self).__init__(qScore,
                                                      NotePosition(),
@@ -502,7 +593,8 @@ class SetDefaultCountCommand(_COMMAND_CLASS):
         self._score.defaultCount = self._old
         self._qScore.defaultCountChanged.emit(self._old)
 
-class SetSystemSpacingCommand(_COMMAND_CLASS):
+class SetSystemSpacingCommand(ScoreCommand):
+    canReformat = False
     def __init__(self, qScore, newSpacing):
         super(SetSystemSpacingCommand, self).__init__(qScore,
                                                       NotePosition(),
@@ -520,7 +612,7 @@ class SetSystemSpacingCommand(_COMMAND_CLASS):
         self._qScore.displayProperties.lineSpacing = self._old - 101
         self._qScore.spacingChanged.emit(self._old)
 
-class SetFontSizeCommand(_COMMAND_CLASS):
+class SetFontSizeCommand(ScoreCommand):
     def __init__(self, qScore, newSize, fontType):
         super(SetFontSizeCommand, self).__init__(qScore,
                                                  NotePosition(),
@@ -537,7 +629,7 @@ class SetFontSizeCommand(_COMMAND_CLASS):
     def _undo(self):
         setattr(self._qScore.displayProperties, self._fontName, self._oldSize)
 
-class SetFontCommand(_COMMAND_CLASS):
+class SetFontCommand(ScoreCommand):
     def __init__(self, qScore, font, fontType):
         super(SetFontCommand, self).__init__(qScore,
                                              NotePosition(),
@@ -553,7 +645,8 @@ class SetFontCommand(_COMMAND_CLASS):
     def _undo(self):
         setattr(self._qScore.displayProperties, self._fontName, self._oldFont)
 
-class SetVisibilityCommand(_COMMAND_CLASS):
+class SetVisibilityCommand(ScoreCommand):
+    canReformat = False
     def __init__(self, qScore, onOff, elementName, text):
         super(SetVisibilityCommand, self).__init__(qScore,
                                                    NotePosition(),

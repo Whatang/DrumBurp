@@ -36,3 +36,37 @@ class NoSuchDrumError(StandardError):
 
 class OverSizeMeasure(StandardError):
     "The Score contains a Measure which is too large to format for this width."
+
+class DbReadError(StandardError):
+    "There was an error reading the score."
+    
+    def __init__(self, scoreIterator):
+        self.lineNumber = scoreIterator.lineNumber
+        self.line = scoreIterator.currentLine
+
+    def __str__(self):
+        return "\n".join(self.__doc__, "", "Line %d" % self.lineNumber, self.line)
+
+class UnrecognisedLine(DbReadError):
+    "Unrecognised line type."
+
+class InvalidInteger(DbReadError):
+    "The value must be an integer."
+
+class InvalidNonNegativeInteger(DbReadError):
+    "The value must be a non-negative integer."
+
+class InvalidPositiveInteger(DbReadError):
+    "The value must be a positive integer."
+
+class TooManyBarLines(DbReadError):
+    "There are too many bar lines specifed for this measure."
+
+class BadCount(DbReadError):
+    "The given count is not recognised."
+
+class DBVersionError(DbReadError):
+    "This file is a newer format which cannot be read by this version of DrumBurp. Check www.whatang.org for a newer DrumBurp release."
+
+    def __str__(self):
+        return self.__doc__

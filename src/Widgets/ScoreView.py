@@ -105,6 +105,11 @@ class ScoreView(QtGui.QGraphicsView):
         self.scene().setElementVisibility(onOff, "kitData",
                                           "drum key")
 
+    @QtCore.pyqtSlot(bool)
+    def setMeasureCountsVisible(self, onOff):
+        self.scene().setElementVisibility(onOff, "measureCounts",
+                                          "measure counts")
+
     def startUp(self):
         self.scene().startUp()
 

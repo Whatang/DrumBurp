@@ -22,7 +22,6 @@ Created on 23 Jan 2011
 @author: Mike Thomas
 
 '''
-import time
 
 class ScoreMetaData(object):
     '''
@@ -46,6 +45,7 @@ class ScoreMetaData(object):
         self.metadataVisible = True
         self.beatCountVisible = True
         self.emptyLinesVisible = True
+        self.measureCountsVisible = False
 
     def makeEmpty(self):
         self.title = "Untitled"
@@ -53,66 +53,38 @@ class ScoreMetaData(object):
         self.creator = "Nobody"
 
     def load(self, scoreIterator):
-        for lineType, lineData in scoreIterator:
-            if lineData is None:
-                lineData = ""
-            if lineType == "TITLE":
-                self.title = lineData
-            elif lineType == "ARTIST":
-                self.artist = lineData
-            elif lineType == "ARTISTVISIBLE":
-                self.artistVisible = (lineData == "True")
-            elif lineType == "CREATOR":
-                self.creator = lineData
-            elif lineType == "CREATORVISIBLE":
-                self.creatorVisible = (lineData == "True")
-            elif lineType == "BPM":
-                self.bpm = int(lineData)
-            elif lineType == "BPMVISIBLE":
-                self.bpmVisible = (lineData == "True")
-            elif lineType == "WIDTH":
-                self.width = int(lineData)
-            elif lineType == "KITDATAVISIBLE":
-                self.kitDataVisible = (lineData == "True")
-            elif lineType == "METADATAVISIBLE":
-                self.metadataVisible = (lineData == "True")
-            elif lineType == "BEATCOUNTVISIBLE":
-                self.beatCountVisible = (lineData == "True")
-            elif lineType == "EMPTYLINESVISIBLE":
-                self.emptyLinesVisible = (lineData == "True")
-            elif lineType == "END_SCORE_METADATA":
-                break
+        with scoreIterator.section("SCORE_METADATA",
+                                   "END_SCORE_METADATA") as section:
+            section.readString("TITLE", self, "title")
+            section.readString("ARTIST", self, "artist")
+            section.readBoolean("ARTISTVISIBLE", self, "artistVisible")
+            section.readString("CREATOR", self, "creator")
+            section.readBoolean("CREATORVISIBLE", self, "creatorVisible")
+            section.readPositiveInteger("BPM", self, "bpm")
+            section.readBoolean("BPMVISIBLE", self, "bpmVisible")
+            section.readPositiveInteger("WIDTH", self, "width")
+            section.readBoolean("KITDATAVISIBLE", self, "kitDataVisible")
+            section.readBoolean("METADATAVISIBLE", self, "metadataVisible")
+            section.readBoolean("BEATCOUNTVISIBLE", self, "beatCountVisible")
+            section.readBoolean("EMPTYLINESVISIBLE", self, "emptyLinesVisible")
+            section.readBoolean("MEASURECOUNTSVISIBLE", self,
+                                "measureCountsVisible")
 
-    def save(self, handle, indenter):
-        print >> handle, indenter("SCORE_METADATA")
-        indenter.increase()
-        print >> handle, indenter("TITLE", self.title)
-        print >> handle, indenter("ARTIST", self.artist)
-        print >> handle, indenter("ARTISTVISIBLE", str(self.artistVisible))
-        print >> handle, indenter("CREATOR", self.creator)
-        print >> handle, indenter("CREATORVISIBLE", str(self.creatorVisible))
-        print >> handle, indenter("BPM", self.bpm)
-        print >> handle, indenter("BPMVISIBLE", str(self.bpmVisible))
-        print >> handle, indenter("WIDTH", self.width)
-        print >> handle, indenter("KITDATAVISIBLE", str(self.kitDataVisible))
-        print >> handle, indenter("METADATAVISIBLE", str(self.metadataVisible))
-        print >> handle, indenter("BEATCOUNTVISIBLE",
-                                  str(self.beatCountVisible))
-        print >> handle, indenter("EMPTYLINESVISIBLE",
-                                  str(self.emptyLinesVisible))
-        indenter.decrease()
-        print >> handle, indenter("END_SCORE_METADATA")
-
-
-    def exportASCII(self):
-        metadataString = []
-        metadataString.append("Title     : " + self.title)
-        if self.artistVisible:
-            metadataString.append("Artist    : " + self.artist)
-        if self.bpmVisible:
-            metadataString.append("BPM       : " + str(self.bpm))
-        if self.creatorVisible:
-            metadataString.append("Tabbed by : " + self.creator)
-        metadataString.append("Date      : " + time.strftime("%d %B %Y"))
-        metadataString.append("")
-        return metadataString
+    def save(self, indenter):
+        with indenter.section("SCORE_METADATA", "END_SCORE_METADATA"):
+            indenter("TITLE", self.title)
+            indenter("ARTIST", self.artist)
+            indenter("ARTISTVISIBLE", str(self.artistVisible))
+            indenter("CREATOR", self.creator)
+            indenter("CREATORVISIBLE", str(self.creatorVisible))
+            indenter("BPM", self.bpm)
+            indenter("BPMVISIBLE", str(self.bpmVisible))
+            indenter("WIDTH", self.width)
+            indenter("KITDATAVISIBLE", str(self.kitDataVisible))
+            indenter("METADATAVISIBLE", str(self.metadataVisible))
+            indenter("BEATCOUNTVISIBLE",
+                                      str(self.beatCountVisible))
+            indenter("EMPTYLINESVISIBLE",
+                                      str(self.emptyLinesVisible))
+            indenter("MEASURECOUNTSVISIBLE",
+                                      str(self.measureCountsVisible))

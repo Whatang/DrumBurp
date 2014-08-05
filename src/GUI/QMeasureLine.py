@@ -113,13 +113,13 @@ class QMeasureLine(QtGui.QGraphicsItem):
         else:
             event.ignore()
 
-    def hoverEnterEvent(self, *args, **kwargs):
+    def hoverEnterEvent(self, event):
         self._qScore.setStatusMessage("Right-click for barline options.")
-        return super(QMeasureLine, self).hoverEnterEvent(*args, **kwargs)
+        event.accept()
 
-    def hoverLeaveEvent(self, *args, **kwargs):
+    def hoverLeaveEvent(self, event):
         self._qScore.setStatusMessage()
-        return super(QMeasureLine, self).hoverLeaveEvent(*args, **kwargs)
+        event.accept()
 
 #pylint:disable-msg=R0913
 class BarLinePainter(object):

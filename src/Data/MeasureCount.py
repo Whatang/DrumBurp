@@ -26,7 +26,7 @@ Created on 18 Jan 2011
 from Beat import Beat
 from Counter import CounterRegistry
 
-MIDITICKSPERBEAT = 96
+MIDITICKSPERBEAT = 192
 
 class MeasureCount(object):
     def __init__(self):
@@ -43,12 +43,6 @@ class MeasureCount(object):
             total = startTotal + (beat.numTicks * msPerBeat) / beatTicks
         yield total
 
-    def floatBeats(self):
-        lastBeat = self.beats[-1]
-        beatTicks = lastBeat.ticksPerBeat
-        return ((len(self.beats) - 1) +
-                float(lastBeat.numTicks) / beatTicks)
-
     def timeSig(self):
         lastBeat = self.beats[-1]
         beatTicks = lastBeat.ticksPerBeat
@@ -57,10 +51,10 @@ class MeasureCount(object):
         else:
             for i in (12, 8, 6, 4, 3, 2, 1):
                 if (beatTicks % i) == 0 and (lastBeat.numTicks % i) == 0:
-                    denomPerBeat = (lastBeat.numTicks / i)
+                    denomPerBeat = beatTicks / i
                     denom = 4 * denomPerBeat
                     num = (len(self.beats) - 1) * denomPerBeat
-                    num += beatTicks / i
+                    num += lastBeat.numTicks / i
                     return num, denom
 
     def iterBeatTicks(self):
@@ -68,7 +62,7 @@ class MeasureCount(object):
             for tick in beat.iterTicks():
                 yield(beatNum, beat, tick)
 
-    def iterBeatTimes(self):
+    def iterBeatTickPositions(self):
         tick = 0
         for beat in self.beats:
             yield tick
@@ -82,7 +76,7 @@ class MeasureCount(object):
                 yield total
                 total += midiTicks
         yield total
-
+        
     def count(self):
         for beatNum, beat in enumerate(self.beats):
             for count in beat.count(beatNum + 1):
@@ -116,40 +110,42 @@ class MeasureCount(object):
     def numBeats(self):
         return len(self.beats)
 
-    def write(self, handle, indenter, title = "COUNT_INFO_START"):
-        print >> handle, indenter(title)
-        indenter.increase()
-        if self.isSimpleCount():
-            # All beats are the same
-            print >> handle, indenter("REPEAT_BEATS %d" % len(self.beats))
-            self.beats[0].write(handle, indenter)
-        else:
-            for beat in self.beats:
-                beat.write(handle, indenter)
-        indenter.decrease()
-        print >> handle, indenter("COUNT_INFO_END")
+    def write(self, indenter, default = False):
+        title = "COUNT_INFO_START"
+        if default:
+            title = "DEFAULT_" + title
+        with indenter.section(title, "COUNT_INFO_END"):
+            if self.isSimpleCount():
+                # All beats are the same
+                indenter("REPEAT_BEATS %d" % len(self.beats))
+                self.beats[0].write(indenter)
+            else:
+                for beat in self.beats:
+                    beat.write(indenter)
 
-    def read(self, scoreIterator):
-        repeat = False
-        for lineType, lineData in scoreIterator:
-            if lineType == "COUNT_INFO_END":
-                break
-            elif lineType == "REPEAT_BEATS":
-                repeat = int(lineData)
-            elif lineType == "BEAT_START":
+    def read(self, scoreIterator, default = False):
+        title = "COUNT_INFO_START"
+        if default:
+            title = "DEFAULT_" + title
+        self.beats = []
+        class RepeatTracker(object):
+            repeat = False
+            @classmethod
+            def readBeat(cls, unused):
                 beat = Beat.read(scoreIterator)
-                if repeat:
-                    self.beats.extend([beat] * repeat)
+                if cls.repeat:
+                    self.beats.extend([beat] * cls.repeat)
                 else:
                     self.beats.append(beat)
-            else:
-                raise IOError("Unrecognised line type")
+        tracker = RepeatTracker
+        with scoreIterator.section(title, "COUNT_INFO_END") as section:
+            section.readPositiveInteger("REPEAT_BEATS", tracker, "repeat")
+            section.readCallback("BEAT_START", tracker.readBeat)
 
-def counterMaker(beatLength, numTicks = None):
+def counterMaker(beatLength, numTicks):
     # Create a MeasureCount from an 'old style' specification, where
-    # all we are given is the number of ticks in a beat.
-    if numTicks is None:
-        numTicks = beatLength
+    # all we are given is the number of ticks in a beat and the total number
+    # of ticks in the bar
     defaultRegistry = CounterRegistry()
     counts = [count[1] for count in
               defaultRegistry.countsByTicks(beatLength)]

@@ -28,7 +28,7 @@ from Data.DBConstants import EMPTY_NOTE
 from Data.DBErrors import BadTimeError
 from Data.NotePosition import NotePosition
 
-#pylint: disable-msg=R0904
+# pylint: disable-msg=R0904
 
 class TestStaff(unittest.TestCase):
     def setUp(self):
@@ -124,19 +124,6 @@ class TestStaff(unittest.TestCase):
         self.assertEqual(len(self.staff), 0)
         self.assertEqual(self.staff.numMeasures(), 0)
 
-    def testCharacterWidth_EmptyStaff(self):
-        self.assertEqual(self.staff.characterWidth(), 0)
-
-    def testCharacterWidth(self):
-        self.staff.addMeasure(Measure(16))
-        self.staff.addMeasure(Measure(16))
-        self.staff.addMeasure(Measure(16))
-        self.assertEqual(self.staff.characterWidth(), 54)
-        endMeasure = Measure(16)
-        endMeasure.setSectionEnd(True)
-        self.staff.addMeasure(endMeasure)
-        self.assertEqual(self.staff.characterWidth(), 71)
-
     def testGridWidth_EmptyStaff(self):
         self.assertEqual(self.staff.gridWidth(), 0)
 
@@ -144,11 +131,11 @@ class TestStaff(unittest.TestCase):
         self.staff.addMeasure(Measure(16))
         self.staff.addMeasure(Measure(16))
         self.staff.addMeasure(Measure(16))
-        self.assertEqual(self.staff.gridWidth(), 54)
+        self.assertEqual(self.staff.gridWidth(), 52)
         endMeasure = Measure(16)
         endMeasure.setSectionEnd(True)
         self.staff.addMeasure(endMeasure)
-        self.assertEqual(self.staff.gridWidth(), 71)
+        self.assertEqual(self.staff.gridWidth(), 69)
 
 
 class TestNoteControl(unittest.TestCase):
@@ -159,32 +146,36 @@ class TestNoteControl(unittest.TestCase):
         self.staff.addMeasure(Measure(16))
         self.staff.addMeasure(Measure(16))
 
-    def testGetNote(self):
-        self.assertEqual(self.staff.getNote(NotePosition(measureIndex = 0,
-                                                         noteTime = 0,
-                                                         drumIndex = 0)),
+    def testgetItemAtPosition(self):
+        np = NotePosition(measureIndex = 0, noteTime = 0, drumIndex = 0)
+        self.assertEqual(self.staff.getItemAtPosition(np),
                          EMPTY_NOTE)
 
-    def testGetNote_BadTime(self):
-        self.assertRaises(BadTimeError, self.staff.getNote,
+    def testGetItemAtPosition(self):
+        np = NotePosition(measureIndex = 0,
+                          noteTime = 0,
+                          drumIndex = 0)
+        self.assertEqual(self.staff.getItemAtPosition(np),
+                         EMPTY_NOTE)
+
+    def testgetItemAtPosition_BadTime(self):
+        self.assertRaises(BadTimeError, self.staff.getItemAtPosition,
                           NotePosition(measureIndex = -1,
                                        noteTime = 0, drumIndex = 0))
-        self.assertRaises(BadTimeError, self.staff.getNote,
+        self.assertRaises(BadTimeError, self.staff.getItemAtPosition,
                           NotePosition(measureIndex = 20,
                                        noteTime = 0, drumIndex = 0))
-        self.assertRaises(BadTimeError, self.staff.getNote,
+        self.assertRaises(BadTimeError, self.staff.getItemAtPosition,
                           NotePosition(measureIndex = 0,
                                        noteTime = -1, drumIndex = 0))
-        self.assertRaises(BadTimeError, self.staff.getNote,
+        self.assertRaises(BadTimeError, self.staff.getItemAtPosition,
                           NotePosition(measureIndex = 0,
                                        noteTime = 20, drumIndex = 0))
 
     def testAddNote(self):
-        self.staff.addNote(NotePosition(measureIndex = 0,
-                                        noteTime = 0, drumIndex = 0), "o")
-        self.assertEqual(self.staff.getNote(NotePosition(measureIndex = 0,
-                                                         noteTime = 0,
-                                                         drumIndex = 0)), "o")
+        np = NotePosition(measureIndex = 0, noteTime = 0, drumIndex = 0)
+        self.staff.addNote(np, "o")
+        self.assertEqual(self.staff.getItemAtPosition(np), "o")
 
     def testAddNote_BadTime(self):
         self.assertRaises(BadTimeError, self.staff.addNote,
@@ -204,7 +195,7 @@ class TestNoteControl(unittest.TestCase):
         np = NotePosition(measureIndex = 0, noteTime = 0, drumIndex = 0)
         self.staff.addNote(np, "o")
         self.staff.deleteNote(np)
-        self.assertEqual(self.staff.getNote(np), EMPTY_NOTE)
+        self.assertEqual(self.staff.getItemAtPosition(np), EMPTY_NOTE)
 
     def testDeleteNote_BadTime(self):
         self.assertRaises(BadTimeError, self.staff.deleteNote,
@@ -223,9 +214,9 @@ class TestNoteControl(unittest.TestCase):
     def testToggleNote(self):
         np = NotePosition(measureIndex = 0, noteTime = 0, drumIndex = 0)
         self.staff.toggleNote(np, "o")
-        self.assertEqual(self.staff.getNote(np), "o")
+        self.assertEqual(self.staff.getItemAtPosition(np), "o")
         self.staff.toggleNote(np, "o")
-        self.assertEqual(self.staff.getNote(np), EMPTY_NOTE)
+        self.assertEqual(self.staff.getItemAtPosition(np), EMPTY_NOTE)
 
     def testToggleNote_BadTime(self):
         self.assertRaises(BadTimeError, self.staff.toggleNote,
@@ -240,6 +231,88 @@ class TestNoteControl(unittest.TestCase):
         self.assertRaises(BadTimeError, self.staff.toggleNote,
                           NotePosition(measureIndex = 0,
                                        noteTime = 20, drumIndex = 0), "x")
+
+class TestMeasureControl(unittest.TestCase):
+    def setUp(self):
+        self.staff = Staff()
+        self.staff.addMeasure(Measure(1))
+        self.staff.addMeasure(Measure(2))
+        self.staff.addMeasure(Measure(3))
+        self.staff.addMeasure(Measure(4))
+        self.np = NotePosition(measureIndex = 2)
+
+    def testGetItemAtPosition(self):
+        measure = self.staff.getItemAtPosition(self.np)
+        self.assertEqual(len(measure), 3)
+
+    def testSetSectionEnd(self):
+        measure = self.staff.getItemAtPosition(self.np)
+        self.assertFalse(measure.isSectionEnd())
+        self.staff.setSectionEnd(self.np, True)
+        self.assertTrue(measure.isSectionEnd())
+        self.staff.setSectionEnd(self.np, False)
+        self.assertFalse(measure.isSectionEnd())
+
+    def testIsSectionEnd(self):
+        self.assertFalse(self.staff.isSectionEnd())
+        self.staff.setSectionEnd(self.np, True)
+        self.assertFalse(self.staff.isSectionEnd())
+        self.staff.setSectionEnd(self.np, False)
+        self.assertFalse(self.staff.isSectionEnd())
+        endPos = NotePosition(measureIndex = 3)
+        self.staff.setSectionEnd(endPos, True)
+        self.assertTrue(self.staff.isSectionEnd())
+        self.staff.setSectionEnd(endPos, False)
+        self.assertFalse(self.staff.isSectionEnd())
+
+    def testIsConsistent(self):
+        self.assertTrue(self.staff.isConsistent())
+        self.staff.setSectionEnd(self.np, True)
+        self.assertFalse(self.staff.isConsistent())
+        self.staff.setSectionEnd(self.np, False)
+        self.assertTrue(self.staff.isConsistent())
+        endPos = NotePosition(measureIndex = 3)
+        self.staff.setSectionEnd(endPos, True)
+        self.assertTrue(self.staff.isConsistent())
+        self.staff.setSectionEnd(endPos, False)
+        self.assertTrue(self.staff.isConsistent())
+
+    def testCopyPasteWithoutDecoration(self):
+        measure = self.staff.getItemAtPosition(self.np)
+        measure.setRepeatStart(True)
+        copied = self.staff.copyMeasure(self.np)
+        newPos = NotePosition(measureIndex = 0)
+        self.assertFalse(self.staff[0].isRepeatStart())
+        self.assertEqual(len(self.staff[0]), 1)
+        self.staff.pasteMeasure(newPos, copied, False)
+        self.assertFalse(self.staff[0].isRepeatStart())
+        self.assertEqual(len(self.staff[0]), 3)
+
+    def testCopyPasteWithDecoration(self):
+        measure = self.staff.getItemAtPosition(self.np)
+        measure.setRepeatStart(True)
+        copied = self.staff.copyMeasure(self.np)
+        newPos = NotePosition(measureIndex = 0)
+        self.assertFalse(self.staff[0].isRepeatStart())
+        self.assertEqual(len(self.staff[0]), 1)
+        self.staff.pasteMeasure(newPos, copied, True)
+        self.assertTrue(self.staff[0].isRepeatStart())
+        self.assertEqual(len(self.staff[0]), 3)
+
+    def testLineIsVisible(self):
+        self.staff.addNote(NotePosition(measureIndex = 0, noteTime = 0,
+                                        drumIndex = 0), "x")
+        self.staff.addNote(NotePosition(measureIndex = 1, noteTime = 0,
+                                        drumIndex = 2), "x")
+        self.staff.addNote(NotePosition(measureIndex = 2, noteTime = 0,
+                                        drumIndex = 4), "x")
+        self.assertTrue(self.staff.lineIsVisible(0))
+        self.assertFalse(self.staff.lineIsVisible(1))
+        self.assertTrue(self.staff.lineIsVisible(2))
+        self.assertFalse(self.staff.lineIsVisible(3))
+        self.assertTrue(self.staff.lineIsVisible(4))
+        self.assertFalse(self.staff.lineIsVisible(5))
+
 
 class TestCallBack(unittest.TestCase):
     def setUp(self):

@@ -34,6 +34,14 @@ from DBFSMEvents import (LeftPress, MidPress, RightPress,
                          ChangeRepeatCount,
                          SetAlternateEvent)
 
+def _painter_saver(method):
+    def wrapper(self, painter, *args, **kwargs):
+        painter.save()
+        try:
+            method(self, painter, *args, **kwargs)
+        finally:
+            painter.restore()
+    return wrapper
 
 class QMeasure(QtGui.QGraphicsItem):
     '''
@@ -52,6 +60,8 @@ class QMeasure(QtGui.QGraphicsItem):
         self._index = index
         self._width = 0
         self._height = 0
+        self._base = 0
+        self._measureCount = qScore.score.getMeasureIndex(self.measurePosition())
         self._highlight = None
         self._rect = QtCore.QRectF(0, 0, 0, 0)
         self._repeatCountRect = None
@@ -63,7 +73,7 @@ class QMeasure(QtGui.QGraphicsItem):
         self._potentialHead = None
         self._potentialSet = None
         self.setAcceptsHoverEvents(True)
-        self.setMeasure(measure)
+        self._setMeasure(measure)
 
     def numLines(self):
         return self.parentItem().numLines()
@@ -74,9 +84,14 @@ class QMeasure(QtGui.QGraphicsItem):
     def _setDimensions(self):
         self.prepareGeometryChange()
         self._width = self._qScore.xSpacing * len(self._measure)
-        self._height = (self.numLines() + 1) * self._qScore.ySpacing
+        self._height = self.numLines() * self._qScore.ySpacing
+        self._height += self.parentItem().alternateHeight()
         if self._props.beatCountVisible:
             self._height += self._qScore.ySpacing
+        self._base = 0
+        if self._props.measureCountsVisible:
+            self._base = self._props.measureCountHeight()
+        self._height += self._base
         self._rect.setBottomRight(QtCore.QPointF(self._width, self._height))
 
     def boundingRect(self):
@@ -88,16 +103,17 @@ class QMeasure(QtGui.QGraphicsItem):
     def height(self):
         return self._height
 
-    def setMeasure(self, measure):
+    def _setMeasure(self, measure):
         if self._measure != measure:
             self._measure = measure
             self._setDimensions()
             self.update()
 
+    @_painter_saver
     def _paintNotes(self, painter, xValues):
         font = painter.font()
         fontMetric = QtGui.QFontMetrics(font)
-        baseline = self.numLines() * self._qScore.ySpacing
+        baseline = (self.numLines() - 1) * self._qScore.ySpacing + self._base + self.parentItem().alternateHeight()
         dot = self._qScore.scale
         potential = False
         for drumIndex in range(0, self.numLines()):
@@ -125,11 +141,13 @@ class QMeasure(QtGui.QGraphicsItem):
                     painter.setPen(QtGui.QColor(QtCore.Qt.black))
                     potential = False
             baseline -= self._qScore.ySpacing
+#         painter.drawRect(self._rect) # Draw bounding box
 
+    @_painter_saver
     def _paintHighlight(self, painter, xValues):
         noteTime, drumIndex = self._highlight
-        baseline = (self.numLines() - drumIndex) * self._qScore.ySpacing
-        countLine = (self.numLines() + 1) * self._qScore.ySpacing
+        baseline = (self.numLines() - drumIndex - 1) * self._qScore.ySpacing + self._base + self.parentItem().alternateHeight()
+        countLine = (self.numLines() * self._qScore.ySpacing) + self._base + self.parentItem().alternateHeight()
         x = xValues[noteTime]
         painter.setPen(QtCore.Qt.NoPen)
         painter.setBrush(QtGui.QColor(QtCore.Qt.yellow).lighter())
@@ -140,10 +158,11 @@ class QMeasure(QtGui.QGraphicsItem):
                          self._qScore.ySpacing - 1)
         painter.setPen(self._qScore.palette().text().color())
 
+    @_painter_saver
     def _paintBeatCount(self, painter, xValues):
         font = painter.font()
         fontMetric = QtGui.QFontMetrics(font)
-        baseline = (self.numLines() + 1) * self._qScore.ySpacing
+        baseline = (self.numLines() * self._qScore.ySpacing) + self._base + self.parentItem().alternateHeight()
         for noteTime, count in enumerate(self._measure.count()):
             x = xValues[noteTime]
             br = fontMetric.tightBoundingRect(count)
@@ -151,45 +170,55 @@ class QMeasure(QtGui.QGraphicsItem):
             offset = br.y() - (self._qScore.ySpacing - br.height()) / 2
             painter.drawText(QtCore.QPointF(left, baseline - offset), count)
 
+    @_painter_saver
     def _paintRepeatCount(self, painter):
+        spacing = self._qScore.scale
         painter.setPen(self._qScore.palette().text().color())
         repeatText = '%dx' % self._measure.repeatCount
         textWidth = QtGui.QFontMetrics(painter.font()).width(repeatText)
-        textLocation = QtCore.QPointF(self.width() - textWidth,
-                                      self._qScore.ySpacing)
+        textLocation = QtCore.QPointF(self.width() - textWidth - 2 * spacing,
+                                      self.parentItem().alternateHeight() + self._base - spacing)
         painter.drawText(textLocation, repeatText)
         if self._repeatCountRect is None:
             self._repeatCountRect = QtCore.QRectF(0, 0, 0, 0)
         self._repeatCountRect.setSize(QtCore.QSizeF(textWidth,
-                                                    self._qScore.ySpacing))
-        self._repeatCountRect.setTopRight(QtCore.QPointF(self.width(), 0))
+                                                    self.parentItem().alternateHeight()))
+        self._repeatCountRect.setTopRight(QtCore.QPointF(self.width() - 2 * spacing, self._base - spacing))
 
+    @_painter_saver
     def _paintAlternate(self, painter):
+        altHeight = self.parentItem().alternateHeight()
         spacing = self._qScore.scale
         painter.setPen(self._qScore.palette().text().color())
-        painter.drawLine(0, 0, self.width() - spacing * 2, 0)
-        painter.drawLine(0, 0, 0, self._qScore.ySpacing - spacing * 2)
+        painter.drawLine(0, self._base, self.width() - spacing * 2, self._base)
+        painter.drawLine(0, self._base, 0, altHeight - spacing * 2 + self._base)
         font = painter.font()
-        isItalic = font.italic()
         font.setItalic(True)
         painter.setFont(font)
         if self._alternate is None:
             self._alternate = QtCore.QRectF(0, 0, 0, 0)
         text = self._measure.alternateText
         textWidth = QtGui.QFontMetrics(font).width(text)
-        self._alternate.setSize(QtCore.QSizeF(textWidth, self._qScore.ySpacing))
-        bottomLeft = QtCore.QPointF(spacing, self._qScore.ySpacing - spacing)
+        self._alternate.setSize(QtCore.QSizeF(textWidth, altHeight))
+        bottomLeft = QtCore.QPointF(2 * spacing, altHeight - spacing + self._base)
         self._alternate.setBottomLeft(bottomLeft)
-        painter.drawText(1, self._qScore.ySpacing - spacing, text)
-        font.setItalic(isItalic)
-        painter.setFont(font)
+        painter.drawText(2 * spacing, altHeight - spacing + self._base, text)
 
+    @_painter_saver
     def _paintPlayingHighlight(self, painter):
         painter.setBrush(QtCore.Qt.NoBrush)
         painter.setPen(QtCore.Qt.blue)
         painter.drawRect(-1, -1, self.width() + 1, self.height() + 1)
         painter.setPen(QtGui.QColor(QtCore.Qt.blue).lighter())
         painter.drawRect(0, 0, self.width() - 1, self.height() - 1)
+
+    @_painter_saver
+    def _paintMeasureCount(self, painter):
+        painter.setPen(QtCore.Qt.black)
+        font = painter.font()
+        font.setItalic(True)
+        painter.setFont(font)
+        painter.drawText(1, self._base - 2, "%d" % (1 + self._measureCount))
 
     def paint(self, painter, dummyOption, dummyWidget = None):
         painter.save()
@@ -210,6 +239,8 @@ class QMeasure(QtGui.QGraphicsItem):
         self._paintNotes(painter, xValues)
         if self._props.beatCountVisible:
             self._paintBeatCount(painter, xValues)
+        if self._props.measureCountsVisible:
+            self._paintMeasureCount(painter)
         if self._measure.isRepeatEnd() and self._measure.repeatCount > 2:
             self._paintRepeatCount(painter)
         else:
@@ -238,12 +269,11 @@ class QMeasure(QtGui.QGraphicsItem):
         self._setDimensions()
         self.update()
 
-    def _isOverNotes(self, point):
-        return (1 <= (point.y() / self._qScore.ySpacing)
-                < (1 + self.numLines()))
+    def _isOverNotes(self, lineIndex):
+        return (0 <= lineIndex < self.numLines())
 
-    def _isOverCount(self, point):
-        return (point.y() / self._qScore.ySpacing) > self.numLines() + 1
+    def _isOverCount(self, lineIndex):
+        return lineIndex == -1
 
     def _isOverRepeatCount(self, point):
         return (self._repeatCountRect is not None
@@ -253,11 +283,15 @@ class QMeasure(QtGui.QGraphicsItem):
         return (self._alternate is not None
                 and self._alternate.contains(point))
 
+    def _getMouseLine(self, point):
+        offset = point.y() - self._base - self.parentItem().alternateHeight()
+        if offset < 0:
+            return self.numLines()
+        else:
+            return self.numLines() - int(offset / self._qScore.ySpacing) - 1
 
     def _getMouseCoords(self, point):
-        x = self._getNoteTime(point)
-        y = self.numLines() - int(point.y() / self._qScore.ySpacing)
-        return x, y
+        return self._getNoteTime(point), self._getMouseLine(point)
 
     def _getNotePosition(self, point):
         x, y = self._getMouseCoords(point)
@@ -269,25 +303,27 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def _hovering(self, event):
         point = self.mapFromScene(event.scenePos())
-        if self._isOverNotes(point):
-            newPlace = self._getMouseCoords(point)
-            if newPlace != self._highlight:
-                self._highlight = newPlace
+        noteTime, lineIndex = self._getMouseCoords(point)
+        if self._isOverNotes(lineIndex):
+            if (noteTime, lineIndex) != self._highlight:
+                self._highlight = noteTime, lineIndex
                 self.update()
-                self.parentItem().setLineHighlight(newPlace[1])
-                self._qScore.setCurrentHeads(newPlace[1])
+                self.parentItem().setLineHighlight(lineIndex)
+                realIndex = self.parentItem().lineIndex(lineIndex)
+                self._qScore.setCurrentHeads(realIndex)
         elif self._highlight != None:
             self._highlight = None
             self.parentItem().clearHighlight()
             self.update()
-        if self._isOverCount(point):
+        if self._isOverCount(lineIndex):
             self._qScore.setStatusMessage("Double click to edit measure count.")
             self.setCursor(QtCore.Qt.PointingHandCursor)
         elif self._isOverRepeatCount(point):
             self._qScore.setStatusMessage("Double click to edit repeat count.")
             self.setCursor(QtCore.Qt.PointingHandCursor)
         elif self._isOverAlternate(point):
-            self._qScore.setStatusMessage("Double click to edit alternate ending.")
+            self._qScore.setStatusMessage("Double click to edit "
+                                          "alternate ending.")
             self.setCursor(QtCore.Qt.PointingHandCursor)
         else:
             self._qScore.setStatusMessage()
@@ -295,22 +331,25 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def hoverEnterEvent(self, event):
         self._hovering(event)
+        event.accept()
 
     def hoverMoveEvent(self, event):
         self._hovering(event)
+        event.accept()
 
-    def hoverLeaveEvent(self, event_):
+    def hoverLeaveEvent(self, event):
         self._highlight = None
         self.update()
         self.parentItem().clearHighlight()
         self._qScore.setCurrentHeads(None)
         self.setCursor(QtCore.Qt.ArrowCursor)
+        event.accept()
 
     def mousePressEvent(self, event):
         point = self.mapFromScene(event.scenePos())
         eventType = LeftPress
         np = None
-        if self._isOverNotes(point):
+        if self._isOverNotes(self._getMouseLine(point)):
             noteTime, drumIndex = self._getNotePosition(point)
             np = self.makeNotePosition(noteTime, drumIndex)
             if event.button() == QtCore.Qt.MidButton:
@@ -323,7 +362,7 @@ class QMeasure(QtGui.QGraphicsItem):
         item = self._qScore.itemAt(event.scenePos())
         if item is self:
             point = self.mapFromScene(event.scenePos())
-            if self._isOverNotes(point):
+            if self._isOverNotes(self._getMouseLine(point)):
                 np = self._getNotePosition(point)
                 np = self.makeNotePosition(*np)
                 self._qScore.sendFsmEvent(MouseMove(self, np))
@@ -333,14 +372,15 @@ class QMeasure(QtGui.QGraphicsItem):
     def mouseReleaseEvent(self, event):
         point = self.mapFromScene(event.scenePos())
         np = None
-        if self._isOverNotes(point):
+        if self._isOverNotes(self._getMouseLine(point)):
             noteTime, drumIndex = self._getNotePosition(point)
             np = self.makeNotePosition(noteTime, drumIndex)
         self._qScore.sendFsmEvent(MouseRelease(self, np))
 
     def mouseDoubleClickEvent(self, event):
         point = self.mapFromScene(event.scenePos())
-        if self._isOverCount(point):
+        lineIndex = self._getMouseLine(point)
+        if self._isOverCount(lineIndex):
             counter = self._measure.counter
             fsmEvent = EditMeasureProperties(counter,
                                              self._props.counterRegistry,

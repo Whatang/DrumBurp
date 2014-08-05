@@ -24,8 +24,7 @@ Created on 12 Dec 2010
 '''
 
 from Drum import Drum, HeadData
-from DefaultKits import (DEFAULT_KIT_INFO, STEM_DOWN, STEM_UP,
-                         NAMED_DEFAULTS)
+from DefaultKits import STEM_DOWN, STEM_UP, NAMED_DEFAULTS
 from DBErrors import DuplicateDrumError, NoSuchDrumError
 
 class DrumKit(object):
@@ -47,9 +46,6 @@ class DrumKit(object):
 
     def __iter__(self):
         return iter(self._drums)
-
-    def clear(self):
-        self._drums = []
 
     def addDrum(self, drum):
         if drum in self._drums:
@@ -73,32 +69,19 @@ class DrumKit(object):
         return list(self._drums[drumIndex])
 
     def shortcutsAndNoteHeads(self, drumIndex):
-        shortcuts = []
         drum = self._drums[drumIndex]
-        for head in drum:
-            shortcut = drum.headData(head).shortcut
-            shortcuts.append((unicode(shortcut), head))
-        return shortcuts
+        return drum.shortcutsAndNoteHeads()
 
-    def write(self, handle, indenter):
-        print >> handle, indenter("KIT_START")
-        indenter.increase()
-        for drum in self:
-            drum.write(handle, indenter)
-        indenter.decrease()
-        print >> handle, indenter("KIT_END")
+    def write(self, indenter):
+        with indenter.section("KIT_START", "KIT_END"):
+            for drum in self:
+                drum.write(indenter)
 
     def read(self, scoreIterator):
-        lastDrum = None
-        for lineType, lineData in scoreIterator:
-            if  lineType == "KIT_END":
-                if lastDrum is not None and len(lastDrum) == 0:
-                    lastDrum.guessHeadData()
-                self._checkShortcuts()
-                break
-            elif lineType == "DRUM":
-                if lastDrum is not None and len(lastDrum) == 0:
-                    lastDrum.guessHeadData()
+        class DrumTracker(object):
+            lastDrum = None
+            @classmethod
+            def addDrum(cls, lineData):
                 fields = lineData.split(",")
                 if len(fields) > 3:
                     fields[3] = (fields[3] == "True")
@@ -106,25 +89,23 @@ class DrumKit(object):
                         fields = fields[:3]
                 drum = Drum(*fields)
                 self.addDrum(drum)
-                lastDrum = drum
-            elif lineType == "NOTEHEAD":
-                lastDrum.readHeadData(lineData)
-            elif lineType == "KIT_START":
-                #No need to do anything
-                pass
-            else:
-                raise IOError("Unrecognised line type.", lineType)
-
-    def _checkShortcuts(self):
+                cls.lastDrum = drum
+            @classmethod
+            def readHeadData(cls, headData):
+                cls.lastDrum.readHeadData(headData)
+        tracker = DrumTracker
+        with scoreIterator.section("KIT_START", "KIT_END") as section:
+            section.readCallback("DRUM", tracker.addDrum)
+            section.readCallback("NOTEHEAD", tracker.readHeadData)
         for drum in self:
+            if len(drum) == 0:
+                drum.guessHeadData()
             drum.checkShortcuts()
 
     def getDefaultHead(self, index):
         return self[index].head
 
 def _loadDefaultKit(kit, kitInfo = None):
-    if kitInfo is None:
-        kitInfo = DEFAULT_KIT_INFO
     for (drumData, midiNote, notationHead,
          notationLine, stemDirection) in kitInfo["drums"]:
         drum = Drum(*drumData)
