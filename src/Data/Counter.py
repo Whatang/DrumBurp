@@ -64,6 +64,10 @@ _SIXTEENTH_COUNT = Counter(BEAT_COUNT + "e+a")
 _SIXTEENTH_COUNT_SPARSE = Counter(BEAT_COUNT + ' + ')
 _SIXTEENTH_TRIPLETS = Counter(BEAT_COUNT + 'ea+ea')
 _SIXTEENTH_TRIPLETS_SPARSE = Counter(BEAT_COUNT + '  +  ')
+_THIRTY_SECONDS_COUNT = Counter(BEAT_COUNT + '.e.+.a.')
+_THIRTY_SECONDS_COUNT_SPARSE = Counter(BEAT_COUNT + ' e + a ')
+_THIRTY_SECONDS_TRIPLET_COUNT = Counter(BEAT_COUNT + '.e.a.+.e.a.')
+_THIRTY_SECONDS_TRIPLET_COUNT_SPARSE = Counter(BEAT_COUNT + ' e a + e a ')
 
 class CounterRegistry(object):
     def __init__(self, defaults = True):
@@ -84,6 +88,10 @@ class CounterRegistry(object):
         self.register('Sparse 16ths', _SIXTEENTH_COUNT_SPARSE)
         self.register('16th Triplets', _SIXTEENTH_TRIPLETS)
         self.register('Sparse 16th Triplets', _SIXTEENTH_TRIPLETS_SPARSE)
+        self.register('32nds', _THIRTY_SECONDS_COUNT)
+        self.register('Sparse 32nds', _THIRTY_SECONDS_COUNT_SPARSE)
+        self.register('32nd Triplets', _THIRTY_SECONDS_TRIPLET_COUNT)
+        self.register('Sparse 32nd Triplets', _THIRTY_SECONDS_TRIPLET_COUNT_SPARSE)
 
     def register(self, name, count):
         if count not in self._counts:

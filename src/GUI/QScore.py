@@ -38,7 +38,8 @@ from DBCommands import (MetaDataCommand, ScoreWidthCommand,
                         SetPaperSizeCommand, SetDefaultCountCommand,
                         SetSystemSpacingCommand, InsertMeasuresCommand,
                         SetFontCommand, SetFontSizeCommand,
-                        SetVisibilityCommand)
+                        SetVisibilityCommand, SetLilypondSizeCommand,
+                        SetLilypondPagesCommand, SetLilypondFillCommand)
 import DBMidi
 import functools
 from DBFSM import Waiting
@@ -79,6 +80,8 @@ class QScore(QtGui.QGraphicsScene):
         self._properties = parent.songProperties
         self._score = None
         self._dirty = None
+        self._currentKey = None
+        self._currentHeads = {}
         self._ignoreNext = False
         self.measureClipboard = []
         self._playingMeasure = None
@@ -125,6 +128,11 @@ class QScore(QtGui.QGraphicsScene):
     dragHighlight = QtCore.pyqtSignal(bool)
     sceneFormatted = QtCore.pyqtSignal()
     playing = QtCore.pyqtSignal(bool)
+    currentHeadsChanged = QtCore.pyqtSignal(QtCore.QString)
+    setStatusMessage = QtCore.pyqtSignal(QtCore.QString)
+    lilysizeChanged = QtCore.pyqtSignal(int)
+    lilypagesChanged = QtCore.pyqtSignal(int)
+    lilyFillChanged = QtCore.pyqtSignal(bool)
 
     def addCommand(self, command):
         self._undoStack.push(command)
@@ -152,6 +160,7 @@ class QScore(QtGui.QGraphicsScene):
 
     def startUp(self):
         self.metadataChanged.emit("width", self.scoreWidth)
+        self.setCurrentHeads(None)
 
     def _getscoreWidth(self):
         if self._score is not None:
@@ -211,6 +220,9 @@ class QScore(QtGui.QGraphicsScene):
             self.paperSizeChanged.emit(self._score.paperSize)
             self.defaultCountChanged.emit(self._score.defaultCount)
             self.spacingChanged.emit(self._score.systemSpacing)
+            self.lilysizeChanged.emit(self._score.lilysize)
+            self.lilypagesChanged.emit(self._score.lilypages)
+            self.lilyFillChanged.emit(self._score.lilyFill)
             self.sectionsChanged.emit()
             self._properties.newScore(self)
             self._kitData.setVisible(self._properties.kitDataVisible)
@@ -410,12 +422,56 @@ class QScore(QtGui.QGraphicsScene):
             super(QScore, self).mousePressEvent(event)
 
     def keyPressEvent(self, event):
-        if event.key() == QtCore.Qt.Key_Escape:
-            self.sendFsmEvent(Escape())
+        if not event.isAutoRepeat():
+            if event.key() == QtCore.Qt.Key_Escape:
+                self.sendFsmEvent(Escape())
+            else:
+                if self._currentKey == None and event.text():
+                    self._currentKey = unicode(event.text())
+                    self._highlightCurrentKeyHead()
         return super(QScore, self).keyPressEvent(event)
 
+    def keyReleaseEvent(self, event):
+        if not event.isAutoRepeat():
+            if event.key() != QtCore.Qt.Key_Escape:
+                if unicode(event.text()) == self._currentKey:
+                    self._currentKey = None
+                    self._highlightCurrentKeyHead()
+        return super(QScore, self).keyReleaseEvent(event)
+
+    def getCurrentHead(self):
+        return self._currentHeads.get(self._currentKey, None)
+
+    def setCurrentHeads(self, drumIndex):
+        if drumIndex is None:
+            self._currentHeads = {}
+        else:
+            currentHeads = self.score.drumKit.shortcutsAndNoteHeads(drumIndex)
+            self._currentHeads = dict((unicode(x), y) for (x, y)
+                                       in currentHeads)
+        self._highlightCurrentKeyHead()
+
+    def _keyString(self, head):
+        if head == unicode(self._currentHeads[head]):
+            return head
+        else:
+            return u"%s(%s)" % (self._currentHeads[head], head)
+
+    def _highlightCurrentKeyHead(self):
+        if self._currentHeads:
+            headText = []
+            for head in self._currentHeads:
+                if head == self._currentKey:
+                    headText.append(u'<span style="background-color:#55aaff;">'
+                                    + self._keyString(head) + u"</span>")
+                else:
+                    headText.append(self._keyString(head))
+            headText = "Head (Shortcut): " + u" ".join(headText)
+        else:
+            headText = ""
+        self.currentHeadsChanged.emit(QtCore.QString(headText))
+
     def copyMeasures(self, np = None):
-        print np
         if np is not None:
             self.measureClipboard = [self._score.copyMeasure(np)]
         elif self.hasDragSelection():
@@ -604,6 +660,21 @@ class QScore(QtGui.QGraphicsScene):
         self._metaData.setRect()
         self._kitData.setRect()
         self.scale = 1
+
+    def setLilypondSize(self, size):
+        if size != self.score.lilysize:
+            command = SetLilypondSizeCommand(self, size)
+            self.addCommand(command)
+
+    def setLilypondPages(self, numPages):
+        if numPages != self.score.lilypages:
+            command = SetLilypondPagesCommand(self, numPages)
+            self.addCommand(command)
+
+    def setLilyFill(self, lilyFill):
+        if lilyFill != self.score.lilyFill:
+            command = SetLilypondFillCommand(self, lilyFill)
+            self.addCommand(command)
 
     def setScoreFontSize(self, size, fontType):
         fontName = fontType + "FontSize"

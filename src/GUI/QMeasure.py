@@ -104,7 +104,7 @@ class QMeasure(QtGui.QGraphicsItem):
             lineHeight = baseline + (self._qScore.ySpacing / 2.0) - 1
             lineIndex = self.lineIndex(drumIndex)
             for noteTime, x in enumerate(xValues):
-                if (drumIndex == self._potentialDrum
+                if (lineIndex == self._potentialDrum
                     and noteTime in self._potentialSet):
                     text = self._potentialHead
                     potential = True
@@ -275,15 +275,22 @@ class QMeasure(QtGui.QGraphicsItem):
                 self._highlight = newPlace
                 self.update()
                 self.parentItem().setLineHighlight(newPlace[1])
+                self._qScore.setCurrentHeads(newPlace[1])
         elif self._highlight != None:
             self._highlight = None
             self.parentItem().clearHighlight()
             self.update()
-        if (self._isOverCount(point)
-            or self._isOverRepeatCount(point)
-            or self._isOverAlternate(point)):
+        if self._isOverCount(point):
+            self._qScore.setStatusMessage.emit("Double click to edit measure count.")
+            self.setCursor(QtCore.Qt.PointingHandCursor)
+        elif self._isOverRepeatCount(point):
+            self._qScore.setStatusMessage.emit("Double click to edit repeat count.")
+            self.setCursor(QtCore.Qt.PointingHandCursor)
+        elif self._isOverAlternate(point):
+            self._qScore.setStatusMessage.emit("Double click to edit alternate ending.")
             self.setCursor(QtCore.Qt.PointingHandCursor)
         else:
+            self._qScore.setStatusMessage.emit("")
             self.setCursor(QtCore.Qt.ArrowCursor)
 
     def hoverEnterEvent(self, event):
@@ -296,6 +303,7 @@ class QMeasure(QtGui.QGraphicsItem):
         self._highlight = None
         self.update()
         self.parentItem().clearHighlight()
+        self._qScore.setCurrentHeads(None)
         self.setCursor(QtCore.Qt.ArrowCursor)
 
     def mousePressEvent(self, event):
@@ -336,11 +344,11 @@ class QMeasure(QtGui.QGraphicsItem):
             counter = self._measure.counter
             fsmEvent = EditMeasureProperties(counter,
                                              self._props.counterRegistry,
-                                             self._measurePosition())
+                                             self.measurePosition())
             self._qScore.sendFsmEvent(fsmEvent)
         elif self._isOverRepeatCount(point):
             fsmEvent = ChangeRepeatCount(self._measure.repeatCount,
-                                         self._measurePosition())
+                                         self.measurePosition())
             self._qScore.sendFsmEvent(fsmEvent)
         elif self._isOverAlternate(point):
             self.setAlternate()
@@ -353,13 +361,13 @@ class QMeasure(QtGui.QGraphicsItem):
                           drumIndex = drumIndex)
         return self.parentItem().augmentNotePosition(np)
 
-    def _measurePosition(self):
+    def measurePosition(self):
         np = NotePosition(measureIndex = self._index)
         return self.parentItem().augmentNotePosition(np)
 
     def setAlternate(self):
         self._qScore.sendFsmEvent(SetAlternateEvent(self._measure.alternateText,
-                                                    self._measurePosition()))
+                                                    self.measurePosition()))
 
     def setPlaying(self, onOff):
         self._playing = onOff

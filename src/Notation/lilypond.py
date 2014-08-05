@@ -26,6 +26,7 @@ from __future__ import print_function
 from contextlib import contextmanager
 import collections
 from Data.DrumKit import DrumKit
+from DBVersion import DB_VERSION
 
 import sys
 
@@ -73,6 +74,21 @@ class TripletsProblem(LilypondProblem):
 class FiveSixthsProblem(LilypondProblem):
     "DrumBurp cannot set notes of length 5/6 beat."
 
+class FiveEighthsProblem(LilypondProblem):
+    "DrumBurp cannot set notes of length 5/8 beat."
+
+class SevenEighthsProblem(LilypondProblem):
+    "DrumBurp cannot set notes of length 7/8 beat."
+
+class FiveTwelfthsProblem(LilypondProblem):
+    "DrumBurp cannot set notes of length 5/12 beat."
+
+class SevenTwelfthsProblem(LilypondProblem):
+    "DrumBurp cannot set notes of length 7/12 beat."
+
+class ElevenTwelfthsProblem(LilypondProblem):
+    "DrumBurp cannot set notes of length 11/12 beat."
+
 def lilyDuration(beat, ticks):
     dur = None
     if ticks == beat.numTicks:
@@ -88,6 +104,16 @@ def lilyDuration(beat, ticks):
             dur = "@8"
         elif ticks * 6 == beat.numTicks:
             dur = "@16"
+        elif ticks * 12 == beat.numTicks:
+            dur = "@32"
+        elif ticks * 4 == beat.numTicks:
+            dur = "@16."
+        elif ticks * 12 == 5 * beat.numTicks:
+            raise FiveTwelfthsProblem()
+        elif ticks * 12 == 7 * beat.numTicks:
+            raise SevenTwelfthsProblem()
+        elif ticks * 12 == 11 * beat.numTicks:
+            raise ElevenTwelfthsProblem()
     else:
         if 2 * ticks == beat.numTicks:
             dur = "8"
@@ -95,6 +121,14 @@ def lilyDuration(beat, ticks):
             dur = "16"
         elif 4 * ticks == 3 * beat.numTicks:
             dur = "8."
+        elif 8 * ticks == beat.numTicks:
+            dur = "32"
+        elif 8 * ticks == 3 * beat.numTicks:
+            dur = "16."
+        elif 8 * ticks == 5 * beat.numTicks:
+            raise FiveEighthsProblem()
+        elif 8 * ticks == 7 * beat.numTicks:
+            raise SevenEighthsProblem()
     return dur
 
 
@@ -291,6 +325,7 @@ class LilyKit(object):
         self._lilyNames = []
         allLilyHeads = set()
         allLilyNames = set()
+        reservedNames = set(["s", "r"])
         headCount = 0
         for drum in kit:
             sanitized = "".join(ch.lower() for ch in drum.name if ch.isalpha())
@@ -311,7 +346,8 @@ class LilyKit(object):
                     headCount += 1
                     lHead = sanAbbr + lily
                     lName = sanitized + lily
-                    ok = not(lHead in allLilyHeads or lName in allLilyNames)
+                    ok = not(lHead in allLilyHeads or lName in allLilyNames
+                             or lHead in reservedNames)
                 lilyHeads[head] = lHead
                 lilyNames[head] = lName
                 allLilyHeads.add(lHead)
@@ -363,29 +399,85 @@ class LilyKit(object):
         print("))", file = handle)
         print ("", file = handle)
 
+_PAPER_SIZES = { "A0" : "a0",
+                 "A1" : "a1",
+                 "A2" : "a2",
+                 "A3" : "a3",
+                 "A4" : "a4",
+                 "A5" : "a5",
+                 "A6" : "a6",
+                 "A7" : "a7",
+                 "A8" : "a8",
+                 "A9" : "a9",
+                 "B0" : "b0",
+                 "B1" : "b1",
+                 "B10" : "b10",
+                 "B2" : "b2",
+                 "B3" : "b3",
+                 "B4" : "b4",
+                 "B5" : "b5",
+                 "B6" : "b6",
+                 "B7" : "b7",
+                 "B8" : "b8",
+                 "B9" : "b9",
+                 "C5E" : "c5",
+                 "Executive" : "executive",
+                 "Folio" : "folio",
+                 "Ledger" : "ledger",
+                 "Legal" : "legal",
+                 "Letter" : "letter",
+                 "Tabloid" : "tabloid" }
+
+class BadPaperSize(LilypondProblem):
+    "DrumBurp cannot create a Lilypond score on this paper size."
 class LilypondScore(object):
     def __init__(self, score):
         self.score = score
         self._lilyKit = LilyKit(score.drumKit)
+        self._paperSize = str(score.paperSize)
         self.scoreData = score.scoreData
+        self._lilysize = score.lilysize
+        self._numPages = score.lilypages
+        self._lilyFill = score.lilyFill
         self.indenter = Indenter()
+        self._timeSig = None
+        self._lastTimeSig = None
+        self._hadRepeatCount = False
 
     def write(self, handle):
         self.indenter.setHandle(handle)
         self.indenter(r'\version "2.12.3"')
-        with LILY_CONTEXT(self.indenter, '\header'):
+        with LILY_CONTEXT(self.indenter, r"\paper"):
+            self._writePaper()
+        with LILY_CONTEXT(self.indenter, r'\header'):
             self._writeHeader()
+        with LILY_CONTEXT(self.indenter, r'\layout'):
+            self._writeLayout()
         self._writeMacros(handle)
         self._lilyKit.write(handle)
         with LILY_CONTEXT(self.indenter, '\score'):
             self._writeScore()
 
+    def _writePaper(self):
+        paperSize = _PAPER_SIZES.get(self._paperSize, None)
+        if paperSize is None:
+            raise BadPaperSize(self._paperSize)
+        self.indenter(r'#(set-paper-size %s)' % lilyString(paperSize))
+        if self._numPages != 0:
+            self.indenter(r'page-count = #%d' % self._numPages)
+        if self._lilyFill:
+            self.indenter(r'ragged-last-bottom = ##f')
+
     def _writeHeader(self):
         self.indenter('title = %s' % lilyString(self.scoreData.title))
+        self.indenter(r'tagline = #(string-append "Score created using DrumBurp %s, engraved with Lilypond " (lilypond-version))' % DB_VERSION)
         if self.scoreData.artistVisible:
             self.indenter('composer = %s' % lilyString(self.scoreData.artist))
         if self.scoreData.creatorVisible:
             self.indenter('arranger = %s' % lilyString(self.scoreData.creator))
+
+    def _writeLayout(self):
+        self.indenter(r'#(layout-set-staff-size %d)' % self._lilysize)
 
     def _writeScore(self):
         with VOICE_CONTEXT(self.indenter, r'\new DrumStaff'):
@@ -423,14 +515,31 @@ class LilypondScore(object):
 
     def _writeSectionTitle(self, sectionTitle):
         if sectionTitle:
+            if self._hadRepeatCount:
+                self._hadRepeatCount = False
+                self.indenter(r'\bar "|"')
+                self.indenter(r"\cadenzaOn")
+                self.indenter(r"\once \override Score.TimeSignature #'stencil = ##f")
+                self.indenter(r"\time 1/32")
+                self.indenter(r"s32")
+                self.indenter(r'\bar ""')
+                self.indenter(r"\cadenzaOff")
+                if self._timeSig == self._lastTimeSig:
+                    self.indenter(r"\once \override Score.TimeSignature #'stencil = ##f")
+                self.indenter(r"\time %s" % self._timeSig)
+                self._lastTimeSig = self._timeSig
             self.indenter(r'\mark %s' % lilyString(sectionTitle))
             sectionTitle = None
         return sectionTitle
 
 
     def _getLastRepeats(self, repeatCommands, hasAlternate, measure):
+        self._hadRepeatCount = False
         if measure.isRepeatEnd():
             if measure.repeatCount > 2:
+                self._hadRepeatCount = True
+                self.indenter(r"\once \override Score.RehearsalMark " +
+                              r"#'break-visibility = #begin-of-line-invisible")
                 self.indenter(r"\once \override Score.RehearsalMark " +
                               r"#'self-alignment-X = #right")
                 self.indenter(r'\mark %s'
@@ -459,19 +568,19 @@ class LilypondScore(object):
         secIndex, secTitle = self._getNextSectionTitle(-1)
         repeatCommands = []
         hasAlternate = False
-        lastTimeSig = None
+        self._lastTimeSig = None
         for measure in self.score.iterMeasures():
-            secTitle = self._writeSectionTitle(secTitle)
             hasAlternate = self._getNextRepeats(repeatCommands,
                                                 hasAlternate, measure)
             if repeatCommands:
                 self.indenter(r"\set Score.repeatCommands = #'(%s)" %
                               " ".join(repeatCommands))
                 repeatCommands = []
-            timeSig = self._getTimeSig(measure)
-            if timeSig != lastTimeSig:
-                self.indenter(r"\time %s" % timeSig)
-                lastTimeSig = timeSig
+            self._timeSig = self._getTimeSig(measure)
+            secTitle = self._writeSectionTitle(secTitle)
+            if self._timeSig != self._lastTimeSig:
+                self.indenter(r"\time %s" % self._timeSig)
+                self._lastTimeSig = self._timeSig
             with VOICE_CONTEXT(self.indenter, ""):
                 self._writeMeasure(measure)
             hasAlternate = self._getLastRepeats(repeatCommands,

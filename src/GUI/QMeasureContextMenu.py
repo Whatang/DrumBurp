@@ -32,17 +32,17 @@ from DBCommands import (InsertMeasuresCommand,
                         InsertSectionCommand, DeleteMeasureCommand,
                         SetAlternateCommand)
 from QInsertMeasuresDialog import QInsertMeasuresDialog
-from DBFSMEvents import MenuSelect, RepeatNotes
+from DBFSMEvents import MenuSelect, RepeatNotes, EditMeasureProperties
 
 class QMeasureContextMenu(QMenuIgnoreCancelClick):
-    def __init__(self, qScore, qmeasure, firstNote, noteText, alternateText):
+    def __init__(self, qScore, qmeasure, firstNote, alternateText):
         '''
         Constructor
         '''
         super(QMeasureContextMenu, self).__init__(qScore)
         self._qmeasure = qmeasure
         self._np = firstNote
-        self._noteText = noteText
+        self._noteText = qmeasure.noteAt(firstNote)
         self._alternate = alternateText
         self._props = self._qScore.displayProperties
         self._setup()
@@ -83,6 +83,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                                          "Insert Measures From Clipboard",
                                          self._insertOneMeasure)
         pasteAction.setEnabled(len(self._qScore.measureClipboard) > 0)
+        self.addAction("Edit Measure Count", self._editMeasureCount)
         self.addSeparator()
 
     def _setupInsertSection(self, score):
@@ -129,6 +130,15 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
 
     def _repeatNote(self):
         self._qScore.sendFsmEvent(RepeatNotes())
+
+    def _editMeasureCount(self):
+        measurePosition = self._qmeasure.measurePosition()
+        measure = self._qScore.score.getItemAtPosition(measurePosition)
+        counter = measure.counter
+        fsmEvent = EditMeasureProperties(counter,
+                                         self._props.counterRegistry,
+                                         measurePosition)
+        self._qScore.sendFsmEvent(fsmEvent)
 
     def _insertDefaultMeasure(self, np):
         mc = self._qScore.defaultCount

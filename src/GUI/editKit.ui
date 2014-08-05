@@ -599,28 +599,15 @@
            </property>
            <layout class="QVBoxLayout" name="verticalLayout">
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_4">
-              <item>
-               <spacer name="horizontalSpacer_13">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
+             <layout class="QGridLayout" name="gridLayout_3">
+              <item row="0" column="1">
                <widget class="QLabel" name="label_6">
                 <property name="text">
                  <string>Current note head</string>
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="0" column="2">
                <widget class="QComboBox" name="currentNoteHead">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -633,7 +620,7 @@
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="0" column="3">
                <spacer name="horizontalSpacer_11">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -648,6 +635,160 @@
                  </size>
                 </property>
                </spacer>
+              </item>
+              <item row="0" column="0">
+               <spacer name="horizontalSpacer_13">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLabel" name="label_10">
+                <property name="text">
+                 <string>Shortcut</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QComboBox" name="shortcutCombo">
+                <item>
+                 <property name="text">
+                  <string>a</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>b</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>c</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>d</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>e</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>f</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>g</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>h</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>i</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>j</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>k</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>l</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>m</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>n</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>o</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>p</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>q</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>r</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>s</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>t</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>u</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>v</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>w</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>x</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>y</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>z</string>
+                 </property>
+                </item>
+               </widget>
               </item>
              </layout>
             </item>

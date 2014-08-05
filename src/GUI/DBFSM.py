@@ -94,7 +94,8 @@ class ButtonDown(FsmState):
             else:
                 return self
         elif msgType == Event.MouseRelease:
-            command = ToggleNote(self.qscore, self.note)
+            head = self.qscore.getCurrentHead()
+            command = ToggleNote(self.qscore, self.note, head)
             self.qscore.addCommand(command)
             return Waiting(self.qscore)
         elif msgType == Event.StartPlaying:
@@ -153,15 +154,14 @@ class NotesMenu(FsmState):
 
 
 class ContextMenu(FsmState):
-    def __init__(self, qscore, measure, note, screenPos):
+    def __init__(self, qscore, qmeasure, note, screenPos):
         super(ContextMenu, self).__init__(qscore)
         if qscore.hasDragSelection():
             if not qscore.inDragSelection(note):
                 qscore.clearDragSelection()
-        self.menu = QMeasureContextMenu(qscore, measure, note,
-                                        measure.noteAt(note),
-                                        measure.alternateText())
-        self.measure = measure
+        self.menu = QMeasureContextMenu(qscore, qmeasure, note,
+                                        qmeasure.alternateText())
+        self.measure = qmeasure
         self.note = note
         QtCore.QTimer.singleShot(0, lambda: self.menu.exec_(screenPos))
 
@@ -184,6 +184,11 @@ class ContextMenu(FsmState):
         elif msgType == Event.SetAlternateEvent:
             newState = SetAlternateState(self.qscore, event.alternateText,
                                      event.measurePosition)
+        elif msgType == Event.EditMeasureProperties:
+            newState = EditMeasurePropertiesState(self.qscore,
+                                                  event.counter,
+                                                  event.counterRegistry,
+                                                  event.measurePosition)
         return newState
 
 class Repeating(FsmState):
@@ -274,12 +279,13 @@ class RepeatingDragging(FsmState):
         while more:
             note = copy.copy(note)
             note = self.score.notePlus(note, self.interval)
-            more = ((note.staffIndex < self._lastNote.staffIndex) or
+            more = (note is not None and
+                    ((note.staffIndex < self._lastNote.staffIndex) or
                     (note.staffIndex == self._lastNote.staffIndex
                      and note.measureIndex < self._lastNote.measureIndex) or
                     ((note.staffIndex == self._lastNote.staffIndex
                       and note.measureIndex == self._lastNote.measureIndex
-                      and note.noteTime <= self._lastNote.noteTime)))
+                      and note.noteTime <= self._lastNote.noteTime))))
             if more:
                 notes.append(note)
 

@@ -37,7 +37,8 @@ class HeadData(object):
                  notationHead = "default",
                  notationLine = 0,
                  notationEffect = "none",
-                 stemDirection = STEM_UP):
+                 stemDirection = STEM_UP,
+                 shortcut = ""):
         self.midiNote = midiNote
         self.midiVolume = midiVolume
         self.effect = effect
@@ -45,15 +46,17 @@ class HeadData(object):
         self.notationLine = notationLine
         self.notationEffect = notationEffect
         self.stemDirection = stemDirection
+        self.shortcut = shortcut
 
     def write(self, noteHead, handle, indenter):
-        dataString = "%s %d,%d,%s,%s,%d,%s,%d" % (noteHead, self.midiNote,
+        dataString = "%s %d,%d,%s,%s,%d,%s,%d,%s" % (noteHead, self.midiNote,
                                                   self.midiVolume,
                                                   self.effect,
                                                   self.notationHead,
                                                   self.notationLine,
                                                   self.notationEffect,
-                                                  self.stemDirection)
+                                                  self.stemDirection,
+                                                  self.shortcut)
         print >> handle, indenter("NOTEHEAD", dataString)
 
     @staticmethod
@@ -63,13 +66,17 @@ class HeadData(object):
         note, volume, effect = fields[:3]
         note = int(note)
         volume = int(volume)
+        shortcut = ""
         if len(fields) > 3:
-            nHead, nLine, nEffect, sDir = fields[3:]
+            nHead, nLine, nEffect, sDir = fields[3:7]
             nLine = int(nLine)
             sDir = int(sDir)
+            if len(fields) > 7:
+                shortcut = fields[7]
         else:
             nHead, nLine, nEffect, sDir = _guessNotation(abbr, head)
-        return head, HeadData(note, volume, effect, nHead, nLine, nEffect, sDir)
+        return head, HeadData(note, volume, effect, nHead,
+                              nLine, nEffect, sDir, shortcut)
 
 def _guessNotation(abbr, head):
     for drumInfo in DEFAULT_KIT:
@@ -161,8 +168,11 @@ class Drum(object):
     def addNoteHead(self, head, headData = None):
         self._noteHeads.append(head)
         if headData is None:
-            self._headData[head] = copy.deepcopy(self._headData[self.head])
+            newHead = copy.deepcopy(self._headData[self.head])
+            newHead.shortcut = None
+            self._headData[head] = newHead
             self._guessEffect(head)
+            self.checkShortcuts()
         else:
             self._headData[head] = headData
 
@@ -230,6 +240,20 @@ class Drum(object):
             return
         assert(idx < len(self) - 1)
         self._noteHeads[idx:idx + 2] = self._noteHeads[idx + 1:idx - 1:-1]
+
+    def checkShortcuts(self):
+        availableShortcuts = set('abcdefghijklmnopqrstuvwxyz')
+        for head, data in self._headData.iteritems():
+            if data.shortcut:
+                availableShortcuts.remove(data.shortcut)
+        for head, data in self._headData.iteritems():
+            if not data.shortcut:
+                if head in availableShortcuts:
+                    data.shortcut = head
+                    availableShortcuts.remove(head)
+                else:
+                    data.shortcut = availableShortcuts.pop()
+
 
     def write(self, handle, indenter):
         print >> handle, indenter("DRUM %s,%s,%s,%s" % (self.name,

@@ -30,6 +30,8 @@ class QKitData(QGraphicsListData):
     classdocs
     '''
 
+    _editName = "kit information"
+
     def _iterData(self):
         kit = self._qScore.score.drumKit
         for drum in reversed(kit):

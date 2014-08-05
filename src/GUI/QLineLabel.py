@@ -27,9 +27,10 @@ from PyQt4 import QtGui, QtCore
 
 class QLineLabel(QtGui.QGraphicsItem):
     def __init__(self, drum, qScore, parent):
-        super(QLineLabel, self).__init__(parent = None,
-                                          scene = qScore)
+        super(QLineLabel, self).__init__(parent = parent,
+                                         scene = qScore)
         self._text = ""
+        self._qScore = qScore
         self._props = qScore.displayProperties
         self._rect = QtCore.QRectF(0, 0,
                                    self.cellWidth(),
@@ -38,6 +39,15 @@ class QLineLabel(QtGui.QGraphicsItem):
         self.setText(drum.abbr)
         self.setToolTip(drum.name)
         self.setCursor(QtCore.Qt.PointingHandCursor)
+        self.setAcceptsHoverEvents(True)
+
+    def hoverEnterEvent(self, *args, **kwargs):
+        self._qScore.setStatusMessage.emit("Double click to edit kit information.")
+        return super(QLineLabel, self).hoverEnterEvent(*args, **kwargs)
+
+    def hoverLeaveEvent(self, *args, **kwargs):
+        self._qScore.setStatusMessage.emit("")
+        return super(QLineLabel, self).hoverLeaveEvent(*args, **kwargs)
 
     def cellHeight(self):
         return self.scene().ySpacing

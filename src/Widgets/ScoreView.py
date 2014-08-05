@@ -49,6 +49,18 @@ class ScoreView(QtGui.QGraphicsView):
         self.widthChanged.emit(width)
     widthChanged = QtCore.pyqtSignal(int)
 
+    @QtCore.pyqtSlot(int)
+    def setLilypondSize(self, size):
+        self.scene().setLilypondSize(size)
+
+    @QtCore.pyqtSlot(int)
+    def setLilypondPages(self, numPages):
+        self.scene().setLilypondPages(numPages)
+
+    @QtCore.pyqtSlot(bool)
+    def setLilyFill(self, lilyFill):
+        self.scene().setLilyFill(lilyFill)
+
     @QtCore.pyqtSlot(QtGui.QFont)
     def setFont(self, font):
         self.scene().setScoreFont(font, "note")

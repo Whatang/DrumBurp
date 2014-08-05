@@ -29,7 +29,7 @@ from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QFileDialog, QMessageBox,
                          QPrintPreviewDialog, QWhatsThis,
                          QPrinterInfo, QLabel, QFrame,
-                         QPrinter, QDesktopServices, QSizePolicy)
+                         QPrinter, QDesktopServices)
 from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer
 from QScore import QScore
 from QDisplayProperties import QDisplayProperties
@@ -100,12 +100,14 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreScene = QScore(self)
         self.restoreGeometry(settings.value("Geometry").toByteArray())
         self.restoreState(settings.value("MainWindow/State").toByteArray())
+        self.statusbar.addPermanentWidget(QFrame())
+        self.availableNotesLabel = QLabel()
+        self.availableNotesLabel.setMinimumWidth(250)
+        self.statusbar.addPermanentWidget(self.availableNotesLabel)
+        self._infoBar = QLabel()
+        self.statusbar.addPermanentWidget(self._infoBar)
         self._initializeState()
         self.setSections()
-        self._infoBar = QLabel()
-        self._infoBar.setFrameShape(self._infoBar.Panel)
-        self._infoBar.setFrameShadow(self._infoBar.Sunken)
-        self.statusbar.addPermanentWidget(self._infoBar)
         QTimer.singleShot(0, self._startUp)
 
 
@@ -126,6 +128,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         scene.dragHighlight.connect(self.actionDeleteMeasures.setEnabled)
         scene.sceneFormatted.connect(self.sceneFormatted)
         scene.playing.connect(self._scorePlaying)
+        scene.currentHeadsChanged.connect(self.availableNotesLabel.setText)
+        scene.setStatusMessage.connect(self._setStatusFromScene)
+        scene.lilysizeChanged.connect(self._setLilySize)
+        scene.lilypagesChanged.connect(self._setLilyPages)
+        scene.lilyFillChanged.connect(self._setLilyFill)
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
@@ -187,11 +194,15 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         # Default beat
         self._beatChanged(scene.defaultCount)
         self.widthSpinBox.setValue(scene.scoreWidth)
+        self.lilypondSize.setValue(scene.score.lilysize)
+        self.lilyPagesBox.setValue(scene.score.lilypages)
+        self.lilyFillButton.setChecked(scene.score.lilyFill)
 
 
     def _startUp(self):
         self.scoreView.startUp()
         self.updateStatus("Welcome to %s v%s" % (APPNAME, DB_VERSION))
+        self.scoreView.setFocus()
 
 
     def _makeQSettings(self):
@@ -316,6 +327,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             return
         if self.scoreScene.loadScore(fname):
             self._beatChanged(self.scoreScene.defaultCount)
+            self.lilypondSize.setValue(self.scoreScene.score.lilysize)
+            self.lilyPagesBox.setValue(self.scoreScene.score.lilypages)
             self.filename = unicode(fname)
             self.updateStatus("Successfully loaded %s" % self.filename)
             self.addToRecentFiles()
@@ -767,6 +780,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.menubar.setDisabled(playing)
         self.actionExportMIDI.setDisabled(playing)
         self.actionMuteNotes.setDisabled(playing)
+        self.lilypondGroupBox.setDisabled(playing)
 
     @pyqtSignature("int")
     def on_paperBox_currentIndexChanged(self, index):
@@ -788,3 +802,19 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             if numPages > 1:
                 pagetext += "s"
             self._infoBar.setText(", ".join([measureText, staffText, pagetext]))
+
+    def _setStatusFromScene(self, msg):
+        self.statusbar.showMessage(msg)
+
+    def _setLilySize(self, size):
+        if size != self.lilypondSize.value():
+            self.lilypondSize.setValue(size)
+
+    def _setLilyPages(self, numPages):
+        if numPages != self.lilyPagesBox.value():
+            self.lilyPagesBox.setValue(numPages)
+
+    def _setLilyFill(self, lilyFill):
+        if lilyFill != self.lilyFillButton.isChecked():
+            self.lilyFillButton.setChecked(lilyFill)
+
