@@ -90,7 +90,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         self.addAction(actionText, self._insertMeasureBefore)
         insertMenu = self.addMenu("Insert...")
         insertMenu.addAction("Default Measure After", self._insertMeasureAfter)
-        insertMenu.addAction("Other Measures", self._insertOtherMeasures)
+        insertMenu.addAction("Other Measures...", self._insertOtherMeasures)
         sectionCopyMenu = insertMenu.addMenu("Section Copy")
         sectionCopyMenu.setEnabled(score.numSections() > 0)
         for si, sectionTitle in enumerate(score.iterSections()):

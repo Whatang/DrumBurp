@@ -53,7 +53,7 @@ class NotePosition(object):
 
     def __cmp__(self, other):
         if other is None:
-            return False
+            return 1
         return cmp((self.staffIndex, self.measureIndex,
                     self.noteTime, self.drumIndex),
                    (other.staffIndex, other.measureIndex,

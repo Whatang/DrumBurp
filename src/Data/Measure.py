@@ -33,77 +33,84 @@ import copy
 class NoteDictionary(object):
     def __init__(self):
         self._notes = defaultdict(lambda:defaultdict(dict))
+        self._notesOnLine = defaultdict(lambda : 0)
         self._noteTimes = []
 
     def __len__(self):
         return len(self._noteTimes)
 
-    def __iter__(self):
+    def numNotes(self):
+        return sum(self._notesOnLine.itervalues())
+
+    def iterTimes(self):
         return iter(self._noteTimes)
 
-    def iterkeys(self):
-        return iter(self._noteTimes)
+    def iterNotesAtTime(self, noteTime):
+        for index, head in self._notes[noteTime].iteritems():
+            yield (NotePosition(noteTime = noteTime,
+                                drumIndex = index),
+                       head)
 
-    def itervalues(self):
-        for noteTime in self._noteTimes:
-            yield self._notes[noteTime]
+    def iterNotesAndHeads(self):
+        for noteTime in self.iterTimes():
+            drumDict = self._notes[noteTime]
+            for drumIndex, drumHead in drumDict.iteritems():
+                yield (NotePosition(noteTime = noteTime,
+                                   drumIndex = drumIndex),
+                       drumHead)
 
-    def iteritems(self):
-        for noteTime in self._noteTimes:
-            yield (noteTime, self._notes[noteTime])
+    def __contains__(self, noteTime):
+        return noteTime in self._notes
 
-    def __contains__(self, key):
-        return key in self._notes
-
-    def __getitem__(self, key):
-        if key not in self._notes:
-            self._noteTimes.append(key)
+    def setNote(self, noteTime, drumIndex, head):
+        if noteTime not in self._notes:
+            self._noteTimes.append(noteTime)
             self._noteTimes.sort()
-        return self._notes[key]
+        if drumIndex not in self._notes[noteTime]:
+            self._notesOnLine[drumIndex] += 1
+        elif head == self._notes[noteTime][drumIndex]:
+            return False
+        self._notes[noteTime][drumIndex] = head
+        return True
 
-    def __setitem__(self, index, value):
-        if index not in self:
-            self._noteTimes.append(index)
-            self._noteTimes.sort()
-        self._notes[index] = value
+    def delNote(self, noteTime, drumIndex):
+        if noteTime in self and drumIndex in self._notes[noteTime]:
+            del self._notes[noteTime][drumIndex]
+            self._notesOnLine[drumIndex] -= 1
+            if len(self._notes[noteTime]) == 0:
+                del self._notes[noteTime]
+                self._noteTimes.remove(noteTime)
+            return True
+        return False
 
-    def __delitem__(self, key):
-        self._noteTimes.remove(key)
-        del self._notes[key]
+    def deleteAllNotesAtTime(self, noteTime):
+        if noteTime not in self:
+            return
+        self._noteTimes.remove(noteTime)
+        for drumIndex in self._notes[noteTime]:
+            self._notesOnLine[drumIndex] -= 1
+        del self._notes[noteTime]
+
+    def getNote(self, noteTime, drumIndex):
+        if noteTime not in self or drumIndex not in self._notes[noteTime]:
+            return EMPTY_NOTE
+        return self._notes[noteTime][drumIndex]
+
+    def notesOnLine(self, index):
+        return self._notesOnLine[index]
 
     def clear(self):
         self._notes.clear()
         self._noteTimes = []
+        self._notesOnLine.clear()
 
-    def copy(self):
-        newDict = NoteDictionary()
-        for key, value in self.iteritems():
-            newDict[key] = value
-        return newDict
-
-    def items(self):
-        return list(self.iteritems())
-
-    def keys(self):
-        return list(self.iterkeys())
-
-    def pop(self, key):
-        item = self._notes.pop(key)
-        self._noteTimes.remove(key)
-        return item
-
-    def popitem(self):
-        key, value = self._notes.popitem(self)
-        self._noteTimes.remove(key)
-        return key, value
-
-    def values(self):
-        return list(self.itervalues())
-
-def _makeNoteDict():
-    return NoteDictionary()
-
-_DEFAULTREPEATCOUNT = 1
+class MeasureInfo(object):
+    def __init__(self):
+        self.isRepeatEnd = False
+        self.isRepeatStart = False
+        self.isSectionEnd = False
+        self.isLineBreak = False
+        self.repeatCount = 1
 
 class Measure(object):
     '''
@@ -112,16 +119,11 @@ class Measure(object):
 
     def __init__(self, width = 0):
         self._width = width
-        self._notes = _makeNoteDict()
-        self._notesOnLine = defaultdict(lambda : 0)
+        self._notes = NoteDictionary()
         self.startBar = BAR_TYPES["NORMAL_BAR"]
         self.endBar = BAR_TYPES["NORMAL_BAR"]
         self._callBack = None
-        self._isRepeatEnd = False
-        self._isRepeatStart = False
-        self._isSectionEnd = False
-        self._isLineBreak = False
-        self._repeatCount = _DEFAULTREPEATCOUNT
+        self._info = MeasureInfo()
         self.counter = None
         self.alternateText = None
 
@@ -133,13 +135,13 @@ class Measure(object):
             return BARLINE
 
     def _getrepeatCount(self):
-        return self._repeatCount
+        return self._info.repeatCount
     def _setrepeatCount(self, value):
-        if value != self._repeatCount:
+        if value != self._info.repeatCount:
             if self.isRepeatEnd():
-                self._repeatCount = max(value, 2)
+                self._info.repeatCount = max(value, 2)
             else:
-                self._repeatCount = 1
+                self._info.repeatCount = 1
             self._runCallBack(NotePosition())
     repeatCount = property(fget = _getrepeatCount,
                          fset = _setrepeatCount)
@@ -148,16 +150,10 @@ class Measure(object):
         return self._width
 
     def __iter__(self):
-        notes = [(NotePosition(noteTime = noteTime,
-                               drumIndex = drumIndex),
-                  drumHead)
-                 for noteTime, drumDict in self._notes.iteritems()
-                 for drumIndex, drumHead in drumDict.iteritems()
-                 ]
-        return iter(notes)
+        return self._notes.iterNotesAndHeads()
 
     def numNotes(self):
-        return sum(len(drumIndex) for drumIndex in self._notes.itervalues())
+        return self._notes.numNotes()
 
     def _runCallBack(self, position):
         if self._callBack is not None:
@@ -175,21 +171,21 @@ class Measure(object):
                          self.isSectionEnd()))
 
     def setSectionEnd(self, boolean):
-        self._isSectionEnd = boolean
+        self._info.isSectionEnd = boolean
         if boolean:
             self.endBar |= BAR_TYPES["SECTION_END"]
         else:
             self.endBar &= ~BAR_TYPES["SECTION_END"]
 
     def setRepeatStart(self, boolean):
-        self._isRepeatStart = boolean
+        self._info.isRepeatStart = boolean
         if boolean:
             self.startBar |= BAR_TYPES["REPEAT_START"]
         else:
             self.startBar &= ~BAR_TYPES["REPEAT_START"]
 
     def setRepeatEnd(self, boolean):
-        self._isRepeatEnd = boolean
+        self._info.isRepeatEnd = boolean
         if boolean:
             self.endBar |= BAR_TYPES["REPEAT_END"]
             self.repeatCount = max(self.repeatCount, 2)
@@ -198,23 +194,23 @@ class Measure(object):
             self.endBar &= ~BAR_TYPES["REPEAT_END"]
 
     def setLineBreak(self, boolean):
-        self._isLineBreak = boolean
+        self._info.isLineBreak = boolean
         if boolean:
             self.endBar |= BAR_TYPES["LINE_BREAK"]
         else:
             self.endBar &= ~BAR_TYPES["LINE_BREAK"]
 
     def isSectionEnd(self):
-        return self._isSectionEnd
+        return self._info.isSectionEnd
 
     def isRepeatStart(self):
-        return self._isRepeatStart
+        return self._info.isRepeatStart
 
     def isRepeatEnd(self):
-        return self._isRepeatEnd
+        return self._info.isRepeatEnd
 
     def isLineBreak(self):
-        return self._isLineBreak
+        return self._info.isLineBreak
 
     def isLineEnd(self):
         return self.isLineBreak() or self.isSectionEnd()
@@ -225,10 +221,7 @@ class Measure(object):
     def noteAt(self, noteTime, drumIndex):
         if not(0 <= noteTime < len(self)):
             raise BadTimeError(noteTime)
-        if (noteTime in self._notes and
-            drumIndex in self._notes[noteTime]):
-            return self._notes[noteTime][drumIndex]
-        return EMPTY_NOTE
+        return self._notes.getNote(noteTime, drumIndex)
 
     def clear(self):
         for pos, dummyHead in list(self):
@@ -237,29 +230,20 @@ class Measure(object):
     def addNote(self, position, head):
         if not(0 <= position.noteTime < len(self)):
             raise BadTimeError(position)
-        if position.drumIndex not in self._notes[position.noteTime]:
-            self._notesOnLine[position.drumIndex] += 1
-        if head != self._notes[position.noteTime][position.drumIndex]:
-            self._notes[position.noteTime][position.drumIndex] = head
+        if self._notes.setNote(position.noteTime, position.drumIndex, head):
             self._runCallBack(position)
 
     def deleteNote(self, position):
         if not(0 <= position.noteTime < len(self)):
             raise BadTimeError(position)
-        self._notesOnLine[position.drumIndex] -= 1
-        if (position.noteTime in self._notes
-            and position.drumIndex in self._notes[position.noteTime]):
-            del self._notes[position.noteTime][position.drumIndex]
-            if len(self._notes[position.noteTime]) == 0:
-                del self._notes[position.noteTime]
+        if self._notes.delNote(position.noteTime, position.drumIndex):
             self._runCallBack(position)
 
     def toggleNote(self, position, head):
         if not(0 <= position.noteTime < len(self)):
             raise BadTimeError(position)
-        if (position.noteTime in self._notes
-            and position.drumIndex in self._notes[position.noteTime]
-            and self.getNote(position) == head):
+        oldHead = self._notes.getNote(position.noteTime, position.drumIndex)
+        if (oldHead == head):
             self.deleteNote(position)
         else:
             self.addNote(position, head)
@@ -269,10 +253,10 @@ class Measure(object):
         if newWidth == len(self):
             return
         self._width = newWidth
-        badTimes = [noteTime for noteTime in self._notes
+        badTimes = [noteTime for noteTime in self._notes.iterTimes()
                     if noteTime >= self._width]
         for badTime in badTimes:
-            del self._notes[badTime]
+            self._notes.deleteAllNotesAtTime(badTime)
         self._runCallBack(NotePosition())
 
     def setBeatCount(self, counter):
@@ -303,8 +287,8 @@ class Measure(object):
                 newIndex += 1
                 continue
             if oldIndex in oldNotes:
-                for drumIndex, head in oldNotes[oldIndex].iteritems():
-                    self._notes[newIndex][drumIndex] = head
+                for position, head in oldNotes.iterNotesAtTime(oldIndex):
+                    self._notes.setNote(newIndex, position.drumIndex, head)
             oldIndex += 1
             newIndex += 1
         self.counter = counter
@@ -342,12 +326,10 @@ class Measure(object):
 
 
     def changeKit(self, newKit, changes):
-        transposed = _makeNoteDict()
-        for noteTime, line in self._notes.iteritems():
-            for drumIndex, head in line.iteritems():
-                transposed[drumIndex][noteTime] = head
-        self._notes = _makeNoteDict()
-        self._notesOnLine.clear()
+        transposed = defaultdict(lambda: defaultdict(dict))
+        for note, head in self._notes.iterNotesAndHeads():
+            transposed[note.drumIndex][note.noteTime] = head
+        self._notes.clear()
         for newDrumIndex, newDrum in enumerate(newKit):
             oldDrumIndex = changes[newDrumIndex]
             if oldDrumIndex == -1:
@@ -360,7 +342,7 @@ class Measure(object):
                              head)
 
     def lineIsVisible(self, index):
-        return (self._notesOnLine.get(index, 0) > 0)
+        return (self._notes.notesOnLine(index) > 0)
 
     def write(self, handle, indenter):
         print >> handle, indenter("START_BAR %d" % len(self))
@@ -377,7 +359,7 @@ class Measure(object):
         endString = [name for name, value in BAR_TYPES.iteritems()
                      if (self.endBar & value) == value ]
         print >> handle, indenter("BARLINE %s" % ",".join(endString))
-        if self.repeatCount != _DEFAULTREPEATCOUNT:
+        if self.repeatCount != 1:
             print >> handle, indenter("REPEAT_COUNT %d" % self.repeatCount)
         if self.alternateText is not None:
             print >> handle, indenter("ALTERNATE %s" % self.alternateText)

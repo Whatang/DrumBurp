@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\dbStartup.ui'
 #
-# Created: Sat Feb 18 12:40:46 2012
-#      by: PyQt4 UI code generator 4.8.1
+# Created: Sat Mar 31 13:52:21 2012
+#      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
 

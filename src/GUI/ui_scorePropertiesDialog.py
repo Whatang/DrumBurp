@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike\workspace\DrumBurp\src\GUI\scorePropertiesDialog.ui'
 #
-# Created: Sat Mar 03 22:59:56 2012
+# Created: Sat Sep 01 17:27:14 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -18,7 +18,7 @@ class Ui_ScoreDialog(object):
     def setupUi(self, ScoreDialog):
         ScoreDialog.setObjectName(_fromUtf8("ScoreDialog"))
         ScoreDialog.resize(482, 145)
-        ScoreDialog.setWindowTitle(QtGui.QApplication.translate("ScoreDialog", "Dialog", None, QtGui.QApplication.UnicodeUTF8))
+        ScoreDialog.setWindowTitle(QtGui.QApplication.translate("ScoreDialog", "Edit Score Properties", None, QtGui.QApplication.UnicodeUTF8))
         self.gridLayout = QtGui.QGridLayout(ScoreDialog)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.label = QtGui.QLabel(ScoreDialog)

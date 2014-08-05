@@ -49,6 +49,31 @@ class MeasureCount(object):
         return ((len(self.beats) - 1) +
                 float(lastBeat.numTicks) / beatTicks)
 
+    def timeSig(self):
+        lastBeat = self.beats[-1]
+        beatTicks = lastBeat.ticksPerBeat
+        if beatTicks == lastBeat.numTicks:
+            return len(self.beats), 4
+        else:
+            for i in (6, 4, 3, 2, 1):
+                if (beatTicks % i) == 0 and (lastBeat.numTicks % i) == 0:
+                    denomPerBeat = (lastBeat.numTicks / i)
+                    denom = 4 * denomPerBeat
+                    num = (len(self.beats) - 1) * denomPerBeat
+                    num += beatTicks / i
+                    return num, denom
+
+    def iterBeatTicks(self):
+        for (beatNum, beat) in enumerate(self.beats):
+            for tick in beat.iterTicks():
+                yield(beatNum, beat, tick)
+
+    def iterBeatTimes(self):
+        tick = 0
+        for beat in self.beats:
+            yield tick
+            tick += beat.numTicks
+
     def iterMidiTicks(self):
         total = 0
         for beat in self.beats:

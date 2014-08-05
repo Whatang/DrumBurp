@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\Mike\workspace\DrumBurp\src\GUI\measurePropertiesDialog.ui'
+# Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\measurePropertiesDialog.ui'
 #
-# Created: Sat Mar 03 22:59:55 2012
-#      by: PyQt4 UI code generator 4.8.5
+# Created: Sat Mar 31 13:52:24 2012
+#      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -19,7 +19,6 @@ class Ui_measurePropertiesDialog(object):
         measurePropertiesDialog.setObjectName(_fromUtf8("measurePropertiesDialog"))
         measurePropertiesDialog.resize(352, 223)
         measurePropertiesDialog.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
-        measurePropertiesDialog.setWindowTitle(QtGui.QApplication.translate("measurePropertiesDialog", "Measure Properties", None, QtGui.QApplication.UnicodeUTF8))
         self.verticalLayout = QtGui.QVBoxLayout(measurePropertiesDialog)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
@@ -30,7 +29,6 @@ class Ui_measurePropertiesDialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.measureTabs.sizePolicy().hasHeightForWidth())
         self.measureTabs.setSizePolicy(sizePolicy)
-        self.measureTabs.setToolTip(QtGui.QApplication.translate("measurePropertiesDialog", "Select the count for the measure", None, QtGui.QApplication.UnicodeUTF8))
         self.measureTabs.setObjectName(_fromUtf8("measureTabs"))
         self.horizontalLayout_2.addWidget(self.measureTabs)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
@@ -53,6 +51,7 @@ class Ui_measurePropertiesDialog(object):
         QtCore.QMetaObject.connectSlotsByName(measurePropertiesDialog)
 
     def retranslateUi(self, measurePropertiesDialog):
-        pass
+        measurePropertiesDialog.setWindowTitle(QtGui.QApplication.translate("measurePropertiesDialog", "Measure Properties", None, QtGui.QApplication.UnicodeUTF8))
+        self.measureTabs.setToolTip(QtGui.QApplication.translate("measurePropertiesDialog", "Select the count for the measure", None, QtGui.QApplication.UnicodeUTF8))
 
 from Widgets.measureTabs_plugin import measureTabs

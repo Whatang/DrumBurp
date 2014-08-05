@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\Mike\workspace\DrumBurp\src\GUI\newScoreDialog.ui'
+# Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\newScoreDialog.ui'
 #
-# Created: Sat Mar 03 22:59:55 2012
-#      by: PyQt4 UI code generator 4.8.5
+# Created: Sat Mar 31 13:52:24 2012
+#      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -19,7 +19,6 @@ class Ui_newScoreDialog(object):
         newScoreDialog.setObjectName(_fromUtf8("newScoreDialog"))
         newScoreDialog.resize(288, 281)
         newScoreDialog.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
-        newScoreDialog.setWindowTitle(QtGui.QApplication.translate("newScoreDialog", "New Score", None, QtGui.QApplication.UnicodeUTF8))
         self.verticalLayout = QtGui.QVBoxLayout(newScoreDialog)
         self.verticalLayout.setSpacing(9)
         self.verticalLayout.setMargin(9)
@@ -28,15 +27,10 @@ class Ui_newScoreDialog(object):
         self.gridLayout.setVerticalSpacing(6)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.label = QtGui.QLabel(newScoreDialog)
-        self.label.setToolTip(QtGui.QApplication.translate("newScoreDialog", "The number of measures in the new score", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("newScoreDialog", "Number of measures", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label.setObjectName(_fromUtf8("label"))
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
         self.numMeasuresSpinBox = QtGui.QSpinBox(newScoreDialog)
-        self.numMeasuresSpinBox.setToolTip(QtGui.QApplication.translate("newScoreDialog", "The number of measures in the new score", None, QtGui.QApplication.UnicodeUTF8))
-        self.numMeasuresSpinBox.setStatusTip(QtGui.QApplication.translate("newScoreDialog", "The number of measures in the new score", None, QtGui.QApplication.UnicodeUTF8))
-        self.numMeasuresSpinBox.setSuffix(QtGui.QApplication.translate("newScoreDialog", " measures", None, QtGui.QApplication.UnicodeUTF8))
         self.numMeasuresSpinBox.setMinimum(1)
         self.numMeasuresSpinBox.setMaximum(100000)
         self.numMeasuresSpinBox.setProperty("value", 32)
@@ -46,7 +40,6 @@ class Ui_newScoreDialog(object):
         self.gridLayout.addItem(spacerItem, 0, 2, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         self.measureTabs = measureTabs(newScoreDialog)
-        self.measureTabs.setToolTip(QtGui.QApplication.translate("newScoreDialog", "The default measure count for the new score", None, QtGui.QApplication.UnicodeUTF8))
         self.measureTabs.setObjectName(_fromUtf8("measureTabs"))
         self.verticalLayout.addWidget(self.measureTabs)
         spacerItem1 = QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
@@ -70,6 +63,12 @@ class Ui_newScoreDialog(object):
         QtCore.QMetaObject.connectSlotsByName(newScoreDialog)
 
     def retranslateUi(self, newScoreDialog):
-        pass
+        newScoreDialog.setWindowTitle(QtGui.QApplication.translate("newScoreDialog", "New Score", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setToolTip(QtGui.QApplication.translate("newScoreDialog", "The number of measures in the new score", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("newScoreDialog", "Number of measures", None, QtGui.QApplication.UnicodeUTF8))
+        self.numMeasuresSpinBox.setToolTip(QtGui.QApplication.translate("newScoreDialog", "The number of measures in the new score", None, QtGui.QApplication.UnicodeUTF8))
+        self.numMeasuresSpinBox.setStatusTip(QtGui.QApplication.translate("newScoreDialog", "The number of measures in the new score", None, QtGui.QApplication.UnicodeUTF8))
+        self.numMeasuresSpinBox.setSuffix(QtGui.QApplication.translate("newScoreDialog", " measures", None, QtGui.QApplication.UnicodeUTF8))
+        self.measureTabs.setToolTip(QtGui.QApplication.translate("newScoreDialog", "The default measure count for the new score", None, QtGui.QApplication.UnicodeUTF8))
 
 from Widgets.measureTabs_plugin import measureTabs

@@ -39,7 +39,6 @@ import copy
 import hashlib
 from StringIO import StringIO
 
-#pylint: disable-msg=R0904
 
 class InconsistentRepeats(StandardError):
     "Bad repeat data"
@@ -909,8 +908,10 @@ class ScoreFactory(object):
 
     @classmethod
     def saveScore(cls, score, filename):
+        scoreBuffer = StringIO()
+        score.write(scoreBuffer)
         with open(filename, 'w') as handle:
-            score.write(handle)
+            handle.write(scoreBuffer.getvalue())
 
 class Indenter(object):
     def __init__(self, indent = "  "):

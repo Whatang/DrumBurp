@@ -38,7 +38,7 @@
      <number>3</number>
     </property>
     <item>
-     <widget class="QGroupBox" name="groupBox">
+     <widget class="QGroupBox" name="scorePropertiesGroup">
       <property name="title">
        <string>Score Properties</string>
       </property>
@@ -337,21 +337,6 @@ Sections in the score are defined by a section end barline, and the title that a
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="pagesLabel">
-         <property name="toolTip">
-          <string>Number of pages in this score</string>
-         </property>
-         <property name="whatsThis">
-          <string>The number of pages in this score.
-
-The number of pages used by this score depends on the score width, the font size and the current page size selected. The number of pages being used with the current settings is displayed here.</string>
-         </property>
-         <property name="text">
-          <string>0 Pages</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <spacer name="horizontalSpacer_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -451,6 +436,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <addaction name="actionPrint"/>
     <addaction name="actionExportASCII"/>
     <addaction name="actionExportPDF"/>
+    <addaction name="actionExportLilypond"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -501,6 +487,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
      <string>Help</string>
     </property>
     <addaction name="actionWhatsThis"/>
+    <addaction name="actionOnlineManual"/>
     <addaction name="separator"/>
     <addaction name="actionAboutDrumBurp"/>
    </widget>
@@ -521,7 +508,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <bool>true</bool>
    </property>
    <property name="allowedAreas">
-    <set>Qt::TopToolBarArea</set>
+    <set>Qt::AllToolBarAreas</set>
    </property>
    <property name="iconSize">
     <size>
@@ -548,7 +535,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <bool>true</bool>
    </property>
    <property name="allowedAreas">
-    <set>Qt::TopToolBarArea</set>
+    <set>Qt::AllToolBarAreas</set>
    </property>
    <property name="iconSize">
     <size>
@@ -589,6 +576,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
    <addaction name="actionPrint"/>
    <addaction name="actionExportASCII"/>
    <addaction name="actionExportPDF"/>
+   <addaction name="actionExportLilypond"/>
   </widget>
   <widget class="QToolBar" name="helpToolBar">
    <property name="windowTitle">
@@ -607,6 +595,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <bool>false</bool>
    </attribute>
    <addaction name="actionWhatsThis"/>
+   <addaction name="actionOnlineManual"/>
    <addaction name="actionAboutDrumBurp"/>
   </widget>
   <widget class="QDockWidget" name="fontDock">
@@ -1679,9 +1668,43 @@ Plays the currently selected measures back through MIDI. To stop playback, click
     <string>Ctrl+Shift+V</string>
    </property>
   </action>
-  <action name="actionOnline_Help">
+  <action name="actionOnlineManual">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/book.png</normaloff>:/Icons/Icons/book.png</iconset>
+   </property>
    <property name="text">
-    <string>Online Help</string>
+    <string>Online Manual</string>
+   </property>
+   <property name="toolTip">
+    <string>Open the Online Manual in a web browser</string>
+   </property>
+   <property name="statusTip">
+    <string>Open the Online Manual in a web browser</string>
+   </property>
+  </action>
+  <action name="actionExportLilypond">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/lilypond-icon.png</normaloff>:/Icons/Icons/lilypond-icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Export Lilypond</string>
+   </property>
+   <property name="toolTip">
+    <string>Export Lilypond</string>
+   </property>
+   <property name="statusTip">
+    <string>Export this score to a Lilypond input file</string>
+   </property>
+   <property name="whatsThis">
+    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Export this score to a Lilypond file.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Lilypond is a TeX based music typesetting system available from &lt;a href=&quot;http://www.lilypond.org&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;lilypond.org&lt;/span&gt;&lt;/a&gt;. DrumBurp can export its scores to the Lilypond input format. Run Lilypond on the resulting files to have your score set in notation rather than as tab.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </action>
  </widget>
