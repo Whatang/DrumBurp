@@ -24,6 +24,9 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QPushButton" name="filenameButton">
+       <property name="toolTip">
+        <string>Click to select a new filename</string>
+       </property>
        <property name="text">
         <string>Filename:</string>
        </property>
@@ -36,6 +39,9 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>The filename to export this score to</string>
        </property>
        <property name="frameShape">
         <enum>QFrame::NoFrame</enum>
@@ -64,8 +70,11 @@
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
       <widget class="QCheckBox" name="metadataCheck">
+       <property name="toolTip">
+        <string>Export the song information</string>
+       </property>
        <property name="text">
-        <string>Song metadata (Title, artist, etc.)</string>
+        <string>Song info (Title, artist, etc.)</string>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -74,6 +83,9 @@
      </item>
      <item row="0" column="1">
       <widget class="QCheckBox" name="underlineCheck">
+       <property name="toolTip">
+        <string>Underline each section title</string>
+       </property>
        <property name="text">
         <string>Underline section titles with ~ characters</string>
        </property>
@@ -84,6 +96,9 @@
      </item>
      <item row="2" column="0">
       <widget class="QCheckBox" name="kitKeyCheck">
+       <property name="toolTip">
+        <string>Export the drum kit key</string>
+       </property>
        <property name="text">
         <string>Drum kit key</string>
        </property>
@@ -94,6 +109,9 @@
      </item>
      <item row="3" column="0">
       <widget class="QCheckBox" name="omitEmptyCheck">
+       <property name="toolTip">
+        <string>Empty lines for unlocked drums are not written to the ASCII tab</string>
+       </property>
        <property name="text">
         <string>Omit empty lines for unlocked drums</string>
        </property>
@@ -104,6 +122,9 @@
      </item>
      <item row="4" column="0">
       <widget class="QCheckBox" name="printCountsCheck">
+       <property name="toolTip">
+        <string>Export the beat count underneath each measure</string>
+       </property>
        <property name="text">
         <string>Beat count</string>
        </property>
@@ -127,6 +148,9 @@
      </item>
      <item row="3" column="1">
       <widget class="QCheckBox" name="emptyLineAfterSectionCheck">
+       <property name="toolTip">
+        <string>Include a blank line after each section title</string>
+       </property>
        <property name="text">
         <string>Empty line after section title</string>
        </property>
@@ -137,6 +161,9 @@
      </item>
      <item row="2" column="1">
       <widget class="QCheckBox" name="emptyLineBeforeSectionCheck">
+       <property name="toolTip">
+        <string>Include a blank line before each section title</string>
+       </property>
        <property name="text">
         <string>Empty line before section title</string>
        </property>

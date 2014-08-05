@@ -22,7 +22,6 @@ Created on 12 Mar 2011
 @author: Mike Thomas
 
 '''
-
 from QMetaDataDialog import QMetadataDialog
 from QGraphicsListData import QGraphicsListData
 
@@ -51,7 +50,7 @@ class QMetaData(QGraphicsListData):
         return self._props.metadataFont
 
     def mouseDoubleClickEvent(self, event_):
-        dialog = QMetadataDialog(self._qScore)
+        dialog = QMetadataDialog(self._qScore, self.scene().parent())
         if dialog.exec_():
             changed = any((getattr(self._qScore, attribute) != value
                           for (attribute, value) in

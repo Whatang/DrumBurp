@@ -208,10 +208,6 @@ class QStaff(QtGui.QGraphicsItemGroup):
         qMeasure = self._measures[np.measureIndex]
         qMeasure.setHighlight(np, onOff)
 
-    def changeRepeatCount(self, np):
-        qMeasure = self._measures[np.measureIndex]
-        qMeasure.changeRepeatCount()
-
     def getQMeasure(self, np):
         return self._measures[np.measureIndex]
 

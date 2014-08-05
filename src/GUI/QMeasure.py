@@ -28,15 +28,12 @@ from PyQt4 import QtGui, QtCore
 from Data.NotePosition import NotePosition
 from Data import DBConstants
 
-from DBCommands import (ToggleNote,
-                        SetRepeatCountCommand,
-                        EditMeasurePropertiesCommand,
-                        SetAlternateCommand)
-from QEditMeasureDialog import QEditMeasureDialog
-from QRepeatCountDialog import QRepeatCountDialog
-from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
-from QMeasureContextMenu import QMeasureContextMenu
-from QAlternateDialog import QAlternateDialog
+from DBFSMEvents import (LeftPress, MidPress, RightPress,
+                         EditMeasureProperties,
+                         MouseMove, MouseRelease,
+                         ChangeRepeatCount,
+                         SetAlternateEvent)
+
 
 class QMeasure(QtGui.QGraphicsItem):
     '''
@@ -58,10 +55,13 @@ class QMeasure(QtGui.QGraphicsItem):
         self._highlight = None
         self._rect = QtCore.QRectF(0, 0, 0, 0)
         self._repeatCountRect = None
-        self._startClick = None
         self._alternate = None
         self._playing = False
         self._dragHighlight = False
+        self._potentials = []
+        self._potentialDrum = None
+        self._potentialHead = None
+        self._potentialSet = None
         self.setAcceptsHoverEvents(True)
         self.setMeasure(measure)
 
@@ -99,11 +99,18 @@ class QMeasure(QtGui.QGraphicsItem):
         fontMetric = QtGui.QFontMetrics(font)
         baseline = self.numLines() * self._qScore.ySpacing
         dot = self._qScore.scale
+        potential = False
         for drumIndex in range(0, self.numLines()):
             lineHeight = baseline + (self._qScore.ySpacing / 2.0) - 1
             lineIndex = self.lineIndex(drumIndex)
             for noteTime, x in enumerate(xValues):
-                text = self._measure.noteAt(noteTime, lineIndex)
+                if (drumIndex == self._potentialDrum
+                    and noteTime in self._potentialSet):
+                    text = self._potentialHead
+                    potential = True
+                    painter.setPen(QtGui.QColor(QtCore.Qt.blue))
+                else:
+                    text = self._measure.noteAt(noteTime, lineIndex)
                 if text == DBConstants.EMPTY_NOTE:
                     painter.drawLine(x + dot, lineHeight,
                                      x + self._qScore.xSpacing - dot,
@@ -114,6 +121,9 @@ class QMeasure(QtGui.QGraphicsItem):
                     offset = br.y() - (self._qScore.ySpacing - br.height()) / 2
                     painter.drawText(QtCore.QPointF(left, baseline - offset),
                                      text)
+                if potential:
+                    painter.setPen(QtGui.QColor(QtCore.Qt.black))
+                    potential = False
             baseline -= self._qScore.ySpacing
 
     def _paintHighlight(self, painter, xValues):
@@ -228,17 +238,6 @@ class QMeasure(QtGui.QGraphicsItem):
         self._setDimensions()
         self.update()
 
-    def changeRepeatCount(self):
-        repDialog = QRepeatCountDialog(self._measure.repeatCount,
-                                       self._qScore.parent())
-        if (repDialog.exec_()
-            and self._measure.repeatCount != repDialog.getValue()):
-            command = SetRepeatCountCommand(self._qScore,
-                                            self._measurePosition(),
-                                            self._measure.repeatCount,
-                                            repDialog.getValue())
-            self._qScore.addCommand(command)
-
     def _isOverNotes(self, point):
         return (1 <= (point.y() / self._qScore.ySpacing)
                 < (1 + self.numLines()))
@@ -299,85 +298,50 @@ class QMeasure(QtGui.QGraphicsItem):
         self.parentItem().clearHighlight()
         self.setCursor(QtCore.Qt.ArrowCursor)
 
-    def toggleNote(self, noteTime, drumIndex, head = None):
-        notePosition = self.makeNotePosition(noteTime, drumIndex)
-        if head is None:
-            head = self._props.head
-        command = ToggleNote(self._qScore, notePosition, head)
-        self._qScore.addCommand(command)
-
     def mousePressEvent(self, event):
         point = self.mapFromScene(event.scenePos())
+        eventType = LeftPress
+        np = None
         if self._isOverNotes(point):
             noteTime, drumIndex = self._getNotePosition(point)
-            self._notePressEvent(event, noteTime, drumIndex)
-        else:
-            self._qScore.clearDragSelection()
-            event.ignore()
+            np = self.makeNotePosition(noteTime, drumIndex)
+            if event.button() == QtCore.Qt.MidButton:
+                eventType = MidPress
+            elif event.button() == QtCore.Qt.RightButton:
+                eventType = RightPress
+        self._qScore.sendFsmEvent(eventType(self, np, event.screenPos()))
 
     def mouseMoveEvent(self, event):
-        if self._startClick is None:
-            event.ignore()
-            return
-        point = self.mapFromScene(event.scenePos())
         item = self._qScore.itemAt(event.scenePos())
-        if item is self and self._isOverNotes(point):
-            if self._getNotePosition(point) == self._startClick:
-                event.ignore()
-                return
-        if isinstance(item, QMeasure):
-            self._qScore.dragging(item)
-
-    def _notePressEvent(self, event, noteTime, drumIndex):
-        menu = None
-        self._startClick = None
-        if event.button() == QtCore.Qt.MidButton:
-            event.ignore()
-            self._qScore.clearDragSelection()
-            menu = QMenuIgnoreCancelClick(self._qScore)
-            kit = self._qScore.score.drumKit
-            for noteHead in kit.allowedNoteHeads(drumIndex):
-                def noteAction(nh = noteHead):
-                    self.toggleNote(noteTime, drumIndex, nh)
-                menu.addAction(noteHead, noteAction)
-        elif event.button() == QtCore.Qt.RightButton:
-            event.ignore()
-            if self._qScore.hasDragSelection():
-                np = self.makeNotePosition(None, None)
-                if not self._qScore.inDragSelection(np):
-                    self._qScore.clearDragSelection()
-            menu = QMeasureContextMenu(self._qScore, self,
-                                       self.makeNotePosition(noteTime,
-                                                              drumIndex),
-                                       self._measure.noteAt(noteTime,
-                                                            drumIndex),
-                                       self._measure.alternateText)
-        else:
-            self._qScore.clearDragSelection()
-            self._startClick = (noteTime, drumIndex)
-        if menu is not None:
-            menu.exec_(event.screenPos())
+        if item is self:
+            point = self.mapFromScene(event.scenePos())
+            if self._isOverNotes(point):
+                np = self._getNotePosition(point)
+                np = self.makeNotePosition(*np)
+                self._qScore.sendFsmEvent(MouseMove(self, np))
+        elif isinstance(item, QMeasure):
+            item.mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
         point = self.mapFromScene(event.scenePos())
-        if self._qScore.isDragging():
-            self._qScore.endDragging()
+        np = None
         if self._isOverNotes(point):
             noteTime, drumIndex = self._getNotePosition(point)
-            if (event.button() == QtCore.Qt.LeftButton and
-                self._startClick == (noteTime, drumIndex)):
-                self.toggleNote(noteTime, drumIndex)
-            else:
-                event.ignore()
-        else:
-            event.ignore()
+            np = self.makeNotePosition(noteTime, drumIndex)
+        self._qScore.sendFsmEvent(MouseRelease(self, np))
 
     def mouseDoubleClickEvent(self, event):
         point = self.mapFromScene(event.scenePos())
         if self._isOverCount(point):
-            self.editMeasureProperties()
+            counter = self._measure.counter
+            fsmEvent = EditMeasureProperties(counter,
+                                             self._props.counterRegistry,
+                                             self._measurePosition())
+            self._qScore.sendFsmEvent(fsmEvent)
         elif self._isOverRepeatCount(point):
-            self.changeRepeatCount()
+            fsmEvent = ChangeRepeatCount(self._measure.repeatCount,
+                                         self._measurePosition())
+            self._qScore.sendFsmEvent(fsmEvent)
         elif self._isOverAlternate(point):
             self.setAlternate()
         else:
@@ -393,29 +357,9 @@ class QMeasure(QtGui.QGraphicsItem):
         np = NotePosition(measureIndex = self._index)
         return self.parentItem().augmentNotePosition(np)
 
-    def editMeasureProperties(self):
-        counter = self._measure.counter
-        defCounter = self._qScore.defaultCount
-        editDialog = QEditMeasureDialog(counter,
-                                        defCounter,
-                                        self._props.counterRegistry,
-                                        self._qScore.parent())
-        if editDialog.exec_():
-            newCounter = editDialog.getValues()
-            if (newCounter.countString() != counter.countString()):
-                command = EditMeasurePropertiesCommand(self._qScore,
-                                                       self._measurePosition(),
-                                                       newCounter)
-                self._qScore.addCommand(command)
-
     def setAlternate(self):
-        altDialog = QAlternateDialog(self._measure.alternateText,
-                                     self._qScore.parent())
-        if (altDialog.exec_()
-            and self._measure.alternateText != altDialog.getValue()):
-            command = SetAlternateCommand(self._qScore, self._measurePosition(),
-                                          altDialog.getValue())
-            self._qScore.addCommand(command)
+        self._qScore.sendFsmEvent(SetAlternateEvent(self._measure.alternateText,
+                                                    self._measurePosition()))
 
     def setPlaying(self, onOff):
         self._playing = onOff
@@ -424,3 +368,23 @@ class QMeasure(QtGui.QGraphicsItem):
     def setDragHighlight(self, onOff):
         self._dragHighlight = onOff
         self.update()
+
+    def noteAt(self, np):
+        return self._measure.noteAt(np.noteTime, np.drumIndex)
+
+    def alternateText(self):
+        return self._measure.alternateText
+
+    def setPotentials(self, notes = None, head = None):
+        if notes is None:
+            newNotes = []
+            self._potentialDrum = None
+        else:
+            newNotes = [np.noteTime for np in notes]
+            self._potentialDrum = notes[0].drumIndex
+        if newNotes != self._potentials:
+            self._potentials = newNotes
+            self._potentialSet = set(self._potentials)
+            self._potentialHead = head
+            self.update()
+

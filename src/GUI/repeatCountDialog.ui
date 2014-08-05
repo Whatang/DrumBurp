@@ -44,6 +44,9 @@
      </item>
      <item>
       <widget class="QLabel" name="label">
+       <property name="toolTip">
+        <string>Select the number of repeats</string>
+       </property>
        <property name="text">
         <string>Repeat count</string>
        </property>
@@ -54,6 +57,9 @@
      </item>
      <item>
       <widget class="QSpinBox" name="countBox">
+       <property name="toolTip">
+        <string>Select the number of repeats</string>
+       </property>
        <property name="minimum">
         <number>2</number>
        </property>

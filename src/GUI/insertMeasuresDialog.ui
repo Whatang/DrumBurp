@@ -18,6 +18,9 @@
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
       <widget class="QLabel" name="label">
+       <property name="toolTip">
+        <string>Number of measures to insert</string>
+       </property>
        <property name="text">
         <string>Number of measures</string>
        </property>
@@ -117,7 +120,11 @@
     </layout>
    </item>
    <item>
-    <widget class="measureTabs" name="measureTabs"/>
+    <widget class="measureTabs" name="measureTabs">
+     <property name="toolTip">
+      <string>Select the count to use for the new measures</string>
+     </property>
+    </widget>
    </item>
    <item>
     <spacer name="verticalSpacer">

@@ -40,9 +40,10 @@ import DBIcons
 import os
 import DBMidi
 from Data.Score import InconsistentRepeats
+from DBFSMEvents import StartPlaying, StopPlaying
 
 APPNAME = "DrumBurp"
-DB_VERSION = "0.5"
+DB_VERSION = "0.6"
 #pylint:disable-msg=R0904
 
 class FakeQSettings(object):
@@ -366,7 +367,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if self.okToContinue():
             counter = self.scoreScene.defaultCount
             registry = self.songProperties.counterRegistry
-            dialog = QNewScoreDialog(self.parent(),
+            dialog = QNewScoreDialog(self,
                                      counter,
                                      registry)
             if dialog.exec_():
@@ -433,7 +434,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             fname = os.path.splitext(fname)[0] + '.txt'
         props = self.songProperties
         self._asciiSettings = props.generateAsciiSettings(self._asciiSettings)
-        asciiDialog = QAsciiExportDialog(fname, self,
+        asciiDialog = QAsciiExportDialog(fname, parent = self,
                                          settings = self._asciiSettings)
         if not asciiDialog.exec_():
             return
@@ -500,10 +501,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def on_actionRedo_triggered(self):
         self.scoreScene.redo()
 
-    @staticmethod
     @pyqtSignature("")
-    def on_actionAboutDrumBurp_triggered():
-        dlg = DBInfoDialog(DB_VERSION)
+    def on_actionAboutDrumBurp_triggered(self):
+        dlg = DBInfoDialog(DB_VERSION, self)
         dlg.exec_()
 
     def _getPaperSize(self):
@@ -555,7 +555,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     def _canPlayback(self):
         try:
-            measures = list(self.scoreScene.score.iterMeasuresWithRepeats())
+            unused = list(self.scoreScene.score.iterMeasuresWithRepeats())
         except InconsistentRepeats, exc:
             QMessageBox.warning(self, "Playback error",
                                 "There are inconsistent repeat markings.")
@@ -572,7 +572,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 self.actionPlayScore.toggle()
                 return
             DBMidi.playScore(self.scoreScene.score)
+            self.musicStart()
         else:
+            self.musicDone()
             DBMidi.shutUp()
 
     def highlightPlayingMeasure(self, index):
@@ -626,7 +628,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 return
             DBMidi.loopBars(self.scoreScene.iterDragSelection(),
                             self.scoreScene.score)
+            self.musicStart()
         else:
+            self.musicDone()
             DBMidi.shutUp()
 
     @pyqtSignature("bool")
@@ -638,7 +642,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             DBMidi.loopBars(self.scoreScene.iterDragSelection(),
                             self.scoreScene.score,
                             loopCount = 1)
+            self.musicStart()
         else:
+            self.musicDone()
             DBMidi.shutUp()
 
     @pyqtSignature("")
@@ -667,12 +673,16 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def on_actionDeleteMeasures_triggered(self):
         self.scoreScene.deleteMeasures()
 
+    def musicStart(self):
+        self.scoreScene.sendFsmEvent(StartPlaying())
+
     def musicDone(self):
         players = [self.actionPlayScore, self.actionPlayOnce,
                    self.actionLoopBars]
         for playButton in players:
             if playButton.isChecked():
                 playButton.setChecked(False)
+        self.scoreScene.sendFsmEvent(StopPlaying())
 
     @pyqtSignature("int")
     def on_paperBox_currentIndexChanged(self, index):

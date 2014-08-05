@@ -28,25 +28,20 @@ from PyQt4 import QtGui
 from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 import DBIcons
 from Data import DBConstants
-from DBCommands import (RepeatNoteCommand, InsertMeasuresCommand,
+from DBCommands import (InsertMeasuresCommand,
                         InsertSectionCommand, DeleteMeasureCommand,
                         SetAlternateCommand)
-from QRepeatDialog import QRepeatDialog
 from QInsertMeasuresDialog import QInsertMeasuresDialog
+from DBFSMEvents import MenuSelect, RepeatNotes
 
 class QMeasureContextMenu(QMenuIgnoreCancelClick):
-    '''
-    classdocs
-    '''
-
-
-    def __init__(self, qScore, qmeasure, notePosition, noteText, alternateText):
+    def __init__(self, qScore, qmeasure, firstNote, noteText, alternateText):
         '''
         Constructor
         '''
         super(QMeasureContextMenu, self).__init__(qScore)
         self._qmeasure = qmeasure
-        self._np = notePosition
+        self._np = firstNote
         self._noteText = noteText
         self._alternate = alternateText
         self._props = self._qScore.displayProperties
@@ -65,29 +60,28 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                            self._qmeasure.setAlternate)
 
     def _setupEditSection(self):
-        actionText = "Repeat note"
-        repeatNoteAction = self.addAction(DBIcons.getIcon("repeat"),
-                                          actionText, self._repeatNote)
-        if (self._noteText ==
+        if (self._noteText !=
             DBConstants.EMPTY_NOTE):
-            repeatNoteAction.setEnabled(False)
+            actionText = "Repeat note"
+            self.addAction(DBIcons.getIcon("repeat"),
+                           actionText, self._repeatNote)
         self.addSeparator()
         if self._qScore.hasDragSelection():
             self.addAction(DBIcons.getIcon("copy"), "Copy Selected Measures",
-                           lambda:self._qScore.copyMeasures)
+                           self._copyMeasures)
             pasteAction = self.addAction(DBIcons.getIcon("paste"),
                                          "Paste Over Selected Measures",
-                                         self._qScore.pasteMeasuresOver)
+                                         self._pasteMeasuresOver)
             fillAction = self.addAction(DBIcons.getIcon("paste"),
                                          "Fill Paste Selected Measures",
-                                         lambda: self._qScore.pasteMeasuresOver(True))
+                                         self._fillPaste)
             fillAction.setEnabled(len(self._qScore.measureClipboard) > 0)
         else:
             self.addAction(DBIcons.getIcon("copy"), "Copy Measure",
-                           lambda:self._qScore.copyMeasures(self._np))
+                           self._copyOneMeasure)
             pasteAction = self.addAction(DBIcons.getIcon("paste"),
                                          "Insert Measures From Clipboard",
-                                         lambda:self._qScore.insertMeasures(self._np))
+                                         self._insertOneMeasure)
         pasteAction.setEnabled(len(self._qScore.measureClipboard) > 0)
         self.addSeparator()
 
@@ -108,53 +102,50 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         if self._qScore.hasDragSelection():
             deleteAction = self.addAction(DBIcons.getIcon("delete"),
                                           "Delete Selected Measures",
-                                          self._qScore.deleteMeasures)
+                                          self._deleteMeasures)
             deleteAction.setEnabled(score.numMeasures() >
                                     len(list(self._qScore.iterDragSelection())))
             self.addAction("Clear Selected Measures",
-                           self._qScore.clearMeasures)
+                           self._clearMeasures)
         else:
             deleteAction = self.addAction(DBIcons.getIcon("delete"),
                                           "Delete Measure",
-                                          lambda:self._qScore.deleteMeasures(self._np))
+                                          self._deleteOneMeasure)
             deleteAction.setEnabled(score.numMeasures() > 1)
             self.addAction("Clear Measure",
-                           lambda : self._qScore.clearMeasures(self._np))
+                           self._clearOneMeasure)
         deleteMenu = self.addMenu("Delete...")
         deleteStaffAction = deleteMenu.addAction("Staff", self._deleteStaff)
         deleteStaffAction.setEnabled(score.numStaffs() > 1)
         deleteSectionAction = deleteMenu.addAction("Section",
-            self._deleteSection)
+                                                   self._deleteSection)
         deleteSectionAction.setEnabled(score.numSections() > 1)
         deleteEmptyAction = deleteMenu.addAction("Empty Trailing Measures",
-            self._deleteEmptyMeasures)
+                                                 self._deleteEmptyMeasures)
         emptyPositions = score.trailingEmptyMeasures()
         deleteEmptyAction.setEnabled(score.numMeasures() > 1
                                      and len(emptyPositions) > 0)
         self.addSeparator()
 
     def _repeatNote(self):
-        repeatDialog = QRepeatDialog(self._qScore.parent())
-        if repeatDialog.exec_():
-            nRepeats, repInterval = repeatDialog.getValues()
-            command = RepeatNoteCommand(self._qScore, self._np,
-                                        nRepeats,
-                                        repInterval, self._noteText)
-            self._qScore.addCommand(command)
+        self._qScore.sendFsmEvent(RepeatNotes())
 
     def _insertDefaultMeasure(self, np):
         mc = self._qScore.defaultCount
         command = InsertMeasuresCommand(self._qScore, np, 1,
                                         mc)
         self._qScore.addCommand(command)
+        self._qScore.sendFsmEvent(MenuSelect())
 
     def _insertMeasureBefore(self):
         self._insertDefaultMeasure(self._np)
+        self._qScore.sendFsmEvent(MenuSelect())
 
     def _insertMeasureAfter(self):
         np = copy.copy(self._np)
         np.measureIndex += 1
         self._insertDefaultMeasure(np)
+        self._qScore.sendFsmEvent(MenuSelect())
 
     def _insertOtherMeasures(self):
         np = copy.copy(self._np)
@@ -169,10 +160,12 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
             command = InsertMeasuresCommand(self._qScore, np, nMeasures,
                                             counter)
             self._qScore.addCommand(command)
+        self._qScore.sendFsmEvent(MenuSelect())
 
     def _copySection(self, sectionIndex):
         command = InsertSectionCommand(self._qScore, self._np, sectionIndex)
         self._qScore.addCommand(command)
+        self._qScore.sendFsmEvent(MenuSelect())
 
     def _deleteStaff(self):
         score = self._qScore.score
@@ -192,6 +185,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                 np.measureIndex -= 1
             self._qScore.addRepeatedCommand("delete staff",
                                             DeleteMeasureCommand, arguments)
+        self._qScore.sendFsmEvent(MenuSelect())
 
     def _deleteSection(self):
         score = self._qScore.score
@@ -218,6 +212,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                 np.staffIndex -= 1
             self._qScore.addRepeatedCommand("delete section: " + sectionName,
                                             DeleteMeasureCommand, arguments)
+        self._qScore.sendFsmEvent(MenuSelect())
 
     def _deleteEmptyMeasures(self):
         score = self._qScore.score
@@ -232,9 +227,47 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
             arguments = [(np,) for np in positions]
             self._qScore.addRepeatedCommand("delete empty measures",
                                             DeleteMeasureCommand, arguments)
+        self._qScore.sendFsmEvent(MenuSelect())
 
     def _deleteAlternate(self):
         np = self._np.makeMeasurePosition()
         command = SetAlternateCommand(self._qScore, np,
                                       None)
         self._qScore.addCommand(command)
+        self._qScore.sendFsmEvent(MenuSelect())
+
+    def _copyOneMeasure(self):
+        self._qScore.copyMeasures(self._np)
+        self._qScore.sendFsmEvent(MenuSelect())
+
+    def _copyMeasures(self):
+        self._qScore.copyMeasures()
+        self._qScore.sendFsmEvent(MenuSelect())
+
+    def _pasteMeasuresOver(self):
+        self._qScore.pasteMeasuresOver()
+        self._qScore.sendFsmEvent(MenuSelect())
+
+    def _fillPaste(self):
+        self._qScore.pasteMeasuresOver(True)
+        self._qScore.sendFsmEvent(MenuSelect())
+
+    def _insertOneMeasure(self):
+        self._qScore.insertMeasures(self._np)
+        self._qScore.sendFsmEvent(MenuSelect())
+
+    def _deleteMeasures(self):
+        self._qScore.deleteMeasures()
+        self._qScore.sendFsmEvent(MenuSelect())
+
+    def _deleteOneMeasure(self):
+        self._qScore.deleteMeasures(self._np)
+        self._qScore.sendFsmEvent(MenuSelect())
+
+    def _clearMeasures(self):
+        self._qScore.clearMeasures()
+        self._qScore.sendFsmEvent(MenuSelect())
+
+    def _clearOneMeasure(self):
+        self._qScore.clearMeasures(self._np)
+        self._qScore.sendFsmEvent(MenuSelect())

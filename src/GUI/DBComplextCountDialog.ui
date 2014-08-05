@@ -18,6 +18,9 @@
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <widget class="QListWidget" name="beatList">
+       <property name="toolTip">
+        <string>List of beats in the measure count</string>
+       </property>
        <property name="editTriggers">
         <set>QAbstractItemView::NoEditTriggers</set>
        </property>
@@ -30,6 +33,9 @@
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="QPushButton" name="addButton">
+         <property name="toolTip">
+          <string>Add a new beat at the end of this count</string>
+         </property>
          <property name="text">
           <string>Add Beat</string>
          </property>
@@ -37,6 +43,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="deleteButton">
+         <property name="toolTip">
+          <string>Delete the currently selected count</string>
+         </property>
          <property name="text">
           <string>Delete Beat</string>
          </property>
@@ -50,7 +59,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="countBox"/>
+        <widget class="QComboBox" name="countBox">
+         <property name="toolTip">
+          <string>Count to use for the current beat</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QLabel" name="label_3">
@@ -60,7 +73,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QSpinBox" name="numTicksSpinBox"/>
+        <widget class="QSpinBox" name="numTicksSpinBox">
+         <property name="toolTip">
+          <string>How many ticks of the count should the current beat use?</string>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="verticalSpacer">
@@ -81,6 +98,9 @@
    </item>
    <item>
     <widget class="QGroupBox" name="groupBox">
+     <property name="toolTip">
+      <string>Preview of the measure count according to the current settings</string>
+     </property>
      <property name="title">
       <string>Preview</string>
      </property>
@@ -115,6 +135,9 @@
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="toolTip">
+      <string>Reset the count to the original settings</string>
+     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>

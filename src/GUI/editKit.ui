@@ -463,6 +463,9 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="toolTip">
+             <string>Name for this drum</string>
+            </property>
             <property name="text">
              <string>Name</string>
             </property>
@@ -523,6 +526,9 @@
             <property name="toolTip">
              <string>Abbreviation for this drum</string>
             </property>
+            <property name="statusTip">
+             <string>Abbreviation for this drum</string>
+            </property>
             <property name="inputMask">
              <string>NN; </string>
             </property>
@@ -538,6 +544,9 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Copy the data from one of the drums in the current score to this drum</string>
             </property>
             <property name="text">
              <string>Convert from existing drum?</string>
@@ -868,6 +877,9 @@
       <layout class="QVBoxLayout" name="verticalLayout_6">
        <item>
         <widget class="QGroupBox" name="groupBox_4">
+         <property name="toolTip">
+          <string>Mute audio in this dialog</string>
+         </property>
          <property name="title">
           <string>Sound</string>
          </property>
@@ -906,6 +918,9 @@
            <widget class="QLabel" name="label_7">
             <property name="text">
              <string>Play sound effects</string>
+            </property>
+            <property name="buddy">
+             <cstring>muteButton</cstring>
             </property>
            </widget>
           </item>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike\workspace\DrumBurp\src\GUI\editKit.ui'
 #
-# Created: Sun Jan 22 13:55:21 2012
+# Created: Sat Mar 03 22:59:54 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -221,6 +221,7 @@ class Ui_editKitDialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
         self.label_3.setSizePolicy(sizePolicy)
+        self.label_3.setToolTip(QtGui.QApplication.translate("editKitDialog", "Name for this drum", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("editKitDialog", "Name", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setObjectName(_fromUtf8("label_3"))
         self.gridLayout_2.addWidget(self.label_3, 0, 0, 1, 1)
@@ -251,6 +252,7 @@ class Ui_editKitDialog(object):
         self.drumAbbr.setSizePolicy(sizePolicy)
         self.drumAbbr.setMinimumSize(QtCore.QSize(143, 0))
         self.drumAbbr.setToolTip(QtGui.QApplication.translate("editKitDialog", "Abbreviation for this drum", None, QtGui.QApplication.UnicodeUTF8))
+        self.drumAbbr.setStatusTip(QtGui.QApplication.translate("editKitDialog", "Abbreviation for this drum", None, QtGui.QApplication.UnicodeUTF8))
         self.drumAbbr.setInputMask(QtGui.QApplication.translate("editKitDialog", "NN; ", None, QtGui.QApplication.UnicodeUTF8))
         self.drumAbbr.setMaxLength(2)
         self.drumAbbr.setObjectName(_fromUtf8("drumAbbr"))
@@ -261,6 +263,7 @@ class Ui_editKitDialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_5.sizePolicy().hasHeightForWidth())
         self.label_5.setSizePolicy(sizePolicy)
+        self.label_5.setToolTip(QtGui.QApplication.translate("editKitDialog", "Copy the data from one of the drums in the current score to this drum", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("editKitDialog", "Convert from existing drum?", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setWordWrap(True)
         self.label_5.setObjectName(_fromUtf8("label_5"))
@@ -390,6 +393,7 @@ class Ui_editKitDialog(object):
         self.verticalLayout_6 = QtGui.QVBoxLayout()
         self.verticalLayout_6.setObjectName(_fromUtf8("verticalLayout_6"))
         self.groupBox_4 = QtGui.QGroupBox(editKitDialog)
+        self.groupBox_4.setToolTip(QtGui.QApplication.translate("editKitDialog", "Mute audio in this dialog", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_4.setTitle(QtGui.QApplication.translate("editKitDialog", "Sound", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_4.setObjectName(_fromUtf8("groupBox_4"))
         self.horizontalLayout_6 = QtGui.QHBoxLayout(self.groupBox_4)
@@ -550,6 +554,7 @@ class Ui_editKitDialog(object):
         self.label_3.setBuddy(self.drumName)
         self.label_4.setBuddy(self.drumAbbr)
         self.label_5.setBuddy(self.oldDrum)
+        self.label_7.setBuddy(self.muteButton)
         self.label.setBuddy(self.lockedCheckBox)
 
         self.retranslateUi(editKitDialog)

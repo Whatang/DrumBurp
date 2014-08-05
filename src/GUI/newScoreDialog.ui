@@ -30,6 +30,9 @@
      </property>
      <item row="0" column="0">
       <widget class="QLabel" name="label">
+       <property name="toolTip">
+        <string>The number of measures in the new score</string>
+       </property>
        <property name="text">
         <string>Number of measures</string>
        </property>
@@ -79,7 +82,11 @@
     </layout>
    </item>
    <item>
-    <widget class="measureTabs" name="measureTabs"/>
+    <widget class="measureTabs" name="measureTabs">
+     <property name="toolTip">
+      <string>The default measure count for the new score</string>
+     </property>
+    </widget>
    </item>
    <item>
     <spacer name="verticalSpacer">

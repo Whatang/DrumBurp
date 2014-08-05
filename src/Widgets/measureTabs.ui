@@ -47,6 +47,9 @@
       <number>0</number>
      </property>
      <widget class="QWidget" name="simpleTab">
+      <property name="toolTip">
+       <string>Edit a simple measure count</string>
+      </property>
       <attribute name="title">
        <string>Simple Count</string>
       </attribute>
@@ -58,6 +61,9 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>The size of each measure in the new score in beats</string>
          </property>
          <property name="text">
           <string>Beats</string>
@@ -85,10 +91,10 @@
           </size>
          </property>
          <property name="toolTip">
-          <string>The size of each measure in the new score in ticks</string>
+          <string>The size of each measure in the new score in beats</string>
          </property>
          <property name="statusTip">
-          <string>The size of each measure in the new score in ticks</string>
+          <string>The size of each measure in the new score in beats</string>
          </property>
          <property name="suffix">
           <string> beats</string>
@@ -111,6 +117,9 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>The number of beats in this measure</string>
          </property>
          <property name="text">
           <string>Beat count</string>
@@ -140,17 +149,26 @@
            <height>0</height>
           </size>
          </property>
+         <property name="toolTip">
+          <string>The number of beats in this measure</string>
+         </property>
         </widget>
        </item>
       </layout>
      </widget>
      <widget class="QWidget" name="complexTab">
+      <property name="toolTip">
+       <string>Edit a complex measure count</string>
+      </property>
       <attribute name="title">
        <string>Complex Count</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="0" column="1">
         <widget class="QPushButton" name="complexEditButton">
+         <property name="toolTip">
+          <string>Edit a complex count</string>
+         </property>
          <property name="text">
           <string>Edit Count</string>
          </property>
@@ -205,6 +223,9 @@
        <width>200</width>
        <height>0</height>
       </size>
+     </property>
+     <property name="toolTip">
+      <string>A preview of the measure count currently selected</string>
      </property>
      <property name="title">
       <string>Preview</string>

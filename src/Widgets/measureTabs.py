@@ -116,7 +116,7 @@ class measureTabs(QWidget, Ui_measureTabs):
         self.beatChanged.emit()
 
     def _editComplex(self):
-        dlg = self._complexDialog(self._registry, self._currentCount)
+        dlg = self._complexDialog(self._registry, self._currentCount, self)
         if dlg.exec_():
             self._currentCount = dlg.getCount()
             self.preview()

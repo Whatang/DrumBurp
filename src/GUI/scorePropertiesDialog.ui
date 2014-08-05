@@ -16,36 +16,60 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <widget class="QLabel" name="label">
+     <property name="toolTip">
+      <string>The title of the score</string>
+     </property>
      <property name="text">
       <string>Title</string>
      </property>
     </widget>
    </item>
    <item row="0" column="2">
-    <widget class="QLineEdit" name="titleEdit"/>
+    <widget class="QLineEdit" name="titleEdit">
+     <property name="toolTip">
+      <string>The title of the score</string>
+     </property>
+    </widget>
    </item>
    <item row="1" column="0">
     <widget class="QLabel" name="label_2">
+     <property name="toolTip">
+      <string>The score's artist</string>
+     </property>
      <property name="text">
       <string>Artist</string>
      </property>
     </widget>
    </item>
    <item row="1" column="2">
-    <widget class="QLineEdit" name="artistEdit"/>
+    <widget class="QLineEdit" name="artistEdit">
+     <property name="toolTip">
+      <string>The score's artist</string>
+     </property>
+    </widget>
    </item>
    <item row="2" column="0">
     <widget class="QLabel" name="label_3">
+     <property name="toolTip">
+      <string>The name of the person who wrote this score</string>
+     </property>
      <property name="text">
       <string>Tabbed by</string>
      </property>
     </widget>
    </item>
    <item row="2" column="2">
-    <widget class="QLineEdit" name="creatorEdit"/>
+    <widget class="QLineEdit" name="creatorEdit">
+     <property name="toolTip">
+      <string>The name of the person who wrote this score</string>
+     </property>
+    </widget>
    </item>
    <item row="3" column="0">
     <widget class="QLabel" name="label_4">
+     <property name="toolTip">
+      <string>Beats per minute of this score</string>
+     </property>
      <property name="text">
       <string>BPM</string>
      </property>
@@ -60,7 +84,7 @@
       </sizepolicy>
      </property>
      <property name="toolTip">
-      <string>BPM</string>
+      <string>Beats per minute of this score</string>
      </property>
      <property name="statusTip">
       <string>Beats per minute</string>
@@ -91,6 +115,9 @@
    </item>
    <item row="1" column="1">
     <widget class="QCheckBox" name="artistVisible">
+     <property name="toolTip">
+      <string>Show/hide artist name</string>
+     </property>
      <property name="text">
       <string/>
      </property>
@@ -98,6 +125,9 @@
    </item>
    <item row="2" column="1">
     <widget class="QCheckBox" name="creatorVisible">
+     <property name="toolTip">
+      <string>Show.hide tabber name</string>
+     </property>
      <property name="text">
       <string/>
      </property>
@@ -105,6 +135,9 @@
    </item>
    <item row="3" column="1">
     <widget class="QCheckBox" name="bpmVisible">
+     <property name="toolTip">
+      <string>Show/hide BPM</string>
+     </property>
      <property name="text">
       <string/>
      </property>
