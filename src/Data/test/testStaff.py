@@ -131,11 +131,11 @@ class TestStaff(unittest.TestCase):
         self.staff.addMeasure(Measure(16))
         self.staff.addMeasure(Measure(16))
         self.staff.addMeasure(Measure(16))
-        self.assertEqual(self.staff.characterWidth(), 52)
+        self.assertEqual(self.staff.characterWidth(), 54)
         endMeasure = Measure(16)
         endMeasure.setSectionEnd(True)
         self.staff.addMeasure(endMeasure)
-        self.assertEqual(self.staff.characterWidth(), 70)
+        self.assertEqual(self.staff.characterWidth(), 71)
 
     def testGridWidth_EmptyStaff(self):
         self.assertEqual(self.staff.gridWidth(), 0)
@@ -144,11 +144,11 @@ class TestStaff(unittest.TestCase):
         self.staff.addMeasure(Measure(16))
         self.staff.addMeasure(Measure(16))
         self.staff.addMeasure(Measure(16))
-        self.assertEqual(self.staff.gridWidth(), 52)
+        self.assertEqual(self.staff.gridWidth(), 54)
         endMeasure = Measure(16)
         endMeasure.setSectionEnd(True)
         self.staff.addMeasure(endMeasure)
-        self.assertEqual(self.staff.gridWidth(), 69)
+        self.assertEqual(self.staff.gridWidth(), 71)
 
 
 class TestNoteControl(unittest.TestCase):

@@ -27,6 +27,7 @@ from ui_drumburp import Ui_DrumBurpWindow
 from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QFileDialog, QMessageBox,
                          QPrintPreviewDialog, QWhatsThis,
+                         QPrinterInfo,
                          QPrinter, QDesktopServices)
 from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer
 from QScore import QScore
@@ -41,7 +42,7 @@ import DBIcons
 import os
 
 APPNAME = "DrumBurp"
-DB_VERSION = "0.1"
+DB_VERSION = "0.2"
 #pylint:disable-msg=R0904
 
 class FakeQSettings(object):
@@ -57,7 +58,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     classdocs
     '''
 
-    def __init__(self, parent = None, fakeStartup = False):
+    def __init__(self, parent = None, fakeStartup = False, filename = None):
         '''
         Constructor
         '''
@@ -68,12 +69,20 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self._printer = QPrinter()
         self.setupUi(self)
         DBIcons.initialiseIcons()
+        self.paperBox.clear()
+        for name in dir(QPrinter):
+            if isinstance(getattr(QPrinter, name), QPrinter.PageSize):
+                self.paperBox.addItem(name)
         settings = self._makeQSettings()
         self.recentFiles = [unicode(fname) for fname in
-                            settings.value("RecentFiles").toStringList()]
-        self.filename = (None
-                         if len(self.recentFiles) == 0
-                         else self.recentFiles[0])
+                            settings.value("RecentFiles").toStringList()
+                            if os.path.exists(unicode(fname))]
+        if filename is None:
+            filename = (None
+                        if len(self.recentFiles) == 0
+                        else self.recentFiles[0])
+        self.filename = filename
+        self.addToRecentFiles()
         self.updateRecentFiles()
         self.songProperties = QDisplayProperties()
         self.scoreScene = QScore(self)
@@ -330,15 +339,19 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionPrint_triggered(self):
+        self._printer = QPrinter(QPrinterInfo(self._printer),
+                                 QPrinter.HighResolution)
         self._printer.setPaperSize(self._getPaperSize())
         dialog = QPrintPreviewDialog(self._printer, parent = self)
-        dialog.paintRequested.connect(self.scoreScene.printScore)
+        def updatePages(qprinter):
+            self.scoreScene.printScore(qprinter, self.scoreView)
+        dialog.paintRequested.connect(updatePages)
         dialog.exec_()
 
     @pyqtSignature("")
     def on_actionExportPDF_triggered(self):
         try:
-            printer = QPrinter()
+            printer = QPrinter(mode = QPrinter.HighResolution)
             printer.setPaperSize(self._getPaperSize())
             if self.filename:
                 outfileName = list(os.path.splitext(self.filename)[:-1])
@@ -348,7 +361,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             printer.setOutputFileName(outfileName)
             printer.setPaperSize(self._getPaperSize())
             dialog = QPrintPreviewDialog(printer, parent = self)
-            dialog.paintRequested.connect(self.scoreScene.printScore)
+            def updatePages(qprinter):
+                self.scoreScene.printScore(qprinter, self.scoreView)
+            dialog.paintRequested.connect(updatePages)
             dialog.exec_()
             self.updateStatus("Exported to PDF %s" % outfileName)
         except StandardError:

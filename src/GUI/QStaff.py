@@ -131,12 +131,12 @@ class QStaff(QtGui.QGraphicsItemGroup):
         xOffset += self._lineLabels[0].cellWidth()
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
-            qMeasureLine.setPos(xOffset, self._props.ySpacing)
+            qMeasureLine.setPos(xOffset, self.scene().ySpacing)
             qMeasureLine.setDimensions()
             xOffset += qMeasureLine.width()
             qMeasure.setPos(xOffset, 0)
             xOffset += qMeasure.width()
-        self._measureLines[-1].setPos(xOffset, self._props.ySpacing)
+        self._measureLines[-1].setPos(xOffset, self.scene().ySpacing)
         self._measureLines[-1].setDimensions()
         self._width = xOffset + self._measureLines[-1].width()
         self._height = max(element.height()
@@ -149,14 +149,14 @@ class QStaff(QtGui.QGraphicsItemGroup):
             label.xSpacingChanged()
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
-            qMeasureLine.setPos(xOffset, self._props.ySpacing)
+            qMeasureLine.setPos(xOffset, self.scene().ySpacing)
             qMeasureLine.xSpacingChanged()
             xOffset += qMeasureLine.width()
             qMeasure.setPos(xOffset, 0)
             qMeasure.xSpacingChanged()
             xOffset += qMeasure.width()
         self._measureLines[-1].xSpacingChanged()
-        self._measureLines[-1].setPos(xOffset, self._props.ySpacing)
+        self._measureLines[-1].setPos(xOffset, self.scene().ySpacing)
         self._width = xOffset + self._measureLines[-1].width()
 
     def ySpacingChanged(self):

@@ -35,6 +35,11 @@ class MeasureCount(object):
             for count in beat.count(beatNum + 1):
                 yield count
 
+    def iterTime(self):
+        for beatNum, beat in enumerate(self.beats):
+            for timeIndex, count in enumerate(beat.count(beatNum + 1)):
+                yield (beatNum, timeIndex, beat.ticksPerBeat)
+
     def isSimpleCount(self):
         firstBeat = "".join(self.beats[0])
         return all("".join(beat) == firstBeat for beat in self.beats)

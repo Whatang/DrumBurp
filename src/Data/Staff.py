@@ -155,8 +155,7 @@ class Staff(object):
     def gridWidth(self):
         if self.numMeasures() == 0:
             return 0
-        return (len(self) + self.numMeasures() + 1
-                + DRUM_ABBR_WIDTH)
+        return (len(self) + self.numMeasures() + 1)
 
     def getNote(self, position):
         if not (0 <= position.measureIndex < self.numMeasures()):

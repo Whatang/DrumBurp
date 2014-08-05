@@ -25,9 +25,16 @@ import sys
 from PyQt4.QtGui import QApplication
 import GUI.DBMainwindow
 import GUI.DBIcons
+import optparse
 
 def main():
     import ctypes
+    parser = optparse.OptionParser()
+    parser.add_option('--virgin', action = 'store_true')
+    opts, args = parser.parse_args()
+    filename = None
+    if len(args) > 0:
+        filename = args[0]
     myappid = 'Whatang.DrumBurp'
     try:
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
@@ -37,7 +44,8 @@ def main():
     app.setOrganizationName("Whatang Software")
     app.setOrganizationDomain("whatang.org")
     app.setApplicationName(GUI.DBMainwindow.APPNAME)
-    mainWindow = GUI.DBMainwindow.DrumBurp(fakeStartup = '--virgin' in sys.argv)
+    mainWindow = GUI.DBMainwindow.DrumBurp(fakeStartup = opts.virgin,
+                                           filename = filename)
     mainWindow.setWindowTitle("DrumBurp v" + GUI.DBMainwindow.DB_VERSION)
     app.setWindowIcon(GUI.DBIcons.getIcon("drumburp"))
     mainWindow.show()
