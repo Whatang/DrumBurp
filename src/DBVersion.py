@@ -5,7 +5,7 @@ Created on 18 Mar 2012
 '''
 APPNAME = "DrumBurp"
 FULL_RELEASE = True
-DB_VERSION = "0.8"
+DB_VERSION = "0.9"
 if not FULL_RELEASE:
     DB_VERSION += "a"
 

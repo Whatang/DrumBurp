@@ -22,7 +22,6 @@ Created on 19 Jan 2011
 @author: Mike Thomas
 '''
 
-from QEditKitDialog import QEditKitDialog
 from PyQt4 import QtGui, QtCore
 
 class QLineLabel(QtGui.QGraphicsItem):
@@ -42,11 +41,11 @@ class QLineLabel(QtGui.QGraphicsItem):
         self.setAcceptsHoverEvents(True)
 
     def hoverEnterEvent(self, *args, **kwargs):
-        self._qScore.setStatusMessage.emit("Double click to edit kit information.")
+        self._qScore.setStatusMessage("Double click to edit kit information.")
         return super(QLineLabel, self).hoverEnterEvent(*args, **kwargs)
 
     def hoverLeaveEvent(self, *args, **kwargs):
-        self._qScore.setStatusMessage.emit("")
+        self._qScore.setStatusMessage()
         return super(QLineLabel, self).hoverLeaveEvent(*args, **kwargs)
 
     def cellHeight(self):
@@ -56,13 +55,7 @@ class QLineLabel(QtGui.QGraphicsItem):
         return 2 * self.scene().xSpacing
 
     def mouseDoubleClickEvent(self, event_):
-        editDialog = QEditKitDialog(self.scene().score.drumKit,
-                                    self.scene().score.emptyDrums(),
-                                    self.scene().parent())
-        if editDialog.exec_():
-            newKit, changes = editDialog.getNewKit()
-            self.scene().changeKit(newKit, changes)
-
+        self.scene().editKit()
 
     def setText(self, text):
         self._text = text
@@ -100,7 +93,7 @@ class QLineLabel(QtGui.QGraphicsItem):
             br = br.tightBoundingRect(self._text)
             w = br.width()
             h = br.height()
-            textLocation = QtCore.QPointF((self.cellWidth() - w + 2) / 2,
+            textLocation = QtCore.QPointF(self.cellWidth() - w,
                                           (self.cellHeight() + h) / 2)
             painter.drawText(textLocation, self._text)
         painter.restore()

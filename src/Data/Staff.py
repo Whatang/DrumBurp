@@ -59,12 +59,6 @@ class Staff(object):
     def __iter__(self):
         return iter(self._measures)
 
-    def iterNotes(self):
-        for mIndex, measure in enumerate(self._measures):
-            for np, head in measure:
-                np.measureIndex = mIndex
-                yield np, head
-
     def __getitem__(self, index):
         return self._measures[index]
 
@@ -222,8 +216,9 @@ class Staff(object):
 
     def _getRepeatString(self, isRepeating, repeatExtender):
         staffString = []
-        hasRepeat = isRepeating or any(measure.isRepeatStart()
-                                       for measure in self)
+        hasRepeat = (isRepeating or
+                     any(measure.isRepeatStart() for measure in self) or
+                     any(measure.alternateText for measure in self))
         if not hasRepeat:
             return staffString, isRepeating, repeatExtender
         repeatString = "  "

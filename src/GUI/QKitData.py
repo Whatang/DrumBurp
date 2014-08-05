@@ -23,7 +23,6 @@ Created on 13 Mar 2011
 '''
 
 from QGraphicsListData import QGraphicsListData
-from QEditKitDialog import QEditKitDialog
 
 class QKitData(QGraphicsListData):
     '''
@@ -44,9 +43,4 @@ class QKitData(QGraphicsListData):
         return self._qScore.kitSize
 
     def mouseDoubleClickEvent(self, event_):
-        editDialog = QEditKitDialog(self.scene().score.drumKit,
-                                    self.scene().score.emptyDrums(),
-                                    self.scene().parent())
-        if editDialog.exec_():
-            newKit, changes = editDialog.getNewKit()
-            self.scene().changeKit(newKit, changes)
+        self.scene().editKit()

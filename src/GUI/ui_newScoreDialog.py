@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\newScoreDialog.ui'
 #
-# Created: Sat Mar 31 13:52:24 2012
+# Created: Sat Oct 13 22:33:42 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_newScoreDialog(object):
     def setupUi(self, newScoreDialog):
         newScoreDialog.setObjectName(_fromUtf8("newScoreDialog"))
-        newScoreDialog.resize(288, 281)
+        newScoreDialog.resize(288, 298)
         newScoreDialog.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.verticalLayout = QtGui.QVBoxLayout(newScoreDialog)
         self.verticalLayout.setSpacing(9)
@@ -42,6 +42,12 @@ class Ui_newScoreDialog(object):
         self.measureTabs = measureTabs(newScoreDialog)
         self.measureTabs.setObjectName(_fromUtf8("measureTabs"))
         self.verticalLayout.addWidget(self.measureTabs)
+        self.label_2 = QtGui.QLabel(newScoreDialog)
+        self.label_2.setObjectName(_fromUtf8("label_2"))
+        self.verticalLayout.addWidget(self.label_2)
+        self.kitCombobox = QtGui.QComboBox(newScoreDialog)
+        self.kitCombobox.setObjectName(_fromUtf8("kitCombobox"))
+        self.verticalLayout.addWidget(self.kitCombobox)
         spacerItem1 = QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem1)
         self.horizontalLayout = QtGui.QHBoxLayout()
@@ -56,11 +62,14 @@ class Ui_newScoreDialog(object):
         self.horizontalLayout.addWidget(self.buttonBox)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.label.setBuddy(self.numMeasuresSpinBox)
+        self.label_2.setBuddy(self.kitCombobox)
 
         self.retranslateUi(newScoreDialog)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), newScoreDialog.accept)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), newScoreDialog.reject)
         QtCore.QMetaObject.connectSlotsByName(newScoreDialog)
+        newScoreDialog.setTabOrder(self.numMeasuresSpinBox, self.kitCombobox)
+        newScoreDialog.setTabOrder(self.kitCombobox, self.buttonBox)
 
     def retranslateUi(self, newScoreDialog):
         newScoreDialog.setWindowTitle(QtGui.QApplication.translate("newScoreDialog", "New Score", None, QtGui.QApplication.UnicodeUTF8))
@@ -70,5 +79,6 @@ class Ui_newScoreDialog(object):
         self.numMeasuresSpinBox.setStatusTip(QtGui.QApplication.translate("newScoreDialog", "The number of measures in the new score", None, QtGui.QApplication.UnicodeUTF8))
         self.numMeasuresSpinBox.setSuffix(QtGui.QApplication.translate("newScoreDialog", " measures", None, QtGui.QApplication.UnicodeUTF8))
         self.measureTabs.setToolTip(QtGui.QApplication.translate("newScoreDialog", "The default measure count for the new score", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_2.setText(QtGui.QApplication.translate("newScoreDialog", "Drum kit", None, QtGui.QApplication.UnicodeUTF8))
 
 from Widgets.measureTabs_plugin import measureTabs

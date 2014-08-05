@@ -129,7 +129,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         scene.sceneFormatted.connect(self.sceneFormatted)
         scene.playing.connect(self._scorePlaying)
         scene.currentHeadsChanged.connect(self.availableNotesLabel.setText)
-        scene.setStatusMessage.connect(self._setStatusFromScene)
+        scene.statusMessageSet.connect(self._setStatusFromScene)
         scene.lilysizeChanged.connect(self._setLilySize)
         scene.lilypagesChanged.connect(self._setLilyPages)
         scene.lilyFillChanged.connect(self._setLilyFill)
@@ -390,8 +390,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                                      counter,
                                      registry)
             if dialog.exec_():
-                nMeasures, counter = dialog.getValues()
-                self.scoreScene.newScore(numMeasures = nMeasures,
+                nMeasures, counter, kit = dialog.getValues()
+                self.scoreScene.newScore(kit,
+                                         numMeasures = nMeasures,
                                          counter = counter)
                 self.filename = None
                 self.updateRecentFiles()

@@ -85,6 +85,9 @@ class QComplexCountDialog(QDialog, Ui_complexCountDialog):
         self.numTicksSpinBox.setMinimum(1)
         self.numTicksSpinBox.setMaximum(len(beatCounter))
         self.numTicksSpinBox.setValue(len(item.text()))
+        isLastBeat = (self.beatList.currentIndex().row()
+                      == self.beatList.count() - 1)
+        self.numTicksSpinBox.setEnabled(isLastBeat)
 
     def _beatChanged(self):
         counter = self._registry.getCounterByIndex(self.countBox.currentIndex())
@@ -106,6 +109,12 @@ class QComplexCountDialog(QDialog, Ui_complexCountDialog):
 
     @pyqtSignature("")
     def on_addButton_clicked(self):
+        item = self.beatList.item(self.beatList.count() - 1)
+        index = item.data(Qt.UserRole).toInt()[0]
+        counter = self._registry.getCounterByIndex(index)
+        if len(item.text()) < len(counter):
+            beat = Beat(counter)
+            item.setText("".join(beat.count(index + 1)))
         counter = self._registry.getCounterByIndex(self.countBox.currentIndex())
         beat = Beat(counter)
         beatNum = self.beatList.count()

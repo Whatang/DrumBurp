@@ -23,7 +23,7 @@ Created on 12 Dec 2010
 
 '''
 
-from DrumKit import DrumKit
+import DrumKit
 from Staff import Staff
 from Measure import Measure
 from Counter import CounterRegistry
@@ -33,6 +33,7 @@ from DBConstants import REPEAT_EXTENDER
 from NotePosition import NotePosition
 from ScoreMetaData import ScoreMetaData
 from FontOptions import FontOptions
+import fileUtils
 import os
 import bisect
 import copy
@@ -54,7 +55,7 @@ class Score(object):
         Constructor
         '''
         self._staffs = []
-        self.drumKit = DrumKit()
+        self.drumKit = DrumKit.DrumKit()
         self._callBack = None
         self._callBacksEnabled = True
         self.scoreData = ScoreMetaData()
@@ -221,13 +222,6 @@ class Score(object):
             else:
                 index += 1
 
-
-    def iterNotes(self):
-        for sIndex, staff in enumerate(self.iterStaffs()):
-            for np, head in staff.iterNotes():
-                np.staffIndex = sIndex
-                yield np, head
-
     def getMeasure(self, index):
         if not (0 <= index < self.numMeasures()):
             raise BadTimeError()
@@ -255,9 +249,6 @@ class Score(object):
         self._staffs.append(newStaff)
         self._setStaffCallBack(newStaff, self.numStaffs() - 1)
 
-    def deleteLastStaff(self):
-        staff = self._staffs.pop()
-        staff.clearCallBack()
 
     def deleteStaffByIndex(self, index):
         if not (0 <= index < self.numStaffs()):
@@ -707,7 +698,8 @@ class Score(object):
                     self.addStaff()
                 staff = self.getStaff(staffIndex)
         while self.numStaffs() > staffIndex + 1:
-            self.deleteLastStaff()
+            staff = self._staffs.pop()
+            staff.clearCallBack()
         return self._formatState != self._getFormatState()
 
     def textFormatScore(self, width = None, ignoreErrors = False):
@@ -731,8 +723,12 @@ class Score(object):
             return len(self.drumKit)
         else:
             staff = self.getStaff(index)
-            return sum(drum.locked or staff.lineIsVisible(index)
-                       for index, drum in enumerate(self.drumKit))
+            count = sum(drum.locked or staff.lineIsVisible(index)
+                        for index, drum in enumerate(self.drumKit))
+            if count == 0:
+                return 1
+            else:
+                return count
 
     def nthVisibleLineIndex(self, staffIndex, lineIndex):
         count = -1
@@ -742,13 +738,19 @@ class Score(object):
                 count += 1
                 if count == lineIndex:
                     return lineNum
+        if count == -1:
+            return 0
         raise BadTimeError(staffIndex)
 
     def iterVisibleLines(self, staffIndex):
         staff = self.getStaff(staffIndex)
+        count = 0
         for lineNum, drum in enumerate(self.drumKit):
             if drum.locked or staff.lineIsVisible(lineNum):
+                count += 1
                 yield drum
+        if count == 0:
+            yield self.drumKit[0]
 
     def emptyDrums(self):
         emptyDrums = set(self.drumKit)
@@ -759,7 +761,7 @@ class Score(object):
         return emptyDrums
 
     def write(self, handle):
-        indenter = Indenter()
+        indenter = fileUtils.Indenter()
         self.scoreData.save(handle, indenter)
         self.drumKit.write(handle, indenter)
         for measure in self.iterMeasures():
@@ -778,19 +780,7 @@ class Score(object):
 
 
     def read(self, handle):
-        def scoreHandle():
-            for line in handle:
-                line = line.strip()
-                fields = line.split(None, 1)
-                if len(fields) == 1:
-                    fields.append(None)
-                elif len(fields) == 0:
-                    # Blank line
-                    continue
-                lineType, lineData = fields
-                lineType = lineType.upper()
-                yield lineType, lineData
-        scoreIterator = scoreHandle()
+        scoreIterator = fileUtils.dbFileIterator(handle)
         self.lilyFill = False
         for lineType, lineData in scoreIterator:
             if lineType == "SCORE_METADATA":
@@ -821,9 +811,10 @@ class Score(object):
                 self.fontOptions.read(scoreIterator)
             else:
                 raise IOError("Unrecognised line type: " + lineType)
-        for np, head in self.iterNotes():
-            if not self.drumKit[np.drumIndex].isAllowedHead(head):
-                self.drumKit[np.drumIndex].addNoteHead(head)
+        for measure in self.iterMeasures():
+            for np, head in measure:
+                if not self.drumKit[np.drumIndex].isAllowedHead(head):
+                    self.drumKit[np.drumIndex].addNoteHead(head)
         # Format the score appropriately
         self.gridFormatScore(self.scoreData.width)
         # Make sure we've got the right number of section titles
@@ -853,6 +844,7 @@ class Score(object):
         for staff in self.iterStaffs():
             assert(staff.isConsistent())
             if newSection:
+                isRepeating = False
                 newSection = False
                 if sectionIndex < self.numSections():
                     if len(asciiString) > 0 and settings.emptyLineBeforeSection:
@@ -882,27 +874,34 @@ class Score(object):
         print >> handle, ("Tabbed with DrumBurp, "
                           "a drum tab editor from www.whatang.org")
         if settings.metadata:
-            handle.writelines(mString + os.linesep
-                              for mString in metadataString)
+            for mString in metadataString:
+                print >> handle, mString
         if settings.kitKey:
-            handle.writelines(iString + os.linesep
-                              for iString in kitString)
-        handle.writelines(sString + os.linesep for sString in asciiString)
+            for iString in kitString:
+                print >> handle, iString
+        for sString in asciiString:
+            print >> handle, sString
+        print >> handle, ""
+        print >> handle, ("Tabbed with DrumBurp, "
+                          "a drum tab editor from www.whatang.org")
 
 class ScoreFactory(object):
     def __call__(self, filename = None,
                  numMeasures = 32,
-                 counter = None):
+                 counter = None,
+                 kit = None):
         if filename is not None:
             score = self.loadScore(filename)
         else:
-            score = self.makeEmptyScore(numMeasures, counter)
+            score = self.makeEmptyScore(numMeasures, counter, kit)
         return score
 
     @classmethod
-    def makeEmptyScore(cls, numMeasures, counter):
+    def makeEmptyScore(cls, numMeasures, counter, kit):
         score = Score()
-        score.drumKit.loadDefaultKit()
+        if kit is None:
+            kit = DrumKit.getNamedDefaultKit()
+        score.drumKit = kit
         if counter is None:
             registry = CounterRegistry()
             counter = list(registry.countsByTicks(2))
@@ -926,18 +925,3 @@ class ScoreFactory(object):
         score.write(scoreBuffer)
         with open(filename, 'w') as handle:
             handle.write(scoreBuffer.getvalue())
-
-class Indenter(object):
-    def __init__(self, indent = "  "):
-        self._indent = indent
-        self._level = 0
-    def increase(self):
-        self._level += 1
-    def decrease(self):
-        self._level -= 1
-        self._level = max(0, self._level)
-    def __call__(self, *args):
-        argString = " ".join(str(ar) for ar in args)
-        if self._level != 0:
-            argString = (self._indent * self._level) + argString
-        return argString

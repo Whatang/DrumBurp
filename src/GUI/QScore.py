@@ -25,11 +25,13 @@ Created on 4 Jan 2011
 
 from PyQt4 import QtGui, QtCore
 import itertools
+import functools
 from QStaff import QStaff
 from QSection import QSection
 from QMeasure import QMeasure
 from QMetaData import QMetaData
 from QKitData import QKitData
+from QEditKitDialog import QEditKitDialog
 from Data.Score import ScoreFactory
 from Data.NotePosition import NotePosition
 from DBCommands import (MetaDataCommand, ScoreWidthCommand,
@@ -41,7 +43,6 @@ from DBCommands import (MetaDataCommand, ScoreWidthCommand,
                         SetVisibilityCommand, SetLilypondSizeCommand,
                         SetLilypondPagesCommand, SetLilypondFillCommand)
 import DBMidi
-import functools
 from DBFSM import Waiting
 from DBFSMEvents import Escape
 _SCORE_FACTORY = ScoreFactory()
@@ -82,6 +83,7 @@ class QScore(QtGui.QGraphicsScene):
         self._dirty = None
         self._currentKey = None
         self._currentHeads = {}
+        self._headOrder = []
         self._ignoreNext = False
         self.measureClipboard = []
         self._playingMeasure = None
@@ -89,6 +91,7 @@ class QScore(QtGui.QGraphicsScene):
         self._lastDrag = None
         self._dragSelection = []
         self._dragged = []
+        self._saved = False
         self._undoStack = QtGui.QUndoStack(self)
         self._undoStack.canUndoChanged.connect(self.canUndoChanged)
         self._undoStack.undoTextChanged.connect(self.undoTextChanged)
@@ -106,9 +109,9 @@ class QScore(QtGui.QGraphicsScene):
         if parent.filename is not None:
             if not self.loadScore(parent.filename, quiet = True):
                 parent.filename = None
-                self.newScore()
+                self.newScore(None)
         else:
-            self.newScore()
+            self.newScore(None)
         self.defaultCountChanged.connect(parent.setDefaultCount)
         self.spacingChanged.connect(parent.setSystemSpacing)
         self.sectionsChanged.connect(parent.setSections)
@@ -129,14 +132,14 @@ class QScore(QtGui.QGraphicsScene):
     sceneFormatted = QtCore.pyqtSignal()
     playing = QtCore.pyqtSignal(bool)
     currentHeadsChanged = QtCore.pyqtSignal(QtCore.QString)
-    setStatusMessage = QtCore.pyqtSignal(QtCore.QString)
+    statusMessageSet = QtCore.pyqtSignal(QtCore.QString)
     lilysizeChanged = QtCore.pyqtSignal(int)
     lilypagesChanged = QtCore.pyqtSignal(int)
     lilyFillChanged = QtCore.pyqtSignal(bool)
 
     def addCommand(self, command):
         self._undoStack.push(command)
-        self.dirty = not self._undoStack.isClean()
+        self.dirty = not (self._undoStack.isClean() and self._saved)
 
     def addRepeatedCommand(self, name, command, arguments):
         self._undoStack.beginMacro(name)
@@ -152,11 +155,11 @@ class QScore(QtGui.QGraphicsScene):
 
     def undo(self):
         self._undoStack.undo()
-        self.dirty = not self._undoStack.isClean()
+        self.dirty = not (self._undoStack.isClean() and self._saved)
 
     def redo(self):
         self._undoStack.redo()
-        self.dirty = not self._undoStack.isClean()
+        self.dirty = not (self._undoStack.isClean() and self._saved)
 
     def startUp(self):
         self.metadataChanged.emit("width", self.scoreWidth)
@@ -445,10 +448,12 @@ class QScore(QtGui.QGraphicsScene):
     def setCurrentHeads(self, drumIndex):
         if drumIndex is None:
             self._currentHeads = {}
+            self._headOrder = []
         else:
             currentHeads = self.score.drumKit.shortcutsAndNoteHeads(drumIndex)
             self._currentHeads = dict((unicode(x), y) for (x, y)
                                        in currentHeads)
+            self._headOrder = [unicode(x) for (x, y_) in currentHeads]
         self._highlightCurrentKeyHead()
 
     def _keyString(self, head):
@@ -458,9 +463,9 @@ class QScore(QtGui.QGraphicsScene):
             return u"%s(%s)" % (self._currentHeads[head], head)
 
     def _highlightCurrentKeyHead(self):
-        if self._currentHeads:
+        if len(self._currentHeads) > 1:
             headText = []
-            for head in self._currentHeads:
+            for head in self._headOrder[1:]: # Do not display default
                 if head == self._currentKey:
                     headText.append(u'<span style="background-color:#55aaff;">'
                                     + self._keyString(head) + u"</span>")
@@ -500,7 +505,8 @@ class QScore(QtGui.QGraphicsScene):
             start = self._dragSelection[0]
             measureIndex = self._score.getMeasureIndex(start)
             self.beginMacro("delete measures")
-            for unused in self.iterDragSelection():
+            measures = list(self.iterDragSelection())
+            for unused in measures:
                 command = DeleteMeasureCommand(self, start, measureIndex)
                 self.addCommand(command)
             self.endMacro()
@@ -578,6 +584,7 @@ class QScore(QtGui.QGraphicsScene):
         except StandardError, exc:
             raise
         self._setScore(newScore)
+        self._saved = True
         return True
 
     def saveScore(self, filename):
@@ -590,10 +597,11 @@ class QScore(QtGui.QGraphicsScene):
                                       msg)
             return False
         self._undoStack.setClean()
+        self._saved = True
         self.dirty = False
         return True
 
-    def newScore(self, numMeasures = 16,
+    def newScore(self, kit, numMeasures = 16,
                  counter = None):
         if counter is None:
             if self._score is None:
@@ -601,7 +609,8 @@ class QScore(QtGui.QGraphicsScene):
             else:
                 counter = self.defaultCount
         newScore = _SCORE_FACTORY(numMeasures = numMeasures,
-                                  counter = counter)
+                                  counter = counter,
+                                  kit = kit)
         self._setScore(newScore)
 
     def numPages(self, pageHeight):
@@ -717,11 +726,23 @@ class QScore(QtGui.QGraphicsScene):
         qMeasure = self.getQMeasure(self._playingMeasure)
         qMeasure.setPlaying(True)
 
-    def changeKit(self, kit, changes):
-        self.score.changeKit(kit, changes)
-        DBMidi.setKit(kit)
-        self.reBuild()
-        self.dirty = True
+    def editKit(self):
+        editDialog = QEditKitDialog(self.score.drumKit,
+                                    self.score.emptyDrums(),
+                                    self.parent())
+        if not editDialog.exec_():
+            return
+        kit, changes = editDialog.getNewKit()
+        if QtGui.QMessageBox.question(self.parent(),
+                                      "Apply kit changes?",
+                                      "Editing the kit cannot be undone. Proceed?",
+                                      buttons = QtGui.QMessageBox.Yes | QtGui.QMessageBox.No) == QtGui.QMessageBox.Yes:
+            self.score.changeKit(kit, changes)
+            DBMidi.setKit(kit)
+            self._undoStack.clear()
+            self._saved = False
+            self.reBuild()
+            self.dirty = True
 
     def _startDragging(self, qmeasure):
         self._dragStart = qmeasure
@@ -806,6 +827,11 @@ class QScore(QtGui.QGraphicsScene):
             self._state = Waiting(self)
             raise
 #        print self._state
+
+    def setStatusMessage(self, msg = None):
+        if not msg:
+            msg = ""
+        self.statusMessageSet.emit(msg)
 
     def setPotentialRepeatNotes(self, notes, head):
         newMeasures = [(np.staffIndex, np.measureIndex) for np in notes]

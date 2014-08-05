@@ -6,12 +6,32 @@
     <file>GUI/Icons/list-remove.png</file>
   </qresource>
   <qresource prefix="heads">
-    <file>GUI/crossHead.png</file>
-    <file>GUI/defaultHead.png</file>
-    <file>GUI/diamondHead.png</file>
-    <file>GUI/harmonicBlackHead.png</file>
-    <file>GUI/harmonicHead.png</file>
-    <file>GUI/triangleHead.png</file>
-    <file>GUI/xcircleHead.png</file>
+    <file>GUI/Notation/Effect_Ghost.png</file>
+    <file>GUI/Notation/Flam_Down_Cross.png</file>
+    <file>GUI/Notation/Effect_Accent.png</file>
+    <file>GUI/Notation/Effect_Choke.png</file>
+    <file>GUI/Notation/Effect_Closed.png</file>
+    <file>GUI/Notation/Effect_Drag.png</file>
+    <file>GUI/Notation/Effect_Open.png</file>
+    <file>GUI/Notation/Flam_Down_Default.png</file>
+    <file>GUI/Notation/Flam_Down_Diamond.png</file>
+    <file>GUI/Notation/Flam_Down_Harmonic.png</file>
+    <file>GUI/Notation/Flam_Down_HarmonicBlack.png</file>
+    <file>GUI/Notation/Flam_Down_Triangle.png</file>
+    <file>GUI/Notation/Flam_Down_Xcircle.png</file>
+    <file>GUI/Notation/Flam_Up_Cross.png</file>
+    <file>GUI/Notation/Flam_Up_Default.png</file>
+    <file>GUI/Notation/Flam_Up_Diamond.png</file>
+    <file>GUI/Notation/Flam_Up_Harmonic.png</file>
+    <file>GUI/Notation/Flam_Up_HarmonicBlack.png</file>
+    <file>GUI/Notation/Flam_Up_Triangle.png</file>
+    <file>GUI/Notation/Flam_Up_Xcircle.png</file>
+    <file>GUI/Notation/crossHead.png</file>
+    <file>GUI/Notation/defaultHead.png</file>
+    <file>GUI/Notation/diamondHead.png</file>
+    <file>GUI/Notation/harmonicBlackHead.png</file>
+    <file>GUI/Notation/harmonicHead.png</file>
+    <file>GUI/Notation/triangleHead.png</file>
+    <file>GUI/Notation/xcircleHead.png</file>
   </qresource>
 </RCC>

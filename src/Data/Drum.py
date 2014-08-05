@@ -25,19 +25,16 @@ Created on 12 Dec 2010
 import copy
 
 from DBConstants import DRUM_ABBR_WIDTH
-from DefaultKits import DEFAULT_KIT, DEFAULT_EXTRA_HEADS, STEM_UP
-
-_DEFAULTNOTE = 71
-_DEFAULTVOLUME = 96
+import DefaultKits
 
 class HeadData(object):
-    def __init__(self, midiNote = _DEFAULTNOTE,
-                 midiVolume = _DEFAULTVOLUME,
+    def __init__(self, midiNote = DefaultKits.DEFAULT_NOTE,
+                 midiVolume = DefaultKits.DEFAULT_VOLUME,
                  effect = "normal",
                  notationHead = "default",
                  notationLine = 0,
                  notationEffect = "none",
-                 stemDirection = STEM_UP,
+                 stemDirection = DefaultKits.STEM_UP,
                  shortcut = ""):
         self.midiNote = midiNote
         self.midiVolume = midiVolume
@@ -79,16 +76,16 @@ class HeadData(object):
                               nLine, nEffect, sDir, shortcut)
 
 def _guessNotation(abbr, head):
-    for drumInfo in DEFAULT_KIT:
+    for drumInfo in DefaultKits.DEFAULT_KIT:
         if drumInfo[0][1] == abbr:
             nHead, nLine, sDir = drumInfo[-3:]
             nEffect = "none"
             break
     else:
-        return ["default", 0, "none", STEM_UP]
-    for headInfo in DEFAULT_EXTRA_HEADS[abbr]:
+        return ["default", 0, "none", DefaultKits.STEM_UP]
+    for headInfo in DefaultKits.DEFAULT_EXTRA_HEADS[abbr]:
         if headInfo[0] == head:
-            nHead, nEffect = headInfo[-2:]
+            nHead, nEffect = headInfo[4:6]
     return nHead, nLine, nEffect, sDir
 
 
@@ -183,14 +180,14 @@ class Drum(object):
     def guessHeadData(self):
         self._noteHeads = [self._head]
         midiNote = _guessMidiNote(self.abbr)
-        for drumInfo in DEFAULT_KIT:
+        for drumInfo in DefaultKits.DEFAULT_KIT:
             if drumInfo[0][1] == self.abbr:
                 notationHead, notationLine, stemDir = drumInfo[-3:]
                 break
         else:
             notationHead = "default"
             notationLine = 0
-            stemDir = STEM_UP
+            stemDir = DefaultKits.STEM_UP
         headData = HeadData(midiNote, notationHead = notationHead,
                             notationLine = notationLine,
                             stemDirection = stemDir)
@@ -201,7 +198,8 @@ class Drum(object):
              newMidiVolume,
              newEffect,
              newNotationHead,
-             newNotationEffect) in DEFAULT_EXTRA_HEADS.get(self.abbr, []):
+             newNotationEffect,
+             shortcut) in DefaultKits.DEFAULT_EXTRA_HEADS.get(self.abbr, []):
             if newMidi is None:
                 newMidi = midiNote
             if newMidiVolume is None:
@@ -210,7 +208,8 @@ class Drum(object):
                                notationHead = newNotationHead,
                                notationLine = notationLine,
                                notationEffect = newNotationEffect,
-                               stemDirection = stemDir)
+                               stemDirection = stemDir,
+                               shortcut = shortcut)
             self.addNoteHead(extraHead, newData)
 
     def readHeadData(self, dataString):
@@ -269,7 +268,7 @@ class Drum(object):
 
 
 def _guessMidiNote(abbr):
-    for drumData, midiNote, x_, y_, z_ in DEFAULT_KIT:
+    for drumData, midiNote, x_, y_, z_ in DefaultKits.DEFAULT_KIT:
         if abbr == drumData[1]:
             return midiNote
-    return _DEFAULTNOTE
+    return DefaultKits.DEFAULT_NOTE

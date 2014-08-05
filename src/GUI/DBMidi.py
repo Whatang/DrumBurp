@@ -67,6 +67,9 @@ class _midi(QObject):
     def setMute(self, onOff):
         self._mute = onOff
 
+    def isMuted(self):
+        return self._mute
+
     highlightMeasure = pyqtSignal(int)
 
     def playNote(self, drumIndex, head):
@@ -174,6 +177,9 @@ def shutUp():
 
 def setMute(onOff):
     _PLAYER.setMute(onOff)
+
+def isMuted():
+    return _PLAYER.isMuted()
 
 def encodeSevenBitDelta(delta, midiData):
     values = []

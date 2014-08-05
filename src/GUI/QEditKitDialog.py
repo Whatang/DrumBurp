@@ -22,30 +22,43 @@ Created on 26 Jan 2011
 @author: Mike Thomas
 
 '''
-from PyQt4.QtGui import QDialog, QRadioButton
+from PyQt4.QtGui import (QDialog, QRadioButton, QFileDialog, QDesktopServices,
+                         QMessageBox, QInputDialog, QColor, QDialogButtonBox)
 from ui_editKit import Ui_editKitDialog
 from PyQt4.QtCore import QVariant
-from Data.DrumKit import DrumKit
+from Data import DrumKit
 from Data.Drum import Drum
+from Data.DefaultKits import GHOST_VOLUME, ACCENT_VOLUME
+from Data import fileUtils
+from QDefaultKitManager import QDefaultKitManager
 import copy
+import os
 import string #IGNORE:W0402
 import DBMidi
 from QNotationScene import QNotationScene
+
+_KIT_FILE_EXT = ".dbk"
+_KIT_FILTER = "DrumBurp kits (*%s)" % _KIT_FILE_EXT
+
+_BAD_ABBR_COLOR = QColor("red")
+_GOOD_ABBR_COLOR = QColor("black")
 
 class QEditKitDialog(QDialog, Ui_editKitDialog):
     '''
     classdocs
     '''
 
-    def __init__(self, kit, emptyDrums = None, parent = None):
+    def __init__(self, kit, emptyDrums = None, parent = None, directory = None):
         '''
         Constructor
         '''
         super(QEditKitDialog, self).__init__(parent)
         self.setupUi(self)
+        self.muteButton.setChecked(DBMidi.isMuted())
         if emptyDrums is None:
             emptyDrums = []
             self.deleteEmptyButton.setEnabled(False)
+        self._scoreDirectory = directory
         self._emptyDrums = emptyDrums
         self._currentKit = []
         self._oldLines = {}
@@ -59,6 +72,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.deleteEmptyButton.clicked.connect(self._deleteEmpty)
         self.clearButton.clicked.connect(self._clearKit)
         self.resetButton.clicked.connect(self._resetKit)
+        self.defaultKitButton.clicked.connect(self._manageDefaultKits)
         self.loadButton.clicked.connect(self._loadKit)
         self.saveButton.clicked.connect(self._saveKit)
         self.drumName.textEdited.connect(self._drumNameEdited)
@@ -105,7 +119,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             self.kitTable.addItem(drum.name)
         self.kitTable.blockSignals(False)
         self.kitTable.setCurrentRow(0)
-
+        self._checkAbbrs()
 
     @property
     def _currentDrumIndex(self):
@@ -141,6 +155,9 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.kitTable.addItem(drum.name)
         self.kitTable.setCurrentRow(len(self._currentKit) - 1)
         self._checkDrumButtons()
+        self._checkAbbrs()
+        self.drumName.setFocus()
+        self.drumName.selectAll()
 
     def _removeDrum(self):
         index = self._currentDrumIndex
@@ -154,6 +171,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             self.kitTable.setCurrentRow(index - 1)
         self.kitTable.takeItem(index)
         self._checkDrumButtons()
+        self._checkAbbrs()
 
     def _moveDrumUp(self):
         idx = self._currentDrumIndex
@@ -207,12 +225,56 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             self._oldLines[drum] = drumIndex
         self._populate()
 
-
     def _loadKit(self):
-        pass
+        directory = self._scoreDirectory
+        if directory is None:
+            home = QDesktopServices.HomeLocation
+            directory = unicode(QDesktopServices.storageLocation(home))
+        fname = QFileDialog.getOpenFileName(parent = self,
+                                            caption = "Load DrumBurp kit",
+                                            directory = directory,
+                                            filter = _KIT_FILTER)
+        if len(fname) == 0:
+            return
+        with open(fname, 'rU') as handle:
+            fileIterator = fileUtils.dbFileIterator(handle)
+            newKit = DrumKit.DrumKit()
+            newKit.read(fileIterator)
+        self._currentKit = list(reversed(newKit))
+        self._oldLines.clear()
+        for drum in self._currentKit:
+            self._oldLines[drum] = -1
+        self._populate()
+
+    def _manageDefaultKits(self):
+        currentKit, unused_ = self.getNewKit()
+        dialog = QDefaultKitManager(currentKit, self)
+        if dialog.exec_():
+            newKit = dialog.getKit()
+            self._currentKit = list(reversed(newKit))
+            self._oldLines.clear()
+            for drum in self._currentKit:
+                self._oldLines[drum] = -1
+            self._populate()
 
     def _saveKit(self):
-        pass
+        directory = self._scoreDirectory
+        if directory is None:
+            home = QDesktopServices.HomeLocation
+            directory = unicode(QDesktopServices.storageLocation(home))
+        fname = QFileDialog.getSaveFileName(parent = self,
+                                            caption = "Save DrumBurp kit",
+                                            directory = directory,
+                                            filter = _KIT_FILTER)
+        if len(fname) == 0:
+            return
+        fname = unicode(fname)
+        indenter = fileUtils.Indenter()
+        newKit, unused = self.getNewKit()
+        with open(fname, 'w') as handle:
+            newKit.write(handle, indenter)
+        QMessageBox.information(self, "Kit saved", "Successfully saved drumkit")
+
 
     def _drumNameEdited(self):
         self._currentDrum.name = unicode(self.drumName.text())
@@ -221,6 +283,30 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
 
     def _drumAbbrEdited(self):
         self._currentDrum.abbr = unicode(self.drumAbbr.text())
+        self._checkAbbrs()
+
+    def _checkAbbrs(self):
+        # Check that there is not more than one drum with the same
+        # abbreviation. If there is, highlight them and disable the OK button 
+        # and accept action.
+        drumIndicesByAbbr = {}
+        for index, drum in enumerate(self._currentKit):
+            if drum.abbr not in drumIndicesByAbbr:
+                drumIndicesByAbbr[drum.abbr] = []
+            drumIndicesByAbbr[drum.abbr].append(index)
+        ok = True
+        for indices in drumIndicesByAbbr.itervalues():
+            if len(indices) > 1:
+                ok = False
+                for index in indices:
+                    self.kitTable.item(index).setTextColor(_BAD_ABBR_COLOR)
+            else:
+                for index in indices:
+                    self.kitTable.item(index).setTextColor(_GOOD_ABBR_COLOR)
+        self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(ok)
+        self.saveButton.setEnabled(ok)
+        return ok
+
 
     def _oldDrumChanged(self):
         drum = self._currentDrum
@@ -303,10 +389,12 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             availableShortcuts = set('abcdefghijklmnopqrstuvwxyz')
             for head in self._currentDrum:
                 if head != self._currentHead:
-                    availableShortcuts.remove(self._currentDrum.headData(head).shortcut)
+                    shortcut = self._currentDrum.headData(head).shortcut
+                    availableShortcuts.remove(shortcut)
             for okShortcut in sorted(list(availableShortcuts)):
                 self.shortcutCombo.addItem(okShortcut)
-            shortIndex = self.shortcutCombo.findText(self._currentHeadData.shortcut)
+            shortcut = self._currentHeadData.shortcut
+            shortIndex = self.shortcutCombo.findText(shortcut)
             self.shortcutCombo.setCurrentIndex(shortIndex)
         finally:
             self.shortcutCombo.blockSignals(False)
@@ -325,6 +413,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self._populateHeadTable()
         self.noteHeadTable.setCurrentRow(len(self._currentDrum) - 1)
         self._checkHeadButtons()
+        self.currentNoteHead.setFocus()
 
     def _removeNoteHead(self):
         row = self.noteHeadTable.currentRow()
@@ -415,7 +504,8 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
 
     def _setNotation(self):
         headData = self._currentHeadData
-        self.stemUpDownBox.setChecked(headData.stemDirection == DrumKit.UP)
+        self.stemUpDownBox.setChecked(headData.stemDirection
+                                      == DrumKit.STEM_UP)
         effectIndex = self.effectBox.findText(headData.notationEffect)
         self.effectBox.setCurrentIndex(effectIndex)
         headIndex = self.noteHeadBox.findText(headData.notationHead)
@@ -433,9 +523,9 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
 
     def _stemDirectionChanged(self):
         if self.stemUpDownBox.isChecked():
-            self._currentHeadData.stemDirection = DrumKit.UP
+            self._currentHeadData.stemDirection = DrumKit.STEM_UP
         else:
-            self._currentHeadData.stemDirection = DrumKit.DOWN
+            self._currentHeadData.stemDirection = DrumKit.STEM_DOWN
         self._notationScene.setHeadData(self._currentHeadData)
 
     def _moveNotationUp(self):
@@ -448,8 +538,17 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self._notationScene.setHeadData(self._currentHeadData)
         self._checkNotationButtons()
 
+    def accept(self):
+        if all(old == -1 for old in self._oldLines.itervalues()):
+            if QMessageBox.question(self.parent(),
+                                    "Discard all existing notes?",
+                                    "Warning! You have changed the kit, but none of the old drums are being converted to new drums. This will discard all notes currently in the score. Are you sure you want to proceed?",
+                                    buttons = QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+                return
+        super(QEditKitDialog, self).accept()
+
     def getNewKit(self):
-        newKit = DrumKit()
+        newKit = DrumKit.DrumKit()
         oldLines = []
         for drum in reversed(self._currentKit):
             newKit.addDrum(drum)
@@ -514,18 +613,71 @@ def main():
     from PyQt4.QtGui import QApplication
     import sys
     app = QApplication(sys.argv)
-    kit = DrumKit()
-    kit.loadDefaultKit()
+    kit = DrumKit.getNamedDefaultKit()
     dialog = QEditKitDialog(kit, [kit[0]])
     dialog.show()
     app.exec_()
     if dialog.result():
-        newKit, changes = dialog.getNewKit()
-        print changes
-        for drum, oldDrumIndex in zip(newKit, changes):
-            print (drum.name, kit[oldDrumIndex].name
-                   if oldDrumIndex != -1
-                   else None, drum.head)
+        kitname, ok = QInputDialog.getText(None, "Enter new kit name",
+                                           "Kit name")
+        if not ok:
+            return
+        kitname = unicode(kitname)
+        kitvar = kitname.upper()
+        kitvar = "".join([ch if ch.isalnum() else "_" for ch in kitvar])
+        kitvar = "_" + kitvar
+        newKit, changes_ = dialog.getNewKit()
+        lines = []
+        indent = '%s_DRUMS = [' % kitvar
+        for drum in newKit:
+            line = indent
+            headData = drum.headData(drum.head)
+            values = (drum.name, drum.abbr, drum.head, str(drum.locked),
+                      headData.midiNote, headData.notationHead, headData.notationLine,
+                      "UP" if headData.stemDirection == DrumKit.STEM_UP
+                      else "DOWN")
+            line += '(("%s", "%s", "%s", %s), %d, "%s", %d, STEM_%s)' % values
+            lines.append(line)
+            indent = " " * len(indent)
+        lines = ("," + os.linesep).join(lines) + "]"
+        print lines
+        indent = '%s_HEADS = {' % kitvar
+        lines = []
+        volumeSymbols = {GHOST_VOLUME: "GHOST_VOLUME",
+                         ACCENT_VOLUME:"ACCENT_VOLUME"}
+        for drum in newKit:
+            headLines = []
+            headIndent = indent + '"%s" : [' % drum.abbr
+            defaultData = drum.headData(drum.head)
+            for head in drum:
+                if head == drum.head:
+                    continue
+                data = drum.headData(head)
+                line = headIndent
+                values = (head,
+                          "None" if data.midiNote == defaultData.midiNote
+                          else str(data.midiNote),
+                          "None" if data.midiVolume == defaultData.midiVolume
+                          else volumeSymbols.get(data.midiVolume,
+                                                str(data.midiVolume)),
+                          data.effect, data.notationHead,
+                          data.notationEffect, data.shortcut)
+                line += '("%s", %s, %s, "%s", "%s", "%s", "%s")' % values
+                headLines.append(line)
+                headIndent = ' ' * len(headIndent)
+            if headLines:
+                headLines = ("," + os.linesep).join(headLines) + "]"
+                lines.append(headLines)
+                indent = ' ' * len(indent)
+        if lines:
+            lines = ("," + os.linesep).join(lines) + "}"
+        else:
+            lines = '%s_HEADS = {}' % kitvar
+        print lines
+        print ('%s_KIT = {"drums":%s_DRUMS, "heads":%s_HEADS}'
+               % (kitvar, kitvar, kitvar))
+        print 'NAMED_DEFAULTS["%s"] = %s_KIT' % (kitname, kitvar)
+        print 'DEFAULT_KIT_NAMES.append("%s")' % kitname
 
 
 if __name__ == "__main__":

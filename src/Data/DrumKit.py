@@ -24,7 +24,8 @@ Created on 12 Dec 2010
 '''
 
 from Drum import Drum, HeadData
-from DefaultKits import DEFAULT_KIT, DEFAULT_EXTRA_HEADS, STEM_DOWN, STEM_UP
+from DefaultKits import (DEFAULT_KIT_INFO, STEM_DOWN, STEM_UP,
+                         NAMED_DEFAULTS)
 from DBErrors import DuplicateDrumError, NoSuchDrumError
 
 class DrumKit(object):
@@ -49,34 +50,6 @@ class DrumKit(object):
 
     def clear(self):
         self._drums = []
-
-    def loadDefaultKit(self):
-        for (drumData, midiNote, notationHead,
-             notationLine, stemDirection) in DEFAULT_KIT:
-            drum = Drum(*drumData)
-            headData = HeadData(midiNote = midiNote,
-                                notationHead = notationHead,
-                                notationLine = notationLine,
-                                stemDirection = stemDirection)
-            drum.addNoteHead(drum.head, headData)
-            for (extraHead,
-                 newMidi,
-                 newMidiVolume,
-                 newEffect,
-                 newNotationHead,
-                 newNotationEffect) in DEFAULT_EXTRA_HEADS.get(drum.abbr, []):
-                if newMidi is None:
-                    newMidi = midiNote
-                if newMidiVolume is None:
-                    newMidiVolume = headData.midiVolume
-                newData = HeadData(newMidi, newMidiVolume, newEffect,
-                                   notationLine = notationLine,
-                                   notationHead = newNotationHead,
-                                   notationEffect = newNotationEffect,
-                                   stemDirection = stemDirection)
-                drum.addNoteHead(extraHead, newData)
-            drum.checkShortcuts()
-            self.addDrum(drum)
 
     def addDrum(self, drum):
         if drum in self._drums:
@@ -136,8 +109,11 @@ class DrumKit(object):
                 lastDrum = drum
             elif lineType == "NOTEHEAD":
                 lastDrum.readHeadData(lineData)
+            elif lineType == "KIT_START":
+                #No need to do anything
+                pass
             else:
-                raise IOError("Unrecognised line type.")
+                raise IOError("Unrecognised line type.", lineType)
 
     def _checkShortcuts(self):
         for drum in self:
@@ -145,3 +121,44 @@ class DrumKit(object):
 
     def getDefaultHead(self, index):
         return self[index].head
+
+def _loadDefaultKit(kit, kitInfo = None):
+    if kitInfo is None:
+        kitInfo = DEFAULT_KIT_INFO
+    for (drumData, midiNote, notationHead,
+         notationLine, stemDirection) in kitInfo["drums"]:
+        drum = Drum(*drumData)
+        headData = HeadData(midiNote = midiNote,
+                            notationHead = notationHead,
+                            notationLine = notationLine,
+                            stemDirection = stemDirection)
+        drum.addNoteHead(drum.head, headData)
+        for (extraHead,
+             newMidi,
+             newMidiVolume,
+             newEffect,
+             newNotationHead,
+             newNotationEffect,
+             shortcut) in kitInfo["heads"].get(drum.abbr, []):
+            if newMidi is None:
+                newMidi = midiNote
+            if newMidiVolume is None:
+                newMidiVolume = headData.midiVolume
+            newData = HeadData(newMidi, newMidiVolume, newEffect,
+                               notationLine = notationLine,
+                               notationHead = newNotationHead,
+                               notationEffect = newNotationEffect,
+                               stemDirection = stemDirection,
+                               shortcut = shortcut)
+            drum.addNoteHead(extraHead, newData)
+        drum.checkShortcuts()
+        kit.addDrum(drum)
+
+def getNamedDefaultKit(defaultName = None):
+    if defaultName is None:
+        defaultName = "Default"
+    kitInfo = NAMED_DEFAULTS[defaultName]
+    kit = DrumKit()
+    _loadDefaultKit(kit, kitInfo)
+    return kit
+
