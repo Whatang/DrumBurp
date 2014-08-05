@@ -396,10 +396,10 @@ class SetRepeatCountCommand(ScoreCommand):
         if self._qScore.getQStaff(self._np).checkAlternate():
             self._qScore.reBuild()
 
-class EditMeasurePropertiesCommand(ScoreCommand):
+class ChangeMeasureCountCommand(ScoreCommand):
     def __init__(self, qScore, note, newCounter):
-        name = "edit measure properties"
-        super(EditMeasurePropertiesCommand, self).__init__(qScore,
+        name = "change measure count"
+        super(ChangeMeasureCountCommand, self).__init__(qScore,
                                                            note,
                                                            name)
         self._measureIndex = self._score.getMeasureIndex(note)

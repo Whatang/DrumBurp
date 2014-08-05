@@ -71,6 +71,9 @@ class Beat(object):
     def numTicks(self):
         return self._numTicks
 
+    def isPartial(self):
+        return self._numTicks < len(self.counter)
+
     def write(self, indenter):
         with indenter.section("BEAT_START", "BEAT_END"):
             if self.numTicks != self.ticksPerBeat:

@@ -24,12 +24,20 @@ Created on 19 Jan 2011
 '''
 
 from PyQt4.QtGui import QMenu
-from DBFSMEvents import MenuCancel
+from functools import wraps
+from DBFSMEvents import MenuCancel, MenuSelect
 
 class QMenuIgnoreCancelClick(QMenu):
     '''
     classdocs
     '''
+    @staticmethod
+    def menuSelection(method):
+        @wraps(method)
+        def wrapper(self, *args, **kwargs):
+            val = method(self, *args, **kwargs)
+            self._qScore.sendFsmEvent(MenuSelect())
+        return wrapper
 
 
     def __init__(self, qScore, parent = None):

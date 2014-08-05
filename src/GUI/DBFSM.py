@@ -22,11 +22,12 @@
 '''
 
 from DBCommands import (ToggleNote, RepeatNoteCommand,
-                        EditMeasurePropertiesCommand, SetRepeatCountCommand,
+                        ChangeMeasureCountCommand, SetRepeatCountCommand,
                         SetAlternateCommand)
 from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 from QMeasureContextMenu import QMeasureContextMenu
 from QMeasureLineContextMenu import QMeasureLineContextMenu
+from QCountContextMenu import QCountContextMenu
 from QEditMeasureDialog import QEditMeasureDialog
 from QRepeatCountDialog import QRepeatCountDialog
 from QAlternateDialog import QAlternateDialog
@@ -63,6 +64,11 @@ class Waiting(FsmState):
                                                    event.endNote,
                                                    event.startNote,
                                                    event.screenPos)
+        elif msgType == Event.MeasureCountContext:
+            newState = MeasureCountContextMenuState(self.qscore,
+                                                    event.note,
+                                                    event.measure,
+                                                    event.screenPos)
         elif msgType == Event.StartPlaying:
             newState = Playing(self.qscore)
         elif msgType == Event.EditMeasureProperties:
@@ -299,6 +305,7 @@ class MeasureLineContextMenuState(FsmState):
         super(MeasureLineContextMenuState, self).__init__(qscore)
         self.menu = QMeasureLineContextMenu(qscore, prevMeasure, nextMeasure,
                                             endNote, startNote)
+        qscore.clearDragSelection()
         QtCore.QTimer.singleShot(0, lambda: self.menu.exec_(screenPos))
 
     def send(self, event):
@@ -318,6 +325,24 @@ class MeasureLineContextMenuState(FsmState):
                                     event.measurePosition)
         else:
             return self
+
+class MeasureCountContextMenuState(FsmState):
+    def __init__(self, qscore, np, measure, screenPos):
+        super(MeasureCountContextMenuState, self).__init__(qscore)
+        self.menu = QCountContextMenu(qscore, np, measure)
+        qscore.clearDragSelection()
+        QtCore.QTimer.singleShot(0, lambda: self.menu.exec_(screenPos))
+
+    def send(self, event):
+        msgType = type(event)
+        if msgType == Event.StartPlaying:
+            self.menu.close()
+            return Playing(self.qscore)
+        elif msgType == Event.Escape:
+            self.menu.close()
+            return Waiting(self.qscore)
+        else:
+            return Waiting(self.qscore)
 
 class Playing(FsmState):
     def __init__(self, qscore):
@@ -374,9 +399,9 @@ class EditMeasurePropertiesState(DialogState):
     def _accepted(self):
         newCounter = self.dialog.getValues()
         if (newCounter.countString() != self.counter.countString()):
-            command = EditMeasurePropertiesCommand(self.qscore,
-                                                   self.measurePosition,
-                                                   newCounter)
+            command = ChangeMeasureCountCommand(self.qscore,
+                                                self.measurePosition,
+                                                newCounter)
             self.qscore.clearDragSelection()
             self.qscore.addCommand(command)
         super(EditMeasurePropertiesState, self)._accepted()  # IGNORE:W0212

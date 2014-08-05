@@ -32,7 +32,8 @@ from DBFSMEvents import (LeftPress, MidPress, RightPress,
                          EditMeasureProperties,
                          MouseMove, MouseRelease,
                          ChangeRepeatCount,
-                         SetAlternateEvent)
+                         SetAlternateEvent,
+                         MeasureCountContext)
 
 def _painter_saver(method):
     def wrapper(self, painter, *args, **kwargs):
@@ -368,13 +369,19 @@ class QMeasure(QtGui.QGraphicsItem):
         point = self.mapFromScene(event.scenePos())
         eventType = LeftPress
         np = None
-        if self._isOverNotes(self._getMouseLine(point)):
+        lineIndex = self._getMouseLine(point)
+        if self._isOverNotes(lineIndex):
             noteTime, drumIndex = self._getNotePosition(point)
             np = self.makeNotePosition(noteTime, drumIndex)
             if event.button() == QtCore.Qt.MidButton:
                 eventType = MidPress
             elif event.button() == QtCore.Qt.RightButton:
                 eventType = RightPress
+        elif self._isOverCount(lineIndex):
+            if event.button() == QtCore.Qt.RightButton:
+                eventType = MeasureCountContext
+                noteTime = self._getNoteTime(point)
+                np = self.makeNotePosition(noteTime, -1)
         self._qScore.sendFsmEvent(eventType(self, np, event.screenPos()))
 
     def mouseMoveEvent(self, event):
