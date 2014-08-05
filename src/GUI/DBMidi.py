@@ -235,5 +235,9 @@ def exportMidi(measureIterator, score, handle):
     for byte in midiData:
         handle.write("%c" % byte)
 
-atexit.register(_PLAYER.cleanup)
 
+def cleanup():
+    _PLAYER.cleanup()
+    pygame.mixer.quit()
+    pygame.midi.quit()
+    pygame.quit()
