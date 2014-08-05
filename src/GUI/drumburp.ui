@@ -65,45 +65,23 @@
         <number>3</number>
        </property>
        <item>
-        <widget class="QFrame" name="frame_2">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
+        <widget class="QComboBox" name="paperBox">
+         <property name="toolTip">
+          <string>Page size</string>
          </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
+         <property name="statusTip">
+          <string>Select the page size</string>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_6">
-          <property name="spacing">
-           <number>3</number>
+         <item>
+          <property name="text">
+           <string>A4</string>
           </property>
-          <property name="margin">
-           <number>0</number>
+         </item>
+         <item>
+          <property name="text">
+           <string>Letter</string>
           </property>
-          <item>
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>Page Size</string>
-            </property>
-            <property name="buddy">
-             <cstring>paperBox</cstring>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="paperBox">
-            <item>
-             <property name="text">
-              <string>A4</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Letter</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-         </layout>
+         </item>
         </widget>
        </item>
        <item>
@@ -117,46 +95,29 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <property name="spacing">
-          <number>3</number>
+        <widget class="QSpinBox" name="widthSpinBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
-         <item>
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>Columns</string>
-           </property>
-           <property name="buddy">
-            <cstring>widthSpinBox</cstring>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="widthSpinBox">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="toolTip">
-            <string>Score width</string>
-           </property>
-           <property name="statusTip">
-            <string>The number of columns to display the Score on</string>
-           </property>
-           <property name="minimum">
-            <number>10</number>
-           </property>
-           <property name="maximum">
-            <number>1000</number>
-           </property>
-           <property name="value">
-            <number>80</number>
-           </property>
-          </widget>
-         </item>
-        </layout>
+         <property name="toolTip">
+          <string>Score width</string>
+         </property>
+         <property name="statusTip">
+          <string>The number of columns to display the Score on</string>
+         </property>
+         <property name="minimum">
+          <number>10</number>
+         </property>
+         <property name="maximum">
+          <number>1000</number>
+         </property>
+         <property name="value">
+          <number>80</number>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QFrame" name="frame_5">
@@ -184,16 +145,6 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="label_4">
-            <property name="text">
-             <string>System Spacing</string>
-            </property>
-            <property name="buddy">
-             <cstring>lineSpaceSlider</cstring>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QFrame" name="frame_4">
             <property name="frameShape">
              <enum>QFrame::Box</enum>
@@ -217,10 +168,10 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Inter-system distance</string>
+                <string>Inter-staff distance</string>
                </property>
                <property name="statusTip">
-                <string>The distance between each system in the Score</string>
+                <string>The distance between each staff in the Score</string>
                </property>
                <property name="maximum">
                 <number>100</number>
@@ -274,17 +225,13 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>Default Measure</string>
-            </property>
-            <property name="buddy">
-             <cstring>defaultMeasureButton</cstring>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QPushButton" name="defaultMeasureButton">
+            <property name="toolTip">
+             <string>Default count</string>
+            </property>
+            <property name="statusTip">
+             <string>The default count to use for new measures</string>
+            </property>
             <property name="text">
              <string>MeasureCount</string>
             </property>
@@ -305,6 +252,12 @@
        </item>
        <item>
         <widget class="QPushButton" name="fontsButton">
+         <property name="toolTip">
+          <string>Fonts</string>
+         </property>
+         <property name="statusTip">
+          <string>Adjust the fonts used by this score</string>
+         </property>
          <property name="text">
           <string>Fonts...</string>
          </property>
@@ -322,6 +275,12 @@
        </item>
        <item>
         <widget class="QComboBox" name="sectionNavigator">
+         <property name="toolTip">
+          <string>Section navigator</string>
+         </property>
+         <property name="statusTip">
+          <string>Quickly jump to a section of the score</string>
+         </property>
          <property name="sizeAdjustPolicy">
           <enum>QComboBox::AdjustToContents</enum>
          </property>
@@ -340,6 +299,13 @@
          </property>
          <property name="frameShadow">
           <enum>QFrame::Raised</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="pagesLabel">
+         <property name="text">
+          <string>0 Pages</string>
          </property>
         </widget>
        </item>
@@ -377,10 +343,13 @@
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
       </property>
       <property name="dragMode">
-       <enum>QGraphicsView::RubberBandDrag</enum>
+       <enum>QGraphicsView::NoDrag</enum>
       </property>
       <property name="transformationAnchor">
        <enum>QGraphicsView::NoAnchor</enum>
+      </property>
+      <property name="rubberBandSelectionMode">
+       <enum>Qt::IntersectsItemBoundingRect</enum>
       </property>
      </widget>
     </item>
@@ -443,6 +412,7 @@
      <addaction name="actionFileToolbarIsVisible"/>
      <addaction name="actionDisplayToolBarIsVisible"/>
      <addaction name="actionExportToolBarIsVisible"/>
+     <addaction name="actionMIDIToolBarIsVisible"/>
      <addaction name="actionHelpToolBarIsVisible"/>
     </widget>
     <addaction name="actionFitInWindow"/>
@@ -462,6 +432,13 @@
     </property>
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
+    <addaction name="separator"/>
+    <addaction name="actionCopyMeasures"/>
+    <addaction name="actionPasteMeasures"/>
+    <addaction name="actionFillPasteMeasures"/>
+    <addaction name="separator"/>
+    <addaction name="actionClearMeasures"/>
+    <addaction name="actionDeleteMeasures"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -901,6 +878,22 @@ p, li { white-space: pre-wrap; }
     </layout>
    </widget>
   </widget>
+  <widget class="QToolBar" name="MIDIToolBar">
+   <property name="windowTitle">
+    <string>MIDI ToolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionPlayScore"/>
+   <addaction name="actionPlayOnce"/>
+   <addaction name="actionLoopBars"/>
+   <addaction name="actionMuteNotes"/>
+   <addaction name="actionExportMIDI"/>
+  </widget>
   <action name="actionQuit">
    <property name="icon">
     <iconset resource="DrumBurp.qrc">
@@ -1242,6 +1235,162 @@ Writes this Score as a plain .txt file.</string>
     <string>Fit Score to Page</string>
    </property>
   </action>
+  <action name="actionPlayScore">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/media-playback-start.png</normaloff>
+     <normalon>:/Icons/Icons/media-playback-stop.png</normalon>:/Icons/Icons/media-playback-start.png</iconset>
+   </property>
+   <property name="text">
+    <string>Play Score</string>
+   </property>
+   <property name="toolTip">
+    <string>Play this score through MIDI</string>
+   </property>
+  </action>
+  <action name="actionMuteNotes">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/audio-volume-medium.png</normaloff>
+     <normalon>:/Icons/Icons/audio-volume-muted.png</normalon>:/Icons/Icons/audio-volume-medium.png</iconset>
+   </property>
+   <property name="text">
+    <string>Mute Notes</string>
+   </property>
+   <property name="toolTip">
+    <string>Enable/disable note audio</string>
+   </property>
+  </action>
+  <action name="actionExportMIDI">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/midi</normaloff>:/Icons/Icons/midi</iconset>
+   </property>
+   <property name="text">
+    <string>Export MIDI</string>
+   </property>
+   <property name="toolTip">
+    <string>Export this score to a MIDI file</string>
+   </property>
+  </action>
+  <action name="actionMIDIToolBarIsVisible">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>MIDI</string>
+   </property>
+   <property name="toolTip">
+    <string>Change visibility of MIDI toolbar</string>
+   </property>
+  </action>
+  <action name="actionLoopBars">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/arrow-repeat.png</normaloff>:/Icons/Icons/arrow-repeat.png</iconset>
+   </property>
+   <property name="text">
+    <string>Loop</string>
+   </property>
+   <property name="toolTip">
+    <string>Play the selected bars in a constant loop</string>
+   </property>
+  </action>
+  <action name="actionPlayOnce">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/arrow-repeat-once.png</normaloff>:/Icons/Icons/arrow-repeat-once.png</iconset>
+   </property>
+   <property name="text">
+    <string>Play Once</string>
+   </property>
+   <property name="toolTip">
+    <string>Play the selected measures once</string>
+   </property>
+  </action>
+  <action name="actionCopyMeasures">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/edit-copy.png</normaloff>:/Icons/Icons/edit-copy.png</iconset>
+   </property>
+   <property name="text">
+    <string>Copy Measures</string>
+   </property>
+   <property name="toolTip">
+    <string>Copy the currently selected measures</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="actionPasteMeasures">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/edit-paste.png</normaloff>:/Icons/Icons/edit-paste.png</iconset>
+   </property>
+   <property name="text">
+    <string>Paste Measures</string>
+   </property>
+   <property name="toolTip">
+    <string>Paste the clipboard over the currently selected measures</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="actionClearMeasures">
+   <property name="text">
+    <string>Clear Measures</string>
+   </property>
+   <property name="toolTip">
+    <string>Clears the selected measures of all notes</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
+  </action>
+  <action name="actionDeleteMeasures">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/edit-delete.png</normaloff>:/Icons/Icons/edit-delete.png</iconset>
+   </property>
+   <property name="text">
+    <string>Delete Measures</string>
+   </property>
+   <property name="toolTip">
+    <string>Deletes the currently selected measures</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Del</string>
+   </property>
+  </action>
+  <action name="actionFillPasteMeasures">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/edit-paste.png</normaloff>:/Icons/Icons/edit-paste.png</iconset>
+   </property>
+   <property name="text">
+    <string>Fill Paste Measures</string>
+   </property>
+   <property name="toolTip">
+    <string>Paste the copied measues enough times to fill the selected ones.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+V</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -1251,8 +1400,6 @@ Writes this Score as a plain .txt file.</string>
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>paperBox</tabstop>
-  <tabstop>widthSpinBox</tabstop>
   <tabstop>lineSpaceSlider</tabstop>
   <tabstop>defaultMeasureButton</tabstop>
   <tabstop>fontsButton</tabstop>
@@ -1730,6 +1877,38 @@ Writes this Score as a plain .txt file.</string>
     <hint type="destinationlabel">
      <x>876</x>
      <y>202</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionMIDIToolBarIsVisible</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MIDIToolBar</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>801</x>
+     <y>41</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>MIDIToolBar</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionMIDIToolBarIsVisible</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>801</x>
+     <y>41</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
     </hint>
    </hints>
   </connection>

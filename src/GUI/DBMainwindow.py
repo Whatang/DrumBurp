@@ -1,4 +1,4 @@
-# Copyright 2011 Michael Thomas
+# Copyright 2011-2012 Michael Thomas
 #
 # See www.whatang.org for more information.
 #
@@ -36,12 +36,13 @@ from QNewScoreDialog import QNewScoreDialog
 from QAsciiExportDialog import QAsciiExportDialog
 from QEditMeasureDialog import QEditMeasureDialog
 from DBInfoDialog import DBInfoDialog
-from DBStartupDialog import DBStartupDialog
 import DBIcons
 import os
+import DBMidi
+from Data.Score import InconsistentRepeats
 
 APPNAME = "DrumBurp"
-DB_VERSION = "0.4"
+DB_VERSION = "0.5"
 #pylint:disable-msg=R0904
 
 class FakeQSettings(object):
@@ -65,13 +66,23 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         super(DrumBurp, self).__init__(parent)
         self._state = None
         self._asciiSettings = None
-        self._printer = QPrinter()
+        self._printer = None
         self.setupUi(self)
-        DBIcons.initialiseIcons()
+        self.scoreScene = None
+        self.paperBox.blockSignals(True)
         self.paperBox.clear()
+        self._knownPageHeights = []
+        printer = QPrinter()
+        printer.setOutputFileName("invalid.pdf")
         for name in dir(QPrinter):
-            if isinstance(getattr(QPrinter, name), QPrinter.PageSize):
+            attr = getattr(QPrinter, name)
+            if (isinstance(attr, QPrinter.PageSize)
+                and name != "Custom"):
                 self.paperBox.addItem(name)
+                printer.setPaperSize(attr)
+                self._knownPageHeights.append(printer.pageRect().height())
+        self._pageHeight = printer.paperRect().height()
+        self.paperBox.blockSignals(False)
         settings = self._makeQSettings()
         self.recentFiles = [unicode(fname) for fname in
                             settings.value("RecentFiles").toStringList()
@@ -92,43 +103,57 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.setSections()
         QTimer.singleShot(0, self._startUp)
 
-    def _initializeState(self):
-        self.scoreView.setScene(self.scoreScene)
+
+    def _connectSignals(self, props, scene):
         # Connect signals
-        props = self.songProperties
         props.fontChanged.connect(self._setNoteFont)
         props.noteSizeChanged.connect(self.noteSizeSpinBox.setValue)
         props.sectionFontChanged.connect(self._setSectionFont)
         props.sectionFontSizeChanged.connect(self._setSectionFontSize)
         props.metadataFontChanged.connect(self._setMetadataFont)
         props.metadataFontSizeChanged.connect(self._setMetadataSize)
-        self.scoreScene.dirtySignal.connect(self.setWindowModified)
+        scene.dirtySignal.connect(self.setWindowModified)
+        scene.dragHighlight.connect(self.actionLoopBars.setEnabled)
+        scene.dragHighlight.connect(self.actionPlayOnce.setEnabled)
+        scene.dragHighlight.connect(self.actionCopyMeasures.setEnabled)
+        scene.dragHighlight.connect(self.checkPasteMeasure)
+        scene.dragHighlight.connect(self.actionClearMeasures.setEnabled)
+        scene.dragHighlight.connect(self.actionDeleteMeasures.setEnabled)
+        scene.setNumPages.connect(self.setNumPages)
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
         props.metadataVisibilityChanged.connect(self._setMetadataVisible)
         props.beatCountVisibleChanged.connect(self._setBeatCountVisible)
+        DBMidi.SONGEND_SIGNAL.connect(self.musicDone)
+        DBMidi.HIGHLIGHT_SIGNAL.connect(self.highlightPlayingMeasure)
+
+    def _initializeState(self):
+        props = self.songProperties
+        scene = self.scoreScene
+        self.scoreView.setScene(scene)
+        self._connectSignals(props, scene)
         # Fonts
         self.fontComboBox.setWritingSystem(QFontDatabase.Latin)
         self.sectionFontCombo.setWritingSystem(QFontDatabase.Latin)
         self.sectionFontCombo.setWritingSystem(QFontDatabase.Latin)
-        self.lineSpaceSlider.setValue(self.scoreScene.systemSpacing)
-        font = self.songProperties.noteFont
+        self.lineSpaceSlider.setValue(scene.systemSpacing)
+        font = props.noteFont
         if font is None:
-            font = self.scoreScene.font()
-        font.setPointSize(self.songProperties.noteFontSize)
+            font = scene.font()
+        font.setPointSize(props.noteFontSize)
         self.fontComboBox.setCurrentFont(font)
-        self.noteSizeSpinBox.setValue(self.songProperties.noteFontSize)
-        font = self.songProperties.sectionFont
+        self.noteSizeSpinBox.setValue(props.noteFontSize)
+        font = props.sectionFont
         if font is None:
-            font = self.scoreScene.font()
-        font.setPointSize(self.songProperties.sectionFontSize)
+            font = scene.font()
+        font.setPointSize(props.sectionFontSize)
         self.sectionFontCombo.setCurrentFont(font)
         self.sectionFontSizeSpinbox.setValue(props.sectionFontSize)
-        font = self.songProperties.metadataFont
+        font = props.metadataFont
         if font is None:
-            font = self.scoreScene.font()
-        font.setPointSize(self.songProperties.metadataFontSize)
+            font = scene.font()
+        font.setPointSize(props.metadataFontSize)
         self.metadataFontCombo.setCurrentFont(font)
         self.metadataFontSizeSpinbox.setValue(props.metadataFontSize)
         # Visibility toggles
@@ -136,23 +161,30 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.actionShowEmptyLines.setChecked(props.emptyLinesVisible)
         self.actionShowScoreInfo.setChecked(props.metadataVisible)
         self.actionShowBeatCount.setChecked(props.beatCountVisible)
+        # Set doable actions
+        self.actionPlayOnce.setEnabled(False)
+        self.actionLoopBars.setEnabled(False)
+        self.actionCopyMeasures.setEnabled(False)
+        self.actionPasteMeasures.setEnabled(False)
+        self.actionFillPasteMeasures.setEnabled(False)
+        self.actionClearMeasures.setEnabled(False)
+        self.actionDeleteMeasures.setEnabled(False)
         # Undo/redo
         self.actionUndo.setEnabled(False)
         self.actionRedo.setEnabled(False)
-        self.scoreScene.canUndoChanged.connect(self.actionUndo.setEnabled)
+        scene.canUndoChanged.connect(self.actionUndo.setEnabled)
         changeUndoText = lambda txt:self.actionUndo.setText("Undo " + txt)
-        self.scoreScene.undoTextChanged.connect(changeUndoText)
-        self.scoreScene.canRedoChanged.connect(self.actionRedo.setEnabled)
+        scene.undoTextChanged.connect(changeUndoText)
+        scene.canRedoChanged.connect(self.actionRedo.setEnabled)
         changeRedoText = lambda txt:self.actionRedo.setText("Redo " + txt)
-        self.scoreScene.redoTextChanged.connect(changeRedoText)
+        scene.redoTextChanged.connect(changeRedoText)
         # Default beat
-        self._beatChanged(self.scoreScene.defaultCount)
+        self._beatChanged(scene.defaultCount)
+        self.widthSpinBox.setValue(scene.scoreWidth)
 
 
     def _startUp(self):
         self.scoreView.startUp()
-        dlg = DBStartupDialog(DB_VERSION)
-        dlg.exec_()
         self.updateStatus("Welcome to %s v%s" % (APPNAME, DB_VERSION))
 
 
@@ -256,6 +288,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         widthInPixels = self.scoreView.width()
         maxColumns = self.songProperties.maxColumns(widthInPixels)
         self.widthSpinBox.setValue(maxColumns)
+        self.scoreScene.reBuild()
 
     @pyqtSignature("")
     def on_actionLoad_triggered(self):
@@ -419,6 +452,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionPrint_triggered(self):
+        if self._printer is None:
+            self._printer = QPrinter()
         self._printer = QPrinter(QPrinterInfo(self._printer),
                                  QPrinter.HighResolution)
         self._printer.setPaperSize(self._getPaperSize())
@@ -433,6 +468,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         try:
             printer = QPrinter(mode = QPrinter.HighResolution)
             printer.setPaperSize(self._getPaperSize())
+            printer.setOutputFormat(QPrinter.PdfFormat)
             if self.filename:
                 outfileName = list(os.path.splitext(self.filename)[:-1])
                 outfileName = os.extsep.join(outfileName + ["pdf"])
@@ -471,7 +507,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         dlg.exec_()
 
     def _getPaperSize(self):
-        return getattr(QPrinter, str(self.paperBox.currentText()))
+        try:
+            return getattr(QPrinter, str(self.paperBox.currentText()))
+        except AttributeError:
+            return QPrinter.Letter
 
     @pyqtSignature("")
     def on_actionFitPage_triggered(self):
@@ -481,6 +520,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         widthInPixels = printer.pageRect().width()
         maxColumns = self.songProperties.maxColumns(widthInPixels)
         self.widthSpinBox.setValue(maxColumns)
+        self.scoreScene.reBuild()
 
     @pyqtSignature("")
     def on_defaultMeasureButton_clicked(self):
@@ -513,3 +553,136 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             self.sectionNavigator.addItem(sectionTitle)
         self.sectionNavigator.blockSignals(False)
 
+    def _canPlayback(self):
+        try:
+            measures = list(self.scoreScene.score.iterMeasuresWithRepeats())
+        except InconsistentRepeats, exc:
+            QMessageBox.warning(self, "Playback error",
+                                "There are inconsistent repeat markings.")
+            position = self.scoreScene.score.getMeasurePosition(exc[0])
+            measure = self.scoreScene.getQMeasure(position)
+            self.scoreView.ensureVisible(measure)
+            return False
+        return True
+
+    @pyqtSignature("bool")
+    def on_actionPlayScore_toggled(self, onOff):
+        if onOff:
+            if not self._canPlayback():
+                self.actionPlayScore.toggle()
+                return
+            DBMidi.playScore(self.scoreScene.score)
+        else:
+            DBMidi.shutUp()
+
+    def highlightPlayingMeasure(self, index):
+        if index == -1:
+            self.scoreScene.highlightPlayingMeasure(None)
+        else:
+            position = self.scoreScene.score.getMeasurePosition(index)
+            self.scoreScene.highlightPlayingMeasure(position)
+            measure = self.scoreScene.getQMeasure(position)
+            self.scoreView.ensureVisible(measure)
+
+    @pyqtSignature("bool")
+    def on_actionMuteNotes_toggled(self, onOff):
+        DBMidi.setMute(onOff)
+
+    @pyqtSignature("")
+    def on_actionExportMIDI_triggered(self):
+        if not self._canPlayback():
+            return
+        directory = self.filename
+        if directory is None:
+            suggestion = unicode(self.scoreScene.title)
+            if len(suggestion) == 0:
+                suggestion = "Untitled"
+            suggestion = os.extsep.join([suggestion, "brp"])
+            if len(self.recentFiles) > 0:
+                directory = os.path.dirname(self.recentFiles[-1])
+            else:
+                home = QDesktopServices.HomeLocation
+                directory = str(QDesktopServices.storageLocation(home))
+            directory = os.path.join(directory,
+                                     suggestion)
+        if os.path.splitext(directory)[-1] == os.extsep + 'brp':
+            directory = os.path.splitext(directory)[0]
+        caption = "Export to MIDI"
+        fname = QFileDialog.getSaveFileName(parent = self,
+                                            caption = caption,
+                                            directory = directory,
+                                            filter = "DrumBurp files (*.mid)")
+        if len(fname) == 0 :
+            return
+        with open(fname, 'wb') as handle:
+            DBMidi.exportMidi(self.scoreScene.score.iterMeasuresWithRepeats(),
+                              self.scoreScene.score, handle)
+
+    @pyqtSignature("bool")
+    def on_actionLoopBars_toggled(self, onOff):
+        if onOff:
+            if not self.scoreScene.hasDragSelection():
+                self.actionLoopBars.toggle()
+                return
+            DBMidi.loopBars(self.scoreScene.iterDragSelection(),
+                            self.scoreScene.score)
+        else:
+            DBMidi.shutUp()
+
+    @pyqtSignature("bool")
+    def on_actionPlayOnce_toggled(self, onOff):
+        if onOff:
+            if not self.scoreScene.hasDragSelection():
+                self.actionPlayOnce.toggle()
+                return
+            DBMidi.loopBars(self.scoreScene.iterDragSelection(),
+                            self.scoreScene.score,
+                            loopCount = 1)
+        else:
+            DBMidi.shutUp()
+
+    @pyqtSignature("")
+    def on_actionCopyMeasures_triggered(self):
+        self.scoreScene.copyMeasures()
+
+    def checkPasteMeasure(self):
+        onOff = (self.scoreScene.hasDragSelection() and
+                 len(self.scoreScene.measureClipboard) > 0)
+        self.actionPasteMeasures.setEnabled(onOff)
+        self.actionFillPasteMeasures.setEnabled(onOff)
+
+    @pyqtSignature("")
+    def on_actionPasteMeasures_triggered(self):
+        self.scoreScene.pasteMeasuresOver()
+
+    @pyqtSignature("")
+    def on_actionFillPasteMeasures_triggered(self):
+        self.scoreScene.pasteMeasuresOver(repeating = True)
+
+    @pyqtSignature("")
+    def on_actionClearMeasures_triggered(self):
+        self.scoreScene.clearMeasures()
+
+    @pyqtSignature("")
+    def on_actionDeleteMeasures_triggered(self):
+        self.scoreScene.deleteMeasures()
+
+    def musicDone(self):
+        players = [self.actionPlayScore, self.actionPlayOnce,
+                   self.actionLoopBars]
+        for playButton in players:
+            if playButton.isChecked():
+                playButton.setChecked(False)
+
+    @pyqtSignature("int")
+    def on_paperBox_currentIndexChanged(self, index):
+        self._pageHeight = self._knownPageHeights[index]
+        self.setNumPages()
+
+    def setNumPages(self):
+        if self.scoreScene:
+            numPages = self.scoreScene.numPages(self._pageHeight)
+            if numPages > 1:
+                self.pagesLabel.setText("%d Pages" % numPages)
+            else:
+                self.pagesLabel.setText("1 Page")

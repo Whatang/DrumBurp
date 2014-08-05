@@ -1,28 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Michael Thomas
-#
-# See www.whatang.org for more information.
-#
-# This file is part of DrumBurp.
-#
-# DrumBurp is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# DrumBurp is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with DrumBurp.  If not, see <http://www.gnu.org/licenses/>
-
-
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\dbStartup.ui'
 #
-# Created: Sun Apr 17 16:05:21 2011
+# Created: Sat Feb 18 12:40:46 2012
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -44,7 +24,7 @@ class Ui_dbStartup(object):
         self.textBrowser.setAutoFillBackground(True)
         self.textBrowser.setFrameShape(QtGui.QFrame.NoFrame)
         self.textBrowser.setFrameShadow(QtGui.QFrame.Plain)
-        self.textBrowser.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByKeyboard | QtCore.Qt.LinksAccessibleByMouse)
+        self.textBrowser.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByKeyboard|QtCore.Qt.LinksAccessibleByMouse)
         self.textBrowser.setOpenExternalLinks(True)
         self.textBrowser.setObjectName(_fromUtf8("textBrowser"))
         self.verticalLayout.addWidget(self.textBrowser)
@@ -58,6 +38,7 @@ class Ui_dbStartup(object):
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), dbStartup.accept)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), dbStartup.reject)
         QtCore.QMetaObject.connectSlotsByName(dbStartup)
+        dbStartup.setTabOrder(self.buttonBox, self.textBrowser)
 
     def retranslateUi(self, dbStartup):
         dbStartup.setWindowTitle(QtGui.QApplication.translate("dbStartup", "Welcome to DrumBurp", None, QtGui.QApplication.UnicodeUTF8))
@@ -65,7 +46,7 @@ class Ui_dbStartup(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt; font-weight:600; font-style:italic;\">DrumBurp Copyright (C) 2011 Michael Thomas</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt; font-weight:600; font-style:italic;\">DrumBurp Copyright (C) 2011-12 Michael Thomas</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">This program comes with ABSOLUTELY NO WARRANTY; for details see the </span><span style=\" font-size:8pt; font-weight:600;\">Help&gt;About DrumBurp</span><span style=\" font-size:8pt;\"> menu item. This is free software, and you are welcome to redistribute it under certain conditions; see the licensing information in </span><span style=\" font-size:8pt; font-weight:600;\">Help&gt;About DrumBurp</span><span style=\" font-size:8pt;\"> for details.</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"></p>\n"

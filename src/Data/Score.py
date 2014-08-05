@@ -1,4 +1,4 @@
-# Copyright 2011 Michael Thomas
+# Copyright 2011-12 Michael Thomas
 #
 # See www.whatang.org for more information.
 #
@@ -40,6 +40,9 @@ import hashlib
 from StringIO import StringIO
 
 #pylint: disable-msg=R0904
+
+class InconsistentRepeats(StandardError):
+    "Bad repeat data"
 
 class Score(object):
     '''
@@ -96,6 +99,126 @@ class Score(object):
         for staff in self.iterStaffs():
             for measure in staff:
                 yield measure
+
+    def iterMeasuresBetween(self, start, end):
+        if self.getMeasureIndex(end) < self.getMeasureIndex(start):
+            start, end = end, start
+        staffIndex = start.staffIndex
+        measureIndex = start.measureIndex
+        absIndex = self.getMeasureIndex(start)
+        while staffIndex < end.staffIndex:
+            staff = self.getStaff(staffIndex)
+            while measureIndex < staff.numMeasures():
+                yield (staff[measureIndex], absIndex,
+                       NotePosition(staffIndex, measureIndex))
+                measureIndex += 1
+                absIndex += 1
+            measureIndex = 0
+            staffIndex += 1
+        staff = self.getStaff(staffIndex)
+        while measureIndex <= end.measureIndex:
+            yield (staff[measureIndex], absIndex,
+                   NotePosition(staffIndex, measureIndex))
+            absIndex += 1
+            measureIndex += 1
+
+    @staticmethod
+    def _readAlternates(text):
+        alternates = [t.strip() for t in
+                      text.split(",")]
+        theseAlternates = set()
+        for aText in alternates:
+            if "-" in aText:
+                aStart, aEnd = aText.split("-")
+                for aVal in xrange(int(aStart), int(aEnd.rstrip(".")) + 1):
+                    theseAlternates.add(aVal)
+            else:
+                theseAlternates.add(int(aText.rstrip(".")))
+        return theseAlternates
+
+    @staticmethod
+    def _findRepeatData(measures, index, alternateIndexes):
+        start = index
+        numMeasures = len(measures)
+        numRepeats = 0
+        alternates = set()
+        while index < numMeasures:
+            measure = measures[index]
+            if index in alternateIndexes:
+                numRepeats += len(alternateIndexes[index])
+                alternates.update(alternateIndexes[index])
+            if (measure.isRepeatEnd() or measure.isSectionEnd()):
+                if alternates:
+                    if (index + 1 == numMeasures or
+                        not measures[index + 1].alternateText
+                        or measures[index + 1].isRepeatStart()
+                        or measure.isSectionEnd()):
+                        if alternates != set(xrange(1, numRepeats + 1)):
+                            raise InconsistentRepeats(start, index)
+                        return index + 1, numRepeats
+                else:
+                    numRepeats = measure.repeatCount
+                    return index + 1, numRepeats
+            index += 1
+        return index, numRepeats
+
+
+    def iterMeasuresWithRepeats(self):
+        measures = list(self.iterMeasures())
+        alternateIndexes = {}
+        repeatData = {}
+        repeatStart = -1
+        for index, measure in enumerate(measures):
+            if measure.alternateText:
+                alternateIndexes[index] = self._readAlternates(measure.alternateText)
+        for index, measure in enumerate(measures):
+            if measure.isRepeatStart():
+                repeatData[index] = self._findRepeatData(measures, index,
+                                                         alternateIndexes)
+        index = 0
+        repeatStart = 0
+        repeatNum = -1
+        afterRepeat = -1
+        latestRepeatEnd = -1
+        numMeasures = len(measures)
+        alternateStarts = {}
+        while index < numMeasures:
+            measure = measures[index]
+            if measure.isRepeatStart():
+                repeatStart = index
+                afterRepeat, numRepeats = repeatData[index]
+                repeatNum += 1
+            if index in alternateIndexes and repeatNum > -1:
+                theseAlternates = alternateIndexes[index]
+                alternateStarts.update((aStart, index) for aStart
+                                       in theseAlternates)
+                if repeatNum + 1 not in theseAlternates:
+                    index = alternateStarts.get(repeatNum + 1,
+                                                latestRepeatEnd + 1)
+                    continue
+            yield measure, index
+            if measure.isRepeatEnd() and repeatNum > -1:
+                if alternateStarts:
+                    if repeatNum < numRepeats - 1:
+                        if index > latestRepeatEnd:
+                            latestRepeatEnd = index
+                        index = repeatStart
+                    else:
+                        index = afterRepeat
+                        repeatNum = -1
+                        alternateStarts = {}
+                elif repeatNum < numRepeats - 1:
+                    index = repeatStart
+                else:
+                    index += 1
+                    repeatNum = -1
+            elif measure.isSectionEnd():
+                repeatNum = -1
+                index += 1
+                alternateStarts = {}
+            else:
+                index += 1
+
 
     def iterNotes(self):
         for sIndex, staff in enumerate(self.iterStaffs()):
@@ -253,6 +376,23 @@ class Score(object):
             self.deleteSectionTitle(sectionIndex)
         staff.deleteMeasure(position)
 
+    def deleteMeasuresAtPosition(self, position, numToDelete):
+        position = copy.copy(position)
+        staff = self.getStaff(position.staffIndex)
+        for dummyIndex in xrange(numToDelete):
+            if position.measureIndex == staff.numMeasures():
+                if staff.numMeasures() == 0:
+                    self.deleteStaff(position)
+                else:
+                    position.staffIndex += 1
+                    position.measureIndex = 0
+                staff = self.getStaff(position.staffIndex)
+            staff.deleteMeasure(position)
+
+    def clearMeasure(self, position):
+        measure = self.getItemAtPosition(position.makeMeasurePosition())
+        measure.clear() #IGNORE:E1103
+
     def trailingEmptyMeasures(self):
         emptyMeasures = []
         np = NotePosition(staffIndex = self.numStaffs() - 1)
@@ -363,9 +503,49 @@ class Score(object):
         for measure in self.iterMeasures():
             if inSection:
                 yield measure
+                if measure.isSectionEnd():
+                    break
             if measure.isSectionEnd():
                 thisSection += 1
                 inSection = (thisSection == sectionIndex)
+
+    def nextMeasure(self, position):
+        if not(0 <= position.staffIndex < self.numStaffs()):
+            raise BadTimeError()
+        staff = self.getStaff(position.staffIndex)
+        if not (0 <= position.measureIndex < staff.numMeasures()):
+            raise BadTimeError()
+        position = NotePosition(position.staffIndex, position.measureIndex)
+        position.measureIndex += 1
+        if position.measureIndex == staff.numMeasures():
+            position.staffIndex += 1
+            if position.staffIndex == self.numStaffs():
+                position.staffIndex = None
+                position.measureIndex = None
+            else:
+                position.measureIndex = 0
+        return position
+
+    def nextMeasurePositionInSection(self, position):
+        if not(0 <= position.staffIndex < self.numStaffs()):
+            raise BadTimeError()
+        staff = self.getStaff(position.staffIndex)
+        if not (0 <= position.measureIndex < staff.numMeasures()):
+            raise BadTimeError()
+        position = NotePosition(position.staffIndex, position.measureIndex)
+        if staff[position.measureIndex].isSectionEnd():
+            position.staffIndex = None
+            position.measureIndex = None
+        else:
+            position.measureIndex += 1
+            if position.measureIndex == staff.numMeasures:
+                position.staffIndex += 1
+                if position.staffIndex == self.numStaffs():
+                    position.staffIndex = None
+                    position.measureIndex = None
+                else:
+                    position.measureIndex = 0
+        return position
 
     def insertSectionCopy(self, position, sectionIndex):
         self.turnOffCallBacks()
@@ -456,8 +636,12 @@ class Score(object):
             measure = staff[pos.measureIndex]
         return pos
 
+    def _getFormatState(self):
+        return [(staff.numMeasures(), self.numVisibleLines(index))
+                for index, staff in enumerate(self.iterStaffs())]
+
     def saveFormatState(self):
-        self._formatState = [staff.numMeasures() for staff in self.iterStaffs()]
+        self._formatState = self._getFormatState()
 
     def _formatScore(self, width,
                      widthFunction, ignoreErrors = False):
@@ -466,7 +650,6 @@ class Score(object):
         measures = list(self.iterMeasures())
         if not self._formatState:
             self.saveFormatState()
-#        oldNumMeasures = [staff.numMeasures() for staff in self.iterStaffs()]
         for staff in self.iterStaffs():
             staff.clear()
         staff = self.getStaff(0)
@@ -494,8 +677,7 @@ class Score(object):
                 staff = self.getStaff(staffIndex)
         while self.numStaffs() > staffIndex + 1:
             self.deleteLastStaff()
-        newNumMeasures = [staff.numMeasures() for staff in self.iterStaffs()]
-        return newNumMeasures != self._formatState
+        return self._formatState != self._getFormatState()
 
     def textFormatScore(self, width = None, ignoreErrors = False):
         return self._formatScore(width, Staff.characterWidth, ignoreErrors)
@@ -507,13 +689,16 @@ class Score(object):
 
     def changeKit(self, newKit, changes):
         for measure in self.iterMeasures():
-            measure.changeKit(changes)
+            measure.changeKit(newKit, changes)
         self.drumKit = newKit
 
     def numVisibleLines(self, index):
-        staff = self.getStaff(index)
-        return sum(drum.locked or staff.lineIsVisible(index)
-                   for index, drum in enumerate(self.drumKit))
+        if self.scoreData.emptyLinesVisible:
+            return len(self.drumKit)
+        else:
+            staff = self.getStaff(index)
+            return sum(drum.locked or staff.lineIsVisible(index)
+                       for index, drum in enumerate(self.drumKit))
 
     def nthVisibleLineIndex(self, staffIndex, lineIndex):
         count = -1
@@ -530,6 +715,14 @@ class Score(object):
         for lineNum, drum in enumerate(self.drumKit):
             if drum.locked or staff.lineIsVisible(lineNum):
                 yield drum
+
+    def emptyDrums(self):
+        emptyDrums = set(self.drumKit)
+        for staffIndex in xrange(self.numStaffs()):
+            emptyDrums.difference_update(set(self.iterVisibleLines(staffIndex)))
+            if not emptyDrums:
+                break
+        return emptyDrums
 
     def write(self, handle):
         indenter = Indenter()
@@ -583,6 +776,9 @@ class Score(object):
                 self.fontOptions.read(scoreIterator)
             else:
                 raise IOError("Unrecognised line type: " + lineType)
+        for np, head in self.iterNotes():
+            if not self.drumKit[np.drumIndex].isAllowedHead(head):
+                self.drumKit[np.drumIndex].addNoteHead(head)
         # Format the score appropriately
         self.gridFormatScore(self.scoreData.width)
         # Make sure we've got the right number of section titles

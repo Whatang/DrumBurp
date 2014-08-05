@@ -1,4 +1,4 @@
-# Copyright 2011 Michael Thomas
+# Copyright 2011-12 Michael Thomas
 #
 # See www.whatang.org for more information.
 #
@@ -104,7 +104,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
         return len(self._measures)
 
     def _addLineLabel(self, drum):
-        qLabel = QLineLabel(drum, self.scene(), self)
+        qLabel = QLineLabel(drum, self._qScore, self)
         self._lineLabels.append(qLabel)
         self.addToGroup(qLabel)
 
@@ -115,7 +115,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
         self.addToGroup(qMeasure)
 
     def _addMeasureLine(self, lastMeasure, nextMeasure):
-        qMeasureLine = QMeasureLine(self.scene(),
+        qMeasureLine = QMeasureLine(self._qScore,
                                     lastMeasure, nextMeasure,
                                     len(self._measureLines),
                                     self._index,
@@ -132,12 +132,12 @@ class QStaff(QtGui.QGraphicsItemGroup):
         xOffset += self._lineLabels[0].cellWidth()
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
-            qMeasureLine.setPos(xOffset, self.scene().ySpacing)
+            qMeasureLine.setPos(xOffset, self._qScore.ySpacing)
             qMeasureLine.setDimensions()
             xOffset += qMeasureLine.width()
             qMeasure.setPos(xOffset, 0)
             xOffset += qMeasure.width()
-        self._measureLines[-1].setPos(xOffset, self.scene().ySpacing)
+        self._measureLines[-1].setPos(xOffset, self._qScore.ySpacing)
         self._measureLines[-1].setDimensions()
         self._width = xOffset + self._measureLines[-1].width()
         self._height = max(element.height()
@@ -150,14 +150,14 @@ class QStaff(QtGui.QGraphicsItemGroup):
             label.xSpacingChanged()
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
-            qMeasureLine.setPos(xOffset, self.scene().ySpacing)
+            qMeasureLine.setPos(xOffset, self._qScore.ySpacing)
             qMeasureLine.xSpacingChanged()
             xOffset += qMeasureLine.width()
             qMeasure.setPos(xOffset, 0)
             qMeasure.xSpacingChanged()
             xOffset += qMeasure.width()
         self._measureLines[-1].xSpacingChanged()
-        self._measureLines[-1].setPos(xOffset, self.scene().ySpacing)
+        self._measureLines[-1].setPos(xOffset, self._qScore.ySpacing)
         self._width = xOffset + self._measureLines[-1].width()
 
     def ySpacingChanged(self):
@@ -211,3 +211,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
     def changeRepeatCount(self, np):
         qMeasure = self._measures[np.measureIndex]
         qMeasure.changeRepeatCount()
+
+    def getQMeasure(self, np):
+        return self._measures[np.measureIndex]
+

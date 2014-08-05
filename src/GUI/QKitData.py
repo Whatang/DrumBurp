@@ -1,4 +1,4 @@
-# Copyright 2011 Michael Thomas
+# Copyright 2011-12 Michael Thomas
 #
 # See www.whatang.org for more information.
 #
@@ -32,7 +32,7 @@ class QKitData(QGraphicsListData):
 
     def _iterData(self):
         kit = self._qScore.score.drumKit
-        for drum in kit:
+        for drum in reversed(kit):
             yield "%-2s = %s" % (drum.abbr, drum.name)
 
     def font(self):
@@ -43,9 +43,8 @@ class QKitData(QGraphicsListData):
 
     def mouseDoubleClickEvent(self, event_):
         editDialog = QEditKitDialog(self.scene().score.drumKit,
+                                    self.scene().score.emptyDrums(),
                                     self.scene().parent())
         if editDialog.exec_():
             newKit, changes = editDialog.getNewKit()
-            self.scene().score.changeKit(newKit, changes)
-            self.scene().reBuild()
-            self.scene().dirty = True
+            self.scene().changeKit(newKit, changes)

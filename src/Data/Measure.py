@@ -1,4 +1,4 @@
-# Copyright 2011 Michael Thomas
+# Copyright 2011-12 Michael Thomas
 #
 # See www.whatang.org for more information.
 #
@@ -30,8 +30,78 @@ from NotePosition import NotePosition
 from Data import MeasureCount
 import copy
 
+class NoteDictionary(object):
+    def __init__(self):
+        self._notes = defaultdict(lambda:defaultdict(dict))
+        self._noteTimes = []
+
+    def __len__(self):
+        return len(self._noteTimes)
+
+    def __iter__(self):
+        return iter(self._noteTimes)
+
+    def iterkeys(self):
+        return iter(self._noteTimes)
+
+    def itervalues(self):
+        for noteTime in self._noteTimes:
+            yield self._notes[noteTime]
+
+    def iteritems(self):
+        for noteTime in self._noteTimes:
+            yield (noteTime, self._notes[noteTime])
+
+    def __contains__(self, key):
+        return key in self._notes
+
+    def __getitem__(self, key):
+        if key not in self._notes:
+            self._noteTimes.append(key)
+            self._noteTimes.sort()
+        return self._notes[key]
+
+    def __setitem__(self, index, value):
+        if index not in self:
+            self._noteTimes.append(index)
+            self._noteTimes.sort()
+        self._notes[index] = value
+
+    def __delitem__(self, key):
+        self._noteTimes.remove(key)
+        del self._notes[key]
+
+    def clear(self):
+        self._notes.clear()
+        self._noteTimes = []
+
+    def copy(self):
+        newDict = NoteDictionary()
+        for key, value in self.iteritems():
+            newDict[key] = value
+        return newDict
+
+    def items(self):
+        return list(self.iteritems())
+
+    def keys(self):
+        return list(self.iterkeys())
+
+    def pop(self, key):
+        item = self._notes.pop(key)
+        self._noteTimes.remove(key)
+        return item
+
+    def popitem(self):
+        key, value = self._notes.popitem(self)
+        self._noteTimes.remove(key)
+        return key, value
+
+    def values(self):
+        return list(self.itervalues())
+
 def _makeNoteDict():
-    return defaultdict(lambda: defaultdict(dict))
+    return NoteDictionary()
 
 _DEFAULTREPEATCOUNT = 1
 
@@ -43,6 +113,7 @@ class Measure(object):
     def __init__(self, width = 0):
         self._width = width
         self._notes = _makeNoteDict()
+        self._notesOnLine = defaultdict(lambda : 0)
         self.startBar = BAR_TYPES["NORMAL_BAR"]
         self.endBar = BAR_TYPES["NORMAL_BAR"]
         self._callBack = None
@@ -77,17 +148,16 @@ class Measure(object):
         return self._width
 
     def __iter__(self):
-        noteTimes = self._notes.keys()
-        noteTimes.sort()
-        for noteTime in noteTimes:
-            drumIndexes = self._notes[noteTime].keys()
-            for drumIndex in drumIndexes:
-                yield (NotePosition(noteTime = noteTime,
-                                    drumIndex = drumIndex),
-                       self._notes[noteTime][drumIndex])
+        notes = [(NotePosition(noteTime = noteTime,
+                               drumIndex = drumIndex),
+                  drumHead)
+                 for noteTime, drumDict in self._notes.iteritems()
+                 for drumIndex, drumHead in drumDict.iteritems()
+                 ]
+        return iter(notes)
 
     def numNotes(self):
-        return sum(len(drumIndex) for drumIndex in self._notes.values())
+        return sum(len(drumIndex) for drumIndex in self._notes.itervalues())
 
     def _runCallBack(self, position):
         if self._callBack is not None:
@@ -161,12 +231,14 @@ class Measure(object):
         return EMPTY_NOTE
 
     def clear(self):
-        for pos, dummyHead in self:
+        for pos, dummyHead in list(self):
             self.deleteNote(pos)
 
     def addNote(self, position, head):
         if not(0 <= position.noteTime < len(self)):
             raise BadTimeError(position)
+        if position.drumIndex not in self._notes[position.noteTime]:
+            self._notesOnLine[position.drumIndex] += 1
         if head != self._notes[position.noteTime][position.drumIndex]:
             self._notes[position.noteTime][position.drumIndex] = head
             self._runCallBack(position)
@@ -174,6 +246,7 @@ class Measure(object):
     def deleteNote(self, position):
         if not(0 <= position.noteTime < len(self)):
             raise BadTimeError(position)
+        self._notesOnLine[position.drumIndex] -= 1
         if (position.noteTime in self._notes
             and position.drumIndex in self._notes[position.noteTime]):
             del self._notes[position.noteTime][position.drumIndex]
@@ -268,18 +341,26 @@ class Measure(object):
         return oldMeasure
 
 
-    def changeKit(self, changes):
-        oldNotes = copy.deepcopy(self._notes)
-        self._notes = _makeNoteDict()
-        for noteTime, line in oldNotes.iteritems():
+    def changeKit(self, newKit, changes):
+        transposed = _makeNoteDict()
+        for noteTime, line in self._notes.iteritems():
             for drumIndex, head in line.iteritems():
-                if changes[drumIndex] == -1:
-                    continue
-                self._notes[noteTime][changes[drumIndex]] = head
+                transposed[drumIndex][noteTime] = head
+        self._notes = _makeNoteDict()
+        self._notesOnLine.clear()
+        for newDrumIndex, newDrum in enumerate(newKit):
+            oldDrumIndex = changes[newDrumIndex]
+            if oldDrumIndex == -1:
+                continue
+            for noteTime, head in transposed[oldDrumIndex].iteritems():
+                if not newDrum.isAllowedHead(head):
+                    head = newDrum.head
+                self.addNote(NotePosition(None, None,
+                                          noteTime, newDrumIndex),
+                             head)
 
     def lineIsVisible(self, index):
-        return (len(self._notes) > 0 and
-                any(index in noteTime for noteTime in self._notes.values()))
+        return (self._notesOnLine.get(index, 0) > 0)
 
     def write(self, handle, indenter):
         print >> handle, indenter("START_BAR %d" % len(self))

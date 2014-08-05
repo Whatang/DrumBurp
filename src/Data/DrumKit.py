@@ -1,4 +1,4 @@
-# Copyright 2011 Michael Thomas
+# Copyright 2011-12 Michael Thomas
 #
 # See www.whatang.org for more information.
 #
@@ -23,24 +23,14 @@ Created on 12 Dec 2010
 
 '''
 
-from Drum import Drum
+from Drum import Drum, HeadData
+from DefaultKits import DEFAULT_KIT, DEFAULT_EXTRA_HEADS
 from DBErrors import DuplicateDrumError, NoSuchDrumError
 
 class DrumKit(object):
     '''
     classdocs
     '''
-
-    DEFAULT_KIT = [("Foot pedal", "Hf", "x"),
-                   ("Kick", "Bd", "o", True),
-                   ("Floor Tom", "FT", "o"),
-                   ("Snare", "Sn", "o", True),
-                   ("Mid Tom", "MT", "o"),
-                   ("High Tom", "HT", "o"),
-                   ("Ride", "Ri", "x"),
-                   ("HiHat", "Hh", "x"),
-                   ("Crash", "Cr", "x")]
-
 
     def __init__(self):
         self._drums = []
@@ -54,9 +44,25 @@ class DrumKit(object):
     def __iter__(self):
         return iter(self._drums)
 
+    def clear(self):
+        self._drums = []
+
     def loadDefaultKit(self):
-        for drumData in self.DEFAULT_KIT:
-            self.addDrum(Drum(*drumData))
+        for drumData, midiNote in DEFAULT_KIT:
+            drum = Drum(*drumData)
+            headData = HeadData(midiNote = midiNote)
+            drum.addNoteHead(drum.head, headData)
+            for (extraHead,
+                 newMidi,
+                 newMidiVolume,
+                 newEffect) in DEFAULT_EXTRA_HEADS.get(drum.abbr, []):
+                if newMidi is None:
+                    newMidi = midiNote
+                if newMidiVolume is None:
+                    newMidiVolume = headData.midiVolume
+                newData = HeadData(newMidi, newMidiVolume, newEffect)
+                drum.addNoteHead(extraHead, newData)
+            self.addDrum(drum)
 
     def addDrum(self, drum):
         if drum in self._drums:
@@ -76,26 +82,36 @@ class DrumKit(object):
             raise NoSuchDrumError(index)
         self._drums.pop(index)
 
+    def allowedNoteHeads(self, drumIndex):
+        return list(self._drums[drumIndex])
+
     def write(self, handle, indenter):
         print >> handle, indenter("KIT_START")
         indenter.increase()
         for drum in self:
-            print >> handle, indenter("DRUM %s,%s,%s,%s" % (drum.name,
-                                                   drum.abbr,
-                                                   drum.head,
-                                                   str(drum.locked)))
+            drum.write(handle, indenter)
         indenter.decrease()
         print >> handle, indenter("KIT_END")
 
     def read(self, scoreIterator):
+        lastDrum = None
         for lineType, lineData in scoreIterator:
             if  lineType == "KIT_END":
+                if lastDrum is not None and len(lastDrum) == 0:
+                    lastDrum.guessHeadData()
                 break
             elif lineType == "DRUM":
+                if lastDrum is not None and len(lastDrum) == 0:
+                    lastDrum.guessHeadData()
                 fields = lineData.split(",")
+                if len(fields) > 3:
+                    fields[3] = (fields[3] == "True")
+                    if len(fields) > 4:
+                        fields = fields[:3]
                 drum = Drum(*fields)
-                if len(fields) == 4:
-                    drum.locked = (fields[3] == "True")
                 self.addDrum(drum)
+                lastDrum = drum
+            elif lineType == "NOTEHEAD":
+                lastDrum.readHeadData(lineData)
             else:
                 raise IOError("Unrecognised line type.")

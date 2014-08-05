@@ -1,4 +1,4 @@
-# Copyright 2011 Michael Thomas
+# Copyright 2011-12 Michael Thomas
 #
 # See www.whatang.org for more information.
 #
@@ -42,7 +42,10 @@ class QMetaData(QGraphicsListData):
             yield "Tabbed by " + self._qScore.creator
 
     def _dataLen(self):
-        return 2
+        if self._qScore.creatorVisible:
+            return 2
+        else:
+            return 1
 
     def font(self):
         return self._props.metadataFont

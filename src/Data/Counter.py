@@ -1,4 +1,4 @@
-# Copyright 2011 Michael Thomas
+# Copyright 2011-12 Michael Thomas
 #
 # See www.whatang.org for more information.
 #
@@ -31,11 +31,12 @@ class Counter(object):
     '''
 
 
-    def __init__(self, counts):
+    def __init__(self, counts, *alternatives):
         '''
         Constructor
         '''
         self._counts = counts
+        self._alternatives = alternatives
 
     def __iter__(self):
         return iter(self._counts)
@@ -46,12 +47,19 @@ class Counter(object):
     def __str__(self):
         return self._counts
 
+    def matchesExact(self, beatStr):
+        return beatStr == self._counts
+
+    def matchesAlternative(self, beatStr):
+        return any(beatStr == alt for alt in self._alternatives)
+
     def write(self, handle, indenter):
         print >> handle, indenter("COUNT", "|" + self._counts + "|")
 
 _COUNTER_BEAT = Counter(BEAT_COUNT)
-_EIGHTH_COUNT = Counter(BEAT_COUNT + "+")
-_TRIPLET_COUNT = Counter(BEAT_COUNT + "ea")
+_EIGHTH_COUNT = Counter(BEAT_COUNT + "+", BEAT_COUNT + "&")
+_TRIPLET_COUNT = Counter(BEAT_COUNT + "+a", BEAT_COUNT + "ea")
+_OLD_TRIPLET_COUNT = Counter(BEAT_COUNT + "ea")
 _SIXTEENTH_COUNT = Counter(BEAT_COUNT + "e+a")
 _SIXTEENTH_COUNT_SPARSE = Counter(BEAT_COUNT + ' + ')
 _SIXTEENTH_TRIPLETS = Counter(BEAT_COUNT + 'ea+ea')
@@ -102,7 +110,10 @@ class CounterRegistry(object):
     def lookupIndex(self, beat):
         beatStr = str(beat)
         for index, (unusedName, count) in enumerate(self):
-            if str(count) == beatStr:
+            if count.matchesExact(beatStr):
+                return index
+        for index, (unusedName, count) in enumerate(self):
+            if count.matchesAlternative(beatStr):
                 return index
         return(-1)
 

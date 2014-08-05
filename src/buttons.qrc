@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="buttons">
+    <file>GUI/Icons/go-down.png</file>
+    <file>GUI/Icons/go-up.png</file>
+    <file>GUI/Icons/list-add.png</file>
+    <file>GUI/Icons/list-remove.png</file>
+  </qresource>
+</RCC>

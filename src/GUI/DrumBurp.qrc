@@ -1,5 +1,12 @@
 <RCC>
   <qresource prefix="Icons">
+    <file>Icons/arrow-repeat.png</file>
+    <file>Icons/arrow-repeat-once.png</file>
+    <file>Icons/midi</file>
+    <file>Icons/audio-volume-medium.png</file>
+    <file>Icons/audio-volume-muted.png</file>
+    <file>Icons/media-playback-start.png</file>
+    <file>Icons/media-playback-stop.png</file>
     <file>Icons/gplv3-88x31.png</file>
     <file>Icons/fit-page</file>
     <file>Icons/1299814882_Black_Numbered-List.png</file>

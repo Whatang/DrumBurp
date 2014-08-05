@@ -1,4 +1,4 @@
-# Copyright 2011 Michael Thomas
+# Copyright 2011-12 Michael Thomas
 #
 # See www.whatang.org for more information.
 #
@@ -26,9 +26,37 @@ Created on 18 Jan 2011
 from Beat import Beat
 from Counter import CounterRegistry
 
+MIDITICKSPERBEAT = 48
+
 class MeasureCount(object):
     def __init__(self):
         self.beats = []
+
+    def iterTimesMs(self, msPerBeat):
+        total = 0
+        for beat in self.beats:
+            beatTicks = beat.ticksPerBeat
+            startTotal = total
+            for unusedCount in beat.iterTicks():
+                yield total
+                total += msPerBeat / beatTicks
+            total = startTotal + (beat.numTicks * msPerBeat) / beatTicks
+        yield total
+
+    def floatBeats(self):
+        lastBeat = self.beats[-1]
+        beatTicks = lastBeat.ticksPerBeat
+        return ((len(self.beats) - 1) +
+                float(lastBeat.numTicks) / beatTicks)
+
+    def iterMidiTicks(self):
+        total = 0
+        for beat in self.beats:
+            midiTicks = MIDITICKSPERBEAT / beat.ticksPerBeat
+            for unused in beat.iterTicks():
+                yield total
+                total += midiTicks
+        yield total
 
     def count(self):
         for beatNum, beat in enumerate(self.beats):

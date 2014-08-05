@@ -1,4 +1,4 @@
-# Copyright 2011 Michael Thomas
+# Copyright 2011-12 Michael Thomas
 #
 # See www.whatang.org for more information.
 #
@@ -22,6 +22,7 @@ Created on 13 Feb 2011
 @author: Mike Thomas
 '''
 from PyQt4.QtGui import QUndoCommand
+import DBMidi
 from Data import DBConstants
 from Data.Score import Score
 from Data.NotePosition import NotePosition
@@ -61,7 +62,7 @@ class DebugScoreCommand(ScoreCommand): #pylint:disable-msg=W0223
         print newHash.encode('hex'), self._hash.encode('hex')
         assert(newHash == self._hash)
 
-_COMMAND_CLASS = DebugScoreCommand
+_COMMAND_CLASS = ScoreCommand
 
 class NoteCommand(_COMMAND_CLASS): #pylint:disable-msg=W0223
     def __init__(self, qScore, notePosition, head):
@@ -75,14 +76,20 @@ class NoteCommand(_COMMAND_CLASS): #pylint:disable-msg=W0223
             self._score.deleteNote(self._np)
         else:
             self._score.addNote(self._np, self._oldHead)
+            DBMidi.playNote(self._np.drumIndex, self._oldHead)
 
 class SetNote(NoteCommand):
     def _redo(self):
         self._score.addNote(self._np, self._head)
+        if self._head != DBConstants.EMPTY_NOTE:
+            DBMidi.playNote(self._np.drumIndex, self._head)
 
 class ToggleNote(NoteCommand):
     def _redo(self):
         self._score.toggleNote(self._np, self._head)
+        newHead = self._score.getNote(self._np)
+        if (newHead != DBConstants.EMPTY_NOTE):
+            DBMidi.playNote(self._np.drumIndex, self._head)
 
 class MetaDataCommand(_COMMAND_CLASS):
     def __init__(self, qScore, varName, signal, value):
@@ -94,12 +101,15 @@ class MetaDataCommand(_COMMAND_CLASS):
         self._value = value
 
     def _redo(self):
-        setattr(self._score.scoreData, self._varname, self._value)
-        self._signal.emit(self._varname, self._value)
+        with self._qScore.metaChange():
+            setattr(self._score.scoreData, self._varname, self._value)
+            self._signal.emit(self._varname, self._value)
+
 
     def _undo(self):
-        setattr(self._score.scoreData, self._varname, self._oldValue)
-        self._signal.emit(self._varname, self._oldValue)
+        with self._qScore.metaChange():
+            setattr(self._score.scoreData, self._varname, self._oldValue)
+            self._signal.emit(self._varname, self._oldValue)
 
 class ScoreWidthCommand(_COMMAND_CLASS):
     def __init__(self, qScore, value):
@@ -118,18 +128,46 @@ class ScoreWidthCommand(_COMMAND_CLASS):
         for view in self._qScore.views():
             view.setWidth(self._oldValue)
 
-class PasteMeasure(_COMMAND_CLASS):
-    def __init__(self, qScore, notePosition, clipboard):
-        super(PasteMeasure, self).__init__(qScore, notePosition,
-                                           "paste measure")
-        self._measure = clipboard
-        self._oldMeasure = None
+class InsertAndPasteMeasures(_COMMAND_CLASS):
+    def __init__(self, qScore, startPosition, measureData):
+        super(InsertAndPasteMeasures, self).__init__(qScore, startPosition,
+                                                     "insert copied measures")
+        self._startPosition = startPosition
+        self._measureData = measureData
 
     def _redo(self):
-        self._oldMeasure = self._score.pasteMeasure(self._np, self._measure)
+        np = self._startPosition
+        for measure in reversed(self._measureData):
+            self._score.insertMeasureByPosition(len(measure), np,
+                                                measure.counter)
+            self._score.pasteMeasure(np, measure)
 
     def _undo(self):
-        self._score.pasteMeasure(self._np, self._oldMeasure)
+        self._score.deleteMeasuresAtPosition(self._startPosition,
+                                             len(self._measureData))
+
+class PasteMeasuresCommand(_COMMAND_CLASS):
+    def __init__(self, qScore, startPosition, measureData):
+        super(PasteMeasuresCommand, self).__init__(qScore, startPosition,
+                                                     "paste measures")
+        self._startPosition = startPosition
+        self._measureData = measureData
+
+    def _exchange(self):
+        oldData = []
+        np = self._startPosition
+        for measure in self._measureData:
+            oldData.append(self._score.copyMeasure(np))
+            self._score.pasteMeasure(np, measure)
+            np = self._score.nextMeasure(np)
+        return oldData
+
+    def _redo(self):
+        self._measureData = self._exchange()
+
+    def _undo(self):
+        self._measureData = self._exchange()
+
 
 class RepeatNoteCommand(_COMMAND_CLASS):
     def __init__(self, qScore, notePosition, nRepeats, repInterval, head):
@@ -279,11 +317,30 @@ class SetRepeatEndCommand(SetMeasureLineCommand):
                                                   np, onOff,
                                                   Score.setRepeatEnd)
 
+class ClearMeasureCommand(_COMMAND_CLASS):
+    def __init__(self, qScore, positions):
+        super(ClearMeasureCommand, self).__init__(qScore, NotePosition(),
+                                                  "clear measures")
+        self._positions = positions
+        self._oldMeasures = [self._score.copyMeasure(np)
+                             for np in positions]
+
+    def _redo(self):
+        for np in self._positions:
+            self._score.clearMeasure(np)
+
+    def _undo(self):
+        for np, data in zip(self._positions, self._oldMeasures):
+            self._score.pasteMeasure(np, data)
+
 class DeleteMeasureCommand(_COMMAND_CLASS):
-    def __init__(self, qScore, np):
+    def __init__(self, qScore, np, measureIndex = None):
+        np = np.makeMeasurePosition()
         super(DeleteMeasureCommand, self).__init__(qScore, np,
                                                    "delete measure")
-        self._index = self._score.getMeasureIndex(np)
+        if measureIndex is None:
+            measureIndex = self._score.getMeasureIndex(np)
+        self._index = measureIndex
         self._oldMeasure = self._score.copyMeasure(np)
         self._sectionIndex = None
         self._sectionTitle = None

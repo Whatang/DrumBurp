@@ -1,4 +1,4 @@
-# Copyright 2011 Michael Thomas
+# Copyright 2011-12 Michael Thomas
 #
 # See www.whatang.org for more information.
 #
@@ -96,8 +96,10 @@ class ScoreMetaData(object):
         print >> handle, indenter("WIDTH", self.width)
         print >> handle, indenter("KITDATAVISIBLE", str(self.kitDataVisible))
         print >> handle, indenter("METADATAVISIBLE", str(self.metadataVisible))
-        print >> handle, indenter("BEATCOUNTVISIBLE", str(self.beatCountVisible))
-        print >> handle, indenter("EMPTYLINESVISIBLE", str(self.emptyLinesVisible))
+        print >> handle, indenter("BEATCOUNTVISIBLE",
+                                  str(self.beatCountVisible))
+        print >> handle, indenter("EMPTYLINESVISIBLE",
+                                  str(self.emptyLinesVisible))
         indenter.decrease()
         print >> handle, indenter("END_SCORE_METADATA")
 

@@ -1,27 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Michael Thomas
-#
-# See www.whatang.org for more information.
-#
-# This file is part of DrumBurp.
-#
-# DrumBurp is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# DrumBurp is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with DrumBurp.  If not, see <http://www.gnu.org/licenses/>
-
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\dbInfo.ui'
 #
-# Created: Tue May 03 20:53:07 2011
+# Created: Sat Feb 18 12:40:46 2012
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -113,7 +94,7 @@ class Ui_InfoDialog(object):
         self.gridLayout.addWidget(self.label_5, 8, 2, 1, 1)
         self.buttonBox = QtGui.QDialogButtonBox(InfoDialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel | QtGui.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
         self.gridLayout.addWidget(self.buttonBox, 10, 0, 1, 3)
         spacerItem = QtGui.QSpacerItem(20, 10, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
@@ -153,15 +134,19 @@ class Ui_InfoDialog(object):
 
     def retranslateUi(self, InfoDialog):
         InfoDialog.setWindowTitle(QtGui.QApplication.translate("InfoDialog", "DrumBurp Information", None, QtGui.QApplication.UnicodeUTF8))
-        self.copyrightLabel.setText(QtGui.QApplication.translate("InfoDialog", "DrumBurp is Copyright 2011 Michael Thomas. All rights reserved.", None, QtGui.QApplication.UnicodeUTF8))
+        self.copyrightLabel.setText(QtGui.QApplication.translate("InfoDialog", "DrumBurp is Copyright 2011-12 Michael Thomas. All rights reserved.", None, QtGui.QApplication.UnicodeUTF8))
         self.label_6.setText(QtGui.QApplication.translate("InfoDialog", "Contact Details", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("InfoDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">For more information go to </span><a href=\"http://www.whatang.org\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">http://www.whatang.org</span></a><span style=\" font-size:8pt;\"> or email drumburp@whatang.org.</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">For more information go to </span><a href=\"http://www.whatang.org\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">www.whatang.org</span></a><span style=\" font-size:8pt;\"> or email </span><a href=\"mailto:drumburp@whatang.org\"><span style=\" text-decoration: underline; color:#0000ff;\">drumburp@whatang.org</span></a><span style=\" font-size:8pt;\">.</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.label_7.setText(QtGui.QApplication.translate("InfoDialog", "Technologies", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setText(QtGui.QApplication.translate("InfoDialog", "DrumBurp is built using PyQt4.8", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_4.setText(QtGui.QApplication.translate("InfoDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">DrumBurp is built using </span><a href=\"http://www.python.org\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">Python</span></a><span style=\" font-size:8pt;\"> 2.6, </span><a href=\"http://www.riverbankcomputing.co.uk\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">PyQt</span></a><span style=\" font-size:8pt;\"> 4.8 and </span><a href=\"http://www.pygame.org\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">PyGame</span></a><span style=\" font-size:8pt;\"> 1.9.1.</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.licenseButton.setText(QtGui.QApplication.translate("InfoDialog", "License", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("InfoDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
