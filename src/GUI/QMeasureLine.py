@@ -92,7 +92,8 @@ class QMeasureLine(QtGui.QGraphicsItem):
         return self._qScore.xSpacing
 
     def _getEndNotePosition(self):
-        assert(self._index > 0)
+        if self._index == 0:
+            return None
         np = NotePosition(measureIndex = self._index - 1)
         return self._qStaff.augmentNotePosition(np)
 
