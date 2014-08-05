@@ -30,7 +30,8 @@ from QMetaData import QMetaData
 from QKitData import QKitData
 from Data.Score import ScoreFactory
 from DBCommands import (MetaDataCommand, ScoreWidthCommand, PasteMeasure,
-                        SetPaperSizeCommand, SetDefaultCountCommand)
+                        SetPaperSizeCommand, SetDefaultCountCommand,
+                        SetSystemSpacingCommand)
 import functools
 _SCORE_FACTORY = ScoreFactory()
 
@@ -95,6 +96,7 @@ class QScore(QtGui.QGraphicsScene):
         else:
             self.newScore()
         self.defaultCountChanged.connect(parent.setDefaultCount)
+        self.spacingChanged.connect(parent.setSystemSpacing)
         self.sectionsChanged.connect(parent.setSections)
         self._properties.connectScore(self)
 
@@ -105,6 +107,7 @@ class QScore(QtGui.QGraphicsScene):
     metadataChanged = QtCore.pyqtSignal(str, object)
     paperSizeChanged = QtCore.pyqtSignal(str)
     defaultCountChanged = QtCore.pyqtSignal(object)
+    spacingChanged = QtCore.pyqtSignal(int)
     sectionsChanged = QtCore.pyqtSignal()
 
     def addCommand(self, command):
@@ -192,8 +195,10 @@ class QScore(QtGui.QGraphicsScene):
             self.dirty = False
             self._undoStack.clear()
             self._undoStack.setClean()
+            self._properties.lineSpacing = self._score.systemSpacing - 101
             self.paperSizeChanged.emit(self._score.paperSize)
             self.defaultCountChanged.emit(self._score.defaultCount)
+            self.spacingChanged.emit(self._score.systemSpacing)
             self.sectionsChanged.emit()
 
     @_readOnly
@@ -295,6 +300,14 @@ class QScore(QtGui.QGraphicsScene):
             self.addCommand(command)
     defaultCount = property(_getdefaultCount,
                             _setdefaultCount)
+
+    def _getsystemSpacing(self):
+        return self._score.systemSpacing
+    def _setsystemSpacing(self, value):
+        if self._score.systemSpacing != value:
+            command = SetSystemSpacingCommand(self, value)
+            self.addCommand(command)
+    systemSpacing = property(_getsystemSpacing, _setsystemSpacing)
 
     def _placeStaffs(self, staffCall = QStaff.placeMeasures):
         xMargins = self.xMargins
@@ -412,7 +425,10 @@ class QScore(QtGui.QGraphicsScene):
     def newScore(self, numMeasures = 16,
                  counter = None):
         if counter is None:
-            counter = self.defaultCount
+            if self._score is None:
+                counter = None
+            else:
+                counter = self.defaultCount
         newScore = _SCORE_FACTORY(numMeasures = numMeasures,
                                   counter = counter)
         self._setScore(newScore)

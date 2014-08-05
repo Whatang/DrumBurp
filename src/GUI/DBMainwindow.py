@@ -41,7 +41,7 @@ import DBIcons
 import os
 
 APPNAME = "DrumBurp"
-DB_VERSION = "0.3"
+DB_VERSION = "0.3.1"
 #pylint:disable-msg=R0904
 
 class FakeQSettings(object):
@@ -96,7 +96,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.sectionFontCombo.setWritingSystem(QFontDatabase.Latin)
         self.sectionFontSizeSpinbox.setValue(self.songProperties.
                                              metadataFontSize)
-        self.lineSpaceSlider.setValue(10)
+        self.lineSpaceSlider.setValue(self.scoreScene.systemSpacing)
         self.scoreView.startUp()
         font = self.scoreScene.font()
         self.fontComboBox.setCurrentFont(font)
@@ -302,6 +302,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             self.scoreScene.defaultCount = counter
         self.defaultMeasureButton.setText(counter.countString())
 
+    def _systemSpacingChanged(self, value):
+        if value != self.scoreScene.systemSpacing:
+            self.scoreScene.systemSpacing = value
+        self.lineSpaceSlider.setValue(value)
+
     def hideEvent(self, event):
         self._state = self.saveState()
         super(DrumBurp, self).hideEvent(event)
@@ -422,6 +427,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     def setDefaultCount(self, count):
         self._beatChanged(count)
+
+    def setSystemSpacing(self, value):
+        self._systemSpacingChanged(value)
 
     def setSections(self):
         score = self.scoreScene.score
