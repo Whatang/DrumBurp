@@ -41,14 +41,14 @@ import DBIcons
 import os
 
 APPNAME = "DrumBurp"
-DB_VERSION = "0.3.1"
+DB_VERSION = "0.4"
 #pylint:disable-msg=R0904
 
 class FakeQSettings(object):
-    def value(self, key_):
+    def value(self, key_): #IGNORE:R0201
         return QVariant()
 
-    def setValue(self, key_, value_):
+    def setValue(self, key_, value_): #IGNORE:R0201
         return
 
 
@@ -86,29 +86,57 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.songProperties = QDisplayProperties()
         # Create scene
         self.scoreScene = QScore(self)
-        # Setup signals
-        self.paperBox.currentIndexChanged.connect(lambda i: self.scoreScene.setPaperSize(self.paperBox.currentText()))
+        self.restoreGeometry(settings.value("Geometry").toByteArray())
+        self.restoreState(settings.value("MainWindow/State").toByteArray())
+        self._initializeState()
+        self.setSections()
+        QTimer.singleShot(0, self._startUp)
+
+    def _initializeState(self):
         self.scoreView.setScene(self.scoreScene)
+        # Connect signals
+        props = self.songProperties
+        props.fontChanged.connect(self._setNoteFont)
+        props.noteSizeChanged.connect(self.noteSizeSpinBox.setValue)
+        props.sectionFontChanged.connect(self._setSectionFont)
+        props.sectionFontSizeChanged.connect(self._setSectionFontSize)
+        props.metadataFontChanged.connect(self._setMetadataFont)
+        props.metadataFontSizeChanged.connect(self._setMetadataSize)
+        self.scoreScene.dirtySignal.connect(self.setWindowModified)
+        self.paperBox.currentIndexChanged.connect(self._setPaperSize)
+        props.kitDataVisibleChanged.connect(self._setKitDataVisible)
+        props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
+        props.metadataVisibilityChanged.connect(self._setMetadataVisible)
+        props.beatCountVisibleChanged.connect(self._setBeatCountVisible)
+        # Fonts
         self.fontComboBox.setWritingSystem(QFontDatabase.Latin)
         self.sectionFontCombo.setWritingSystem(QFontDatabase.Latin)
-        self.sectionFontSizeSpinbox.setValue(self.songProperties.
-                                             sectionFontSize)
         self.sectionFontCombo.setWritingSystem(QFontDatabase.Latin)
-        self.sectionFontSizeSpinbox.setValue(self.songProperties.
-                                             metadataFontSize)
         self.lineSpaceSlider.setValue(self.scoreScene.systemSpacing)
-        self.scoreView.startUp()
-        font = self.scoreScene.font()
+        font = self.songProperties.noteFont
+        if font is None:
+            font = self.scoreScene.font()
+        font.setPointSize(self.songProperties.noteFontSize)
         self.fontComboBox.setCurrentFont(font)
-        self.noteSizeSpinBox.setValue(9)
-        self.noteSizeSpinBox.setValue(10)
+        self.noteSizeSpinBox.setValue(self.songProperties.noteFontSize)
+        font = self.songProperties.sectionFont
+        if font is None:
+            font = self.scoreScene.font()
+        font.setPointSize(self.songProperties.sectionFontSize)
         self.sectionFontCombo.setCurrentFont(font)
-        self.sectionFontSizeSpinbox.setValue(19)
-        self.sectionFontSizeSpinbox.setValue(20)
+        self.sectionFontSizeSpinbox.setValue(props.sectionFontSize)
+        font = self.songProperties.metadataFont
+        if font is None:
+            font = self.scoreScene.font()
+        font.setPointSize(self.songProperties.metadataFontSize)
         self.metadataFontCombo.setCurrentFont(font)
-        self.metadataFontSizeSpinbox.setValue(19)
-        self.metadataFontSizeSpinbox.setValue(20)
-        self.scoreScene.dirtySignal.connect(self.setWindowModified)
+        self.metadataFontSizeSpinbox.setValue(props.metadataFontSize)
+        # Visibility toggles
+        self.actionShowDrumKey.setChecked(props.kitDataVisible)
+        self.actionShowEmptyLines.setChecked(props.emptyLinesVisible)
+        self.actionShowScoreInfo.setChecked(props.metadataVisible)
+        self.actionShowBeatCount.setChecked(props.beatCountVisible)
+        # Undo/redo
         self.actionUndo.setEnabled(False)
         self.actionRedo.setEnabled(False)
         self.scoreScene.canUndoChanged.connect(self.actionUndo.setEnabled)
@@ -117,13 +145,12 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreScene.canRedoChanged.connect(self.actionRedo.setEnabled)
         changeRedoText = lambda txt:self.actionRedo.setText("Redo " + txt)
         self.scoreScene.redoTextChanged.connect(changeRedoText)
+        # Default beat
         self._beatChanged(self.scoreScene.defaultCount)
-        self.restoreGeometry(settings.value("Geometry").toByteArray())
-        self.restoreState(settings.value("MainWindow/State").toByteArray())
-        self.setSections()
-        QTimer.singleShot(0, self._startUp)
+
 
     def _startUp(self):
+        self.scoreView.startUp()
         dlg = DBStartupDialog(DB_VERSION)
         dlg.exec_()
         self.updateStatus("Welcome to %s v%s" % (APPNAME, DB_VERSION))
@@ -134,6 +161,49 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             return FakeQSettings()
         else:
             return QSettings()
+
+    def _setPaperSize(self, unusedIndex):
+        self.scoreScene.setPaperSize(self.paperBox.currentText())
+
+    def _setNoteFont(self):
+        props = self.songProperties
+        self.fontComboBox.setCurrentFont(props.noteFont)
+
+    def _setSectionFont(self):
+        props = self.songProperties
+        self.sectionFontCombo.setCurrentFont(props.sectionFont)
+
+    def _setSectionFontSize(self):
+        props = self.songProperties
+        self.sectionFontSizeSpinbox.setValue(props.sectionFontSize)
+
+    def _setMetadataFont(self):
+        props = self.songProperties
+        self.metadataFontCombo.setCurrentFont(props.metadataFont)
+
+    def _setMetadataSize(self):
+        props = self.songProperties
+        self.metadataFontSizeSpinbox.setValue(props.metadataFontSize)
+
+    def _setKitDataVisible(self):
+        props = self.songProperties
+        if props.kitDataVisible != self.actionShowDrumKey.isChecked():
+            self.actionShowDrumKey.setChecked(props.kitDataVisible)
+
+    def _setMetadataVisible(self):
+        props = self.songProperties
+        if props.metadataVisible != self.actionShowScoreInfo.isChecked():
+            self.actionShowScoreInfo.setChecked(props.metadataVisible)
+
+    def _setEmptyLinesVisible(self):
+        props = self.songProperties
+        if props.emptyLinesVisible != self.actionShowEmptyLines.isChecked():
+            self.actionShowEmptyLines.setChecked(props.emptyLinesVisible)
+
+    def _setBeatCountVisible(self):
+        props = self.songProperties
+        if props.beatCountVisible != self.actionShowBeatCount.isChecked():
+            self.actionShowBeatCount.setChecked(props.beatCountVisible)
 
     def updateStatus(self, message):
         self.statusBar().showMessage(message, 5000)
@@ -196,7 +266,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if len(self.recentFiles) > 0:
             directory = os.path.dirname(self.recentFiles[-1])
         else:
-            directory = QDesktopServices.storageLocation(QDesktopServices.HomeLocation)
+            loc = QDesktopServices.HomeLocation
+            directory = QDesktopServices.storageLocation(loc)
         fname = QFileDialog.getOpenFileName(parent = self,
                                             caption = caption,
                                             directory = directory,
@@ -220,7 +291,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             if len(self.recentFiles) > 0:
                 directory = os.path.dirname(self.recentFiles[-1])
             else:
-                directory = str(QDesktopServices.storageLocation(QDesktopServices.HomeLocation))
+                home = QDesktopServices.HomeLocation
+                directory = str(QDesktopServices.storageLocation(home))
             directory = os.path.join(directory,
                                      suggestion)
         if os.path.splitext(directory)[-1] == os.extsep + 'brp':
@@ -321,11 +393,13 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def on_actionExportASCII_triggered(self):
         fname = self.filename
         if self.filename is None:
-            fname = QDesktopServices.storageLocation(QDesktopServices.HomeLocation)
+            home = QDesktopServices.HomeLocation
+            fname = QDesktopServices.storageLocation(home)
             fname = os.path.join(str(fname), 'Untitled.txt')
         if os.path.splitext(fname)[-1] == '.brp':
             fname = os.path.splitext(fname)[0] + '.txt'
-        self._asciiSettings = self.songProperties.generateAsciiSettings(self._asciiSettings)
+        props = self.songProperties
+        self._asciiSettings = props.generateAsciiSettings(self._asciiSettings)
         asciiDialog = QAsciiExportDialog(fname, self,
                                          settings = self._asciiSettings)
         if not asciiDialog.exec_():

@@ -68,9 +68,9 @@ class QComplexCountDialog(QDialog, Ui_complexCountDialog):
 
     def preview(self):
         self._checkDeleteEnabled()
-        self.previewText.setText("".join(unicode(self.beatList.item(beatNum).text())
-                                         for beatNum in
-                                         range(0, self.beatList.count())))
+        text = "".join(unicode(self.beatList.item(beatNum).text())
+                       for beatNum in range(0, self.beatList.count()))
+        self.previewText.setText(text)
 
     def _checkDeleteEnabled(self):
         self.deleteButton.setEnabled(self.beatList.count() > 1)

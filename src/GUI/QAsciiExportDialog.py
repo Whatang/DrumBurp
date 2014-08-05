@@ -50,7 +50,8 @@ class QAsciiExportDialog(QDialog, Ui_asciiDialog):
                                    if self._filename is not None
                                    else "")
         for checkName in settings.checkNames():
-            getattr(self, checkName + "Check").setChecked(getattr(settings, checkName))
+            getattr(self, checkName + "Check").setChecked(getattr(settings,
+                                                                  checkName))
 
     @pyqtSignature("")
     def on_filenameButton_clicked(self):

@@ -40,6 +40,6 @@ class DBInfoDialog(QDialog, Ui_InfoDialog):
         self.copyrightLabel.setText(text)
 
     @pyqtSignature("")
-    def on_licenseButton_clicked(self):
+    def on_licenseButton_clicked(self): #IGNORE:R0201
         dlg = DBLicenseDialog()
         dlg.exec_()

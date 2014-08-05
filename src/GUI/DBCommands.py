@@ -66,7 +66,7 @@ _COMMAND_CLASS = DebugScoreCommand
 class NoteCommand(_COMMAND_CLASS): #pylint:disable-msg=W0223
     def __init__(self, qScore, notePosition, head):
         super(NoteCommand, self).__init__(qScore, notePosition,
-                                          "Set note")
+                                          "set note")
         self._oldHead = self._score.getNote(notePosition)
         self._head = head
 
@@ -87,7 +87,7 @@ class ToggleNote(NoteCommand):
 class MetaDataCommand(_COMMAND_CLASS):
     def __init__(self, qScore, varName, signal, value):
         super(MetaDataCommand, self).__init__(qScore, None,
-                                              "Edit metadata")
+                                              "edit metadata")
         self._oldValue = getattr(self._score.scoreData, varName)
         self._varname = varName
         self._signal = signal
@@ -104,7 +104,7 @@ class MetaDataCommand(_COMMAND_CLASS):
 class ScoreWidthCommand(_COMMAND_CLASS):
     def __init__(self, qScore, value):
         super(ScoreWidthCommand, self).__init__(qScore, None,
-                                                "Set Width")
+                                                "set width")
         self._oldValue = self._score.scoreData.width
         self._value = value
 
@@ -121,7 +121,7 @@ class ScoreWidthCommand(_COMMAND_CLASS):
 class PasteMeasure(_COMMAND_CLASS):
     def __init__(self, qScore, notePosition, clipboard):
         super(PasteMeasure, self).__init__(qScore, notePosition,
-                                           "Paste Measure")
+                                           "paste measure")
         self._measure = clipboard
         self._oldMeasure = None
 
@@ -134,7 +134,7 @@ class PasteMeasure(_COMMAND_CLASS):
 class RepeatNoteCommand(_COMMAND_CLASS):
     def __init__(self, qScore, notePosition, nRepeats, repInterval, head):
         super(RepeatNoteCommand, self).__init__(qScore, notePosition,
-                                                "Repeat Note")
+                                                "repeat note")
         self._head = head
         np = copy.copy(notePosition)
         self._oldNotes = [(np, self._score.getNote(np))]
@@ -157,7 +157,7 @@ class RepeatNoteCommand(_COMMAND_CLASS):
 class InsertMeasuresCommand(_COMMAND_CLASS):
     def __init__(self, qScore, notePosition, numMeasures, counter):
         super(InsertMeasuresCommand, self).__init__(qScore, notePosition,
-                                                    "Insert Measures")
+                                                    "insert measures")
         self._index = self._score.getMeasureIndex(self._np)
         self._numMeasures = numMeasures
         self._width = len(counter)
@@ -175,7 +175,7 @@ class InsertMeasuresCommand(_COMMAND_CLASS):
 class InsertSectionCommand(_COMMAND_CLASS):
     def __init__(self, qScore, np, sectionIndex):
         super(InsertSectionCommand, self).__init__(qScore, np,
-                                                   "Insert Section Copy")
+                                                   "insert section copy")
         self._np.measureIndex = 0
         self._np = self._np.makeMeasurePosition()
         self._np.staffIndex = self._score.getSectionStartStaffIndex(np)
@@ -193,7 +193,7 @@ class InsertSectionCommand(_COMMAND_CLASS):
 class SetRepeatCountCommand(_COMMAND_CLASS):
     def __init__(self, qScore, notePosition, oldCount, newCount):
         super(SetRepeatCountCommand, self).__init__(qScore, notePosition,
-                                                    "Set Repeat Count")
+                                                    "set repeat count")
         self._oldCount = oldCount
         self._newCount = newCount
 
@@ -207,7 +207,7 @@ class SetRepeatCountCommand(_COMMAND_CLASS):
 
 class EditMeasurePropertiesCommand(_COMMAND_CLASS):
     def __init__(self, qScore, np, newCounter):
-        name = "Edit Measure Properties"
+        name = "edit measure properties"
         super(EditMeasurePropertiesCommand, self).__init__(qScore,
                                                            np,
                                                            name)
@@ -239,7 +239,7 @@ class SetMeasureLineCommand(_COMMAND_CLASS):
 class SetSectionEndCommand(SetMeasureLineCommand):
     def __init__(self, qScore, np, onOff):
         super(SetSectionEndCommand, self).__init__(qScore,
-                                                   "Set Section End",
+                                                   "set section end",
                                                    np, onOff,
                                                    Score.setSectionEnd)
         if not onOff:
@@ -261,28 +261,28 @@ class SetSectionEndCommand(SetMeasureLineCommand):
 class SetLineBreakCommand(SetMeasureLineCommand):
     def __init__(self, qScore, np, onOff):
         super(SetLineBreakCommand, self).__init__(qScore,
-                                                  "Set Line Break",
+                                                  "set line break",
                                                   np, onOff,
                                                   Score.setLineBreak)
 
 class SetRepeatStartCommand(SetMeasureLineCommand):
     def __init__(self, qScore, np, onOff):
         super(SetRepeatStartCommand, self).__init__(qScore,
-                                                    "Set Repeat Start",
+                                                    "set repeat start",
                                                     np, onOff,
                                                     Score.setRepeatStart)
 
 class SetRepeatEndCommand(SetMeasureLineCommand):
     def __init__(self, qScore, np, onOff):
         super(SetRepeatEndCommand, self).__init__(qScore,
-                                                  "Set Repeat End",
+                                                  "set repeat end",
                                                   np, onOff,
                                                   Score.setRepeatEnd)
 
 class DeleteMeasureCommand(_COMMAND_CLASS):
     def __init__(self, qScore, np):
         super(DeleteMeasureCommand, self).__init__(qScore, np,
-                                                   "Delete Measure")
+                                                   "delete measure")
         self._index = self._score.getMeasureIndex(np)
         self._oldMeasure = self._score.copyMeasure(np)
         self._sectionIndex = None
@@ -313,7 +313,7 @@ class SetSectionTitleCommand(_COMMAND_CLASS):
     def __init__(self, qScore, sectionIndex, title):
         super(SetSectionTitleCommand, self).__init__(qScore,
                                                      None,
-                                                     "Set Section Title")
+                                                     "set section tSitle")
         self._index = sectionIndex
         self._oldTitle = self._score.getSectionTitle(sectionIndex)
         self._title = title
@@ -336,7 +336,7 @@ class SetAlternateCommand(_COMMAND_CLASS):
     def __init__(self, qScore, np, alternate):
         super(SetAlternateCommand, self).__init__(qScore,
                                                   np,
-                                                  "Set Alternate Text")
+                                                  "set alternate text")
         self._alternate = alternate
         self._np.noteTime = None
         self._np.drumIndex = None
@@ -357,7 +357,7 @@ class SetPaperSizeCommand(_COMMAND_CLASS):
     def __init__(self, qScore, newPaperSize):
         super(SetPaperSizeCommand, self).__init__(qScore,
                                                   NotePosition(),
-                                                  "Set Page Size")
+                                                  "set page size")
         self._new = newPaperSize
         self._old = self._score.paperSize
 
@@ -373,7 +373,7 @@ class SetDefaultCountCommand(_COMMAND_CLASS):
     def __init__(self, qScore, newCount):
         super(SetDefaultCountCommand, self).__init__(qScore,
                                                      NotePosition(),
-                                                     "Set Default Count")
+                                                     "set default count")
         self._new = newCount
         self._old = self._score.defaultCount
 
@@ -389,7 +389,7 @@ class SetSystemSpacingCommand(_COMMAND_CLASS):
     def __init__(self, qScore, newSpacing):
         super(SetSystemSpacingCommand, self).__init__(qScore,
                                                       NotePosition(),
-                                                      "Set System Spacing")
+                                                      "set system spacing")
         self._new = newSpacing
         self._old = self._score.systemSpacing
 
@@ -402,3 +402,51 @@ class SetSystemSpacingCommand(_COMMAND_CLASS):
         self._score.systemSpacing = self._old
         self._qScore.displayProperties.lineSpacing = self._old - 101
         self._qScore.spacingChanged.emit(self._old)
+
+class SetFontSizeCommand(_COMMAND_CLASS):
+    def __init__(self, qScore, newSize, fontType):
+        super(SetFontSizeCommand, self).__init__(qScore,
+                                                 NotePosition(),
+                                                 "set " + fontType +
+                                                 " font size")
+        self._fontName = fontType + "FontSize"
+        self._newSize = newSize
+        self._oldSize = getattr(self._qScore.displayProperties,
+                                self._fontName)
+
+    def _redo(self):
+        setattr(self._qScore.displayProperties, self._fontName, self._newSize)
+
+    def _undo(self):
+        setattr(self._qScore.displayProperties, self._fontName, self._oldSize)
+
+class SetFontCommand(_COMMAND_CLASS):
+    def __init__(self, qScore, font, fontType):
+        super(SetFontCommand, self).__init__(qScore,
+                                             NotePosition(),
+                                             "set " + fontType + " font")
+        self._newFont = font
+        self._fontName = fontType + "Font"
+        self._oldFont = getattr(self._qScore.displayProperties,
+                                self._fontName)
+
+    def _redo(self):
+        setattr(self._qScore.displayProperties, self._fontName, self._newFont)
+
+    def _undo(self):
+        setattr(self._qScore.displayProperties, self._fontName, self._oldFont)
+
+class SetVisibilityCommand(_COMMAND_CLASS):
+    def __init__(self, qScore, onOff, elementName, text):
+        super(SetVisibilityCommand, self).__init__(qScore,
+                                                   NotePosition(),
+                                                   "change " + text +
+                                                   " visibility")
+        self._name = elementName + "Visible"
+        self._new = onOff
+
+    def _redo(self):
+        setattr(self._qScore.displayProperties, self._name, self._new)
+
+    def _undo(self):
+        setattr(self._qScore.displayProperties, self._name, not self._new)

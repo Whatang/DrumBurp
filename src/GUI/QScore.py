@@ -31,12 +31,11 @@ from QKitData import QKitData
 from Data.Score import ScoreFactory
 from DBCommands import (MetaDataCommand, ScoreWidthCommand, PasteMeasure,
                         SetPaperSizeCommand, SetDefaultCountCommand,
-                        SetSystemSpacingCommand)
+                        SetSystemSpacingCommand,
+                        SetFontCommand, SetFontSizeCommand,
+                        SetVisibilityCommand)
 import functools
 _SCORE_FACTORY = ScoreFactory()
-
-def _readOnly(method):
-    return property(fget = method)
 
 def delayCall(method):
     @functools.wraps(method)
@@ -44,14 +43,13 @@ def delayCall(method):
         QtCore.QTimer.singleShot(0, lambda: method(*args, **kwargs))
     return delayer
 
-def _metaDataProperty(varname, setName = None):
-    if setName is None:
-        setName = "set" + varname.capitalize()
+def _metaDataProperty(varname):
     def _getData(self):
         return getattr(self.score.scoreData, varname)
     def _setData(self, value):
         if getattr(self, varname) != value:
-            command = MetaDataCommand(self, varname, self.metadataChanged, value)
+            command = MetaDataCommand(self, varname,
+                                      self.metadataChanged, value)
             self.addCommand(command)
     return property(fget = _getData, fset = _setData)
 
@@ -136,10 +134,6 @@ class QScore(QtGui.QGraphicsScene):
 
     def startUp(self):
         self.metadataChanged.emit("width", self.scoreWidth)
-        self.metadataChanged.emit("artist", self.artist)
-        self.metadataChanged.emit("title", self.title)
-        self.metadataChanged.emit("creator", self.creator)
-        self.metadataChanged.emit("bpm", self.bpm)
 
     def _getscoreWidth(self):
         if self._score is not None:
@@ -156,11 +150,14 @@ class QScore(QtGui.QGraphicsScene):
                           fset = _setscoreWidth)
 
     artist = _metaDataProperty("artist")
+    artistVisible = _metaDataProperty("artistVisible")
     creator = _metaDataProperty("creator")
+    creatorVisible = _metaDataProperty("creatorVisible")
     title = _metaDataProperty("title")
-    bpm = _metaDataProperty("bpm", "setBPM")
+    bpm = _metaDataProperty("bpm")
+    bpmVisible = _metaDataProperty("bpmVisible")
 
-    @_readOnly
+    @property
     def displayProperties(self):
         return self._properties
 
@@ -173,11 +170,11 @@ class QScore(QtGui.QGraphicsScene):
     dirty = property(fget = _getdirty, fset = _setdirty)
     dirtySignal = QtCore.pyqtSignal(bool)
 
-    @_readOnly
+    @property
     def kitSize(self):
         return len(self._score.drumKit)
 
-    @_readOnly
+    @property
     def lineOffsets(self):
         yOffsets = [(drumIndex + 1) * self.ySpacing
                     for drumIndex in range(0, self.kitSize)]
@@ -192,16 +189,19 @@ class QScore(QtGui.QGraphicsScene):
                 self.startUp()
             self._score.setCallBack(self.dataChanged)
             self._build()
-            self.dirty = False
-            self._undoStack.clear()
-            self._undoStack.setClean()
             self._properties.lineSpacing = self._score.systemSpacing - 101
             self.paperSizeChanged.emit(self._score.paperSize)
             self.defaultCountChanged.emit(self._score.defaultCount)
             self.spacingChanged.emit(self._score.systemSpacing)
             self.sectionsChanged.emit()
+            self._properties.newScore(self)
+            self._kitData.setVisible(self._properties.kitDataVisible)
+            self._metaData.setVisible(self._properties.metadataVisible)
+            self._undoStack.clear()
+            self._undoStack.setClean()
+            self.dirty = False
 
-    @_readOnly
+    @property
     def score(self):
         return self._score
 
@@ -220,23 +220,23 @@ class QScore(QtGui.QGraphicsScene):
             self.invalidate()
     scale = property(fget = _getscale, fset = _setscale)
 
-    @_readOnly
+    @property
     def xSpacing(self):
         return self._properties.xSpacing * self.scale
 
-    @_readOnly
+    @property
     def ySpacing(self):
         return self._properties.ySpacing * self.scale
 
-    @_readOnly
+    @property
     def lineSpacing(self):
         return self._properties.lineSpacing * self.scale
 
-    @_readOnly
+    @property
     def xMargins(self):
         return self._properties.xMargins * self.scale
 
-    @_readOnly
+    @property
     def yMargins(self):
         return self._properties.yMargins * self.scale
 
@@ -476,3 +476,29 @@ class QScore(QtGui.QGraphicsScene):
         self._metaData.setRect()
         self._kitData.setRect()
         self.scale = 1
+
+    def setScoreFontSize(self, size, fontType):
+        fontName = fontType + "FontSize"
+        if size == getattr(self._properties, fontName):
+            return
+        command = SetFontSizeCommand(self, size, fontType)
+        self.addCommand(command)
+
+    def setScoreFont(self, font, fontType):
+        fontName = fontType + "Font"
+        if self._properties is not None:
+            fontFamily = getattr(self._properties, fontName)
+            if fontFamily is None:
+                setattr(self._properties, fontName, font)
+                return
+            elif font.family() == fontFamily.family():
+                return
+        command = SetFontCommand(self, font, fontType)
+        self.addCommand(command)
+
+    def setElementVisibility(self, onOff, elementName, text):
+        element = elementName + "Visible"
+        if getattr(self._properties, element) == onOff:
+            return
+        command = SetVisibilityCommand(self, onOff, elementName, text)
+        self.addCommand(command)

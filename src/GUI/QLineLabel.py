@@ -82,7 +82,8 @@ class QLineLabel(QtGui.QGraphicsItem):
                 font = painter.font()
             else:
                 painter.setFont(font)
-            br = QtGui.QFontMetrics(painter.font()).tightBoundingRect(self._text)
+            br = QtGui.QFontMetrics(painter.font())
+            br = br.tightBoundingRect(self._text)
             w = br.width()
             h = br.height()
             textLocation = QtCore.QPointF((self.cellWidth() - w + 2) / 2,

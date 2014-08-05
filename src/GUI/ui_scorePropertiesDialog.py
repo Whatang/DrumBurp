@@ -1,27 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Michael Thomas
-#
-# See www.whatang.org for more information.
-#
-# This file is part of DrumBurp.
-#
-# DrumBurp is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# DrumBurp is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with DrumBurp.  If not, see <http://www.gnu.org/licenses/>
-
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\scorePropertiesDialog.ui'
 #
-# Created: Sun Apr 17 16:05:25 2011
+# Created: Tue Sep 06 17:04:54 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -44,19 +25,19 @@ class Ui_ScoreDialog(object):
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
         self.titleEdit = QtGui.QLineEdit(ScoreDialog)
         self.titleEdit.setObjectName(_fromUtf8("titleEdit"))
-        self.gridLayout.addWidget(self.titleEdit, 0, 1, 1, 1)
+        self.gridLayout.addWidget(self.titleEdit, 0, 2, 1, 1)
         self.label_2 = QtGui.QLabel(ScoreDialog)
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.gridLayout.addWidget(self.label_2, 1, 0, 1, 1)
         self.artistEdit = QtGui.QLineEdit(ScoreDialog)
         self.artistEdit.setObjectName(_fromUtf8("artistEdit"))
-        self.gridLayout.addWidget(self.artistEdit, 1, 1, 1, 1)
+        self.gridLayout.addWidget(self.artistEdit, 1, 2, 1, 1)
         self.label_3 = QtGui.QLabel(ScoreDialog)
         self.label_3.setObjectName(_fromUtf8("label_3"))
         self.gridLayout.addWidget(self.label_3, 2, 0, 1, 1)
         self.creatorEdit = QtGui.QLineEdit(ScoreDialog)
         self.creatorEdit.setObjectName(_fromUtf8("creatorEdit"))
-        self.gridLayout.addWidget(self.creatorEdit, 2, 1, 1, 1)
+        self.gridLayout.addWidget(self.creatorEdit, 2, 2, 1, 1)
         self.label_4 = QtGui.QLabel(ScoreDialog)
         self.label_4.setObjectName(_fromUtf8("label_4"))
         self.gridLayout.addWidget(self.label_4, 3, 0, 1, 1)
@@ -70,16 +51,31 @@ class Ui_ScoreDialog(object):
         self.bpmSpinBox.setMaximum(300)
         self.bpmSpinBox.setProperty(_fromUtf8("value"), 120)
         self.bpmSpinBox.setObjectName(_fromUtf8("bpmSpinBox"))
-        self.gridLayout.addWidget(self.bpmSpinBox, 3, 1, 1, 1)
+        self.gridLayout.addWidget(self.bpmSpinBox, 3, 2, 1, 1)
         self.buttonBox = QtGui.QDialogButtonBox(ScoreDialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel | QtGui.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
-        self.gridLayout.addWidget(self.buttonBox, 4, 0, 1, 3)
+        self.gridLayout.addWidget(self.buttonBox, 4, 0, 1, 4)
+        self.artistVisible = QtGui.QCheckBox(ScoreDialog)
+        self.artistVisible.setText(_fromUtf8(""))
+        self.artistVisible.setObjectName(_fromUtf8("artistVisible"))
+        self.gridLayout.addWidget(self.artistVisible, 1, 1, 1, 1)
+        self.creatorVisible = QtGui.QCheckBox(ScoreDialog)
+        self.creatorVisible.setText(_fromUtf8(""))
+        self.creatorVisible.setObjectName(_fromUtf8("creatorVisible"))
+        self.gridLayout.addWidget(self.creatorVisible, 2, 1, 1, 1)
+        self.bpmVisible = QtGui.QCheckBox(ScoreDialog)
+        self.bpmVisible.setText(_fromUtf8(""))
+        self.bpmVisible.setObjectName(_fromUtf8("bpmVisible"))
+        self.gridLayout.addWidget(self.bpmVisible, 3, 1, 1, 1)
 
         self.retranslateUi(ScoreDialog)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), ScoreDialog.accept)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), ScoreDialog.reject)
+        QtCore.QObject.connect(self.artistVisible, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.artistEdit.setEnabled)
+        QtCore.QObject.connect(self.creatorVisible, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.creatorEdit.setEnabled)
+        QtCore.QObject.connect(self.bpmVisible, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.bpmSpinBox.setEnabled)
         QtCore.QMetaObject.connectSlotsByName(ScoreDialog)
 
     def retranslateUi(self, ScoreDialog):

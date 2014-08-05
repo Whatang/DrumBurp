@@ -24,8 +24,8 @@ Created on 8 Jan 2011
 
 from Data.Counter import CounterRegistry
 from Data.ASCIISettings import ASCIISettings
-import Data.MeasureCount
 from PyQt4.QtCore import QObject, pyqtSignal
+from PyQt4.QtGui import QFontMetrics, QFont
 
 #pylint: disable-msg=R0902
 
@@ -55,6 +55,7 @@ class QDisplayProperties(QObject):
         self._ySpacing = self._START_NOTE_HEIGHT
         self._lineSpacing = self._START_LINE_SPACE
         self._noteFont = None
+        self._defaultNoteFontSize = 10
         self._sectionFont = None
         self._sectionFontSize = 20
         self._metadataVisible = True
@@ -72,6 +73,7 @@ class QDisplayProperties(QObject):
     ySpacingChanged = pyqtSignal()
     lineSpacingChanged = pyqtSignal()
     fontChanged = pyqtSignal()
+    noteSizeChanged = pyqtSignal(int)
     sectionFontChanged = pyqtSignal()
     sectionFontSizeChanged = pyqtSignal()
     metadataVisibilityChanged = pyqtSignal()
@@ -81,8 +83,12 @@ class QDisplayProperties(QObject):
     beatCountVisibleChanged = pyqtSignal()
     emptyLinesVisibleChanged = pyqtSignal()
 
-    def connectScore(self, qScore):
+    def newScore(self, qScore):
         self._score = qScore.score
+        self._readFromFontOptions()
+        self._readFromScoreData()
+
+    def connectScore(self, qScore):
         self.xSpacingChanged.connect(qScore.xSpacingChanged)
         self.ySpacingChanged.connect(qScore.ySpacingChanged)
         self.lineSpacingChanged.connect(qScore.lineSpacingChanged)
@@ -95,7 +101,7 @@ class QDisplayProperties(QObject):
         self.kitDataVisibleChanged.connect(qScore.kitDataVisibleChanged)
         self.beatCountVisibleChanged.connect(qScore.reBuild)
         self.emptyLinesVisibleChanged.connect(qScore.reBuild)
-
+        self.newScore(qScore)
 
     def _getxSpacing(self):
         return self._xSpacing
@@ -152,15 +158,47 @@ class QDisplayProperties(QObject):
     def _setnoteFont(self, value):
         if self._noteFont != value:
             self._noteFont = value
+            if self._score is not None:
+                self._score.fontOptions.noteFont = value.family()
+            self._updateSpacing()
             self.fontChanged.emit()
     noteFont = property(fget = _getnoteFont, fset = _setnoteFont)
+
+    def _updateSpacing(self):
+        fm = QFontMetrics(self.noteFont)
+        br = fm.boundingRect("X")
+        self.xSpacing = 1.2 * br.width() + 2
+        br = fm.tightBoundingRect("X")
+        self.ySpacing = br.height() + 2
+
+    def _getnoteFontSize(self):
+        if self.noteFont is None:
+            return self._defaultNoteFontSize
+        else:
+            return self.noteFont.pointSize()
+    def _setNoteFontSize(self, size):
+        if size == self.noteFontSize:
+            return
+        self._defaultNoteFontSize = size
+        if self._score is not None:
+            self._score.fontOptions.noteFontSize = size
+        if self.noteFont is not None:
+            self.noteFont.setPointSize(size)
+            self._updateSpacing()
+        self.noteSizeChanged.emit(size)
+    noteFontSize = property(fget = _getnoteFontSize,
+                            fset = _setNoteFontSize)
+
 
     def _getsectionFontSize(self):
         return self._sectionFontSize
     def _setsectionFontSize(self, value):
         if self._sectionFontSize != value:
             self._sectionFontSize = value
-            self.sectionFont.setPointSize(value)
+            if self._score is not None:
+                self._score.fontOptions.sectionFontSize = self.sectionFontSize
+            if self.sectionFont is not None:
+                self.sectionFont.setPointSize(value)
             self.sectionFontSizeChanged.emit()
     sectionFontSize = property(fget = _getsectionFontSize,
                                fset = _setsectionFontSize)
@@ -173,6 +211,8 @@ class QDisplayProperties(QObject):
             value.setItalic(True)
             value.setPointSize(self._sectionFontSize)
             self._sectionFont = value
+            if self._score is not None:
+                self._score.fontOptions.sectionFont = value.family()
             self.sectionFontChanged.emit()
     sectionFont = property(fget = _getsectionFont, fset = _setsectionFont)
 
@@ -181,7 +221,10 @@ class QDisplayProperties(QObject):
     def _setmetadataFontSize(self, value):
         if self._metadataFontSize != value:
             self._metadataFontSize = value
-            self.metadataFont.setPointSize(value)
+            if self._metadataFont is not None:
+                self.metadataFont.setPointSize(value)
+            if self._score is not None:
+                self._score.fontOptions.metadataFontSize = self.metadataFontSize
             self.metadataFontSizeChanged.emit()
     metadataFontSize = property(fget = _getmetadataFontSize,
                                 fset = _setmetadataFontSize)
@@ -193,8 +236,28 @@ class QDisplayProperties(QObject):
             value.setBold(True)
             value.setPointSize(self._metadataFontSize)
             self._metadataFont = value
+            if self._score is not None:
+                self._score.fontOptions.metadataFont = value.family()
             self.metadataFontChanged.emit()
     metadataFont = property(fget = _getmetadataFont, fset = _setmetadataFont)
+
+    def _readFromFontOptions(self):
+        if self._score is not None:
+            options = self._score.fontOptions
+            self.noteFont = QFont(options.noteFont)
+            self.noteFontSize = options.noteFontSize
+            self.metadataFont = QFont(options.metadataFont)
+            self.metadataFontSize = options.metadataFontSize
+            self.sectionFont = QFont(options.sectionFont)
+            self.sectionFontSize = options.sectionFontSize
+
+    def _readFromScoreData(self):
+        if self._score is not None:
+            options = self._score.scoreData
+            self.kitDataVisible = options.kitDataVisible
+            self.metadataVisible = options.metadataVisible
+            self.beatCountVisible = options.beatCountVisible
+            self.emptyLinesVisible = options.emptyLinesVisible
 
     def _gethead(self):
         return self._head
@@ -208,6 +271,7 @@ class QDisplayProperties(QObject):
     def _setmetadataVisible(self, value):
         if self._metadataVisible != value:
             self._metadataVisible = value
+            self._score.scoreData.metadataVisible = value
             self.metadataVisibilityChanged.emit()
     metadataVisible = property(fget = _getmetadataVisible,
                                fset = _setmetadataVisible)
@@ -217,6 +281,7 @@ class QDisplayProperties(QObject):
     def _setkitDataVisible(self, value):
         if self._kitDataVisible != value:
             self._kitDataVisible = value
+            self._score.scoreData.kitDataVisible = value
             self.kitDataVisibleChanged.emit()
     kitDataVisible = property(fget = _getkitDataVisible,
                               fset = _setkitDataVisible)
@@ -226,6 +291,7 @@ class QDisplayProperties(QObject):
     def _setbeatCountVisible(self, value):
         if self._beatCountVisible != value:
             self._beatCountVisible = value
+            self._score.scoreData.beatCountVisible = value
             self.beatCountVisibleChanged.emit()
     beatCountVisible = property(fget = _getbeatCountVisible,
                                 fset = _setbeatCountVisible)
@@ -235,6 +301,7 @@ class QDisplayProperties(QObject):
     def _setemptyLinesVisible(self, value):
         if self._emptyLinesVisible != value:
             self._emptyLinesVisible = value
+            self._score.scoreData.emptyLinesVisible = value
             self.emptyLinesVisibleChanged.emit()
     emptyLinesVisible = property(fget = _getemptyLinesVisible,
                                  fset = _setemptyLinesVisible)

@@ -105,7 +105,8 @@ class QMeasure(QtGui.QGraphicsItem):
                 text = self._measure.noteAt(noteTime, lineIndex)
                 if text == DBConstants.EMPTY_NOTE:
                     painter.drawLine(x + dot, lineHeight,
-                                     x + self.scene().xSpacing - dot, lineHeight)
+                                     x + self.scene().xSpacing - dot,
+                                     lineHeight)
                 else:
                     br = fontMetric.tightBoundingRect(text)
                     left = x + (self.scene().xSpacing - br.width() + 2) / 2 - 2

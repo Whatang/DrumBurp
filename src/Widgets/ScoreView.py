@@ -32,13 +32,11 @@ class ScoreView(QtGui.QGraphicsView):
 
     def __init__(self, parent = None):
         super(ScoreView, self).__init__(parent)
-        self._fixedWidth = 80
         self._props = None
 
     def setScene(self, scene):
         super(ScoreView, self).setScene(scene)
         self._props = scene.displayProperties
-        scene.metadataChanged.connect(self.setMetadata)
         self.centerOn(0, 0)
 
     @QtCore.pyqtSlot(int)
@@ -51,79 +49,49 @@ class ScoreView(QtGui.QGraphicsView):
         self.widthChanged.emit(width)
     widthChanged = QtCore.pyqtSignal(int)
 
-    @QtCore.pyqtSlot(int)
-    def setBPM(self, bpm):
-        self.scene().bpm = bpm
-        self.bpmChanged.emit(bpm)
-    bpmChanged = QtCore.pyqtSignal(int)
-
-    @QtCore.pyqtSlot(QtCore.QString)
-    def setTitle(self, title):
-        self.scene().title = title
-        self.titleChanged.emit(title)
-    titleChanged = QtCore.pyqtSignal(QtCore.QString)
-
-    @QtCore.pyqtSlot(QtCore.QString)
-    def setArtist(self, artist):
-        self.scene().artist = artist
-        self.artistChanged.emit(artist)
-    artistChanged = QtCore.pyqtSignal(QtCore.QString)
-
-    @QtCore.pyqtSlot(QtCore.QString)
-    def setCreator(self, creator):
-        self.scene().creator = creator
-        self.creatorChanged.emit(creator)
-    creatorChanged = QtCore.pyqtSignal(QtCore.QString)
-
-    def setMetadata(self, name, value):
-        signal = getattr(self, str(name) + "Changed")
-        signal.emit(value)
-
     @QtCore.pyqtSlot(QtGui.QFont)
     def setFont(self, font):
-        self._props.noteFont = font
-        self.setNoteFontSize(self._props.noteFont.pointSize())
+        self.scene().setScoreFont(font, "note")
 
     @QtCore.pyqtSlot(int)
     def setNoteFontSize(self, size):
-        self._props.noteFont.setPointSize(size)
-        fm = QtGui.QFontMetrics(self._props.noteFont)
-        br = fm.boundingRect("X")
-        self._props.xSpacing = 1.2 * br.width() + 2
-        br = fm.tightBoundingRect("X")
-        self._props.ySpacing = br.height() + 2
+        self.scene().setScoreFontSize(size, "note")
 
     @QtCore.pyqtSlot(QtGui.QFont)
     def setSectionFont(self, font):
-        self._props.sectionFont = font
+        self.scene().setScoreFont(font, "section")
 
     @QtCore.pyqtSlot(int)
     def setSectionFontSize(self, size):
-        self._props.sectionFontSize = size
+        self.scene().setScoreFontSize(size, "section")
 
     @QtCore.pyqtSlot(QtGui.QFont)
     def setMetadataFont(self, font):
-        self._props.metadataFont = font
+        self.scene().setScoreFont(font, "metadata")
 
     @QtCore.pyqtSlot(int)
     def setMetadataFontSize(self, size):
-        self._props.metadataFontSize = size
+        self.scene().setScoreFontSize(size, "metadata")
 
     @QtCore.pyqtSlot(bool)
     def setMetadataVisible(self, onOff):
-        self._props.metadataVisible = onOff
+        self.scene().setElementVisibility(onOff, "metadata",
+                                          "score info")
 
     @QtCore.pyqtSlot(bool)
     def setBeatCountVisible(self, onOff):
-        self._props.beatCountVisible = onOff
+        self.scene().setElementVisibility(onOff, "beatCount",
+                                          "beat count")
 
     @QtCore.pyqtSlot(bool)
     def setEmptyLinesVisible(self, onOff):
-        self._props.emptyLinesVisible = onOff
+        self.scene().setElementVisibility(onOff, "emptyLines",
+                                          "empty lines")
 
     @QtCore.pyqtSlot(bool)
     def setKitDataVisible(self, onOff):
-        self._props.kitDataVisible = onOff
+        self.scene().setElementVisibility(onOff, "kitData",
+                                          "drum key")
 
     def startUp(self):
         self.scene().startUp()

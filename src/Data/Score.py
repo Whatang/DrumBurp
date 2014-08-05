@@ -32,6 +32,7 @@ from DBErrors import BadTimeError, OverSizeMeasure
 from DBConstants import REPEAT_EXTENDER
 from NotePosition import NotePosition
 from ScoreMetaData import ScoreMetaData
+from FontOptions import FontOptions
 import os
 import bisect
 import copy
@@ -61,6 +62,7 @@ class Score(object):
         counter = CounterRegistry().getCounterByIndex(0)
         self.defaultCount = makeSimpleCount(counter, 4)
         self.systemSpacing = 25
+        self.fontOptions = FontOptions()
 
     def __len__(self):
         return sum(len(staff) for staff in self._staffs)
@@ -541,6 +543,8 @@ class Score(object):
         self.defaultCount.write(handle, indenter,
                                 title = "DEFAULT_COUNT_INFO_START")
         print >> handle, "SYSTEM_SPACE", self.systemSpacing
+        self.fontOptions.write(handle, indenter)
+
 
     def read(self, handle):
         def scoreHandle():
@@ -574,6 +578,9 @@ class Score(object):
                 self.defaultCount.read(scoreIterator)
             elif lineType == "SYSTEM_SPACE":
                 self.systemSpacing = int(lineData)
+            elif lineType == "FONT_OPTIONS_START":
+                self.fontOptions = FontOptions()
+                self.fontOptions.read(scoreIterator)
             else:
                 raise IOError("Unrecognised line type: " + lineType)
         # Format the score appropriately
@@ -593,7 +600,6 @@ class Score(object):
         self.write(scoreString)
         scoreString.seek(0, 0)
         scoreString = "".join(scoreString)
-        scoreString += self.paperSize
         return hashlib.md5(str(scoreString)).digest() #pylint:disable-msg=E1101
 
     def exportASCII(self, handle, settings):
