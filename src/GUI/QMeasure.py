@@ -133,7 +133,7 @@ class QMeasure(QtGui.QGraphicsItem):
                                      lineHeight)
                 else:
                     br = fontMetric.tightBoundingRect(text)
-                    left = x + (self._qScore.xSpacing - br.width() + 2) / 2 - 2
+                    left = x + (self._qScore.xSpacing - br.width()) / 2
                     offset = br.y() - (self._qScore.ySpacing - br.height()) / 2
                     painter.drawText(QtCore.QPointF(left, baseline - offset),
                                      text)

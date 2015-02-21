@@ -52,7 +52,7 @@ class QLineLabel(QtGui.QGraphicsItem):
         return self.scene().ySpacing
 
     def cellWidth(self):
-        return 2 * self.scene().xSpacing
+        return 2 * self.scene().xSpacing + 2
 
     def mouseDoubleClickEvent(self, event_):
         self.scene().editKit()
@@ -93,7 +93,7 @@ class QLineLabel(QtGui.QGraphicsItem):
             br = br.tightBoundingRect(self._text)
             w = br.width()
             h = br.height()
-            textLocation = QtCore.QPointF(self.cellWidth() - w,
+            textLocation = QtCore.QPointF(self.cellWidth() - w - 2,
                                           (self.cellHeight() + h) / 2)
             painter.drawText(textLocation, self._text)
         painter.restore()
