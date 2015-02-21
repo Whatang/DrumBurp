@@ -30,7 +30,7 @@ def versionStringToTuple(vstr):
 def getLatestVersion():
     import urllib2
     try:
-        versionUrl = urllib2.urlopen('http://github.com/Whatang/DrumBurp/raw/master/src/dbversion.txt',
+        versionUrl = urllib2.urlopen('http://github.com/Whatang/DrumBurp/raw/master/src/' + DB_VERSION_FILE,
                                      timeout = 10)
         versionString = versionUrl.read()
         newVersion = versionStringToTuple(versionString)
