@@ -169,10 +169,16 @@ class QDisplayProperties(QObject):
 
     def _updateSpacing(self):
         fm = QFontMetrics(self.noteFont)
-        br = fm.boundingRect("X")
-        self.xSpacing = 1.2 * br.width() + 2
-        br = fm.tightBoundingRect("X")
-        self.ySpacing = br.height() + 2
+        max_width = 0
+        max_height = 0
+        for ch in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+=/?\\{}[]:;'\",<.>~`":
+            br = fm.tightBoundingRect(ch)
+            if br.height() > max_height:
+                max_height = br.height()
+            if br.width() > max_width:
+                max_width = br.width()
+        self.xSpacing = max_width
+        self.ySpacing = max_height
 
     def _getnoteFontSize(self):
         if self.noteFont is None:
