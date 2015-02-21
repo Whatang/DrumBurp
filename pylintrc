@@ -381,3 +381,5 @@ ignore-comments=yes
 
 # Ignore docstrings when computing similarities.
 ignore-docstrings=yes
+
+extension-pkg-whitelist=PyQt4
