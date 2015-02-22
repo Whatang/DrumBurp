@@ -601,7 +601,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                     return
                 fname = unicode(fname)
                 with open(fname, 'w') as handle:
-                    handle.write(lilyBuffer.getvalue())
+                    handle.write(lilyBuffer.getvalue().encode('utf-8'))
             except StandardError:
                 QMessageBox.warning(self.parent(), "Export failed!",
                                     "Could not export Lilypond")
