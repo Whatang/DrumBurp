@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1012</width>
+    <width>1154</width>
     <height>769</height>
    </rect>
   </property>
@@ -448,8 +448,8 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1012</width>
-     <height>26</height>
+     <width>1154</width>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -514,6 +514,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <addaction name="actionShowBeatCount"/>
     <addaction name="actionShowMeasureCounts"/>
     <addaction name="separator"/>
+    <addaction name="actionEditColours"/>
     <addaction name="actionDisplayOptionsIsVisible"/>
     <addaction name="menuShowToolBars"/>
    </widget>
@@ -1798,6 +1799,14 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="whatsThis">
     <string>Show/Hide Measure Indexes</string>
+   </property>
+  </action>
+  <action name="actionEditColours">
+   <property name="text">
+    <string>Edit &amp;Colours</string>
+   </property>
+   <property name="toolTip">
+    <string>Edit the colours DrumBurp uses</string>
    </property>
   </action>
  </widget>

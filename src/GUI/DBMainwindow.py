@@ -351,7 +351,6 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             if not settings.contains("Colours/" + colourRef):
                 continue
             colourItem.fromString(settings.value("Colours/" + colourRef).toString())
-            print colourItem.toString()
 
     @pyqtSignature("")
     def on_actionFitInWindow_triggered(self):
@@ -886,6 +885,13 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             self.statusbar.showMessage("Failed to get latest version info from www.whatang.org", 5000)
         else:
             self.statusbar.showMessage("Check successful: You have the latest version of DrumBurp", 5000)
+
+    @pyqtSignature("")
+    def on_actionEditColours_triggered(self):
+        dialog = DBColourPicker.DBColourPicker(self._colourScheme, self)
+        if not dialog.exec_():
+            return
+        self._colourScheme = dialog.getColourScheme()
 
 class VersionCheckThread(QThread):
     def __init__(self, parent = None):
