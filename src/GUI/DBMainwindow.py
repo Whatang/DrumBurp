@@ -38,6 +38,7 @@ from QAsciiExportDialog import QAsciiExportDialog
 from QEditMeasureDialog import QEditMeasureDialog
 from QVersionDownloader import QVersionDownloader
 from DBInfoDialog import DBInfoDialog
+import DBColourPicker
 import DBIcons
 import os
 import DBMidi
@@ -75,6 +76,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.paperBox.blockSignals(True)
         self.paperBox.clear()
         self._knownPageHeights = []
+        self._colourScheme = DBColourPicker.ColourScheme()
         printer = QPrinter()
         printer.setOutputFileName("invalid.pdf")
         for name in dir(QPrinter):
@@ -113,6 +115,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
         self.restoreGeometry(settings.value("Geometry").toByteArray())
         self.restoreState(settings.value("MainWindow/State").toByteArray())
+        self._readColours(settings)
         self.statusbar.addPermanentWidget(QFrame())
         self.availableNotesLabel = QLabel()
         self.availableNotesLabel.setMinimumWidth(250)
@@ -327,6 +330,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                               QVariant(self.saveState()))
             settings.setValue("CheckOnStartup",
                               QVariant(self.actionCheckOnStartup.isChecked()))
+            self._writeColours(settings)
             self.songProperties.save(settings)
             self._versionThread.exit()
             self._versionThread.wait(1000)
@@ -334,6 +338,20 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 self._versionThread.terminate()
         else:
             event.ignore()
+
+    def _writeColours(self, settings):
+        for unusedName, colourRef in self._colourScheme.iterColourNames():
+            colourItem = getattr(self._colourScheme, colourRef)
+            settings.setValue("Colours/" + colourRef,
+                              QVariant(colourItem.toString()))
+                
+    def _readColours(self, settings):
+        for unusedName, colourRef in self._colourScheme.iterColourNames():
+            colourItem = getattr(self._colourScheme, colourRef)
+            if not settings.contains("Colours/" + colourRef):
+                continue
+            colourItem.fromString(settings.value("Colours/" + colourRef).toString())
+            print colourItem.toString()
 
     @pyqtSignature("")
     def on_actionFitInWindow_triggered(self):

@@ -14,8 +14,6 @@ STYLE_MAP = {"None":QtCore.Qt.NoPen,
 STYLES = ["None", "Dashed", "Solid"]
 REVERSE_STYLE_MAP = dict((x, y) for (y, x) in STYLE_MAP.iteritems())
 
-
-
 class ColouredItem(object):
     def __init__(self, backgroundColour, borderStyle, borderColour):
         self._borderStyle = None
@@ -29,9 +27,39 @@ class ColouredItem(object):
 
     @borderStyle.setter
     def borderStyle(self, value):
-        value = STYLE_MAP.get(value, QtCore.Qt.NoPen)
+        if not isinstance(value, QtCore.Qt.PenStyle):
+            value = STYLE_MAP.get(value, QtCore.Qt.NoPen)
         self._borderStyle = value
 
+    @staticmethod
+    def _colourToString(colour):
+        return "%02x,%02x,%02x,%02x" % colour.getRgb()
+
+    @staticmethod
+    def _colourFromString(c_string):
+        rgba = [int(x, 16) for x in c_string.split(",")]
+        return QColor.fromRgb(*rgba)
+
+    @staticmethod
+    def _lineToString(line):
+        return REVERSE_STYLE_MAP[line]
+
+    @staticmethod
+    def _lineFromString(l_string):
+        return STYLE_MAP[l_string]
+
+
+    def toString(self):
+        answer = "/".join([self._colourToString(self.backgroundColour),
+                          self._lineToString(self._borderStyle),
+                          self._colourToString(self.borderColour)])
+        return answer
+
+    def fromString(self, c_string):
+        back, style, bord = str(c_string).split("/", 3)
+        self.backgroundColour = self._colourFromString(back)
+        self.borderStyle = self._lineFromString(style)
+        self.borderColour = self._colourFromString(bord)
 
 DEFAULT_NOTE_HIGHLIGHT = ColouredItem(QColor(QtCore.Qt.yellow).lighter(),
                                       "Solid",
@@ -57,7 +85,7 @@ class ColourScheme(object):
         self.playingHighlight = playingHighlight
         
     @staticmethod
-    def iterColours():
+    def iterColourNames():
         yield "Note Highlight", "noteHighlight"
         yield "Time Highlight", "timeHighlight"
         yield "Selected Measure", "selectedMeasure"
@@ -70,7 +98,7 @@ class DBColourPicker(QDialog, Ui_ColourPicker):
         self.setupUi(self)
         self._originalScheme = colour_scheme
         self._currentScheme = copy.deepcopy(colour_scheme)
-        for row, (colourName, colourRef) in enumerate(ColourScheme.iterColours()):
+        for row, (colourName, colourRef) in enumerate(ColourScheme.iterColourNames()):
             label = QLabel(self)
             label.setText(colourName)
             label.setAlignment(QtCore.Qt.AlignRight)
