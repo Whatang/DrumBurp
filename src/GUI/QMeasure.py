@@ -227,13 +227,18 @@ class QMeasure(QtGui.QGraphicsItem):
         painter.setFont(font)
         painter.drawText(1, self._base - 2, "%d" % (1 + self._measureCount))
 
+
+    @_painter_saver
+    def _paintDragHighlight(self, painter):
+        color = QtGui.QColor(QtCore.Qt.gray).lighter()
+        painter.setBrush(color)
+        painter.setPen(color)
+        painter.drawRect(self._rect)
+
     def paint(self, painter, dummyOption, dummyWidget = None):
         painter.save()
         if self._dragHighlight:
-            color = QtGui.QColor(QtCore.Qt.gray).lighter()
-            painter.setBrush(color)
-            painter.setPen(color)
-            painter.drawRect(self._rect)
+            self._paintDragHighlight(painter)
         painter.setPen(QtCore.Qt.SolidLine)
         font = self._props.noteFont
         if font is None:
