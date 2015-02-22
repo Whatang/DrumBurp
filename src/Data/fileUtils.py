@@ -180,7 +180,7 @@ class Indenter(object):
         self._level = max(0, self._level)
 
     def __call__(self, *args):
-        argString = " ".join(str(ar) for ar in args)
+        argString = " ".join(unicode(ar) for ar in args)
         if self._level != 0:
             argString = (self._indent * self._level) + argString
         print >> self._handle, argString

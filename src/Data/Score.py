@@ -37,6 +37,7 @@ import bisect
 import hashlib
 import gzip
 import itertools
+import codecs
 from StringIO import StringIO
 
 CURRENT_FILE_FORMAT = 0
@@ -736,7 +737,7 @@ class Score(object):
         scoreString = StringIO()
         self.write(scoreString)
         scoreString = scoreString.getvalue()
-        return hashlib.md5(scoreString).digest()  # pylint:disable-msg=E1121
+        return hashlib.md5(scoreString.encode('utf-8')).digest()  # pylint:disable-msg=E1121
 
 class ScoreFactory(object):
     def __call__(self, filename = None,
@@ -770,8 +771,9 @@ class ScoreFactory(object):
         score = Score()
         try:
             with gzip.open(filename, 'rb') as handle:
-                score.read(handle)
-        except IOError, exc:
+                with codecs.getreader('utf-8')(handle) as reader:
+                    score.read(reader)
+        except IOError:
             score = Score()
             with open(filename, 'rU') as handle:
                 score.read(handle)
@@ -782,4 +784,5 @@ class ScoreFactory(object):
         scoreBuffer = StringIO()
         score.write(scoreBuffer)
         with gzip.open(filename, 'wb') as handle:
-            handle.write(scoreBuffer.getvalue())
+            with codecs.getwriter('utf-8')(handle) as writer:
+                writer.write(scoreBuffer.getvalue())
