@@ -500,7 +500,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if self.filename is None:
             home = QDesktopServices.HomeLocation
             fname = QDesktopServices.storageLocation(home)
-            fname = os.path.join(str(fname), 'Untitled.txt')
+            fname = os.path.join(unicode(fname), 'Untitled.txt')
         if os.path.splitext(fname)[-1] == '.brp':
             fname = os.path.splitext(fname)[0] + '.txt'
         props = self.songProperties
@@ -740,7 +740,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 directory = os.path.dirname(self.recentFiles[-1])
             else:
                 home = QDesktopServices.HomeLocation
-                directory = str(QDesktopServices.storageLocation(home))
+                directory = unicode(QDesktopServices.storageLocation(home))
             directory = os.path.join(directory,
                                      suggestion)
         if os.path.splitext(directory)[-1] == os.extsep + 'brp':

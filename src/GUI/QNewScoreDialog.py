@@ -57,7 +57,7 @@ class QNewScoreDialog(QDialog, Ui_newScoreDialog):
         kitIndex = self.kitCombobox.currentIndex()
         isUserKit = self.kitCombobox.itemData(kitIndex).toBool()
         if isUserKit:
-            kitString = str(self._settings.value(kitName).toString())
+            kitString = unicode(self._settings.value(kitName).toString())
             handle = StringIO(kitString)
             dbfile = fileUtils.dbFileIterator(handle)
             kit = DrumKit.DrumKit()

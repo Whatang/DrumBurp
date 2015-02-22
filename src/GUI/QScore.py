@@ -656,7 +656,7 @@ class QScore(QtGui.QGraphicsScene):
                 msg = "Error loading DrumBurp file %s" % filename
                 QtGui.QMessageBox.warning(self.parent(),
                                           "Score load error",
-                                          msg + "\n" + str(exc))
+                                          msg + "\n" + unicode(exc))
             return False
         except Exception, exc:
             raise
@@ -668,7 +668,7 @@ class QScore(QtGui.QGraphicsScene):
         try:
             _SCORE_FACTORY.saveScore(self._score, filename)
         except StandardError, exc:
-            msg = "Error saving DrumBurp file: %s" % str(exc)
+            msg = "Error saving DrumBurp file: %s" % unicode(exc)
             QtGui.QMessageBox.warning(self.parent(),
                                       "Score save error",
                                       msg)

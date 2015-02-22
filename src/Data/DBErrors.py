@@ -45,7 +45,7 @@ class DbReadError(StandardError):
         self.line = scoreIterator.currentLine
 
     def __str__(self):
-        return "\n".join(self.__doc__, "", "Line %d" % self.lineNumber, self.line)
+        return "\n".join([self.__doc__, "", "Line %d" % self.lineNumber, self.line])
 
 class UnrecognisedLine(DbReadError):
     "Unrecognised line type."
