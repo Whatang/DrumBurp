@@ -522,7 +522,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             raise
         try:
             with open(fname, 'w') as txtHandle:
-                txtHandle.write(asciiBuffer.getvalue())
+                txtHandle.write(asciiBuffer.getvalue().encode('utf-8'))
         except StandardError:
             QMessageBox.warning(self.parent(), "Export failed!",
                                 "Could not export to " + fname)
