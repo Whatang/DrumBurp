@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>848</width>
-    <height>592</height>
+    <width>1036</width>
+    <height>689</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -42,14 +42,14 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>24</width>
-                <height>24</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>24</width>
-                <height>24</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="toolTip">
@@ -61,12 +61,18 @@
               <property name="whatsThis">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Delete empty non-locked drums&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Any drums which are not locked and which do not have any notes on them in the current score will be deleted from the kit when this button is pressed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
               <property name="text">
                <string/>
               </property>
               <property name="icon">
                <iconset resource="DrumBurp.qrc">
                 <normaloff>:/Icons/Icons/process-stop.png</normaloff>:/Icons/Icons/process-stop.png</iconset>
+              </property>
+              <property name="flat">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -80,14 +86,14 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>24</width>
-                <height>24</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>24</width>
-                <height>24</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="toolTip">
@@ -103,6 +109,9 @@
                <iconset resource="DrumBurp.qrc">
                 <normaloff>:/Icons/Icons/document-new.png</normaloff>:/Icons/Icons/document-new.png</iconset>
               </property>
+              <property name="flat">
+               <bool>true</bool>
+              </property>
              </widget>
             </item>
             <item>
@@ -115,14 +124,14 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>24</width>
-                <height>24</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>24</width>
-                <height>24</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="toolTip">
@@ -138,10 +147,25 @@
                <iconset resource="DrumBurp.qrc">
                 <normaloff>:/Icons/Icons/edit-undo.png</normaloff>:/Icons/Icons/edit-undo.png</iconset>
               </property>
+              <property name="flat">
+               <bool>true</bool>
+              </property>
              </widget>
             </item>
             <item>
              <widget class="QPushButton" name="defaultKitButton">
+              <property name="minimumSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
+              </property>
               <property name="toolTip">
                <string>Default kits</string>
               </property>
@@ -153,7 +177,10 @@
               </property>
               <property name="icon">
                <iconset resource="DrumBurp.qrc">
-                <normaloff>:/Icons/Icons/go-home.png</normaloff>:/Icons/Icons/go-home.png</iconset>
+                <normaloff>:/Icons/Icons/drumburp.png</normaloff>:/Icons/Icons/drumburp.png</iconset>
+              </property>
+              <property name="flat">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -170,14 +197,14 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>24</width>
-                <height>24</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>24</width>
-                <height>24</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="toolTip">
@@ -192,6 +219,9 @@
               <property name="icon">
                <iconset resource="DrumBurp.qrc">
                 <normaloff>:/Icons/Icons/folder.png</normaloff>:/Icons/Icons/folder.png</iconset>
+              </property>
+              <property name="flat">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -208,14 +238,14 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>24</width>
-                <height>24</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>24</width>
-                <height>24</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="toolTip">
@@ -230,6 +260,9 @@
               <property name="icon">
                <iconset resource="DrumBurp.qrc">
                 <normaloff>:/Icons/Icons/document-save.png</normaloff>:/Icons/Icons/document-save.png</iconset>
+              </property>
+              <property name="flat">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -297,14 +330,14 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>24</width>
-                <height>24</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>24</width>
-                <height>24</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="toolTip">
@@ -320,6 +353,9 @@
                <iconset resource="../buttons.qrc">
                 <normaloff>:/buttons/GUI/Icons/list-add.png</normaloff>:/buttons/GUI/Icons/list-add.png</iconset>
               </property>
+              <property name="flat">
+               <bool>true</bool>
+              </property>
              </widget>
             </item>
             <item>
@@ -332,14 +368,14 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>24</width>
-                <height>24</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>24</width>
-                <height>24</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="toolTip">
@@ -355,6 +391,9 @@
                <iconset resource="../buttons.qrc">
                 <normaloff>:/buttons/GUI/Icons/go-up.png</normaloff>:/buttons/GUI/Icons/go-up.png</iconset>
               </property>
+              <property name="flat">
+               <bool>true</bool>
+              </property>
              </widget>
             </item>
             <item>
@@ -367,14 +406,14 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>24</width>
-                <height>24</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>24</width>
-                <height>24</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="toolTip">
@@ -390,6 +429,9 @@
                <iconset resource="../buttons.qrc">
                 <normaloff>:/buttons/GUI/Icons/go-down.png</normaloff>:/buttons/GUI/Icons/go-down.png</iconset>
               </property>
+              <property name="flat">
+               <bool>true</bool>
+              </property>
              </widget>
             </item>
             <item>
@@ -402,14 +444,14 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>24</width>
-                <height>24</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>24</width>
-                <height>24</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="toolTip">
@@ -424,6 +466,9 @@
               <property name="icon">
                <iconset resource="../buttons.qrc">
                 <normaloff>:/buttons/GUI/Icons/list-remove.png</normaloff>:/buttons/GUI/Icons/list-remove.png</iconset>
+              </property>
+              <property name="flat">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -914,6 +959,9 @@
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Preferred</enum>
+                </property>
                 <property name="sizeHint" stdset="0">
                  <size>
                   <width>0</width>
@@ -932,14 +980,14 @@
                 </property>
                 <property name="minimumSize">
                  <size>
-                  <width>28</width>
-                  <height>24</height>
+                  <width>32</width>
+                  <height>32</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>28</width>
-                  <height>24</height>
+                  <width>32</width>
+                  <height>32</height>
                  </size>
                 </property>
                 <property name="toolTip">
@@ -955,6 +1003,9 @@
                  <iconset resource="../buttons.qrc">
                   <normaloff>:/buttons/GUI/Icons/list-add.png</normaloff>:/buttons/GUI/Icons/list-add.png</iconset>
                 </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
               <item>
@@ -967,14 +1018,14 @@
                 </property>
                 <property name="minimumSize">
                  <size>
-                  <width>28</width>
-                  <height>24</height>
+                  <width>32</width>
+                  <height>32</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>28</width>
-                  <height>24</height>
+                  <width>32</width>
+                  <height>32</height>
                  </size>
                 </property>
                 <property name="toolTip">
@@ -987,12 +1038,15 @@
                  <iconset resource="../buttons.qrc">
                   <normaloff>:/buttons/GUI/Icons/go-up.png</normaloff>:/buttons/GUI/Icons/go-up.png</iconset>
                 </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="setDefaultHeadButton">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
@@ -1005,8 +1059,8 @@
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>75</width>
-                  <height>23</height>
+                  <width>500</width>
+                  <height>50</height>
                  </size>
                 </property>
                 <property name="toolTip">
@@ -1030,14 +1084,14 @@
                 </property>
                 <property name="minimumSize">
                  <size>
-                  <width>28</width>
-                  <height>24</height>
+                  <width>32</width>
+                  <height>32</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>28</width>
-                  <height>24</height>
+                  <width>32</width>
+                  <height>32</height>
                  </size>
                 </property>
                 <property name="toolTip">
@@ -1053,6 +1107,9 @@
                  <iconset resource="../buttons.qrc">
                   <normaloff>:/buttons/GUI/Icons/go-down.png</normaloff>:/buttons/GUI/Icons/go-down.png</iconset>
                 </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
               <item>
@@ -1065,14 +1122,14 @@
                 </property>
                 <property name="minimumSize">
                  <size>
-                  <width>28</width>
-                  <height>24</height>
+                  <width>32</width>
+                  <height>32</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>28</width>
-                  <height>24</height>
+                  <width>32</width>
+                  <height>32</height>
                  </size>
                 </property>
                 <property name="toolTip">
@@ -1088,12 +1145,18 @@
                  <iconset resource="../buttons.qrc">
                   <normaloff>:/buttons/GUI/Icons/list-remove.png</normaloff>:/buttons/GUI/Icons/list-remove.png</iconset>
                 </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
               <item>
                <spacer name="horizontalSpacer_10">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Preferred</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
@@ -1199,6 +1262,15 @@
                      <iconset resource="../buttons.qrc">
                       <normaloff>:/buttons/GUI/Icons/go-up.png</normaloff>:/buttons/GUI/Icons/go-up.png</iconset>
                     </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>32</width>
+                      <height>32</height>
+                     </size>
+                    </property>
+                    <property name="flat">
+                     <bool>true</bool>
+                    </property>
                    </widget>
                   </item>
                   <item>
@@ -1215,6 +1287,15 @@
                     <property name="icon">
                      <iconset resource="../buttons.qrc">
                       <normaloff>:/buttons/GUI/Icons/go-down.png</normaloff>:/buttons/GUI/Icons/go-down.png</iconset>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>32</width>
+                      <height>32</height>
+                     </size>
+                    </property>
+                    <property name="flat">
+                     <bool>true</bool>
                     </property>
                    </widget>
                   </item>
@@ -1417,15 +1498,21 @@
           <item>
            <widget class="QPushButton" name="muteButton">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="minimumSize">
+             <size>
+              <width>40</width>
+              <height>40</height>
+             </size>
+            </property>
             <property name="maximumSize">
              <size>
-              <width>28</width>
-              <height>24</height>
+              <width>40</width>
+              <height>40</height>
              </size>
             </property>
             <property name="toolTip">
@@ -1441,6 +1528,12 @@
              <iconset resource="DrumBurp.qrc">
               <normaloff>:/Icons/Icons/audio-volume-medium.png</normaloff>
               <normalon>:/Icons/Icons/audio-volume-muted.png</normalon>:/Icons/Icons/audio-volume-medium.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
             </property>
             <property name="checkable">
              <bool>true</bool>
@@ -1466,7 +1559,7 @@
        <item>
         <widget class="QGroupBox" name="groupBox_3">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -1572,7 +1665,7 @@
        <item>
         <widget class="QGroupBox" name="effectsGroup">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -1586,7 +1679,7 @@
          <property name="maximumSize">
           <size>
            <width>221</width>
-           <height>99</height>
+           <height>1000</height>
           </size>
          </property>
          <property name="toolTip">
@@ -1707,7 +1800,7 @@
        <item>
         <widget class="QGroupBox" name="groupBox_2">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -1761,6 +1854,9 @@
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Expanding</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
