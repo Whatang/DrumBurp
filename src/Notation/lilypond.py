@@ -571,7 +571,7 @@ class LilypondScore(object):
         repeatCommands = []
         hasAlternate = False
         self._lastTimeSig = None
-        for measure in self.score.iterMeasures():
+        for measureIndex, measure in enumerate(self.score.iterMeasures()):
             hasAlternate = self._getNextRepeats(repeatCommands,
                                                 hasAlternate, measure)
             if repeatCommands:
@@ -584,7 +584,11 @@ class LilypondScore(object):
                 self.indenter(r"\time %s" % self._timeSig)
                 self._lastTimeSig = self._timeSig
             with VOICE_CONTEXT(self.indenter, ""):
-                self._writeMeasure(measure)
+                try:
+                    self._writeMeasure(measure)
+                except LilypondProblem:
+                    print("Problem at measure %d" % measureIndex)
+                    raise
             hasAlternate = self._getLastRepeats(repeatCommands,
                                                 hasAlternate, measure)
             if measure.isSectionEnd():
