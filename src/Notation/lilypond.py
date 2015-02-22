@@ -463,7 +463,7 @@ class LilypondScore(object):
 
     def write(self, handle):
         self.indenter.setHandle(handle)
-        self.indenter(r'\version "2.12.3"')
+        self.indenter(r'\version "2.18.2"')
         with LILY_CONTEXT(self.indenter, r"\paper"):
             self._writePaper()
         with LILY_CONTEXT(self.indenter, r'\header'):
