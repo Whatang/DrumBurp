@@ -32,8 +32,8 @@ class ColouredItem(object):
         self._borderStyle = value
 
     @staticmethod
-    def _colourToString(colour):
-        return "%02x,%02x,%02x,%02x" % colour.getRgb()
+    def _colourToString(name, colour):
+        return name + ":%02x,%02x,%02x,%02x" % colour.getRgb()
 
     @staticmethod
     def _colourFromString(c_string):
@@ -41,8 +41,8 @@ class ColouredItem(object):
         return QColor.fromRgb(*rgba)
 
     @staticmethod
-    def _lineToString(line):
-        return REVERSE_STYLE_MAP[line]
+    def _lineToString(name, line):
+        return "%s:%s" % (name, REVERSE_STYLE_MAP[line])
 
     @staticmethod
     def _lineFromString(l_string):
@@ -50,16 +50,20 @@ class ColouredItem(object):
 
 
     def toString(self):
-        answer = "/".join([self._colourToString(self.backgroundColour),
-                          self._lineToString(self.borderStyle),
-                          self._colourToString(self.borderColour)])
+        answer = "/".join([self._colourToString("backgroundColour", self.backgroundColour),
+                          self._lineToString("borderStyle", self.borderStyle),
+                          self._colourToString("borderColour", self.borderColour)])
         return answer
 
     def fromString(self, c_string):
-        back, style, bord = str(c_string).split("/", 3)
-        self.backgroundColour = self._colourFromString(back)
-        self.borderStyle = self._lineFromString(style)
-        self.borderColour = self._colourFromString(bord)
+        for item in str(c_string).split("/"):
+            if ":" not in item:
+                continue
+            name, detail = item.split(":")
+            if name.endswith("Colour"):
+                setattr(self, name, self._colourFromString(detail))
+            elif name.endswith("Style"):
+                setattr(self, name, self._lineFromString(detail))
 
 DEFAULT_NOTE_HIGHLIGHT = ColouredItem(QColor(QtCore.Qt.yellow).lighter(),
                                       "None",
