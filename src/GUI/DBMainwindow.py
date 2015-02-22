@@ -76,7 +76,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.paperBox.blockSignals(True)
         self.paperBox.clear()
         self._knownPageHeights = []
-        self._colourScheme = DBColourPicker.ColourScheme()
+        self.colourScheme = DBColourPicker.ColourScheme()
         printer = QPrinter()
         printer.setOutputFileName("invalid.pdf")
         for name in dir(QPrinter):
@@ -340,14 +340,14 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             event.ignore()
 
     def _writeColours(self, settings):
-        for unusedName, colourRef in self._colourScheme.iterColourNames():
-            colourItem = getattr(self._colourScheme, colourRef)
+        for unusedName, colourRef in self.colourScheme.iterColourNames():
+            colourItem = getattr(self.colourScheme, colourRef)
             settings.setValue("Colours/" + colourRef,
                               QVariant(colourItem.toString()))
                 
     def _readColours(self, settings):
-        for unusedName, colourRef in self._colourScheme.iterColourNames():
-            colourItem = getattr(self._colourScheme, colourRef)
+        for unusedName, colourRef in self.colourScheme.iterColourNames():
+            colourItem = getattr(self.colourScheme, colourRef)
             if not settings.contains("Colours/" + colourRef):
                 continue
             colourItem.fromString(settings.value("Colours/" + colourRef).toString())
@@ -888,10 +888,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionEditColours_triggered(self):
-        dialog = DBColourPicker.DBColourPicker(self._colourScheme, self)
+        dialog = DBColourPicker.DBColourPicker(self.colourScheme, self)
         if not dialog.exec_():
             return
-        self._colourScheme = dialog.getColourScheme()
+        self.colourScheme = dialog.getColourScheme()
 
 class VersionCheckThread(QThread):
     def __init__(self, parent = None):

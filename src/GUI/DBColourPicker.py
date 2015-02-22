@@ -51,7 +51,7 @@ class ColouredItem(object):
 
     def toString(self):
         answer = "/".join([self._colourToString(self.backgroundColour),
-                          self._lineToString(self._borderStyle),
+                          self._lineToString(self.borderStyle),
                           self._colourToString(self.borderColour)])
         return answer
 
@@ -62,7 +62,7 @@ class ColouredItem(object):
         self.borderColour = self._colourFromString(bord)
 
 DEFAULT_NOTE_HIGHLIGHT = ColouredItem(QColor(QtCore.Qt.yellow).lighter(),
-                                      "Solid",
+                                      "None",
                                       QColor(QtCore.Qt.NoPen))
 DEFAULT_TIME_HIGHLIGHT = ColouredItem(QColor(QtCore.Qt.transparent),
                                       "Solid",
