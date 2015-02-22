@@ -585,11 +585,37 @@ class LilypondScore(object):
         counter = measure.counter
         return "%d/%d" % counter.timeSig()
 
+
+    def _firstMeasureRepeat(self):
+        measure = self.score.getMeasure(0)
+        if not measure.isRepeatStart():
+            return
+        firstRepeatCode = r"""\once \override Score.BreakAlignment.break-align-orders =
+    #(make-vector 3 '(instrument-name
+                      left-edge
+                      ambitus
+                      breathing-sign
+                      clef
+                      key-signature
+                      time-signature
+                      staff-bar
+                      custos))
+\once \override Staff.TimeSignature.space-alist =
+    #'((first-note . (fixed-space . 2.0))
+       (right-edge . (extra-space . 0.5))
+       ;; free up some space between time signature
+       ;; and repeat bar line
+       (staff-bar . (extra-space . 1)))
+\bar ".|:"
+"""
+        self.indenter(firstRepeatCode)
+
     def _writeMusic(self):
         secIndex, secTitle = self._getNextSectionTitle(-1)
         repeatCommands = []
         hasAlternate = False
         self._lastTimeSig = None
+        self._firstMeasureRepeat()
         for measureIndex, measure in enumerate(self.score.iterMeasures()):
             hasAlternate = self._getNextRepeats(repeatCommands,
                                                 hasAlternate, measure)
