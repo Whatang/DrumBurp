@@ -33,12 +33,18 @@ class QMetaData(QGraphicsListData):
 
     def _iterData(self):
         line = unicode(self._qScore.title)
-        if self._qScore.artistVisible:
-            line += ", by " + self._qScore.artist
-        if self._qScore.bpmVisible:
-            line += " (%d bpm)" % self._qScore.bpm
+        if self._qScore.artistVisible and self._qScore.artist:
+            if line:
+                line += ", by " + self._qScore.artist
+            else:
+                line = self._qScore.artist
+        if self._qScore.bpmVisible and self._qScore.bpm:
+            if line:
+                line += " (%d bpm)" % self._qScore.bpm
+            else:
+                line += "%d bpm" % self._qScore.bpm
         yield line
-        if self._qScore.creatorVisible:
+        if self._qScore.creatorVisible and self._qScore.creator:
             yield "Tabbed by " + self._qScore.creator
 
     def _dataLen(self):

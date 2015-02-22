@@ -84,7 +84,7 @@ class dbFileIterator(object):
 
         @staticmethod
         def _parseString(data, unusedLineName):
-            return data
+            return data if data is not None else ""
 
         @staticmethod
         def _updateDict(target, key, value):
