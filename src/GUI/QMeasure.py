@@ -146,16 +146,23 @@ class QMeasure(QtGui.QGraphicsItem):
     @_painter_saver
     def _paintHighlight(self, painter, xValues):
         noteTime, drumIndex = self._highlight
-        baseline = (self.numLines() - drumIndex - 1) * self._qScore.ySpacing + self._base + self.parentItem().alternateHeight()
+        baseline = self._base + self.parentItem().alternateHeight()
+        noteLine = (self.numLines() - drumIndex - 1) * self._qScore.ySpacing + self._base + self.parentItem().alternateHeight()
         countLine = (self.numLines() * self._qScore.ySpacing) + self._base + self.parentItem().alternateHeight()
         x = xValues[noteTime]
         painter.setPen(QtCore.Qt.NoPen)
         painter.setBrush(QtGui.QColor(QtCore.Qt.yellow).lighter())
-        painter.drawRect(x, baseline,
-                         self._qScore.xSpacing - 1, self._qScore.ySpacing - 1)
         painter.drawRect(x, countLine,
                          self._qScore.xSpacing - 1,
                          self._qScore.ySpacing - 1)
+        painter.drawRect(x, noteLine,
+                         self._qScore.xSpacing - 1,
+                         self._qScore.ySpacing - 1)
+        painter.setPen(QtGui.QColor(QtCore.Qt.blue).lighter())
+        painter.setBrush(QtCore.Qt.NoBrush)
+        painter.drawRect(x, baseline,
+                         self._qScore.xSpacing - 1,
+                         self.numLines() * self._qScore.ySpacing - 1)
         painter.setPen(self._qScore.palette().text().color())
 
     @_painter_saver
@@ -166,7 +173,7 @@ class QMeasure(QtGui.QGraphicsItem):
         for noteTime, count in enumerate(self._measure.count()):
             x = xValues[noteTime]
             br = fontMetric.tightBoundingRect(count)
-            left = x + (self._qScore.xSpacing - br.width()) / 2 - 2
+            left = x + (self._qScore.xSpacing - br.width()) / 2
             offset = br.y() - (self._qScore.ySpacing - br.height()) / 2
             painter.drawText(QtCore.QPointF(left, baseline - offset), count)
 
