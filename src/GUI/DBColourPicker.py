@@ -69,7 +69,7 @@ DEFAULT_NOTE_HIGHLIGHT = ColouredItem(QColor(QtCore.Qt.yellow).lighter(),
                                       "None",
                                       QColor(QtCore.Qt.NoPen))
 DEFAULT_TIME_HIGHLIGHT = ColouredItem(QColor(QtCore.Qt.transparent),
-                                      "Solid",
+                                      "Dashed",
                                       QColor(QtCore.Qt.blue).lighter())
 DEFAULT_SELECTED_MEASURE = ColouredItem(QColor(QtCore.Qt.gray).lighter(),
                                         "Solid",
@@ -100,8 +100,14 @@ class DBColourPicker(QDialog, Ui_ColourPicker):
     def __init__(self, colour_scheme, parent = None):
         super(DBColourPicker, self).__init__(parent)
         self.setupUi(self)
-        self._originalScheme = colour_scheme
+        self._originalScheme = copy.deepcopy(colour_scheme)
         self._currentScheme = copy.deepcopy(colour_scheme)
+        reset = self.buttonBox.button(self.buttonBox.Reset)
+        reset.clicked.connect(self.reset)
+        restore = self.buttonBox.button(self.buttonBox.RestoreDefaults)
+        restore.clicked.connect(self.restoreDefaults)
+        self._colourSelectors = []
+        self._lineSelectors = []
         for row, (colourName, colourRef) in enumerate(ColourScheme.iterColourNames()):
             label = QLabel(self)
             label.setText(colourName)
@@ -113,6 +119,7 @@ class DBColourPicker(QDialog, Ui_ColourPicker):
             self.gridLayout.addWidget(combo, row + 1, 2, 1, 1)
             lineButton = self._makeLineButton(colourRef)
             self.gridLayout.addWidget(lineButton, row + 1, 3, 1, 1)
+        self._setColourValues()
            
     @staticmethod
     def _styleButton(button, colour):
@@ -143,8 +150,7 @@ class DBColourPicker(QDialog, Ui_ColourPicker):
                     self._styleButton(button, selected)
                     setattr(self._getColourItem(colourRef), colourType, selected)
         button.clicked.connect(selectColour)
-        colour = getattr(self._getColourItem(colourRef), colourType)
-        self._styleButton(button, colour)
+        self._colourSelectors.append((button, colourRef, colourType))
 
     def _makeBackgroundButton(self, colourRef):
         backgroundButton = QPushButton(self)
@@ -155,16 +161,12 @@ class DBColourPicker(QDialog, Ui_ColourPicker):
     def _makeLineCombo(self, colourRef):
         combo = QComboBox(self)
         combo.setObjectName(colourRef + "border_style")
-        currentStyle = self._getColourItem(colourRef).borderStyle
-        selected = 0
         for lineStyle in STYLES:
-            if STYLE_MAP[lineStyle] == currentStyle:
-                selected = combo.count()
             combo.addItem(lineStyle)
-        combo.setCurrentIndex(selected)
         def setLineStyle(new_index):
             self._getColourItem(colourRef).borderStyle = STYLES[new_index]
         combo.currentIndexChanged.connect(setLineStyle)
+        self._lineSelectors.append((combo, colourRef))
         return combo
 
     def _makeLineButton(self, colourRef):
@@ -175,6 +177,24 @@ class DBColourPicker(QDialog, Ui_ColourPicker):
 
     def getColourScheme(self):
         return self._currentScheme
+
+    def _setColourValues(self):
+        for button, colourRef, colourType in self._colourSelectors:
+            colour = getattr(self._getColourItem(colourRef), colourType)
+            self._styleButton(button, colour)
+        for combo, colourRef in self._lineSelectors:
+            currentStyle = self._getColourItem(colourRef).borderStyle
+            for selected, lineStyle in enumerate(STYLES):
+                if STYLE_MAP[lineStyle] == currentStyle:
+                    combo.setCurrentIndex(selected)
+
+    def reset(self):
+        self._currentScheme = copy.deepcopy(self._originalScheme)
+        self._setColourValues()
+
+    def restoreDefaults(self):
+        self._currentScheme = copy.deepcopy(ColourScheme())
+        self._setColourValues()
 
 def main():
     from PyQt4.QtGui import QApplication
