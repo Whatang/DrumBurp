@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\mike_000\workspace\DrumBurp\src\GUI\dbStartup.ui'
 #
-# Created: Sun Feb 22 11:31:19 2015
+# Created: Sun Feb 22 13:48:02 2015
 #      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!

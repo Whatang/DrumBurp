@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\mike_000\workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Tue May 06 00:22:49 2014
+# Created: Sun Feb 22 15:47:08 2015
 #      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_DrumBurpWindow(object):
     def setupUi(self, DrumBurpWindow):
         DrumBurpWindow.setObjectName(_fromUtf8("DrumBurpWindow"))
-        DrumBurpWindow.resize(1012, 769)
+        DrumBurpWindow.resize(1154, 769)
         DrumBurpWindow.setFocusPolicy(QtCore.Qt.NoFocus)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/drumburp.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -172,7 +172,7 @@ class Ui_DrumBurpWindow(object):
         self.verticalLayout.addWidget(self.scoreView)
         DrumBurpWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(DrumBurpWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1012, 26))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1154, 31))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
@@ -525,6 +525,8 @@ class Ui_DrumBurpWindow(object):
         icon29.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/accessories-calculator.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionShowMeasureCounts.setIcon(icon29)
         self.actionShowMeasureCounts.setObjectName(_fromUtf8("actionShowMeasureCounts"))
+        self.actionEditColours = QtGui.QAction(DrumBurpWindow)
+        self.actionEditColours.setObjectName(_fromUtf8("actionEditColours"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.menuRecentScores.menuAction())
@@ -552,6 +554,7 @@ class Ui_DrumBurpWindow(object):
         self.menuView.addAction(self.actionShowBeatCount)
         self.menuView.addAction(self.actionShowMeasureCounts)
         self.menuView.addSeparator()
+        self.menuView.addAction(self.actionEditColours)
         self.menuView.addAction(self.actionDisplayOptionsIsVisible)
         self.menuView.addAction(self.menuShowToolBars.menuAction())
         self.menuEdit.addAction(self.actionUndo)
@@ -983,6 +986,8 @@ class Ui_DrumBurpWindow(object):
         self.actionShowMeasureCounts.setToolTip(_translate("DrumBurpWindow", "Show/Hide Measure Indexes", None))
         self.actionShowMeasureCounts.setStatusTip(_translate("DrumBurpWindow", "Show/Hide Measure Indexes", None))
         self.actionShowMeasureCounts.setWhatsThis(_translate("DrumBurpWindow", "Show/Hide Measure Indexes", None))
+        self.actionEditColours.setText(_translate("DrumBurpWindow", "Edit &Colours", None))
+        self.actionEditColours.setToolTip(_translate("DrumBurpWindow", "Edit the colours DrumBurp uses", None))
 
 from Widgets.ScoreView_plugin import ScoreView
 import DrumBurp_rc

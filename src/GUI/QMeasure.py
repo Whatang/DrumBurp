@@ -109,6 +109,15 @@ class QMeasure(QtGui.QGraphicsItem):
             self._setDimensions()
             self.update()
 
+    def _colourScheme(self):
+        return self._qScore.parent().colourScheme
+
+    def _setPainterColour(self, painter, colourItem):
+        pen = QtGui.QPen(colourItem.borderStyle)
+        pen.setColor(colourItem.borderColour)
+        painter.setPen(pen)
+        painter.setBrush(colourItem.backgroundColour)
+
     @_painter_saver
     def _paintNotes(self, painter, xValues):
         font = painter.font()
@@ -150,16 +159,15 @@ class QMeasure(QtGui.QGraphicsItem):
         noteLine = (self.numLines() - drumIndex - 1) * self._qScore.ySpacing + self._base + self.parentItem().alternateHeight()
         countLine = (self.numLines() * self._qScore.ySpacing) + self._base + self.parentItem().alternateHeight()
         x = xValues[noteTime]
-        painter.setPen(QtCore.Qt.NoPen)
-        painter.setBrush(QtGui.QColor(QtCore.Qt.yellow).lighter())
+        scheme = self._colourScheme()
+        self._setPainterColour(painter, scheme.noteHighlight)
         painter.drawRect(x, countLine,
                          self._qScore.xSpacing - 1,
                          self._qScore.ySpacing - 1)
         painter.drawRect(x, noteLine,
                          self._qScore.xSpacing - 1,
                          self._qScore.ySpacing - 1)
-        painter.setPen(QtGui.QColor(QtCore.Qt.blue).lighter())
-        painter.setBrush(QtCore.Qt.NoBrush)
+        self._setPainterColour(painter, scheme.timeHighlight)
         painter.drawRect(x, baseline,
                          self._qScore.xSpacing - 1,
                          self.numLines() * self._qScore.ySpacing - 1)
@@ -213,8 +221,8 @@ class QMeasure(QtGui.QGraphicsItem):
 
     @_painter_saver
     def _paintPlayingHighlight(self, painter):
-        painter.setBrush(QtCore.Qt.NoBrush)
-        painter.setPen(QtCore.Qt.blue)
+        scheme = self._colourScheme()
+        self._setPainterColour(painter, scheme.playingHighlight)
         painter.drawRect(-1, -1, self.width() + 1, self.height() + 1)
         painter.setPen(QtGui.QColor(QtCore.Qt.blue).lighter())
         painter.drawRect(0, 0, self.width() - 1, self.height() - 1)
@@ -227,13 +235,17 @@ class QMeasure(QtGui.QGraphicsItem):
         painter.setFont(font)
         painter.drawText(1, self._base - 2, "%d" % (1 + self._measureCount))
 
+
+    @_painter_saver
+    def _paintDragHighlight(self, painter):
+        scheme = self._colourScheme()
+        self._setPainterColour(painter, scheme.selectedMeasure)
+        painter.drawRect(self._rect)
+
     def paint(self, painter, dummyOption, dummyWidget = None):
         painter.save()
         if self._dragHighlight:
-            color = QtGui.QColor(QtCore.Qt.gray).lighter()
-            painter.setBrush(color)
-            painter.setPen(color)
-            painter.drawRect(self._rect)
+            self._paintDragHighlight(painter)
         painter.setPen(QtCore.Qt.SolidLine)
         font = self._props.noteFont
         if font is None:
