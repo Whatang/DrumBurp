@@ -97,26 +97,31 @@ def lilyDuration(beat, ticks):
     if ticks == beat.numTicks:
         dur = "4"
     elif beat.numTicks % 3 == 0:
-        if ticks * 6 == 5 * beat.numTicks:
-            raise FiveSixthsProblem()
-        elif ticks * 3 == 2 * beat.numTicks:
-            dur = "@4"
-        elif ticks * 2 == beat.numTicks:
-            dur = "@8."
-        elif ticks * 3 == beat.numTicks:
-            dur = "@8"
-        elif ticks * 6 == beat.numTicks:
-            dur = "@16"
-        elif ticks * 12 == beat.numTicks:
+        if ticks * 12 == beat.numTicks:  # 1/12
             dur = "@32"
-        elif ticks * 4 == beat.numTicks:
+        elif ticks * 6 == beat.numTicks:  # 2/12
+            dur = "@16"
+        elif ticks * 4 == beat.numTicks:  # 3/12
             dur = "@16."
-        elif ticks * 12 == 5 * beat.numTicks:
-            raise FiveTwelfthsProblem()
-        elif ticks * 12 == 7 * beat.numTicks:
-            raise SevenTwelfthsProblem()
-        elif ticks * 12 == 11 * beat.numTicks:
-            raise ElevenTwelfthsProblem()
+        elif ticks * 3 == beat.numTicks:  # 4/12
+            dur = "@8"
+        elif ticks * 12 == 5 * beat.numTicks:  # 5/12
+            dur = "@8,32"
+            # raise FiveTwelfthsProblem()
+        elif ticks * 2 == beat.numTicks:  # 6/12
+            dur = "@8."
+        elif ticks * 12 == 7 * beat.numTicks:  # 7/12
+            dur = "@8.,32"
+            # raise SevenTwelfthsProblem()
+        elif ticks * 3 == 2 * beat.numTicks:  # 8/12
+            dur = "@4"
+        elif ticks * 4 == 3 * beat.numTicks:  # 9/12
+            dur = "@4,32"
+        elif ticks * 6 == 5 * beat.numTicks:  # 10/12
+            dur = "@4,16"
+            # raise FiveSixthsProblem()
+        elif ticks * 12 == 11 * beat.numTicks:  # 11/12
+            dur = "@4,16."
     else:
         if 2 * ticks == beat.numTicks:
             dur = "8"
@@ -129,9 +134,11 @@ def lilyDuration(beat, ticks):
         elif 8 * ticks == 3 * beat.numTicks:
             dur = "16."
         elif 8 * ticks == 5 * beat.numTicks:
-            raise FiveEighthsProblem()
+            dur = "8,32"
+            # raise FiveEighthsProblem()
         elif 8 * ticks == 7 * beat.numTicks:
-            raise SevenEighthsProblem()
+            dur = "8.,32"
+            # raise SevenEighthsProblem()
     return dur
 
 
@@ -231,6 +238,9 @@ class LilyMeasure(object):
             isTriplet = False
             for noteTime in timeList[:-1]:
                 dur = durations[direction][noteTime]
+                restTime = None
+                if "," in dur:
+                    dur, restTime = dur.split(",", 1)
                 if dur.startswith("@"):
                     dur = dur[1:]
                     if not isTriplet:
@@ -263,6 +273,8 @@ class LilyMeasure(object):
                     wholeRests[direction][noteTime] = len(voice)
                 voice.append(self._makeNoteString(lNotes[noteTime])
                              + dur + accent)
+                if restTime:
+                    voice.append("r" + restTime)
             if isTriplet:
                 voice.append("}")
         return wholeRests
