@@ -71,22 +71,25 @@ class LilypondProblem(RuntimeError):
 class TripletsProblem(LilypondProblem):
     "DrumBurp cannot yet set triplets in Lilypond"
 
-class FiveSixthsProblem(LilypondProblem):
+class BadNoteDuration(LilypondProblem):
+    "Cannot handle this note duration"
+
+class FiveSixthsProblem(BadNoteDuration):
     "DrumBurp cannot set notes of length 5/6 beat."
 
-class FiveEighthsProblem(LilypondProblem):
+class FiveEighthsProblem(BadNoteDuration):
     "DrumBurp cannot set notes of length 5/8 beat."
 
-class SevenEighthsProblem(LilypondProblem):
+class SevenEighthsProblem(BadNoteDuration):
     "DrumBurp cannot set notes of length 7/8 beat."
 
-class FiveTwelfthsProblem(LilypondProblem):
+class FiveTwelfthsProblem(BadNoteDuration):
     "DrumBurp cannot set notes of length 5/12 beat."
 
-class SevenTwelfthsProblem(LilypondProblem):
+class SevenTwelfthsProblem(BadNoteDuration):
     "DrumBurp cannot set notes of length 7/12 beat."
 
-class ElevenTwelfthsProblem(LilypondProblem):
+class ElevenTwelfthsProblem(BadNoteDuration):
     "DrumBurp cannot set notes of length 11/12 beat."
 
 def lilyDuration(beat, ticks):
@@ -175,9 +178,13 @@ class LilyMeasure(object):
             durationDict = {}
             for thisTime, nextTime in zip(timeList[:-1],
                 timeList[1:]):
-                unusedBeatNum, beat, tick_ = self._beats[thisTime]
+                beatNum, beat, tick_ = self._beats[thisTime]
                 numTicks = nextTime - thisTime
-                durationDict[thisTime] = lilyDuration(beat, numTicks)
+                try:
+                    durationDict[thisTime] = lilyDuration(beat, numTicks)
+                except BadNoteDuration:
+                    print(beatNum, beat, tick_, numTicks)
+                    raise
             durations[direction] = durationDict
         return durations
 
