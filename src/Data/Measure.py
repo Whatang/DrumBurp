@@ -28,6 +28,7 @@ from DBConstants import EMPTY_NOTE, BAR_TYPES
 from DBErrors import BadTimeError, TooManyBarLines
 from NotePosition import NotePosition
 from Data import MeasureCount
+from Data import Counter
 import copy
 
 class _NoteDictionary(object):
@@ -417,3 +418,19 @@ class Measure(object):
             section.readCallback("BEATLENGTH", self._makeOldMeasure)
             section.readPositiveInteger("REPEAT_COUNT", self, "repeatCount")
             section.readString("ALTERNATE", self, "alternateText")
+
+    def getSmallestSimpleCount(self):
+        if not self.counter.isSimpleCount():
+            return None
+        numBeats = self.counter.numBeats()
+        maxLen = len(self)
+        newCount = None
+        for _, count in Counter.DEFAULT_REGISTRY:
+            if len(count) * numBeats >= maxLen:
+                continue
+            mcount = MeasureCount.makeSimpleCount(count, numBeats)
+            newMeasure = self.copyMeasure()
+            newMeasure.setBeatCount(mcount)
+            if self.numNotes() == newMeasure.numNotes():
+                newCount = mcount
+        return newCount

@@ -158,5 +158,5 @@ class CounterRegistry(object):
         return self._counts[self._names[index]]
 
 
-
+DEFAULT_REGISTRY = CounterRegistry()
 

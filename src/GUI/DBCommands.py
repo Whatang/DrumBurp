@@ -22,6 +22,7 @@ Created on 13 Feb 2011
 @author: Mike Thomas
 '''
 from PyQt4.QtGui import QUndoCommand
+import functools
 import DBMidi
 from Data import DBConstants
 from Data.NotePosition import NotePosition
@@ -51,6 +52,17 @@ class ScoreCommand(QUndoCommand):
 
     def _redo(self):
         raise NotImplementedError()
+
+    @staticmethod
+    def suspendCallbacks(method):
+        @functools.wraps(method)
+        def wrapper(self, *args, **kwargs):
+            try:
+                self._score.turnOffCallBacks()
+                return method(self, *args, **kwargs)
+            finally:
+                self._score.turnOnCallBacks()
+        return wrapper
 
 class CheckUndo(ScoreCommand):
     def __init__(self, qScore):
@@ -384,6 +396,30 @@ class EditMeasurePropertiesCommand(ScoreCommand):
         self._score.pasteMeasureByIndex(self._measureIndex, self._oldMeasure,
                                         True)
 
+class ContractMeasureCountCommand(ScoreCommand):
+    def __init__(self, qScore, note):
+        name = "contract measure count"
+        super(ContractMeasureCountCommand, self).__init__(qScore, note, name)
+        self._measureIndex = self._score.getMeasureIndex(note)
+        self._oldCount = None
+
+    @ScoreCommand.suspendCallbacks
+    def _redo(self):
+        measure = self._score.getMeasure(self._measureIndex)
+        self._oldCount = measure.counter
+        newCount = measure.getSmallestSimpleCount()
+        if newCount is not None:
+            measure.setBeatCount(newCount)
+            self._qScore.reBuild()
+
+
+    @ScoreCommand.suspendCallbacks
+    def _undo(self):
+        self._score.turnOffCallBacks()
+        measure = self._score.getMeasure(self._measureIndex)
+        measure.setBeatCount(self._oldCount)
+        self._qScore.reBuild()
+
 class SetMeasureLineCommand(ScoreCommand):
     def __init__(self, qScore, descr, note, onOff, method):
         super(SetMeasureLineCommand, self).__init__(qScore, note,
@@ -495,20 +531,17 @@ class DeleteMeasureCommand(ScoreCommand):
         if self._sectionIndex:
             self._qScore.sectionsChanged.emit()
 
+    @ScoreCommand.suspendCallbacks
     def _undo(self):
-        self._score.turnOffCallBacks()
-        try:
-            self._score.insertMeasureByIndex(len(self._oldMeasure), self._index)
+        self._score.insertMeasureByIndex(len(self._oldMeasure), self._index)
+        self._score.formatScore()
+        if self._sectionIndex is not None:
+            self._score.setSectionEnd(self._np, True)
+            self._score.setSectionTitle(self._sectionIndex,
+                                        self._sectionTitle)
             self._score.formatScore()
-            if self._sectionIndex is not None:
-                self._score.setSectionEnd(self._np, True)
-                self._score.setSectionTitle(self._sectionIndex,
-                                            self._sectionTitle)
-                self._score.formatScore()
-                self._qScore.sectionsChanged.emit()
-            self._score.pasteMeasureByIndex(self._index, self._oldMeasure, True)
-        finally:
-            self._score.turnOnCallBacks()
+            self._qScore.sectionsChanged.emit()
+        self._score.pasteMeasureByIndex(self._index, self._oldMeasure, True)
 
 class SetSectionTitleCommand(ScoreCommand):
     canReformat = False

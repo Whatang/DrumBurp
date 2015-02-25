@@ -29,7 +29,7 @@ import DBIcons
 from Data import DBConstants
 from DBCommands import (InsertMeasuresCommand,
                         InsertSectionCommand, DeleteMeasureCommand,
-                        SetAlternateCommand)
+                        SetAlternateCommand, ContractMeasureCountCommand)
 from QInsertMeasuresDialog import QInsertMeasuresDialog
 from DBFSMEvents import MenuSelect, RepeatNotes, EditMeasureProperties
 
@@ -83,6 +83,10 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                                          self._insertOneMeasure)
         pasteAction.setEnabled(len(self._qScore.measureClipboard) > 0)
         self.addAction("Edit Measure Count", self._editMeasureCount)
+        contractAction = self.addAction("Contract Count", self._contractCount)
+        index = self._qScore.score.getMeasureIndex(self._np)
+        measure = self._qScore.score.getMeasure(index)
+        contractAction.setEnabled(measure.getSmallestSimpleCount() != None)
         self.addSeparator()
 
     def _setupInsertSection(self, score):
@@ -129,6 +133,12 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
 
     def _repeatNote(self):
         self._qScore.sendFsmEvent(RepeatNotes())
+
+    def _contractCount(self):
+        command = ContractMeasureCountCommand(self._qScore, self._np)
+        self._qScore.clearDragSelection()
+        self._qScore.addCommand(command)
+        self._qScore.sendFsmEvent(MenuSelect())
 
     def _editMeasureCount(self):
         measurePosition = self._qmeasure.measurePosition()
