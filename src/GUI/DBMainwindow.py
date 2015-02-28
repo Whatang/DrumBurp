@@ -80,7 +80,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.paperBox.blockSignals(True)
         self.paperBox.clear()
         self._knownPageHeights = []
-        self._exporrter = None
+        self._exporter = None
         self.lilyPath = None
         self.colourScheme = DBColourPicker.ColourScheme()
         printer = QPrinter()
