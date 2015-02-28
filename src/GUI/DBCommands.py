@@ -415,9 +415,32 @@ class ContractMeasureCountCommand(ScoreCommand):
 
     @ScoreCommand.suspendCallbacks
     def _undo(self):
-        self._score.turnOffCallBacks()
         measure = self._score.getMeasure(self._measureIndex)
         measure.setBeatCount(self._oldCount)
+        self._qScore.reBuild()
+
+class ContractAllMeasureCountsCommand(ScoreCommand):
+    def __init__(self, qScore, note):
+        name = "contract all measure counts"
+        super(ContractAllMeasureCountsCommand, self).__init__(qScore, note,
+                                                              name)
+        self._newCounts = [measure.getSmallestSimpleCount() for measure in
+                           self._score.iterMeasures()]
+        self._oldCounts = [measure.counter for measure in 
+                           self._score.iterMeasures()]
+
+    @ScoreCommand.suspendCallbacks
+    def _redo(self):
+        for measure, count in zip(self._score.iterMeasures(), self._newCounts):
+            if count is not None:
+                measure.setBeatCount(count)
+        self._qScore.reBuild()
+
+    @ScoreCommand.suspendCallbacks
+    def _undo(self):
+        for measure, count in zip(self._score.iterMeasures(), self._oldCounts):
+            if count is not None:
+                measure.setBeatCount(count)
         self._qScore.reBuild()
 
 class SetMeasureLineCommand(ScoreCommand):

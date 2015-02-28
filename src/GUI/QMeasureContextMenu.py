@@ -29,7 +29,8 @@ import DBIcons
 from Data import DBConstants
 from DBCommands import (InsertMeasuresCommand,
                         InsertSectionCommand, DeleteMeasureCommand,
-                        SetAlternateCommand, ContractMeasureCountCommand)
+                        SetAlternateCommand, ContractMeasureCountCommand,
+                        ContractAllMeasureCountsCommand)
 from QInsertMeasuresDialog import QInsertMeasuresDialog
 from DBFSMEvents import MenuSelect, RepeatNotes, EditMeasureProperties
 
@@ -87,6 +88,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         index = self._qScore.score.getMeasureIndex(self._np)
         measure = self._qScore.score.getMeasure(index)
         contractAction.setEnabled(measure.getSmallestSimpleCount() != None)
+        self.addAction("Contract All Counts", self._contractAllCounts)
         self.addSeparator()
 
     def _setupInsertSection(self, score):
@@ -136,6 +138,12 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
 
     def _contractCount(self):
         command = ContractMeasureCountCommand(self._qScore, self._np)
+        self._qScore.clearDragSelection()
+        self._qScore.addCommand(command)
+        self._qScore.sendFsmEvent(MenuSelect())
+
+    def _contractAllCounts(self):
+        command = ContractAllMeasureCountsCommand(self._qScore, self._np)
         self._qScore.clearDragSelection()
         self._qScore.addCommand(command)
         self._qScore.sendFsmEvent(MenuSelect())
