@@ -491,7 +491,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
          <widget class="QGraphicsView" name="lilyPreview"/>
         </item>
         <item>
-         <widget class="QFrame" name="frame_3">
+         <widget class="QFrame" name="lilyPreviewControls">
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
           </property>

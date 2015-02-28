@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\mike_000\workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sat Feb 28 11:59:06 2015
+# Created: Sat Feb 28 13:36:53 2015
 #      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -193,29 +193,29 @@ class Ui_DrumBurpWindow(object):
         self.lilyPreview = QtGui.QGraphicsView(self.lilypondTab)
         self.lilyPreview.setObjectName(_fromUtf8("lilyPreview"))
         self.verticalLayout_4.addWidget(self.lilyPreview)
-        self.frame_3 = QtGui.QFrame(self.lilypondTab)
-        self.frame_3.setFrameShape(QtGui.QFrame.NoFrame)
-        self.frame_3.setFrameShadow(QtGui.QFrame.Raised)
-        self.frame_3.setObjectName(_fromUtf8("frame_3"))
-        self.horizontalLayout = QtGui.QHBoxLayout(self.frame_3)
+        self.lilyPreviewControls = QtGui.QFrame(self.lilypondTab)
+        self.lilyPreviewControls.setFrameShape(QtGui.QFrame.NoFrame)
+        self.lilyPreviewControls.setFrameShadow(QtGui.QFrame.Raised)
+        self.lilyPreviewControls.setObjectName(_fromUtf8("lilyPreviewControls"))
+        self.horizontalLayout = QtGui.QHBoxLayout(self.lilyPreviewControls)
         self.horizontalLayout.setMargin(0)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.firstLilyPage = QtGui.QPushButton(self.frame_3)
+        self.firstLilyPage = QtGui.QPushButton(self.lilyPreviewControls)
         self.firstLilyPage.setObjectName(_fromUtf8("firstLilyPage"))
         self.horizontalLayout.addWidget(self.firstLilyPage)
-        self.prevLilyPage = QtGui.QPushButton(self.frame_3)
+        self.prevLilyPage = QtGui.QPushButton(self.lilyPreviewControls)
         self.prevLilyPage.setObjectName(_fromUtf8("prevLilyPage"))
         self.horizontalLayout.addWidget(self.prevLilyPage)
-        self.refreshLilypond = QtGui.QPushButton(self.frame_3)
+        self.refreshLilypond = QtGui.QPushButton(self.lilyPreviewControls)
         self.refreshLilypond.setObjectName(_fromUtf8("refreshLilypond"))
         self.horizontalLayout.addWidget(self.refreshLilypond)
-        self.nextLilyPage = QtGui.QPushButton(self.frame_3)
+        self.nextLilyPage = QtGui.QPushButton(self.lilyPreviewControls)
         self.nextLilyPage.setObjectName(_fromUtf8("nextLilyPage"))
         self.horizontalLayout.addWidget(self.nextLilyPage)
-        self.lastLilyPage = QtGui.QPushButton(self.frame_3)
+        self.lastLilyPage = QtGui.QPushButton(self.lilyPreviewControls)
         self.lastLilyPage.setObjectName(_fromUtf8("lastLilyPage"))
         self.horizontalLayout.addWidget(self.lastLilyPage)
-        self.verticalLayout_4.addWidget(self.frame_3)
+        self.verticalLayout_4.addWidget(self.lilyPreviewControls)
         self.tabWidget.addTab(self.lilypondTab, _fromUtf8(""))
         self.verticalLayout.addWidget(self.tabWidget)
         self.frame_2 = QtGui.QFrame(self.centralwidget)

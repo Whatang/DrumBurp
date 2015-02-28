@@ -5,7 +5,7 @@ Created on Feb 28, 2015
 '''
 from PyQt4.Qt import QThread
 import subprocess
-import os.path
+import platform
 
 class LilypondExporter(QThread):
     '''
@@ -27,7 +27,8 @@ class LilypondExporter(QThread):
         self._onFinish = onFinish
         self._lilypondPath = unicode(lilypondPath)
         self._format = self._toFormatString(lilyFormat)
-        self._status = self.NOT_STARTED 
+        self._status = self.NOT_STARTED
+        self.returnCode = 0
 
     def get_status(self):
         return self._status
@@ -57,11 +58,19 @@ class LilypondExporter(QThread):
                     raise
             self._status = self.WROTE_LY
             if self._lilypondPath is not None:
+                kwargs = {}
+                if platform.system() == "Windows":
+                    suInfo = subprocess.STARTUPINFO()
+                    suInfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+                    suInfo.wShowWindow = subprocess.SW_HIDE
+                    kwargs['startupinfo'] = suInfo
                 returnCode = subprocess.call([self._lilypondPath,
                                               '-s',
                                               '-o', self._processedPath,
                                               '-f', self._format,
-                                              self._outputPath])
+                                              self._outputPath],
+                                             **kwargs)
+                self.returnCode = returnCode
                 if returnCode == 0:
                     self._status = self.SUCCESS
                 else:
