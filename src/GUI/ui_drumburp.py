@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\mike_000\workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sat Feb 28 10:40:30 2015
+# Created: Sat Feb 28 11:44:03 2015
 #      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -161,12 +161,15 @@ class Ui_DrumBurpWindow(object):
         self.gridLayout.addWidget(self.lilyFillButton, 0, 2, 1, 1)
         self.exportLilypondButton = QtGui.QPushButton(self.lilypondGroupBox)
         self.exportLilypondButton.setObjectName(_fromUtf8("exportLilypondButton"))
-        self.gridLayout.addWidget(self.exportLilypondButton, 0, 4, 1, 1)
+        self.gridLayout.addWidget(self.exportLilypondButton, 0, 5, 1, 1)
         self.lilyPagesBox = QtGui.QSpinBox(self.lilypondGroupBox)
         self.lilyPagesBox.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.lilyPagesBox.setMaximum(1000)
         self.lilyPagesBox.setObjectName(_fromUtf8("lilyPagesBox"))
         self.gridLayout.addWidget(self.lilyPagesBox, 0, 0, 1, 1)
+        self.lilypondPathButton = QtGui.QPushButton(self.lilypondGroupBox)
+        self.lilypondPathButton.setObjectName(_fromUtf8("lilypondPathButton"))
+        self.gridLayout.addWidget(self.lilypondPathButton, 0, 4, 1, 1)
         self.lilypondSize = QtGui.QSpinBox(self.lilypondGroupBox)
         self.lilypondSize.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.lilypondSize.setMinimum(8)
@@ -646,7 +649,7 @@ class Ui_DrumBurpWindow(object):
         self.MIDIToolBar.addAction(self.actionMuteNotes)
 
         self.retranslateUi(DrumBurpWindow)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QObject.connect(self.actionFileToolbarIsVisible, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.fileToolBar.setVisible)
         QtCore.QObject.connect(self.fileToolBar, QtCore.SIGNAL(_fromUtf8("visibilityChanged(bool)")), self.actionFileToolbarIsVisible.setChecked)
         QtCore.QObject.connect(self.displayToolBar, QtCore.SIGNAL(_fromUtf8("visibilityChanged(bool)")), self.actionDisplayToolBarIsVisible.setChecked)
@@ -754,6 +757,7 @@ class Ui_DrumBurpWindow(object):
         self.lilyPagesBox.setStatusTip(_translate("DrumBurpWindow", "Force Lilypond to write this score to a given number of pages. (0 lets Lilypond decide)", None))
         self.lilyPagesBox.setWhatsThis(_translate("DrumBurpWindow", "<html><head/><body><p>Set this value to force Lilypond export to fit on the given number of pages.</p><p><br/></p><p>If the value is zero then Lilypond will set the score on as many pages as it wants.</p></body></html>", None))
         self.lilyPagesBox.setSuffix(_translate("DrumBurpWindow", " pages", None))
+        self.lilypondPathButton.setText(_translate("DrumBurpWindow", "Lilypond Path", None))
         self.lilypondSize.setToolTip(_translate("DrumBurpWindow", "Lilypond export size", None))
         self.lilypondSize.setStatusTip(_translate("DrumBurpWindow", "Change the size of Lilypond export.", None))
         self.lilypondSize.setWhatsThis(_translate("DrumBurpWindow", "Lilypond allows one to set a global size which affects how big the staves, notes, and text in a score are. It defaults to 20. By altering this parameter, one can make the output of a Lilypond exported DrumBurp score bigger or smaller.", None))

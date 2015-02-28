@@ -899,11 +899,12 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.colourScheme = dialog.getColourScheme()
 
 
-    def _checkLilypondPath(self):
-        if self.lilyPath is None or not os.path.exists(self.lilyPath):
+    def _checkLilypondPath(self, existing = None):
+        if self.lilyPath is None or not os.path.exists(self.lilyPath) or existing is not None:
             caption = "Please select path to Lilypond executable"
             path = QFileDialog.getOpenFileName(parent = self,
-                                               caption = caption)
+                                               caption = caption,
+                                               directory = existing)
             if path is None:
                 return
             if not os.path.exists(path):
@@ -918,7 +919,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             return
         self._checkLilypondPath()
 
-
+    @pyqtSignature("")
+    def on_lilypondPathButton_clicked(self):
+        self._checkLilypondPath(self.lilyPath)
 
 class VersionCheckThread(QThread):
     def __init__(self, parent = None):
