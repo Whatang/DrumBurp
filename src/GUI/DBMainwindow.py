@@ -30,7 +30,8 @@ from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QPrintPreviewDialog, QWhatsThis,
                          QPrinterInfo, QLabel, QFrame,
                          QPrinter, QDesktopServices)
-from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer, QThread
+from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer, QThread, \
+    pyqtSignal
 from QScore import QScore
 from QDisplayProperties import QDisplayProperties
 from QNewScoreDialog import QNewScoreDialog
@@ -47,6 +48,7 @@ from DBFSMEvents import StartPlaying, StopPlaying
 from DBVersion import APPNAME, DB_VERSION, doesNewerVersionExist
 from Notation.lilypond import LilypondScore, LilypondProblem
 from Notation import AsciiExport
+from LilypondExporter import LilypondExporter
 # pylint:disable-msg=R0904
 
 class FakeQSettings(object):
@@ -62,6 +64,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     classdocs
     '''
 
+    exporterDone = pyqtSignal(unicode)
+
     def __init__(self, parent = None, fakeStartup = False, filename = None):
         '''
         Constructor
@@ -76,6 +80,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.paperBox.blockSignals(True)
         self.paperBox.clear()
         self._knownPageHeights = []
+        self._exporrter = None
         self.lilyPath = None
         self.colourScheme = DBColourPicker.ColourScheme()
         printer = QPrinter()
@@ -162,6 +167,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         props.beatCountVisibleChanged.connect(self._setBeatCountVisible)
         DBMidi.SONGEND_SIGNAL.connect(self.musicDone)
         DBMidi.HIGHLIGHT_SIGNAL.connect(self.highlightPlayingMeasure)
+        self.exporterDone.connect(self._finishLilyExport)
 
     def _initializeState(self):
         props = self.songProperties
@@ -610,14 +616,29 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 if len(fname) == 0:
                     return
                 fname = unicode(fname)
-                with open(fname, 'w') as handle:
-                    handle.write(lilyBuffer.getvalue().encode('utf-8'))
+                self._exporter = LilypondExporter(lilyBuffer.getvalue(), fname,
+                                                  self.lilyPath,
+                                                  self.scoreScene.score.lilyFormat,
+                                                  lambda : self.exporterDone.emit(fname),
+                                                  self)
+                self._exporter.start()
             except StandardError:
                 QMessageBox.warning(self.parent(), "Export failed!",
                                     "Could not export Lilypond")
                 raise
-            else:
-                self.updateStatus("Successfully exported Lilypond to " + fname)
+
+    def _finishLilyExport(self, fname):
+        status = self._exporter.get_status()
+        if status == self._exporter.SUCCESS:
+            self.updateStatus("Successfully ran Lilypond on %s" % fname)
+        elif status == self._exporter.WROTE_LY:
+            self.updateStatus("Successfully exported Lilypond to " + fname)
+        elif status == self._exporter.ERROR_IN_WRITING_LY:
+            QMessageBox.warning(self.parent(), "Export failed!",
+                                "Could not write Lilypond score to " + fname)
+        elif status == self._exporter.ERROR_IN_RUNNING_LY:
+            QMessageBox.warning(self.parent(), "Export failed!",
+                                "Could not run Lilypond on " + fname)
 
     @staticmethod
     @pyqtSignature("")
