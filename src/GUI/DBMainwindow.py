@@ -621,11 +621,18 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 if len(fname) == 0:
                     return
                 fname = unicode(fname)
+                if self._exporter is not None:
+                    if self._exporter.isRunning():
+                        QMessageBox.warning(self.parent(), "Still exporting",
+                                            "Cannot export now - previous export is still in progress")
+                        return
                 self._exporter = LilypondExporter(lilyBuffer.getvalue(), fname,
                                                   self.lilyPath,
                                                   self.scoreScene.score.lilyFormat,
                                                   lambda : self.exporterDone.emit(fname),
                                                   self)
+                self.actionExportLilypond.setEnabled(False)
+                self.lilypondGroupBox.setEnabled(False)
                 self._exporter.start()
             except StandardError:
                 QMessageBox.warning(self.parent(), "Export failed!",
@@ -633,6 +640,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 raise
 
     def _finishLilyExport(self, fname):
+        self.actionExportLilypond.setEnabled(True)
+        self.lilypondGroupBox.setEnabled(True)
         status = self._exporter.get_status()
         if status == self._exporter.SUCCESS:
             self.updateStatus("Successfully ran Lilypond on %s" % fname)
@@ -644,6 +653,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         elif status == self._exporter.ERROR_IN_RUNNING_LY:
             QMessageBox.warning(self.parent(), "Export failed!",
                                 "Could not run Lilypond on " + fname)
+
 
     @staticmethod
     @pyqtSignature("")
