@@ -76,6 +76,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.paperBox.blockSignals(True)
         self.paperBox.clear()
         self._knownPageHeights = []
+        self.lilyPath = None
         self.colourScheme = DBColourPicker.ColourScheme()
         printer = QPrinter()
         printer.setOutputFileName("invalid.pdf")
@@ -89,6 +90,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self._pageHeight = printer.paperRect().height()
         self.paperBox.blockSignals(False)
         settings = self._makeQSettings()
+        self.lilyPath = settings.value("LilypondPath").toString()
         self.recentFiles = [unicode(fname) for fname in
                             settings.value("RecentFiles").toStringList()
                             if os.path.exists(unicode(fname))]
@@ -330,6 +332,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                               QVariant(self.saveState()))
             settings.setValue("CheckOnStartup",
                               QVariant(self.actionCheckOnStartup.isChecked()))
+            settings.setValue("LilypondPath",
+                              QVariant(self.lilyPath))
             self._writeColours(settings)
             self.songProperties.save(settings)
             self._versionThread.exit()
@@ -568,6 +572,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionExportLilypond_triggered(self):
+        self._checkLilypondPath()
         lilyBuffer = StringIO()
         try:
             lyScore = LilypondScore(self.scoreScene.score)
@@ -892,6 +897,28 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if not dialog.exec_():
             return
         self.colourScheme = dialog.getColourScheme()
+
+
+    def _checkLilypondPath(self):
+        if self.lilyPath is None or not os.path.exists(self.lilyPath):
+            caption = "Please select path to Lilypond executable"
+            path = QFileDialog.getOpenFileName(parent = self,
+                                               caption = caption)
+            if path is None:
+                return
+            if not os.path.exists(path):
+                return
+            self.lilyPath = path
+
+
+    @pyqtSignature("int")
+    def on_tabWidget_currentChanged(self, tabIndex):
+        tabText = self.tabWidget.tabText(tabIndex)
+        if tabText != "Lilypond":
+            return
+        self._checkLilypondPath()
+
+
 
 class VersionCheckThread(QThread):
     def __init__(self, parent = None):
