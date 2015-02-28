@@ -349,6 +349,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             self._versionThread.wait(1000)
             if not self._versionThread.isFinished():
                 self._versionThread.terminate()
+            if self._exporter is not None:
+                self._exporter.exit()
+                self._exporter.wait(1000)
+                if not self._exporter.isFinished():
+                    self._exporter.terminate()
         else:
             event.ignore()
 
