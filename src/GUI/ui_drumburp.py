@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\mike_000\workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sat Feb 28 11:44:03 2015
+# Created: Sat Feb 28 11:59:06 2015
 #      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -156,12 +156,18 @@ class Ui_DrumBurpWindow(object):
         self.lilypondGroupBox.setObjectName(_fromUtf8("lilypondGroupBox"))
         self.gridLayout = QtGui.QGridLayout(self.lilypondGroupBox)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
+        self.lilyPngButton = QtGui.QRadioButton(self.lilypondGroupBox)
+        self.lilyPngButton.setObjectName(_fromUtf8("lilyPngButton"))
+        self.gridLayout.addWidget(self.lilyPngButton, 0, 5, 1, 1)
+        self.lilyPsButton = QtGui.QRadioButton(self.lilypondGroupBox)
+        self.lilyPsButton.setObjectName(_fromUtf8("lilyPsButton"))
+        self.gridLayout.addWidget(self.lilyPsButton, 0, 4, 1, 1)
         self.lilyFillButton = QtGui.QCheckBox(self.lilypondGroupBox)
         self.lilyFillButton.setObjectName(_fromUtf8("lilyFillButton"))
         self.gridLayout.addWidget(self.lilyFillButton, 0, 2, 1, 1)
         self.exportLilypondButton = QtGui.QPushButton(self.lilypondGroupBox)
         self.exportLilypondButton.setObjectName(_fromUtf8("exportLilypondButton"))
-        self.gridLayout.addWidget(self.exportLilypondButton, 0, 5, 1, 1)
+        self.gridLayout.addWidget(self.exportLilypondButton, 0, 8, 1, 1)
         self.lilyPagesBox = QtGui.QSpinBox(self.lilypondGroupBox)
         self.lilyPagesBox.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.lilyPagesBox.setMaximum(1000)
@@ -169,7 +175,7 @@ class Ui_DrumBurpWindow(object):
         self.gridLayout.addWidget(self.lilyPagesBox, 0, 0, 1, 1)
         self.lilypondPathButton = QtGui.QPushButton(self.lilypondGroupBox)
         self.lilypondPathButton.setObjectName(_fromUtf8("lilypondPathButton"))
-        self.gridLayout.addWidget(self.lilypondPathButton, 0, 4, 1, 1)
+        self.gridLayout.addWidget(self.lilypondPathButton, 0, 7, 1, 1)
         self.lilypondSize = QtGui.QSpinBox(self.lilypondGroupBox)
         self.lilypondSize.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.lilypondSize.setMinimum(8)
@@ -178,7 +184,11 @@ class Ui_DrumBurpWindow(object):
         self.lilypondSize.setObjectName(_fromUtf8("lilypondSize"))
         self.gridLayout.addWidget(self.lilypondSize, 0, 1, 1, 1)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem, 0, 3, 1, 1)
+        self.gridLayout.addItem(spacerItem, 0, 6, 1, 1)
+        self.lilyPdfButton = QtGui.QRadioButton(self.lilypondGroupBox)
+        self.lilyPdfButton.setChecked(True)
+        self.lilyPdfButton.setObjectName(_fromUtf8("lilyPdfButton"))
+        self.gridLayout.addWidget(self.lilyPdfButton, 0, 3, 1, 1)
         self.verticalLayout_4.addWidget(self.lilypondGroupBox)
         self.lilyPreview = QtGui.QGraphicsView(self.lilypondTab)
         self.lilyPreview.setObjectName(_fromUtf8("lilyPreview"))
@@ -649,7 +659,7 @@ class Ui_DrumBurpWindow(object):
         self.MIDIToolBar.addAction(self.actionMuteNotes)
 
         self.retranslateUi(DrumBurpWindow)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QObject.connect(self.actionFileToolbarIsVisible, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.fileToolBar.setVisible)
         QtCore.QObject.connect(self.fileToolBar, QtCore.SIGNAL(_fromUtf8("visibilityChanged(bool)")), self.actionFileToolbarIsVisible.setChecked)
         QtCore.QObject.connect(self.displayToolBar, QtCore.SIGNAL(_fromUtf8("visibilityChanged(bool)")), self.actionDisplayToolBarIsVisible.setChecked)
@@ -748,6 +758,8 @@ class Ui_DrumBurpWindow(object):
 "To select a measure/measures, click and drag: selected measures can be copy/pasted, deleted, cleared, and more.", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.textTab), _translate("DrumBurpWindow", "Drum Tab", None))
         self.lilypondGroupBox.setTitle(_translate("DrumBurpWindow", "Lilypond Export", None))
+        self.lilyPngButton.setText(_translate("DrumBurpWindow", "PNG", None))
+        self.lilyPsButton.setText(_translate("DrumBurpWindow", "PS", None))
         self.lilyFillButton.setToolTip(_translate("DrumBurpWindow", "Fill the last page of Lilypond export", None))
         self.lilyFillButton.setStatusTip(_translate("DrumBurpWindow", "Fill the last page of Lilypond export", None))
         self.lilyFillButton.setWhatsThis(_translate("DrumBurpWindow", "<html><head/><body><p>Lilypond export can be set to fill the last page of the score with music, or to just stop halfway down the page when it runs out of staffs.</p><p><br/></p><p>Check this box to fill the last page of the score.</p></body></html>", None))
@@ -761,6 +773,7 @@ class Ui_DrumBurpWindow(object):
         self.lilypondSize.setToolTip(_translate("DrumBurpWindow", "Lilypond export size", None))
         self.lilypondSize.setStatusTip(_translate("DrumBurpWindow", "Change the size of Lilypond export.", None))
         self.lilypondSize.setWhatsThis(_translate("DrumBurpWindow", "Lilypond allows one to set a global size which affects how big the staves, notes, and text in a score are. It defaults to 20. By altering this parameter, one can make the output of a Lilypond exported DrumBurp score bigger or smaller.", None))
+        self.lilyPdfButton.setText(_translate("DrumBurpWindow", "PDF", None))
         self.firstLilyPage.setText(_translate("DrumBurpWindow", "First", None))
         self.prevLilyPage.setText(_translate("DrumBurpWindow", "Previous", None))
         self.refreshLilypond.setText(_translate("DrumBurpWindow", "Refresh", None))

@@ -70,6 +70,7 @@ class Score(object):
         self.lilysize = 20
         self.lilypages = 0
         self.lilyFill = False
+        self.lilyFormat = 0
 
     def __len__(self):
         return sum(len(staff) for staff in self._staffs)
@@ -675,6 +676,7 @@ class Score(object):
         indenter("LILYPAGES", self.lilypages)
         if self.lilyFill:
             indenter("LILYFILL", "YES")
+        indenter("LILYFORMAT", self.lilyFormat)
         self.defaultCount.write(indenter, True)
         indenter("SYSTEM_SPACE", self.systemSpacing)
         self.fontOptions.write(indenter)
@@ -697,6 +699,7 @@ class Score(object):
             raise DBVersionError(scoreIterator)
         # Read from the input file
         self.lilyFill = False
+        self.lilyFormat = 0
         def _readMeasure(lineData):
             measureWidth = int(lineData)
             measure = self.insertMeasureByIndex(measureWidth)
@@ -711,6 +714,7 @@ class Score(object):
             section.readPositiveInteger("LILYSIZE", self, "lilySize")
             section.readNonNegativeInteger("LILYPAGES", self, "lilyPages")
             section.readBoolean("LILYFILL", self, "lilyFill")
+            section.readNonNegativeInteger("LILYFORMAT", self, "lilyFormat")
             section.readSubsection("DEFAULT_COUNT_INFO_START",
                                    lambda i: self.defaultCount.read(i, True))
             section.readNonNegativeInteger("SYSTEM_SPACE", self,

@@ -153,6 +153,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         scene.lilysizeChanged.connect(self._setLilySize)
         scene.lilypagesChanged.connect(self._setLilyPages)
         scene.lilyFillChanged.connect(self._setLilyFill)
+        scene.lilyFormatChanged.connect(self._setLilyFormat)
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
@@ -217,9 +218,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         # Default beat
         self._beatChanged(scene.defaultCount)
         self.widthSpinBox.setValue(scene.scoreWidth)
+        # Default Lilypond settings
         self.lilypondSize.setValue(scene.score.lilysize)
         self.lilyPagesBox.setValue(scene.score.lilypages)
         self.lilyFillButton.setChecked(scene.score.lilyFill)
+        self._setLilyFormat(scene.score.lilyFormat)
 
 
     def _startUp(self, errored_files):
@@ -384,6 +387,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             self._beatChanged(self.scoreScene.defaultCount)
             self.lilypondSize.setValue(self.scoreScene.score.lilysize)
             self.lilyPagesBox.setValue(self.scoreScene.score.lilypages)
+            self.lilyFillButton.setChecked(self.scoreScene.score.lilyFill)
+            self._setLilyFormat(self.scoreScene.score.lilyFormat)
             self.filename = unicode(fname)
             self.updateStatus("Successfully loaded %s" % self.filename)
             self.addToRecentFiles()
@@ -876,6 +881,14 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if lilyFill != self.lilyFillButton.isChecked():
             self.lilyFillButton.setChecked(lilyFill)
 
+    def _setLilyFormat(self, lilyFormat):
+        if lilyFormat < 0 or lilyFormat > 2:
+            lilyFormat == 0
+        target = [self.lilyPdfButton, self.lilyPsButton, self.lilyPngButton][lilyFormat]
+        if not target.isChecked():
+            target.setChecked(True)
+        self.scoreScene.setLilyFormat(lilyFormat)
+
     @pyqtSignature("")
     def on_actionCheckForUpdates_triggered(self):
         dialog = QVersionDownloader(newer = None, parent = self)
@@ -922,6 +935,18 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     @pyqtSignature("")
     def on_lilypondPathButton_clicked(self):
         self._checkLilypondPath(self.lilyPath)
+
+    @pyqtSignature("")
+    def on_lilyPdfButton_clicked(self):
+        self._setLilyFormat(0)
+
+    @pyqtSignature("")
+    def on_lilyPsButton_clicked(self):
+        self._setLilyFormat(1)
+
+    @pyqtSignature("")
+    def on_lilyPngButton_clicked(self):
+        self._setLilyFormat(2)
 
 class VersionCheckThread(QThread):
     def __init__(self, parent = None):

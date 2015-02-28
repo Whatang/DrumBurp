@@ -220,6 +220,24 @@ class SetLilypondFillCommand(ScoreCommand):
             self._score.lilyFill = self._oldValue
             self._qScore.lilyFillChanged.emit(self._oldValue)
 
+class SetLilypondFormatCommand(ScoreCommand):
+    canReformat = False
+    def __init__(self, qScore, lilyFormat):
+        super(SetLilypondFormatCommand, self).__init__(qScore, None,
+                                                       "set Lilypond format")
+        self._oldValue = self._score.lilyFormat
+        self._newValue = lilyFormat
+
+    def _redo(self):
+        if self._score.lilyFormat != self._newValue:
+            self._score.lilyFormat = self._newValue
+            self._qScore.lilyFormatChanged.emit(self._newValue)
+
+    def _undo(self):
+        if self._score.lilyFormat != self._oldValue:
+            self._score.lilyFormat = self._oldValue
+            self._qScore.lilyFormatChanged.emit(self._oldValue)
+
 class ScoreWidthCommand(ScoreCommand):
     def __init__(self, qScore, value):
         super(ScoreWidthCommand, self).__init__(qScore, None,
