@@ -30,7 +30,8 @@ from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QPrintPreviewDialog, QWhatsThis,
                          QPrinterInfo, QLabel, QFrame,
                          QPrinter, QDesktopServices)
-from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer, QThread
+from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer, QThread, \
+    pyqtSignal
 from QScore import QScore
 from QDisplayProperties import QDisplayProperties
 from QNewScoreDialog import QNewScoreDialog
@@ -47,6 +48,7 @@ from DBFSMEvents import StartPlaying, StopPlaying
 from DBVersion import APPNAME, DB_VERSION, doesNewerVersionExist
 from Notation.lilypond import LilypondScore, LilypondProblem
 from Notation import AsciiExport
+from LilypondExporter import LilypondExporter
 # pylint:disable-msg=R0904
 
 class FakeQSettings(object):
@@ -62,6 +64,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     classdocs
     '''
 
+    exporterDone = pyqtSignal(unicode)
+
     def __init__(self, parent = None, fakeStartup = False, filename = None):
         '''
         Constructor
@@ -76,6 +80,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.paperBox.blockSignals(True)
         self.paperBox.clear()
         self._knownPageHeights = []
+        self._exporter = None
+        self.lilyPath = None
         self.colourScheme = DBColourPicker.ColourScheme()
         printer = QPrinter()
         printer.setOutputFileName("invalid.pdf")
@@ -89,6 +95,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self._pageHeight = printer.paperRect().height()
         self.paperBox.blockSignals(False)
         settings = self._makeQSettings()
+        self.lilyPath = settings.value("LilypondPath").toString()
         self.recentFiles = [unicode(fname) for fname in
                             settings.value("RecentFiles").toStringList()
                             if os.path.exists(unicode(fname))]
@@ -151,6 +158,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         scene.lilysizeChanged.connect(self._setLilySize)
         scene.lilypagesChanged.connect(self._setLilyPages)
         scene.lilyFillChanged.connect(self._setLilyFill)
+        scene.lilyFormatChanged.connect(self._setLilyFormat)
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
@@ -159,6 +167,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         props.beatCountVisibleChanged.connect(self._setBeatCountVisible)
         DBMidi.SONGEND_SIGNAL.connect(self.musicDone)
         DBMidi.HIGHLIGHT_SIGNAL.connect(self.highlightPlayingMeasure)
+        self.exporterDone.connect(self._finishLilyExport)
 
     def _initializeState(self):
         props = self.songProperties
@@ -215,9 +224,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         # Default beat
         self._beatChanged(scene.defaultCount)
         self.widthSpinBox.setValue(scene.scoreWidth)
+        # Default Lilypond settings
         self.lilypondSize.setValue(scene.score.lilysize)
         self.lilyPagesBox.setValue(scene.score.lilypages)
         self.lilyFillButton.setChecked(scene.score.lilyFill)
+        self._setLilyFormat(scene.score.lilyFormat)
 
 
     def _startUp(self, errored_files):
@@ -330,12 +341,19 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                               QVariant(self.saveState()))
             settings.setValue("CheckOnStartup",
                               QVariant(self.actionCheckOnStartup.isChecked()))
+            settings.setValue("LilypondPath",
+                              QVariant(self.lilyPath))
             self._writeColours(settings)
             self.songProperties.save(settings)
             self._versionThread.exit()
             self._versionThread.wait(1000)
             if not self._versionThread.isFinished():
                 self._versionThread.terminate()
+            if self._exporter is not None:
+                self._exporter.exit()
+                self._exporter.wait(1000)
+                if not self._exporter.isFinished():
+                    self._exporter.terminate()
         else:
             event.ignore()
 
@@ -380,6 +398,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             self._beatChanged(self.scoreScene.defaultCount)
             self.lilypondSize.setValue(self.scoreScene.score.lilysize)
             self.lilyPagesBox.setValue(self.scoreScene.score.lilypages)
+            self.lilyFillButton.setChecked(self.scoreScene.score.lilyFill)
+            self._setLilyFormat(self.scoreScene.score.lilyFormat)
             self.filename = unicode(fname)
             self.updateStatus("Successfully loaded %s" % self.filename)
             self.addToRecentFiles()
@@ -568,6 +588,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionExportLilypond_triggered(self):
+        self._checkLilypondPath()
         lilyBuffer = StringIO()
         try:
             lyScore = LilypondScore(self.scoreScene.score)
@@ -600,14 +621,39 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 if len(fname) == 0:
                     return
                 fname = unicode(fname)
-                with open(fname, 'w') as handle:
-                    handle.write(lilyBuffer.getvalue().encode('utf-8'))
+                if self._exporter is not None:
+                    if self._exporter.isRunning():
+                        QMessageBox.warning(self.parent(), "Still exporting",
+                                            "Cannot export now - previous export is still in progress")
+                        return
+                self._exporter = LilypondExporter(lilyBuffer.getvalue(), fname,
+                                                  self.lilyPath,
+                                                  self.scoreScene.score.lilyFormat,
+                                                  lambda : self.exporterDone.emit(fname),
+                                                  self)
+                self.actionExportLilypond.setEnabled(False)
+                self.lilypondGroupBox.setEnabled(False)
+                self._exporter.start()
             except StandardError:
                 QMessageBox.warning(self.parent(), "Export failed!",
                                     "Could not export Lilypond")
                 raise
-            else:
-                self.updateStatus("Successfully exported Lilypond to " + fname)
+
+    def _finishLilyExport(self, fname):
+        self.actionExportLilypond.setEnabled(True)
+        self.lilypondGroupBox.setEnabled(True)
+        status = self._exporter.get_status()
+        if status == self._exporter.SUCCESS:
+            self.updateStatus("Successfully ran Lilypond on %s" % fname)
+        elif status == self._exporter.WROTE_LY:
+            self.updateStatus("Successfully exported Lilypond to " + fname)
+        elif status == self._exporter.ERROR_IN_WRITING_LY:
+            QMessageBox.warning(self.parent(), "Export failed!",
+                                "Could not write Lilypond score to " + fname)
+        elif status == self._exporter.ERROR_IN_RUNNING_LY:
+            QMessageBox.warning(self.parent(), "Export failed!",
+                                "Could not run Lilypond on " + fname)
+
 
     @staticmethod
     @pyqtSignature("")
@@ -871,6 +917,14 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if lilyFill != self.lilyFillButton.isChecked():
             self.lilyFillButton.setChecked(lilyFill)
 
+    def _setLilyFormat(self, lilyFormat):
+        if lilyFormat < 0 or lilyFormat > 2:
+            lilyFormat == 0
+        target = [self.lilyPdfButton, self.lilyPsButton, self.lilyPngButton][lilyFormat]
+        if not target.isChecked():
+            target.setChecked(True)
+        self.scoreScene.setLilyFormat(lilyFormat)
+
     @pyqtSignature("")
     def on_actionCheckForUpdates_triggered(self):
         dialog = QVersionDownloader(newer = None, parent = self)
@@ -892,6 +946,43 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if not dialog.exec_():
             return
         self.colourScheme = dialog.getColourScheme()
+
+
+    def _checkLilypondPath(self, existing = None):
+        if self.lilyPath is None or not os.path.exists(self.lilyPath) or existing is not None:
+            caption = "Please select path to Lilypond executable"
+            path = QFileDialog.getOpenFileName(parent = self,
+                                               caption = caption,
+                                               directory = existing)
+            if path is None:
+                return
+            if not os.path.exists(path):
+                return
+            self.lilyPath = path
+
+
+    @pyqtSignature("int")
+    def on_tabWidget_currentChanged(self, tabIndex):
+        tabText = self.tabWidget.tabText(tabIndex)
+        if tabText != "Lilypond":
+            return
+        self._checkLilypondPath()
+
+    @pyqtSignature("")
+    def on_lilypondPathButton_clicked(self):
+        self._checkLilypondPath(self.lilyPath)
+
+    @pyqtSignature("")
+    def on_lilyPdfButton_clicked(self):
+        self._setLilyFormat(0)
+
+    @pyqtSignature("")
+    def on_lilyPsButton_clicked(self):
+        self._setLilyFormat(1)
+
+    @pyqtSignature("")
+    def on_lilyPngButton_clicked(self):
+        self._setLilyFormat(2)
 
 class VersionCheckThread(QThread):
     def __init__(self, parent = None):
