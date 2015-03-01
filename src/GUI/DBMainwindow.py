@@ -897,6 +897,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreScene.deleteMeasures()
 
     def musicStart(self):
+        self.tabWidget.setCurrentWidget(self.textTab)
         self.scoreScene.sendFsmEvent(StartPlaying())
 
     def musicDone(self):
@@ -909,7 +910,6 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     def _scorePlaying(self, playing):
         self.fileToolBar.setDisabled(playing)
-        self.exportToolBar.setDisabled(playing)
         self.displayToolBar.setDisabled(playing)
         self.helpToolBar.setDisabled(playing)
         self.fontDock.setDisabled(playing)

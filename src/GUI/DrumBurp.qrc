@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="Icons">
+    <file>Icons/preferences-desktop-locale.png</file>
+    <file>Icons/preferences-desktop-font.png</file>
     <file>Icons/accessories-calculator.png</file>
     <file>Icons/go-home.png</file>
     <file>Icons/lilypond-icon.png</file>
