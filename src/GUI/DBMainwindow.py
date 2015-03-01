@@ -1001,8 +1001,19 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("int")
     def on_tabWidget_currentChanged(self, tabIndex):
-        if self.tabWidget.currentWidget() == self.lilypondTab:
+        widget = self.tabWidget.currentWidget()
+        if widget == self.textTab:
+            self.availableNotesLabel.setVisible(True)
+            self._infoBar.setVisible(True)
+        elif widget == self.lilypondTab:
+            self.availableNotesLabel.setVisible(False)
+            self._infoBar.setVisible(False)
             self.checkLilypondPath()
+        elif widget == self.textExportTab:
+            self.availableNotesLabel.setVisible(False)
+            self._infoBar.setVisible(False)
+
+
 
     @pyqtSignature("")
     def on_lilypondPathButton_clicked(self):
