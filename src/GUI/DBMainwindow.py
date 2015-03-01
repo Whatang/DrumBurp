@@ -540,7 +540,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                                             caption = "Select file to export text tab to",
                                             directory = fname,
                                             filter = "Text files (*.txt)")
-        if fname is None:
+        if not fname:
             return
         try:
             exportedText = self._getTextExport()
