@@ -30,7 +30,7 @@ from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QFileDialog, QMessageBox,
                          QPrintPreviewDialog, QWhatsThis,
                          QPrinterInfo, QLabel, QFrame,
-                         QPrinter, QDesktopServices)
+                         QPrinter, QDesktopServices, QAction)
 from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer, QThread, \
     pyqtSignal
 from QScore import QScore
@@ -245,6 +245,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
 
     def _startUp(self, errored_files):
+        self._refreshMidiDevices()
         self.scoreView.startUp()
         self.updateStatus("Welcome to %s v%s" % (APPNAME, DB_VERSION))
         self.scoreView.setFocus()
@@ -763,6 +764,27 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         for sectionTitle in score.iterSections():
             self.sectionNavigator.addItem(sectionTitle)
         self.sectionNavigator.blockSignals(False)
+
+    def _refreshMidiDevices(self):
+        self.menuSelectMidiOut.clear()
+        self.menuSelectMidiOut.addAction(self.actionRefreshMidiDevices)
+        self.menuSelectMidiOut.addSeparator()
+        DBMidi.refreshOutputDevices()
+        current = DBMidi.currentDevice()
+        for device in DBMidi.iterMidiDevices():
+            action = QAction(device.name, self.menuSelectMidiOut, checkable = True)
+            self.menuSelectMidiOut.addAction(action)
+            def selectDevice(unused, dev = device, act = action):
+                DBMidi.selectMidiDevice(dev)
+                for otherAction in self.menuSelectMidiOut.actions():
+                    otherAction.setChecked(False)
+                act.setChecked(True)
+            action.triggered.connect(selectDevice)
+            action.setChecked(device == current)
+
+    @pyqtSignature("")
+    def on_actionRefreshMidiDevices_triggered(self):
+        self._refreshMidiDevices()
 
     def _canPlayback(self):
         try:

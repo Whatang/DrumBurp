@@ -54,8 +54,13 @@ try:
     pygame.mixer.init(_FREQ, _BITSIZE, _CHANNELS, _NUMSAMPLES)
     pygame.mixer.music.set_volume(0.8)
 
-    def get_default_id():
-        return pygame.midi.get_default_output_id()
+    get_default_id = pygame.midi.get_default_output_id
+
+    iter_device_ids = lambda : xrange(pygame.midi.get_count())
+
+    def get_device_info(deviceId):
+        _, name, isIn, isOut, isOpen = pygame.midi.get_device_info(deviceId)
+        return name, isIn == 1, isOut == 1, isOpen == 1
 
     def cleanup():
         _PLAYER.cleanup()
@@ -68,6 +73,12 @@ except ImportError:
     def get_default_id():
         return -1
 
+    def iter_device_ids():
+        return iter([])
+
+    def get_device_info(deviceId):
+        return None, False, False, False
+
     def cleanup():
         _PLAYER.cleanup()
 
@@ -75,6 +86,34 @@ import atexit
 atexit.register(cleanup)
 import time
 import StringIO
+
+class MidiDevice(object):
+    def __init__(self, deviceId):
+        self.deviceId = deviceId
+        self.name, _, self._isOutput, self._isOpen = get_device_info(deviceId)
+        self._isValid = self.name is not None
+
+    def isValid(self):
+        return self._isValid
+
+    def isOutput(self):
+        return self._isOutput
+
+    def isOpen(self):
+        return get_device_info(self.deviceId)[3]
+
+_OUTPUT_DEVICES = []
+def refreshOutputDevices():
+    while _OUTPUT_DEVICES:
+        _OUTPUT_DEVICES.pop()
+    for devId in iter_device_ids():
+        device = MidiDevice(devId)
+        if device.isOutput():
+            _OUTPUT_DEVICES.append(device)
+
+def iterMidiDevices():
+    return iter(_OUTPUT_DEVICES)
+
 
 from PyQt4.QtCore import QTimer, pyqtSignal, QObject
 from Data.MeasureCount import MIDITICKSPERBEAT
@@ -97,6 +136,18 @@ class _midi(QObject):
         self._musicPlaying = False
         self.kit = None
 
+    def setPort(self, port):
+        if self._midiOut:
+            self._midiOut.abort()
+            del self._midiOut
+            self._midiOut = None
+        self._port = port
+        if self._port != -1:
+            self._midiOut = pygame.midi.Output(self._port, _LATENCY, _BUFSIZE)
+
+    def port(self):
+        return self._port
+
     def isGood(self):
         return self._port != -1 and self._midiOut is not None
 
@@ -114,42 +165,43 @@ class _midi(QObject):
         headData = self.kit[drumIndex].headData(head)
         self.playHeadData(headData)
 
-    def playHeadData(self, headData):
+    def playHeadData(self, headData, when = None):
         if not self._midiOut:
             return
-        now = pygame.midi.time()
+        if when is None:
+            when = pygame.midi.time()
         if headData.effect == "flam":
             self._midiOut.write([[[_PERCUSSION_NOTE_ON,
                                    headData.midiNote,
                                    headData.midiVolume / FLAM_VOLUME_CONSTANT],
-                                  now]])
+                                  when]])
             self._midiOut.write([[[_PERCUSSION_NOTE_ON,
                                    headData.midiNote,
                                    headData.midiVolume],
-                                  now + FLAM_TIME_CONSTANT]])
+                                  when + FLAM_TIME_CONSTANT]])
         elif headData.effect == "drag":
             self._midiOut.write([[[_PERCUSSION_NOTE_ON,
                                    headData.midiNote,
                                    headData.midiVolume ],
-                                  now]])
+                                  when]])
             self._midiOut.write([[[_PERCUSSION_NOTE_ON,
                                    headData.midiNote,
                                    headData.midiVolume],
-                                  now + DRAG_TIME_CONSTANT]])
+                                  when + DRAG_TIME_CONSTANT]])
         elif headData.effect == "choke":
             self._midiOut.write([[[_PERCUSSION_NOTE_ON,
                                    headData.midiNote,
                                    headData.midiVolume ],
-                                  now]])
+                                  when]])
             self._midiOut.write([[[_PERCUSSION_CHOKE,
                                    _CHOKE_MSG,
                                    _CHOKE_VELOCITY],
-                                  now + DRAG_TIME_CONSTANT]])
+                                  when + DRAG_TIME_CONSTANT]])
         else:
             self._midiOut.write([[[_PERCUSSION_NOTE_ON,
                                    headData.midiNote,
                                    headData.midiVolume],
-                                  now]])
+                                  when]])
 
     def playScore(self, score):
         measureList = list(score.iterMeasuresWithRepeats())
@@ -196,6 +248,7 @@ class _midi(QObject):
             self.highlightMeasure.emit(-1)
             if self._midiOut:
                 del self._midiOut
+                self._midiOut = None
             pygame.mixer.music.stop()
             self._midiOut = pygame.midi.Output(self._port, _LATENCY, _BUFSIZE)
             self._musicPlaying = False
@@ -325,3 +378,22 @@ def exportMidi(measureIterator, score, handle):
     handle.write("MTrk")
     for byte in midiData:
         handle.write("%c" % byte)
+
+def selectMidiDevice(dev):
+    _PLAYER.cleanup()
+    _PLAYER.setPort(dev.deviceId)
+    return _PLAYER.isGood()
+
+def currentDevice():
+    for dev in _OUTPUT_DEVICES:
+        if dev.deviceId == _PLAYER.port():
+            return dev
+    return None
+
+def main():
+    refreshOutputDevices()
+    for device in iterMidiDevices():
+        print device.name
+
+if __name__ == "__main__":
+    main()

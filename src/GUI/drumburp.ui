@@ -996,6 +996,13 @@ p, li { white-space: pre-wrap; }
     <property name="title">
      <string>&amp;MIDI</string>
     </property>
+    <widget class="QMenu" name="menuSelectMidiOut">
+     <property name="title">
+      <string>Select MIDI out</string>
+     </property>
+     <addaction name="actionRefreshMidiDevices"/>
+     <addaction name="separator"/>
+    </widget>
     <addaction name="actionPlayScore"/>
     <addaction name="actionPlayOnce"/>
     <addaction name="actionLoopBars"/>
@@ -1003,6 +1010,8 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionMuteNotes"/>
     <addaction name="separator"/>
     <addaction name="actionExportMIDI"/>
+    <addaction name="separator"/>
+    <addaction name="menuSelectMidiOut"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -2253,6 +2262,20 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="toolTip">
     <string>Edit the colours DrumBurp uses</string>
+   </property>
+  </action>
+  <action name="actionRefreshMidiDevices">
+   <property name="text">
+    <string>Refresh Device List</string>
+   </property>
+   <property name="toolTip">
+    <string>Refresh MIDI device list</string>
+   </property>
+   <property name="statusTip">
+    <string>Refresh MIDI device list</string>
+   </property>
+   <property name="whatsThis">
+    <string>Refresh MIDI device list</string>
    </property>
   </action>
  </widget>
