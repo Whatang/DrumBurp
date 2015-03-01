@@ -680,9 +680,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <addaction name="actionSaveAs"/>
     <addaction name="separator"/>
     <addaction name="actionPrint"/>
-    <addaction name="actionExportASCII"/>
     <addaction name="actionExportPDF"/>
-    <addaction name="actionExportLilypond"/>
     <addaction name="actionExportMIDI"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
@@ -827,10 +825,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <bool>false</bool>
    </attribute>
    <addaction name="actionPrint"/>
-   <addaction name="actionExportASCII"/>
    <addaction name="actionExportPDF"/>
-   <addaction name="actionExportLilypond"/>
-   <addaction name="actionExportMIDI"/>
   </widget>
   <widget class="QToolBar" name="helpToolBar">
    <property name="windowTitle">
@@ -1231,6 +1226,7 @@ The score editing window uses the font selected here to display the score inform
    <addaction name="actionPlayOnce"/>
    <addaction name="actionLoopBars"/>
    <addaction name="actionMuteNotes"/>
+   <addaction name="actionExportMIDI"/>
   </widget>
   <action name="actionQuit">
    <property name="icon">

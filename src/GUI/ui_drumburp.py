@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\mike_000\workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sun Mar 01 01:20:46 2015
+# Created: Sun Mar 01 01:26:06 2015
 #      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -626,9 +626,7 @@ class Ui_DrumBurpWindow(object):
         self.menuFile.addAction(self.actionSaveAs)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionPrint)
-        self.menuFile.addAction(self.actionExportASCII)
         self.menuFile.addAction(self.actionExportPDF)
-        self.menuFile.addAction(self.actionExportLilypond)
         self.menuFile.addAction(self.actionExportMIDI)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionQuit)
@@ -682,10 +680,7 @@ class Ui_DrumBurpWindow(object):
         self.displayToolBar.addAction(self.actionShowBeatCount)
         self.displayToolBar.addAction(self.actionShowMeasureCounts)
         self.exportToolBar.addAction(self.actionPrint)
-        self.exportToolBar.addAction(self.actionExportASCII)
         self.exportToolBar.addAction(self.actionExportPDF)
-        self.exportToolBar.addAction(self.actionExportLilypond)
-        self.exportToolBar.addAction(self.actionExportMIDI)
         self.helpToolBar.addAction(self.actionWhatsThis)
         self.helpToolBar.addAction(self.actionOnlineManual)
         self.helpToolBar.addAction(self.actionAboutDrumBurp)
@@ -693,6 +688,7 @@ class Ui_DrumBurpWindow(object):
         self.MIDIToolBar.addAction(self.actionPlayOnce)
         self.MIDIToolBar.addAction(self.actionLoopBars)
         self.MIDIToolBar.addAction(self.actionMuteNotes)
+        self.MIDIToolBar.addAction(self.actionExportMIDI)
 
         self.retranslateUi(DrumBurpWindow)
         self.tabWidget.setCurrentIndex(0)
