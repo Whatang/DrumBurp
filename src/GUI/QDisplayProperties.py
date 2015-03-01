@@ -355,4 +355,5 @@ class QDisplayProperties(QObject):
         settings.kitKey = self.kitDataVisible
         settings.printCount = self.beatCountVisible
         settings.omitEmpty = not self.emptyLinesVisible
+        settings.printCounts = self.beatCountVisible
         return settings

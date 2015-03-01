@@ -542,6 +542,87 @@ To select a measure/measures, click and drag: selected measures can be copy/past
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="textExportTab">
+       <attribute name="title">
+        <string>Text Export</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="QGroupBox" name="textExportOptions">
+          <property name="title">
+           <string>Options</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <item>
+            <layout class="QGridLayout" name="gridLayout_2">
+             <item row="0" column="3">
+              <widget class="QPushButton" name="textExportButton">
+               <property name="text">
+                <string>Export</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QCheckBox" name="emptyLineBeforeSectionCheck">
+               <property name="toolTip">
+                <string>Include a blank line before each section title</string>
+               </property>
+               <property name="text">
+                <string>Empty line before section title</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QCheckBox" name="underlineCheck">
+               <property name="toolTip">
+                <string>Underline each section title</string>
+               </property>
+               <property name="text">
+                <string>Underline section titles with ~ characters</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QCheckBox" name="emptyLineAfterSectionCheck">
+               <property name="toolTip">
+                <string>Include a blank line after each section title</string>
+               </property>
+               <property name="text">
+                <string>Empty line after section title</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPlainTextEdit" name="textExportPreview">
+          <property name="font">
+           <font>
+            <family>Courier</family>
+           </font>
+          </property>
+          <property name="lineWrapMode">
+           <enum>QPlainTextEdit::NoWrap</enum>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
     <item>
@@ -2519,6 +2600,22 @@ p, li { white-space: pre-wrap; }
     <hint type="sourcelabel">
      <x>1035</x>
      <y>163</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>textExportButton</sender>
+   <signal>clicked()</signal>
+   <receiver>actionExportASCII</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1018</x>
+     <y>164</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>

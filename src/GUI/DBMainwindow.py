@@ -172,6 +172,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         DBMidi.HIGHLIGHT_SIGNAL.connect(self.highlightPlayingMeasure)
         self.exporterDone.connect(self._finishLilyExport)
         self.refreshLilypond.clicked.connect(self._lilyScene.preview)
+        self.scoreScene.scoreDisplayChanged.connect(self._refreshTextExport)
+        self.underlineCheck.clicked.connect(self._refreshTextExport)
+        self.emptyLineBeforeSectionCheck.clicked.connect(self._refreshTextExport)
+        self.emptyLineAfterSectionCheck.clicked.connect(self._refreshTextExport)
 
     def _initializeState(self):
         props = self.songProperties
@@ -532,32 +536,55 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             fname = os.path.join(unicode(fname), 'Untitled.txt')
         if os.path.splitext(fname)[-1] == '.brp':
             fname = os.path.splitext(fname)[0] + '.txt'
+        fname = QFileDialog.getSaveFileName(parent = self,
+                                            caption = "Select file to export text tab to",
+                                            directory = fname,
+                                            filter = "Text files (*.txt)")
+        if fname is None:
+            return
+        try:
+            exportedText = self._getTextExport()
+        except StandardError:
+            QMessageBox.warning(self.parent(), "Text generation failed!",
+                                "Could not generate text tab for this score!")
+            raise
+        try:
+            with open(fname, 'w') as txtHandle:
+                txtHandle.write(exportedText.encode('utf-8'))
+        except StandardError:
+            QMessageBox.warning(self.parent(), "Export failed!",
+                                "Could not export to " + fname)
+            raise
+        else:
+            self.updateStatus("Successfully exported text tab to " + fname)
+
+    def _getTextExport(self):
         props = self.songProperties
         self._asciiSettings = props.generateAsciiSettings(self._asciiSettings)
-        asciiDialog = QAsciiExportDialog(fname, parent = self,
-                                         settings = self._asciiSettings)
-        if not asciiDialog.exec_():
-            return
-        fname = asciiDialog.getFilename()
-        self._asciiSettings = asciiDialog.getOptions()
+        self._asciiSettings.underline = self.underlineCheck.isChecked()
+        self._asciiSettings.emptyLineBeforeSection = self.emptyLineBeforeSectionCheck.isChecked()
+        self._asciiSettings.emptyLineAfterSection = self.emptyLineAfterSectionCheck.isChecked()
         try:
             asciiBuffer = StringIO()
             exporter = AsciiExport.Exporter(self.scoreScene.score,
                                             self._asciiSettings)
             exporter.export(asciiBuffer)
         except StandardError:
-            QMessageBox.warning(self.parent(), "ASCII generation failed!",
-                                "Could not generate ASCII for this score!")
+            self.textExportPreview.setPlainText("Failed to export text tab.")
             raise
+        return asciiBuffer.getvalue()
+
+    def _refreshTextExport(self):
         try:
-            with open(fname, 'w') as txtHandle:
-                txtHandle.write(asciiBuffer.getvalue().encode('utf-8'))
+            self.textExportPreview.setPlainText(self._getTextExport())
+            self.actionExportASCII.setEnabled(True)
+            self.textExportButton.setEnabled(True)
         except StandardError:
-            QMessageBox.warning(self.parent(), "Export failed!",
-                                "Could not export to " + fname)
+            self.textExportPreview.setPlainText("Failed to export text tab.")
+            self.actionExportASCII.setEnabled(False)
+            self.textExportButton.setEnabled(False)
             raise
-        else:
-            self.updateStatus("Successfully exported ASCII to " + fname)
+
 
     @pyqtSignature("")
     def on_actionPrint_triggered(self):
@@ -974,10 +1001,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("int")
     def on_tabWidget_currentChanged(self, tabIndex):
-        tabText = self.tabWidget.tabText(tabIndex)
-        if tabText != "Lilypond":
-            return
-        self.checkLilypondPath()
+        if self.tabWidget.currentWidget() == self.lilypondTab:
+            self.checkLilypondPath()
 
     @pyqtSignature("")
     def on_lilypondPathButton_clicked(self):

@@ -221,14 +221,17 @@ class Exporter(object):
         kitString = self._exportKit()
         print >> handle, ("Tabbed with DrumBurp, "
                           "a drum tab editor from www.whatang.org")
+        print >> handle, ""
         if self.settings.metadata:
             for mString in metadataString:
-                print >> handle, mString
+                print >> handle, unicode(mString)
+            print >> handle, ""
         if self.settings.kitKey:
             for iString in kitString:
-                print >> handle, iString
+                print >> handle, unicode(iString)
+            print >> handle, ""
         for sString in asciiString:
-            print >> handle, sString
+            print >> handle, unicode(sString)
         print >> handle, ""
         print >> handle, ("Tabbed with DrumBurp, "
                           "a drum tab editor from www.whatang.org")

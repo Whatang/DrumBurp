@@ -336,6 +336,7 @@ class QScore(QtGui.QGraphicsScene):
             self.reBuild()
             self.dirty = False
             self._state = Waiting(self)
+            self.scoreDisplayChanged.emit()
 
     @property
     def score(self):
@@ -385,13 +386,17 @@ class QScore(QtGui.QGraphicsScene):
         self.placeStaffs()
         self.invalidate()
 
+    scoreDisplayChanged = QtCore.pyqtSignal()
+
     @delayCall
     def reBuild(self):
-        self._score.formatScore(None)
+        if self._score.formatScore(None):
+            self.scoreDisplayChanged.emit()
         self._build()
 
     def checkFormatting(self):
         if self._score.formatScore(None):
+            self.scoreDisplayChanged.emit()
             self.reBuild()
 
     def __iter__(self):
@@ -508,6 +513,7 @@ class QScore(QtGui.QGraphicsScene):
     def dataChanged(self, notePosition):
         staff = self._qStaffs[notePosition.staffIndex]
         staff.dataChanged(notePosition)
+        self.scoreDisplayChanged.emit()
 
     def ignoreNextClick(self):
         self._ignoreNext = True
