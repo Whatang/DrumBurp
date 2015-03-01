@@ -5,6 +5,7 @@ Created on Feb 28, 2015
 '''
 from PyQt4.Qt import QThread
 import subprocess
+import os
 import platform
 
 class LilypondExporter(QThread):
@@ -64,6 +65,9 @@ class LilypondExporter(QThread):
                     suInfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
                     suInfo.wShowWindow = subprocess.SW_HIDE
                     kwargs['startupinfo'] = suInfo
+                env = os.environ
+                env['LILYPOND_GC_YIELD'] = '100'
+                kwargs['env'] = env
                 returnCode = subprocess.call([self._lilypondPath,
                                               '-s',
                                               '-o', self._processedPath,
