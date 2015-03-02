@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1154</width>
+    <width>1193</width>
     <height>769</height>
    </rect>
   </property>
@@ -895,7 +895,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1154</width>
+     <width>1193</width>
      <height>31</height>
     </rect>
    </property>
@@ -2367,8 +2367,8 @@ p, li { white-space: pre-wrap; }
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>611</x>
-     <y>54</y>
+     <x>416</x>
+     <y>75</y>
     </hint>
    </hints>
   </connection>
@@ -2379,8 +2379,8 @@ p, li { white-space: pre-wrap; }
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>611</x>
-     <y>54</y>
+     <x>416</x>
+     <y>75</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -2427,8 +2427,8 @@ p, li { white-space: pre-wrap; }
    <slot>setFont(QFont)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>88</x>
-     <y>208</y>
+     <x>102</x>
+     <y>235</y>
     </hint>
     <hint type="destinationlabel">
      <x>454</x>
@@ -2443,8 +2443,8 @@ p, li { white-space: pre-wrap; }
    <slot>setNoteFontSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>193</x>
-     <y>208</y>
+     <x>172</x>
+     <y>237</y>
     </hint>
     <hint type="destinationlabel">
      <x>349</x>
@@ -2459,8 +2459,8 @@ p, li { white-space: pre-wrap; }
    <slot>setSectionFontSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>193</x>
-     <y>428</y>
+     <x>172</x>
+     <y>443</y>
     </hint>
     <hint type="destinationlabel">
      <x>349</x>
@@ -2491,8 +2491,8 @@ p, li { white-space: pre-wrap; }
    <slot>setMetadataFont(QFont)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>88</x>
-     <y>648</y>
+     <x>102</x>
+     <y>646</y>
     </hint>
     <hint type="destinationlabel">
      <x>351</x>
@@ -2507,7 +2507,7 @@ p, li { white-space: pre-wrap; }
    <slot>setMetadataFontSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>193</x>
+     <x>172</x>
      <y>648</y>
     </hint>
     <hint type="destinationlabel">
@@ -2591,8 +2591,8 @@ p, li { white-space: pre-wrap; }
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>88</x>
-     <y>648</y>
+     <x>102</x>
+     <y>646</y>
     </hint>
    </hints>
   </connection>
@@ -2607,7 +2607,7 @@ p, li { white-space: pre-wrap; }
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>193</x>
+     <x>172</x>
      <y>648</y>
     </hint>
    </hints>
@@ -2619,12 +2619,12 @@ p, li { white-space: pre-wrap; }
    <slot>setWidth(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>373</x>
-     <y>99</y>
+     <x>850</x>
+     <y>168</y>
     </hint>
     <hint type="destinationlabel">
-     <x>488</x>
-     <y>145</y>
+     <x>706</x>
+     <y>313</y>
     </hint>
    </hints>
   </connection>
@@ -2635,12 +2635,12 @@ p, li { white-space: pre-wrap; }
    <slot>systemSpacingChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>475</x>
-     <y>101</y>
+     <x>942</x>
+     <y>169</y>
     </hint>
     <hint type="destinationlabel">
-     <x>661</x>
-     <y>146</y>
+     <x>879</x>
+     <y>314</y>
     </hint>
    </hints>
   </connection>
@@ -2651,12 +2651,12 @@ p, li { white-space: pre-wrap; }
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>469</x>
-     <y>130</y>
+     <x>687</x>
+     <y>298</y>
     </hint>
     <hint type="destinationlabel">
-     <x>373</x>
-     <y>99</y>
+     <x>850</x>
+     <y>168</y>
     </hint>
    </hints>
   </connection>
@@ -2667,8 +2667,8 @@ p, li { white-space: pre-wrap; }
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>661</x>
-     <y>101</y>
+     <x>1165</x>
+     <y>172</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -2699,8 +2699,8 @@ p, li { white-space: pre-wrap; }
    <slot>showSection(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>745</x>
-     <y>99</y>
+     <x>693</x>
+     <y>168</y>
     </hint>
     <hint type="destinationlabel">
      <x>876</x>
@@ -2747,12 +2747,12 @@ p, li { white-space: pre-wrap; }
    <slot>setLilypondSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>856</x>
-     <y>101</y>
+     <x>414</x>
+     <y>175</y>
     </hint>
     <hint type="destinationlabel">
-     <x>815</x>
-     <y>143</y>
+     <x>1033</x>
+     <y>311</y>
     </hint>
    </hints>
   </connection>
@@ -2763,12 +2763,12 @@ p, li { white-space: pre-wrap; }
    <slot>setLilypondPages(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>808</x>
-     <y>101</y>
+     <x>352</x>
+     <y>175</y>
     </hint>
     <hint type="destinationlabel">
-     <x>913</x>
-     <y>180</y>
+     <x>1131</x>
+     <y>348</y>
     </hint>
    </hints>
   </connection>
@@ -2779,12 +2779,12 @@ p, li { white-space: pre-wrap; }
    <slot>setLilyFill(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>944</x>
-     <y>99</y>
+     <x>538</x>
+     <y>174</y>
     </hint>
     <hint type="destinationlabel">
-     <x>852</x>
-     <y>163</y>
+     <x>1070</x>
+     <y>331</y>
     </hint>
    </hints>
   </connection>
@@ -2811,8 +2811,8 @@ p, li { white-space: pre-wrap; }
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1035</x>
-     <y>163</y>
+     <x>1158</x>
+     <y>179</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -2827,8 +2827,72 @@ p, li { white-space: pre-wrap; }
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1018</x>
-     <y>164</y>
+     <x>1157</x>
+     <y>180</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>FitWindowButton</sender>
+   <signal>clicked()</signal>
+   <receiver>actionFitInWindow</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>256</x>
+     <y>156</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>FitPageButton</sender>
+   <signal>clicked()</signal>
+   <receiver>actionFitPage</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>301</x>
+     <y>156</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>301</x>
+     <y>156</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>PrintScoreButton</sender>
+   <signal>clicked()</signal>
+   <receiver>actionPrint</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>346</x>
+     <y>156</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>PrintPdfButton</sender>
+   <signal>clicked()</signal>
+   <receiver>actionExportPDF</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>391</x>
+     <y>156</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>

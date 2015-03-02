@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\mike_000\workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sun Mar 01 02:31:12 2015
+# Created: Mon Mar 02 22:54:36 2015
 #      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_DrumBurpWindow(object):
     def setupUi(self, DrumBurpWindow):
         DrumBurpWindow.setObjectName(_fromUtf8("DrumBurpWindow"))
-        DrumBurpWindow.resize(1154, 769)
+        DrumBurpWindow.resize(1193, 769)
         DrumBurpWindow.setFocusPolicy(QtCore.Qt.NoFocus)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/drumburp.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -320,7 +320,7 @@ class Ui_DrumBurpWindow(object):
         self.verticalLayout.addWidget(self.frame_2)
         DrumBurpWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(DrumBurpWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1154, 31))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1193, 31))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
@@ -777,6 +777,10 @@ class Ui_DrumBurpWindow(object):
         QtCore.QObject.connect(self.actionShowMeasureCounts, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.scoreView.setMeasureCountsVisible)
         QtCore.QObject.connect(self.exportLilypondButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionExportLilypond.trigger)
         QtCore.QObject.connect(self.textExportButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionExportASCII.trigger)
+        QtCore.QObject.connect(self.FitWindowButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionFitInWindow.trigger)
+        QtCore.QObject.connect(self.FitPageButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionFitPage.trigger)
+        QtCore.QObject.connect(self.PrintScoreButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionPrint.trigger)
+        QtCore.QObject.connect(self.PrintPdfButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionExportPDF.trigger)
         QtCore.QMetaObject.connectSlotsByName(DrumBurpWindow)
         DrumBurpWindow.setTabOrder(self.fontsButton, self.noteSizeSpinBox)
         DrumBurpWindow.setTabOrder(self.noteSizeSpinBox, self.fontComboBox)
