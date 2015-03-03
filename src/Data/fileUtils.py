@@ -22,7 +22,7 @@ Created on 7 Oct 2012
 @author: Mike Thomas
 '''
 
-import DBErrors
+import Data.DBErrors as DBErrors
 
 class dbFileIterator(object):
     class _Section(object):

@@ -24,8 +24,8 @@ Created on 12 Dec 2010
 '''
 import copy
 
-from DBConstants import DRUM_ABBR_WIDTH
-import DefaultKits
+from Data.DBConstants import DRUM_ABBR_WIDTH
+import Data.DefaultKits as DefaultKits
 
 class HeadData(object):
     def __init__(self, midiNote = DefaultKits.DEFAULT_NOTE,
@@ -115,9 +115,9 @@ class Drum(object):
         self._noteHeads = []
         self._headData = {}
         self.locked = locked
-        assert(len(name) > 0)
-        assert(1 <= len(abbr) <= DRUM_ABBR_WIDTH)
-        assert(len(head) == 1)
+        assert len(name) > 0
+        assert 1 <= len(abbr) <= DRUM_ABBR_WIDTH
+        assert len(head) == 1
 
     @property
     def head(self):
@@ -172,11 +172,11 @@ class Drum(object):
             self._guessEffect(head)
             self.checkShortcuts()
         else:
-            assert(isinstance(headData, HeadData))
+            assert isinstance(headData, HeadData)
             self._headData[head] = headData
 
     def _guessEffect(self, head):
-        assert(head in self._headData)
+        assert head in self._headData
         self._headData[head].effect = _DEFAULTEFFECT.get(head, "normal")
 
     def guessHeadData(self):
@@ -232,7 +232,7 @@ class Drum(object):
             idx = self._noteHeads.index(head)
         except ValueError:
             return
-        if(idx < 2):
+        if idx < 2:
             return
         self._noteHeads[idx - 1:idx + 1] = self._noteHeads[idx:idx - 2:-1]
 

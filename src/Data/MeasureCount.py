@@ -23,8 +23,8 @@ Created on 18 Jan 2011
 
 '''
 
-from Beat import Beat
-from Counter import CounterRegistry
+from Data.Beat import Beat
+from Data.Counter import CounterRegistry
 
 MIDITICKSPERBEAT = 192
 
@@ -76,7 +76,7 @@ class MeasureCount(object):
                 yield total
                 total += midiTicks
         yield total
-        
+
     def count(self):
         for beatNum, beat in enumerate(self.beats):
             for count in beat.count(beatNum + 1):

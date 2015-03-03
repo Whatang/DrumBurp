@@ -24,14 +24,14 @@ Created on 16 Apr 2011
 '''
 
 import itertools
-from Counter import CounterRegistry
-from DBConstants import BEAT_COUNT
-import DBErrors
+from Data.Counter import CounterRegistry
+from Data.DBConstants import BEAT_COUNT
+import Data.DBErrors as DBErrors
 
 class Beat(object):
-    '''A Beat is a measured instance of a Counter. 
-    
-    A Beat may be less than the full length of the corresponding Counter to 
+    '''A Beat is a measured instance of a Counter.
+
+    A Beat may be less than the full length of the corresponding Counter to
     reflect partial beats at the end of a Measure. A sequence of Beats makes
     up a MeasureCount.
     '''
