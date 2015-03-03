@@ -172,12 +172,8 @@ class ScoreView(QtGui.QGraphicsView):
         
     @QtCore.pyqtSlot(QtGui.QGraphicsItem)
     def showItemAtTop(self, item, timeInMs = 250, margins = 20):
-        itemPos = item.scenePos()
         itemRect = item.sceneBoundingRect()
-        viewRect = self.mapFromScene(itemRect)
-        vwidth = self.viewport().width()
-        vheight = self.viewport().height()
-        left = max(0, itemRect.right() + margins - vwidth)
-        top = max(0, itemPos.y() - margins)
+        left = max(0, itemRect.right() + margins - self.viewport().width())
+        top = max(0, itemRect.top() - margins)
         self.setTopLeft(left, top, timeInMs)
 
