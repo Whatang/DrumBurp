@@ -177,3 +177,25 @@ class ScoreView(QtGui.QGraphicsView):
         top = max(0, itemRect.top() - margins)
         self.setTopLeft(left, top, timeInMs)
 
+    @QtCore.pyqtSlot(QtGui.QGraphicsItem, QtGui.QGraphicsItem)
+    def showTwoItems(self, primary, secondary, timeInMs = 250, margins = 20):
+        primRect = primary.sceneBoundingRect()
+        secRect = secondary.sceneBoundingRect()
+        top = min(primRect.top(), secRect.top())
+        bottom = max(primRect.bottom(), secRect.bottom())
+        left = min(primRect.left(), secRect.left())
+        right = max(primRect.right(), secRect.right())
+        vwidth = self.viewport().width()
+        vheight = self.viewport().height()
+        if (right - left - 2 * margins) > vwidth or (top - bottom - 2 * margins) > vheight:
+            if (right - left) > vwidth or (top - bottom) > vheight:
+                self.showItemAtTop(primary, timeInMs, margins)
+            else:
+                vleft = max(0, right - vwidth)
+                vtop = max(0, top)
+                self.setTopLeft(vleft, vtop, timeInMs)
+        else:
+            vleft = max(0, right + margins - vwidth)
+            vtop = max(0, top - margins)
+            self.setTopLeft(vleft, vtop, timeInMs)
+        
