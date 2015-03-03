@@ -189,11 +189,6 @@ class ContextMenu(FsmState):
         elif msgType == Event.SetAlternateEvent:
             newState = SetAlternateState(self.qscore, event.alternateText,
                                      event.measurePosition)
-        elif msgType == Event.EditMeasureProperties:
-            newState = EditMeasurePropertiesState(self.qscore,
-                                                  event.counter,
-                                                  event.counterRegistry,
-                                                  event.measurePosition)
         return newState
 
 class Repeating(FsmState):
@@ -337,12 +332,18 @@ class MeasureCountContextMenuState(FsmState):
         msgType = type(event)
         if msgType == Event.StartPlaying:
             self.menu.close()
-            return Playing(self.qscore)
+            newState = Playing(self.qscore)
         elif msgType == Event.Escape:
             self.menu.close()
-            return Waiting(self.qscore)
+            newState = Waiting(self.qscore)
+        elif msgType == Event.EditMeasureProperties:
+            newState = EditMeasurePropertiesState(self.qscore,
+                                                  event.counter,
+                                                  event.counterRegistry,
+                                                  event.measurePosition)
         else:
-            return Waiting(self.qscore)
+            newState = Waiting(self.qscore)
+        return newState
 
 class Playing(FsmState):
     def __init__(self, qscore):

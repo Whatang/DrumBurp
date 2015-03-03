@@ -23,9 +23,13 @@ Created on May 11, 2014
 '''
 # import copy
 
-from GUI.QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
-from GUI.DBCommands import ChangeMeasureCountCommand
+from .QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
+from .DBCommands import (ChangeMeasureCountCommand,
+                            ContractMeasureCountCommand,
+                            ContractAllMeasureCountsCommand)
 from Data.MeasureCount import makeSimpleCount
+from .DBFSMEvents import EditMeasureProperties
+
 # from Data.Beat import Beat
 
 class QCountContextMenu(QMenuIgnoreCancelClick):
@@ -42,6 +46,7 @@ class QCountContextMenu(QMenuIgnoreCancelClick):
         self._setup()
 
     def _setup(self):
+        self.addAction("Edit Measure Count", self._editMeasureCount)
         # beatMenu = self.addMenu("Beat Count")
         measureMenu = self.addMenu("Measure Count")
         # self._addCountActions(beatMenu, self._setBeatCount)
@@ -53,6 +58,12 @@ class QCountContextMenu(QMenuIgnoreCancelClick):
         #    after.setDisabled(True)
         self.addSeparator()
         # self.addAction("Delete", self._deleteBeat)
+        contractAction = self.addAction("Contract Count", self._contractCount)
+        index = self._qScore.score.getMeasureIndex(self._np)
+        measure = self._qScore.score.getMeasure(index)
+        contractAction.setEnabled(measure.getSmallestSimpleCount() != None)
+        self.addAction("Contract All Counts", self._contractAllCounts)
+
 
     def _addCountActions(self, menu, countFunction):
         for name, counter in self._qScore.displayProperties.counterRegistry:
@@ -69,7 +80,6 @@ class QCountContextMenu(QMenuIgnoreCancelClick):
         command = ChangeMeasureCountCommand(self._qScore, self._measurePos,
                                             newMeasureCount)
         self._qScore.addCommand(command)
-        
 
 #     @QMenuIgnoreCancelClick.menuSelection
 #     def _insertBeatBefore(self):
@@ -97,3 +107,25 @@ class QCountContextMenu(QMenuIgnoreCancelClick):
 #     @QMenuIgnoreCancelClick.menuSelection
 #     def _deleteBeat(self):
 #         pass
+
+    @QMenuIgnoreCancelClick.menuSelection
+    def _contractCount(self):
+        command = ContractMeasureCountCommand(self._qScore, self._np)
+        self._qScore.clearDragSelection()
+        self._qScore.addCommand(command)
+
+    @QMenuIgnoreCancelClick.menuSelection
+    def _contractAllCounts(self):
+        command = ContractAllMeasureCountsCommand(self._qScore, self._np)
+        self._qScore.clearDragSelection()
+        self._qScore.addCommand(command)
+
+    def _editMeasureCount(self):
+        measurePosition = self._qmeasure.measurePosition()
+        measure = self._qScore.score.getItemAtPosition(measurePosition)
+        counter = measure.counter
+        fsmEvent = EditMeasureProperties(counter,
+                                         self._props.counterRegistry,
+                                         measurePosition)
+        self._qScore.sendFsmEvent(fsmEvent)
+

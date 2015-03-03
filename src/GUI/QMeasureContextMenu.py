@@ -29,10 +29,9 @@ import DBIcons
 from Data import DBConstants
 from DBCommands import (InsertMeasuresCommand,
                         InsertSectionCommand, DeleteMeasureCommand,
-                        SetAlternateCommand, ContractMeasureCountCommand,
-                        ContractAllMeasureCountsCommand)
+                        SetAlternateCommand)
 from QInsertMeasuresDialog import QInsertMeasuresDialog
-from DBFSMEvents import RepeatNotes, EditMeasureProperties
+from DBFSMEvents import RepeatNotes
 
 class QMeasureContextMenu(QMenuIgnoreCancelClick):
     def __init__(self, qScore, qmeasure, firstNote, alternateText):
@@ -44,7 +43,6 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         self._np = firstNote
         self._noteText = qmeasure.noteAt(firstNote)
         self._alternate = alternateText
-        self._props = self._qScore.displayProperties
         self._setup()
 
     def _setup(self):
@@ -83,12 +81,6 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                                          "Insert Measures From Clipboard",
                                          self._insertOneMeasure)
         pasteAction.setEnabled(len(self._qScore.measureClipboard) > 0)
-        self.addAction("Edit Measure Count", self._editMeasureCount)
-        contractAction = self.addAction("Contract Count", self._contractCount)
-        index = self._qScore.score.getMeasureIndex(self._np)
-        measure = self._qScore.score.getMeasure(index)
-        contractAction.setEnabled(measure.getSmallestSimpleCount() != None)
-        self.addAction("Contract All Counts", self._contractAllCounts)
         self.addSeparator()
 
     def _setupInsertSection(self, score):
@@ -135,27 +127,6 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
 
     def _repeatNote(self):
         self._qScore.sendFsmEvent(RepeatNotes())
-
-    def _contractCount(self):
-        command = ContractMeasureCountCommand(self._qScore, self._np)
-        self._qScore.clearDragSelection()
-        self._qScore.addCommand(command)
-        self._qScore.sendFsmEvent(MenuSelect())
-
-    def _contractAllCounts(self):
-        command = ContractAllMeasureCountsCommand(self._qScore, self._np)
-        self._qScore.clearDragSelection()
-        self._qScore.addCommand(command)
-        self._qScore.sendFsmEvent(MenuSelect())
-
-    def _editMeasureCount(self):
-        measurePosition = self._qmeasure.measurePosition()
-        measure = self._qScore.score.getItemAtPosition(measurePosition)
-        counter = measure.counter
-        fsmEvent = EditMeasureProperties(counter,
-                                         self._props.counterRegistry,
-                                         measurePosition)
-        self._qScore.sendFsmEvent(fsmEvent)
 
     @QMenuIgnoreCancelClick.menuSelection
     def _insertDefaultMeasure(self, np, preserveSectionEnd = False):

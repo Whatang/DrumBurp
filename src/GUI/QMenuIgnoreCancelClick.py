@@ -47,6 +47,7 @@ class QMenuIgnoreCancelClick(QMenu):
         '''
         super(QMenuIgnoreCancelClick, self).__init__(parent)
         self._qScore = qScore
+        self._props = self._qScore.displayProperties
         self.aboutToHide.connect(self._checkGoodSelection)
 
     def _checkGoodSelection(self):
