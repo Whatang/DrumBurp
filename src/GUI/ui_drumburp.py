@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\mike_000\workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Mon Mar 02 22:54:36 2015
+# Created: Sun Mar 01 09:26:09 2015
 #      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -341,6 +341,8 @@ class Ui_DrumBurpWindow(object):
         self.menuTool_Bars.setObjectName(_fromUtf8("menuTool_Bars"))
         self.menu_MIDI = QtGui.QMenu(self.menubar)
         self.menu_MIDI.setObjectName(_fromUtf8("menu_MIDI"))
+        self.menuSelectMidiOut = QtGui.QMenu(self.menu_MIDI)
+        self.menuSelectMidiOut.setObjectName(_fromUtf8("menuSelectMidiOut"))
         DrumBurpWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(DrumBurpWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
@@ -667,6 +669,8 @@ class Ui_DrumBurpWindow(object):
         icon31.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icons/Icons/preferences-desktop-locale.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionEditColours.setIcon(icon31)
         self.actionEditColours.setObjectName(_fromUtf8("actionEditColours"))
+        self.actionRefreshMidiDevices = QtGui.QAction(DrumBurpWindow)
+        self.actionRefreshMidiDevices.setObjectName(_fromUtf8("actionRefreshMidiDevices"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.menuRecentScores.menuAction())
@@ -709,6 +713,8 @@ class Ui_DrumBurpWindow(object):
         self.menuTool_Bars.addAction(self.actionHelpToolBarIsVisible)
         self.menuView_2.addAction(self.actionEditColours)
         self.menuView_2.addAction(self.menuTool_Bars.menuAction())
+        self.menuSelectMidiOut.addAction(self.actionRefreshMidiDevices)
+        self.menuSelectMidiOut.addSeparator()
         self.menu_MIDI.addAction(self.actionPlayScore)
         self.menu_MIDI.addAction(self.actionPlayOnce)
         self.menu_MIDI.addAction(self.actionLoopBars)
@@ -716,6 +722,8 @@ class Ui_DrumBurpWindow(object):
         self.menu_MIDI.addAction(self.actionMuteNotes)
         self.menu_MIDI.addSeparator()
         self.menu_MIDI.addAction(self.actionExportMIDI)
+        self.menu_MIDI.addSeparator()
+        self.menu_MIDI.addAction(self.menuSelectMidiOut.menuAction())
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuEdit.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
@@ -957,6 +965,7 @@ class Ui_DrumBurpWindow(object):
         self.menuView_2.setTitle(_translate("DrumBurpWindow", "&View", None))
         self.menuTool_Bars.setTitle(_translate("DrumBurpWindow", "Tool Bars...", None))
         self.menu_MIDI.setTitle(_translate("DrumBurpWindow", "&MIDI", None))
+        self.menuSelectMidiOut.setTitle(_translate("DrumBurpWindow", "Select MIDI out", None))
         self.fileToolBar.setWindowTitle(_translate("DrumBurpWindow", "File", None))
         self.displayToolBar.setWindowTitle(_translate("DrumBurpWindow", "Display", None))
         self.helpToolBar.setWindowTitle(_translate("DrumBurpWindow", "Help", None))
@@ -1224,6 +1233,10 @@ class Ui_DrumBurpWindow(object):
         self.actionShowMeasureCounts.setWhatsThis(_translate("DrumBurpWindow", "Show/Hide Measure Indexes", None))
         self.actionEditColours.setText(_translate("DrumBurpWindow", "Edit &Colours", None))
         self.actionEditColours.setToolTip(_translate("DrumBurpWindow", "Edit the colours DrumBurp uses", None))
+        self.actionRefreshMidiDevices.setText(_translate("DrumBurpWindow", "Refresh Device List", None))
+        self.actionRefreshMidiDevices.setToolTip(_translate("DrumBurpWindow", "Refresh MIDI device list", None))
+        self.actionRefreshMidiDevices.setStatusTip(_translate("DrumBurpWindow", "Refresh MIDI device list", None))
+        self.actionRefreshMidiDevices.setWhatsThis(_translate("DrumBurpWindow", "Refresh MIDI device list", None))
 
 from Widgets.ScoreView_plugin import ScoreView
 import DrumBurp_rc
