@@ -21,13 +21,13 @@ Created on May 11, 2014
 
 @author: Mike Thomas
 '''
-import copy
+# import copy
 
 from GUI.QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 from GUI.DBCommands import ChangeMeasureCountCommand
 from GUI.DBFSMEvents import MenuSelect
 from Data.MeasureCount import makeSimpleCount
-from Data.Beat import Beat
+# from Data.Beat import Beat
 
 class QCountContextMenu(QMenuIgnoreCancelClick):
     def __init__(self, qScore, np, qmeasure):
@@ -43,25 +43,25 @@ class QCountContextMenu(QMenuIgnoreCancelClick):
         self._setup()
 
     def _setup(self):
-        beatMenu = self.addMenu("Beat Count")
+        # beatMenu = self.addMenu("Beat Count")
         measureMenu = self.addMenu("Measure Count")
-        self._addCountActions(beatMenu, self._setBeatCount)
+        # self._addCountActions(beatMenu, self._setBeatCount)
         self._addCountActions(measureMenu, self._setMeasureCount)
         self.addSeparator()
-        self.addAction("Insert Before", self._insertBeatBefore)
-        after = self.addAction("Insert After", self._insertBeatAfter)
-        if self._counter.endsWithPartialBeat():
-            after.setDisabled(True)
+        # self.addAction("Insert Before", self._insertBeatBefore)
+        # after = self.addAction("Insert After", self._insertBeatAfter)
+        # if self._counter.endsWithPartialBeat():
+        #    after.setDisabled(True)
         self.addSeparator()
-        self.addAction("Delete", self._deleteBeat)
+        # self.addAction("Delete", self._deleteBeat)
 
     def _addCountActions(self, menu, countFunction):
         for name, counter in self._qScore.displayProperties.counterRegistry:
             menu.addAction(name, lambda beat = counter: countFunction(beat))
 
-    @QMenuIgnoreCancelClick.menuSelection
-    def _setBeatCount(self, newCount):
-        print "Beat", repr(newCount)
+#     @QMenuIgnoreCancelClick.menuSelection
+#     def _setBeatCount(self, newCount):
+#         print "Beat", repr(newCount)
 
     @QMenuIgnoreCancelClick.menuSelection
     def _setMeasureCount(self, newCounter):
@@ -72,29 +72,29 @@ class QCountContextMenu(QMenuIgnoreCancelClick):
         self._qScore.addCommand(command)
         
 
-    @QMenuIgnoreCancelClick.menuSelection
-    def _insertBeatBefore(self):
-        tickIndex = self._np.noteTime
-        beatIndex = self._counter.beatIndexContainingTickIndex(tickIndex)
-        newMeasureCount = copy.copy(self._counter)
-        newMeasureCount.insertBeat(Beat(self._counter[beatIndex].counter),
-                                   beatIndex)
-        command = ChangeMeasureCountCommand(self._qScore, self._measurePos,
-                                            newMeasureCount)
-        self._qScore.addCommand(command)
+#     @QMenuIgnoreCancelClick.menuSelection
+#     def _insertBeatBefore(self):
+#         tickIndex = self._np.noteTime
+#         beatIndex = self._counter.beatIndexContainingTickIndex(tickIndex)
+#         newMeasureCount = copy.copy(self._counter)
+#         newMeasureCount.insertBeat(Beat(self._counter[beatIndex].counter),
+#                                    beatIndex)
+#         command = ChangeMeasureCountCommand(self._qScore, self._measurePos,
+#                                             newMeasureCount)
+#         self._qScore.addCommand(command)
 
-    @QMenuIgnoreCancelClick.menuSelection
-    def _insertBeatAfter(self):
-        tickIndex = self._np.noteTime
-        beatIndex = self._counter.beatIndexContainingTickIndex(tickIndex)
-        newMeasureCount = copy.copy(self._counter)
-        newMeasureCount.insertBeat(Beat(self._counter[beatIndex].counter),
-                                   beatIndex + 1)
-        command = ChangeMeasureCountCommand(self._qScore, self._measurePos,
-                                            newMeasureCount)
-        self._qScore.addCommand(command)
+#     @QMenuIgnoreCancelClick.menuSelection
+#     def _insertBeatAfter(self):
+#         tickIndex = self._np.noteTime
+#         beatIndex = self._counter.beatIndexContainingTickIndex(tickIndex)
+#         newMeasureCount = copy.copy(self._counter)
+#         newMeasureCount.insertBeat(Beat(self._counter[beatIndex].counter),
+#                                    beatIndex + 1)
+#         command = ChangeMeasureCountCommand(self._qScore, self._measurePos,
+#                                             newMeasureCount)
+#         self._qScore.addCommand(command)
 
 
-    @QMenuIgnoreCancelClick.menuSelection
-    def _deleteBeat(self):
-        pass
+#     @QMenuIgnoreCancelClick.menuSelection
+#     def _deleteBeat(self):
+#         pass

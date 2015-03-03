@@ -107,19 +107,19 @@ class MeasureCount(object):
     def addBeats(self, beat, numBeats):
         self.beats.extend([beat] * numBeats)
 
-    def beatIndexContainingTickIndex(self, tickIndex):
-        totalTicks = 0
-        for beatIndex, beat in enumerate(self.beats):
-            totalTicks += beat.numTicks
-            if totalTicks > tickIndex:
-                return beatIndex
-        return None
+#     def beatIndexContainingTickIndex(self, tickIndex):
+#         totalTicks = 0
+#         for beatIndex, beat in enumerate(self.beats):
+#             totalTicks += beat.numTicks
+#             if totalTicks > tickIndex:
+#                 return beatIndex
+#         return None
 
-    def insertBeat(self, beat, index):
-        self.beats.insert(index, beat)
+#     def insertBeat(self, beat, index):
+#         self.beats.insert(index, beat)
 
-    def endsWithPartialBeat(self):
-        return self.beats[-1].isPartial()
+#     def endsWithPartialBeat(self):
+#         return self.beats[-1].isPartial()
 
     def numBeats(self):
         return len(self.beats)
