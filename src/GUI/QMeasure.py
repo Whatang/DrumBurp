@@ -336,7 +336,7 @@ class QMeasure(QtGui.QGraphicsItem):
             self.parentItem().clearHighlight()
             self.update()
         if self._isOverCount(lineIndex):
-            self._qScore.setStatusMessage("Double click to edit measure count.")
+            self._qScore.setStatusMessage("Double click to edit measure count; right click for count options.")
             self.setCursor(QtCore.Qt.PointingHandCursor)
         elif self._isOverRepeatCount(point):
             self._qScore.setStatusMessage("Double click to edit repeat count.")
