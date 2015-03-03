@@ -76,7 +76,7 @@
             <number>0</number>
            </property>
            <item>
-            <widget class="QGroupBox" name="groupBox">
+            <widget class="QGroupBox" name="scoreActionsBox">
              <property name="title">
               <string>Actions</string>
              </property>
@@ -2886,8 +2886,8 @@ p, li { white-space: pre-wrap; }
      <y>156</y>
     </hint>
     <hint type="destinationlabel">
-     <x>301</x>
-     <y>156</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
    </hints>
   </connection>

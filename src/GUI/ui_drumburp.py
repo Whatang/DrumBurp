@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\mike_000\workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Sun Mar 01 09:26:09 2015
+# Created: Tue Mar 03 17:01:43 2015
 #      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -56,12 +56,12 @@ class Ui_DrumBurpWindow(object):
         self.horizontalLayout_6.setSpacing(4)
         self.horizontalLayout_6.setMargin(0)
         self.horizontalLayout_6.setObjectName(_fromUtf8("horizontalLayout_6"))
-        self.groupBox = QtGui.QGroupBox(self.frame_3)
-        self.groupBox.setObjectName(_fromUtf8("groupBox"))
-        self.horizontalLayout_7 = QtGui.QHBoxLayout(self.groupBox)
+        self.scoreActionsBox = QtGui.QGroupBox(self.frame_3)
+        self.scoreActionsBox.setObjectName(_fromUtf8("scoreActionsBox"))
+        self.horizontalLayout_7 = QtGui.QHBoxLayout(self.scoreActionsBox)
         self.horizontalLayout_7.setMargin(5)
         self.horizontalLayout_7.setObjectName(_fromUtf8("horizontalLayout_7"))
-        self.FitWindowButton = QtGui.QPushButton(self.groupBox)
+        self.FitWindowButton = QtGui.QPushButton(self.scoreActionsBox)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -73,7 +73,7 @@ class Ui_DrumBurpWindow(object):
         self.FitWindowButton.setIcon(icon1)
         self.FitWindowButton.setObjectName(_fromUtf8("FitWindowButton"))
         self.horizontalLayout_7.addWidget(self.FitWindowButton)
-        self.FitPageButton = QtGui.QPushButton(self.groupBox)
+        self.FitPageButton = QtGui.QPushButton(self.scoreActionsBox)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -85,7 +85,7 @@ class Ui_DrumBurpWindow(object):
         self.FitPageButton.setIcon(icon2)
         self.FitPageButton.setObjectName(_fromUtf8("FitPageButton"))
         self.horizontalLayout_7.addWidget(self.FitPageButton)
-        self.PrintScoreButton = QtGui.QPushButton(self.groupBox)
+        self.PrintScoreButton = QtGui.QPushButton(self.scoreActionsBox)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -97,7 +97,7 @@ class Ui_DrumBurpWindow(object):
         self.PrintScoreButton.setIcon(icon3)
         self.PrintScoreButton.setObjectName(_fromUtf8("PrintScoreButton"))
         self.horizontalLayout_7.addWidget(self.PrintScoreButton)
-        self.PrintPdfButton = QtGui.QPushButton(self.groupBox)
+        self.PrintPdfButton = QtGui.QPushButton(self.scoreActionsBox)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -109,7 +109,7 @@ class Ui_DrumBurpWindow(object):
         self.PrintPdfButton.setIcon(icon4)
         self.PrintPdfButton.setObjectName(_fromUtf8("PrintPdfButton"))
         self.horizontalLayout_7.addWidget(self.PrintPdfButton)
-        self.sectionNavigator = QtGui.QComboBox(self.groupBox)
+        self.sectionNavigator = QtGui.QComboBox(self.scoreActionsBox)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -120,7 +120,7 @@ class Ui_DrumBurpWindow(object):
         self.sectionNavigator.setDuplicatesEnabled(True)
         self.sectionNavigator.setObjectName(_fromUtf8("sectionNavigator"))
         self.horizontalLayout_7.addWidget(self.sectionNavigator)
-        self.horizontalLayout_6.addWidget(self.groupBox)
+        self.horizontalLayout_6.addWidget(self.scoreActionsBox)
         self.scorePropertiesGroup = QtGui.QGroupBox(self.frame_3)
         self.scorePropertiesGroup.setFlat(False)
         self.scorePropertiesGroup.setCheckable(False)
@@ -799,7 +799,7 @@ class Ui_DrumBurpWindow(object):
 
     def retranslateUi(self, DrumBurpWindow):
         DrumBurpWindow.setWindowTitle(_translate("DrumBurpWindow", "DrumBurp", None))
-        self.groupBox.setTitle(_translate("DrumBurpWindow", "Actions", None))
+        self.scoreActionsBox.setTitle(_translate("DrumBurpWindow", "Actions", None))
         self.FitWindowButton.setToolTip(_translate("DrumBurpWindow", "Fit score in window.", None))
         self.FitWindowButton.setStatusTip(_translate("DrumBurpWindow", "Attempt to make the score as wide as possible within the current window.", None))
         self.FitWindowButton.setWhatsThis(_translate("DrumBurpWindow", "Try to make the score fit in the editing window.\n"

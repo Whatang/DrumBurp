@@ -950,6 +950,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.actionExportMIDI.setDisabled(playing)
         self.actionMuteNotes.setDisabled(playing)
         self.lilypondGroupBox.setDisabled(playing)
+        self.scoreView.horizontalScrollBar().setDisabled(playing)
+        self.scoreView.verticalScrollBar().setDisabled(playing)
+        self.scoreActionsBox.setDisabled(playing)
+        self.refreshLilypond.setDisabled(playing)
+        self.textExportOptions.setDisabled(playing)
 
     @pyqtSignature("int")
     def on_paperBox_currentIndexChanged(self, index):
