@@ -162,7 +162,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         scene.lilypagesChanged.connect(self._setLilyPages)
         scene.lilyFillChanged.connect(self._setLilyFill)
         scene.lilyFormatChanged.connect(self._setLilyFormat)
-        scene.showItem.connect(self.scoreView.showItem)
+        scene.showItem.connect(self.scoreView.showItemAtTop)
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
@@ -772,13 +772,15 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                                 "There are inconsistent repeat markings.")
             position = self.scoreScene.score.getMeasurePosition(exc[0])
             measure = self.scoreScene.getQMeasure(position)
-            self.scoreView.showItem(measure)
+            self.scoreView.showItemAtTop(measure)
             return False
         return True
 
     @pyqtSignature("bool")
     def on_actionPlayScore_toggled(self, onOff):
         if onOff:
+            self.tabWidget.setCurrentWidget(self.textTab)
+            self.scoreView.setTopLeft(0, 0)
             if not self._canPlayback():
                 self.actionPlayScore.toggle()
                 return
@@ -795,7 +797,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             position = self.scoreScene.score.getMeasurePosition(index)
             self.scoreScene.highlightPlayingMeasure(position)
             measure = self.scoreScene.getQMeasure(position)
-            self.scoreView.showItem(measure)
+            self.scoreView.showItemAtTop(measure)
 
     @staticmethod
     @pyqtSignature("bool")
@@ -847,6 +849,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     @pyqtSignature("bool")
     def on_actionLoopBars_toggled(self, onOff):
         if onOff:
+            self.tabWidget.setCurrentWidget(self.textTab)
             if not self.scoreScene.hasDragSelection():
                 self.actionLoopBars.toggle()
                 return
@@ -860,6 +863,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     @pyqtSignature("bool")
     def on_actionPlayOnce_toggled(self, onOff):
         if onOff:
+            self.tabWidget.setCurrentWidget(self.textTab)
             if not self.scoreScene.hasDragSelection():
                 self.actionPlayOnce.toggle()
                 return

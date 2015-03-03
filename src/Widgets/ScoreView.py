@@ -24,6 +24,42 @@ Created on 5 Dec 2010
 '''
 from PyQt4 import QtGui, QtCore
 
+class SmoothScroller(object):
+    NUM_STEPS = 100
+    
+    def __init__(self, view):
+        self.view = view
+        self._timeline = None
+        self._x_start =None
+        self._x_end = None
+        self._y_start = None
+        self._y_end = None
+        self._mutex = QtCore.QMutex()
+        
+    def scrollTo(self, x_end, y_end, timeInMs = 250):
+        if not timeInMs:
+            self.view.horizontalScrollBar().setValue(x_end)
+            self.view.verticalScrollBar().setValue(y_end)
+            return
+        self._x_start = self.view.horizontalScrollBar().value()
+        self._y_start = self.view.verticalScrollBar().value()
+        self._x_end = x_end
+        self._y_end = y_end
+        self._timeline = QtCore.QTimeLine(duration = timeInMs)
+        self._timeline.setFrameRange(0, self.NUM_STEPS)
+        self._timeline.frameChanged.connect(self._frame)
+        self._timeline.finished.connect(self._finished)
+        self._timeline.start()
+        
+    def _frame(self, frameNum):
+        deltaX = ((self._x_end - self._x_start) * frameNum) / self.NUM_STEPS
+        deltaY = ((self._y_end - self._y_start) * frameNum) / self.NUM_STEPS
+        self.view.horizontalScrollBar().setValue(self._x_start + deltaX)
+        self.view.verticalScrollBar().setValue(self._y_start + deltaY)
+        
+    def _finished(self):
+        del self._timeline
+        self._timeline = None
 
 class ScoreView(QtGui.QGraphicsView):
     '''
@@ -33,6 +69,7 @@ class ScoreView(QtGui.QGraphicsView):
     def __init__(self, parent = None):
         super(ScoreView, self).__init__(parent)
         self._props = None
+        self._scroller = SmoothScroller(self)
 
     def setScene(self, scene):
         super(ScoreView, self).setScene(scene)
@@ -118,9 +155,9 @@ class ScoreView(QtGui.QGraphicsView):
             event.ignore()
             return super(ScoreView, self).keyPressEvent(event)
         if event.key() == QtCore.Qt.Key_Home:
-            self.centerOn(0, 0)
+            self.setTopLeft(0, 0)
         elif event.key() == QtCore.Qt.Key_End:
-            self.centerOn(0, self.sceneRect().height())
+            self.setTopLeft(0, self.sceneRect().height())
         else:
             event.ignore()
             return super(ScoreView, self).keyPressEvent(event)
@@ -128,11 +165,15 @@ class ScoreView(QtGui.QGraphicsView):
     @QtCore.pyqtSlot(int)
     def showSection(self, sectionIndex):
         section = self.scene().getQSection(sectionIndex)
-        self.showItem(section)
+        self.showItemAtTop(section)
+        
+    def setTopLeft(self, left, top, timeInMs = 250):
+        self._scroller.scrollTo(left, top, timeInMs)
         
     @QtCore.pyqtSlot(QtGui.QGraphicsItem)
-    def showItem(self, item):
-        itemPos = item.scenePos()
-        self.horizontalScrollBar().setValue(0)
-        self.verticalScrollBar().setValue(itemPos.y())
-        self.ensureVisible(item.sceneBoundingRect(), xMargin = 10, yMargin = 10)
+    def showItemAtTop(self, item, timeInMs = 250, margins = 20):
+        itemRect = item.sceneBoundingRect()
+        left = max(0, itemRect.right() + margins - self.viewport().width())
+        top = max(0, itemRect.top() - margins)
+        self.setTopLeft(left, top, timeInMs)
+
