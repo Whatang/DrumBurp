@@ -23,11 +23,11 @@ Created on May 11, 2014
 '''
 import copy
 
-from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
-from DBCommands import ChangeMeasureCountCommand
-from DBFSMEvents import MenuSelect
-from MeasureCount import makeSimpleCount
-from Beat import Beat
+from GUI.QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
+from GUI.DBCommands import ChangeMeasureCountCommand
+from GUI.DBFSMEvents import MenuSelect
+from Data.MeasureCount import makeSimpleCount
+from Data.Beat import Beat
 
 class QCountContextMenu(QMenuIgnoreCancelClick):
     def __init__(self, qScore, np, qmeasure):
