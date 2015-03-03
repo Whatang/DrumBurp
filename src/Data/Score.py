@@ -449,12 +449,14 @@ class Score(object):
     def iterSections(self):
         return iter(self._sections)
 
-    def setSectionEnd(self, position, onOff):
+    def setSectionEnd(self, position, onOff, title = None):
         self._checkStaffIndex(position.staffIndex)
         staff = self.getStaff(position.staffIndex)
         sectionIndex = self.getSectionIndex(position)
         if onOff:
-            self._sections.insert(sectionIndex, "Section Title")
+            if title is None:
+                title = "New Section"
+            self._sections.insert(sectionIndex, title)
         else:
             if sectionIndex < self.numSections():
                 self._sections.pop(sectionIndex)
@@ -490,13 +492,32 @@ class Score(object):
                 position.measureIndex = 0
         return position
 
+    @staticmethod
+    def _getPrefixAndDigitSuffix(targetString):
+        withoutDigitSuffix = targetString.rstrip("0123456789")
+        if withoutDigitSuffix == targetString:
+            return targetString, None
+        suffix = targetString[len(withoutDigitSuffix):]
+        suffix = int(suffix)
+        return withoutDigitSuffix, suffix
+
+    def _makeNewSectionTitle(self, startTitle):
+        stem, suffix = self._getPrefixAndDigitSuffix(startTitle)
+        if suffix is None:
+            return
+        for section in self.iterSections():
+            sectionStem, sectionSuffix = self._getPrefixAndDigitSuffix(section)
+            if sectionStem == stem:
+                suffix = max(suffix, sectionSuffix)
+        return "%s %d" % (stem, suffix + 1)
+
     def insertSectionCopy(self, position, sectionIndex):
         self.turnOffCallBacks()
         position = position.makeMeasurePosition()
         try:
             self._checkStaffIndex(position.staffIndex)
             sectionMeasures = list(self.iterMeasuresInSection(sectionIndex))
-            sectionTitle = "Copy of " + self.getSectionTitle(sectionIndex)
+            sectionTitle = self._makeNewSectionTitle(self.getSectionTitle(sectionIndex))
             newIndex = self.getSectionIndex(position)
             self._sections.insert(newIndex, sectionTitle)
             for measure in sectionMeasures:
