@@ -16,6 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with DrumBurp.  If not, see <http://www.gnu.org/licenses/>
+from PyQt4.QtGui import QGraphicsItem
 '''
 Created on 4 Jan 2011
 
@@ -196,6 +197,7 @@ class QScore(QtGui.QGraphicsScene):
     defaultCountChanged = QtCore.pyqtSignal(object)
     spacingChanged = QtCore.pyqtSignal(int)
     sectionsChanged = QtCore.pyqtSignal()
+    showItem = QtCore.pyqtSignal(QGraphicsItem)
     dragHighlight = QtCore.pyqtSignal(bool)
     sceneFormatted = QtCore.pyqtSignal()
     playing = QtCore.pyqtSignal(bool)

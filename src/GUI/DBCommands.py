@@ -486,8 +486,8 @@ class SetSectionEndCommand(SetMeasureLineCommand):
                                                    "set section end",
                                                    note, onOff,
                                                    None)
+        self._index = self._score.getSectionIndex(note)
         if not onOff:
-            self._index = self._score.getSectionIndex(note)
             self._title = self._score.getSectionTitle(self._index)
 
     def _undo(self):
@@ -496,13 +496,16 @@ class SetSectionEndCommand(SetMeasureLineCommand):
         if not self._onOff:
             self._score.setSectionTitle(self._index, self._title)
         self._qScore.sectionsChanged.emit()
+        self._qScore.invalidate()
 
     def _redo(self):
         self._score.setSectionEnd(self._np, self._onOff)
+        if self._onOff:
+            section = self._qScore.getQSection(self._index)
+            self._qScore.showItem.emit(section)
         self._qScore.reBuild()
         self._qScore.sectionsChanged.emit()
-
-
+        self._qScore.invalidate()
 
 class SetLineBreakCommand(SetMeasureLineCommand):
     def __init__(self, qScore, note, onOff):

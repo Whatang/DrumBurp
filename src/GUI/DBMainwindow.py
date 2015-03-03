@@ -162,6 +162,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         scene.lilypagesChanged.connect(self._setLilyPages)
         scene.lilyFillChanged.connect(self._setLilyFill)
         scene.lilyFormatChanged.connect(self._setLilyFormat)
+        scene.showItem.connect(self.scoreView.showItem)
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
@@ -771,7 +772,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                                 "There are inconsistent repeat markings.")
             position = self.scoreScene.score.getMeasurePosition(exc[0])
             measure = self.scoreScene.getQMeasure(position)
-            self.scoreView.ensureVisible(measure)
+            self.scoreView.showItem(measure)
             return False
         return True
 
@@ -794,7 +795,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             position = self.scoreScene.score.getMeasurePosition(index)
             self.scoreScene.highlightPlayingMeasure(position)
             measure = self.scoreScene.getQMeasure(position)
-            self.scoreView.ensureVisible(measure)
+            self.scoreView.showItem(measure)
 
     @staticmethod
     @pyqtSignature("bool")

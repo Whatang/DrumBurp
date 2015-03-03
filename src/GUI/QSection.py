@@ -45,7 +45,7 @@ class QSection(QGraphicsTextItem):
         font.setItalic(True)
         font.setPointSize(qScore.displayProperties.sectionFontSize)
         self.setFont(font)
-        self.setTextInteractionFlags(Qt.TextEditable | Qt.TextSelectableByMouse)
+        self.setTextInteractionFlags(Qt.TextEditorInteraction)
         self._title = None
         self.setTitle(title)
         self._index = None
