@@ -67,7 +67,7 @@ class MeasureLineContext(FsmEvent):
         self.endNote = endNote
         self.startNote = startNote
         self.screenPos = screenPos
-        
+
 class MeasureCountContext(_MouseEvent):
     pass
 

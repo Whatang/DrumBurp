@@ -28,7 +28,7 @@ from PyQt4.QtCore import Qt, QVariant, pyqtSignature
 
 from Data.Beat import Beat
 from Data.MeasureCount import MeasureCount
-from ui_DBComplextCountDialog import Ui_complexCountDialog
+from GUI.ui_DBComplextCountDialog import Ui_complexCountDialog
 
 class QComplexCountDialog(QDialog, Ui_complexCountDialog):
     '''

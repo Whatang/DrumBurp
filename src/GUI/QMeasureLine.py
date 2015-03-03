@@ -25,7 +25,7 @@ Created on 5 Jan 2011
 
 from PyQt4 import QtGui, QtCore
 from Data.NotePosition import NotePosition
-from DBFSMEvents import MeasureLineContext
+from GUI.DBFSMEvents import MeasureLineContext
 
 class QMeasureLine(QtGui.QGraphicsItem):
     '''

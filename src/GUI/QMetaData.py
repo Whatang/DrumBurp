@@ -22,8 +22,8 @@ Created on 12 Mar 2011
 @author: Mike Thomas
 
 '''
-from QMetaDataDialog import QMetadataDialog
-from QGraphicsListData import QGraphicsListData
+from GUI.QMetaDataDialog import QMetadataDialog
+from GUI.QGraphicsListData import QGraphicsListData
 
 class QMetaData(QGraphicsListData):
     '''

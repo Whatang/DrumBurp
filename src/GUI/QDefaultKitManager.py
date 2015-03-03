@@ -24,9 +24,9 @@ Created on 13 Oct 2012
 '''
 
 from PyQt4 import QtGui, QtCore
-from ui_defaultKitManager import Ui_DefaulKitManager
-from Data import DefaultKits, DrumKit, fileUtils
 from cStringIO import StringIO
+from GUI.ui_defaultKitManager import Ui_DefaulKitManager
+from Data import DefaultKits, DrumKit, fileUtils
 
 _IS_USER_KIT = QtCore.Qt.UserRole
 

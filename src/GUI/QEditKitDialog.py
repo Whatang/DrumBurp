@@ -22,20 +22,20 @@ Created on 26 Jan 2011
 @author: Mike Thomas
 
 '''
+import copy
+import os
+import string  # IGNORE:deprecated-module
 from PyQt4.QtGui import (QDialog, QRadioButton, QFileDialog, QDesktopServices,
                          QMessageBox, QInputDialog, QColor, QDialogButtonBox)
-from ui_editKit import Ui_editKitDialog
 from PyQt4.QtCore import QVariant
+from GUI.ui_editKit import Ui_editKitDialog
+from GUI.QDefaultKitManager import QDefaultKitManager
+import GUI.DBMidi as DBMidi
+from GUI.QNotationScene import QNotationScene
 from Data import DrumKit
 from Data.Drum import Drum
 from Data.DefaultKits import GHOST_VOLUME, ACCENT_VOLUME
 from Data import fileUtils
-from QDefaultKitManager import QDefaultKitManager
-import copy
-import os
-import string #IGNORE:W0402
-import DBMidi
-from QNotationScene import QNotationScene
 
 _KIT_FILE_EXT = ".dbk"
 _KIT_FILTER = "DrumBurp kits (*%s)" % _KIT_FILE_EXT
@@ -287,7 +287,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
 
     def _checkAbbrs(self):
         # Check that there is not more than one drum with the same
-        # abbreviation. If there is, highlight them and disable the OK button 
+        # abbreviation. If there is, highlight them and disable the OK button
         # and accept action.
         drumIndicesByAbbr = {}
         for index, drum in enumerate(self._currentKit):

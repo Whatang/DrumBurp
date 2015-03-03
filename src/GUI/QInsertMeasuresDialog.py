@@ -21,10 +21,10 @@ Created on 9 Jan 2011
 
 @author: Mike Thomas
 '''
-from ui_insertMeasuresDialog import Ui_InsertMeasuresDialog
 from PyQt4.QtGui import QDialog
+from GUI.ui_insertMeasuresDialog import Ui_InsertMeasuresDialog
+from GUI.QComplexCountDialog import QComplexCountDialog
 import Data.MeasureCount
-from QComplexCountDialog import QComplexCountDialog
 
 class QInsertMeasuresDialog(QDialog, Ui_InsertMeasuresDialog):
     '''

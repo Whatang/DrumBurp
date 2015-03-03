@@ -28,14 +28,14 @@ from PyQt4 import QtGui, QtCore
 from Data.NotePosition import NotePosition
 from Data import DBConstants
 
-from DBFSMEvents import (LeftPress, MidPress, RightPress,
-                         EditMeasureProperties,
-                         MouseMove, MouseRelease,
-                         ChangeRepeatCount,
-                         SetAlternateEvent,
-                         MeasureCountContext)
+from GUI.DBFSMEvents import (LeftPress, MidPress, RightPress,
+                             EditMeasureProperties,
+                             MouseMove, MouseRelease,
+                             ChangeRepeatCount,
+                             SetAlternateEvent,
+                             MeasureCountContext)
 
-def _painter_saver(method):
+def _painterSaver(method):
     def wrapper(self, painter, *args, **kwargs):
         painter.save()
         try:
@@ -114,13 +114,14 @@ class QMeasure(QtGui.QGraphicsItem):
     def _colourScheme(self):
         return self._qScore.parent().colourScheme
 
-    def _setPainterColour(self, painter, colourItem):
+    @staticmethod
+    def _setPainterColour(painter, colourItem):
         pen = QtGui.QPen(colourItem.borderStyle)
         pen.setColor(colourItem.borderColour)
         painter.setPen(pen)
         painter.setBrush(colourItem.backgroundColour)
 
-    @_painter_saver
+    @_painterSaver
     def _paintNotes(self, painter, xValues):
         font = painter.font()
         fontMetric = QtGui.QFontMetrics(font)
@@ -154,9 +155,11 @@ class QMeasure(QtGui.QGraphicsItem):
             baseline -= self._qScore.ySpacing
 #         painter.drawRect(self._rect) # Draw bounding box
 
-    @_painter_saver
+    @_painterSaver
     def _paintHighlight(self, painter, xValues):
-        noteTime, drumIndex = self._highlight
+        if self._highlight is None:
+            return
+        noteTime, drumIndex = self._highlight  # IGNORE:unpacking-non-sequence
         baseline = self._base + self.parentItem().alternateHeight()
         noteLine = (self.numLines() - drumIndex - 1) * self._qScore.ySpacing + self._base + self.parentItem().alternateHeight()
         countLine = (self.numLines() * self._qScore.ySpacing) + self._base + self.parentItem().alternateHeight()
@@ -175,7 +178,7 @@ class QMeasure(QtGui.QGraphicsItem):
                          self.numLines() * self._qScore.ySpacing - 1)
         painter.setPen(self._qScore.palette().text().color())
 
-    @_painter_saver
+    @_painterSaver
     def _paintBeatCount(self, painter, xValues):
         font = painter.font()
         fontMetric = QtGui.QFontMetrics(font)
@@ -187,7 +190,7 @@ class QMeasure(QtGui.QGraphicsItem):
             offset = br.y() - (self._qScore.ySpacing - br.height()) / 2
             painter.drawText(QtCore.QPointF(left, baseline - offset), count)
 
-    @_painter_saver
+    @_painterSaver
     def _paintRepeatCount(self, painter):
         spacing = self._qScore.scale
         painter.setPen(self._qScore.palette().text().color())
@@ -202,7 +205,7 @@ class QMeasure(QtGui.QGraphicsItem):
                                                     self.parentItem().alternateHeight()))
         self._repeatCountRect.setTopRight(QtCore.QPointF(self.width() - 2 * spacing, self._base - spacing))
 
-    @_painter_saver
+    @_painterSaver
     def _paintAlternate(self, painter):
         altHeight = self.parentItem().alternateHeight()
         spacing = self._qScore.scale
@@ -221,7 +224,7 @@ class QMeasure(QtGui.QGraphicsItem):
         self._alternate.setBottomLeft(bottomLeft)
         painter.drawText(2 * spacing, altHeight - spacing + self._base, text)
 
-    @_painter_saver
+    @_painterSaver
     def _paintPlayingHighlight(self, painter):
         scheme = self._colourScheme()
         if self._playing:
@@ -233,7 +236,7 @@ class QMeasure(QtGui.QGraphicsItem):
         painter.drawRect(-1, -1, self.width() + 1, self.height() + 1)
         painter.drawRect(0, 0, self.width() - 1, self.height() - 1)
 
-    @_painter_saver
+    @_painterSaver
     def _paintMeasureCount(self, painter):
         painter.setPen(QtCore.Qt.black)
         font = painter.font()
@@ -242,7 +245,7 @@ class QMeasure(QtGui.QGraphicsItem):
         painter.drawText(1, self._base - 2, "%d" % (1 + self._measureCount))
 
 
-    @_painter_saver
+    @_painterSaver
     def _paintDragHighlight(self, painter):
         scheme = self._colourScheme()
         self._setPainterColour(painter, scheme.selectedMeasure)
@@ -295,9 +298,10 @@ class QMeasure(QtGui.QGraphicsItem):
         self.update()
 
     def _isOverNotes(self, lineIndex):
-        return (0 <= lineIndex < self.numLines())
+        return 0 <= lineIndex < self.numLines()
 
-    def _isOverCount(self, lineIndex):
+    @staticmethod
+    def _isOverCount(lineIndex):
         return lineIndex == -1
 
     def _isOverRepeatCount(self, point):

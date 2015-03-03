@@ -23,12 +23,12 @@ Created on May 11, 2014
 '''
 # import copy
 
-from .QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
-from .DBCommands import (ChangeMeasureCountCommand,
+from GUI.QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
+from GUI.DBCommands import (ChangeMeasureCountCommand,
                             ContractMeasureCountCommand,
                             ContractAllMeasureCountsCommand)
 from Data.MeasureCount import makeSimpleCount
-from .DBFSMEvents import EditMeasureProperties
+from GUI.DBFSMEvents import EditMeasureProperties
 
 # from Data.Beat import Beat
 

@@ -54,12 +54,12 @@ try:
     pygame.mixer.init(_FREQ, _BITSIZE, _CHANNELS, _NUMSAMPLES)
     pygame.mixer.music.set_volume(0.8)
 
-    get_default_id = pygame.midi.get_default_output_id
+    getDefaultId = pygame.midi.get_default_output_id
 
-    iter_device_ids = lambda : xrange(pygame.midi.get_count())
+    iterDeviceIds = lambda : xrange(pygame.midi.get_count())
 
-    def get_device_info(deviceId):
-        _, name, isIn, isOut, isOpen = pygame.midi.get_device_info(deviceId)
+    def getDeviceInfo(deviceId):
+        int_, name, isIn, isOut, isOpen = pygame.midi.get_device_info(deviceId)
         return name, isIn == 1, isOut == 1, isOpen == 1
 
     def cleanup():
@@ -70,13 +70,13 @@ try:
 
 except ImportError:
     HAS_MIDI = False
-    def get_default_id():
+    def getDefaultId():
         return -1
 
-    def iter_device_ids():
+    def iterDeviceIds():
         return iter([])
 
-    def get_device_info(deviceId):
+    def getDeviceInfo(deviceId_):
         return None, False, False, False
 
     def cleanup():
@@ -90,7 +90,7 @@ import StringIO
 class MidiDevice(object):
     def __init__(self, deviceId):
         self.deviceId = deviceId
-        self.name, _, self._isOutput, self._isOpen = get_device_info(deviceId)
+        self.name, in_, self._isOutput, self._isOpen = getDeviceInfo(deviceId)
         self._isValid = self.name is not None
 
     def isValid(self):
@@ -100,13 +100,13 @@ class MidiDevice(object):
         return self._isOutput
 
     def isOpen(self):
-        return get_device_info(self.deviceId)[3]
+        return getDeviceInfo(self.deviceId)[3]
 
 _OUTPUT_DEVICES = []
 def refreshOutputDevices():
     while _OUTPUT_DEVICES:
         _OUTPUT_DEVICES.pop()
-    for devId in iter_device_ids():
+    for devId in iterDeviceIds():
         device = MidiDevice(devId)
         if device.isOutput():
             _OUTPUT_DEVICES.append(device)
@@ -121,7 +121,7 @@ from Data.MeasureCount import MIDITICKSPERBEAT
 class _midi(QObject):
     def __init__(self):
         super(_midi, self).__init__()
-        self._port = get_default_id()
+        self._port = getDefaultId()
         self._midiOut = None
         if self._port != -1:
             self._midiOut = pygame.midi.Output(self._port, _LATENCY, _BUFSIZE)

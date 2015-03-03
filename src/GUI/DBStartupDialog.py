@@ -21,7 +21,7 @@ Created on 17 Apr 2011
 
 @author: Mike Thomas
 '''
-from ui_dbStartup import Ui_dbStartup
+from GUI.ui_dbStartup import Ui_dbStartup
 from PyQt4.QtGui import QDialog
 
 class DBStartupDialog(QDialog, Ui_dbStartup):

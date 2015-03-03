@@ -27,28 +27,28 @@ Created on 4 Jan 2011
 from PyQt4 import QtGui, QtCore
 import itertools
 import functools
-from QStaff import QStaff
-from QSection import QSection
-from QMeasure import QMeasure
-from QMetaData import QMetaData
-from QKitData import QKitData
-from QEditKitDialog import QEditKitDialog
+from GUI.QStaff import QStaff
+from GUI.QSection import QSection
+from GUI.QMeasure import QMeasure
+from GUI.QMetaData import QMetaData
+from GUI.QKitData import QKitData
+from GUI.QEditKitDialog import QEditKitDialog
+from GUI.DBCommands import (MetaDataCommand, ScoreWidthCommand,
+                            DeleteMeasureCommand, InsertAndPasteMeasures,
+                            ClearMeasureCommand, PasteMeasuresCommand,
+                            SetPaperSizeCommand, SetDefaultCountCommand,
+                            SetSystemSpacingCommand, InsertMeasuresCommand,
+                            SetFontCommand, SetFontSizeCommand,
+                            SetVisibilityCommand, SetLilypondSizeCommand,
+                            SetLilypondPagesCommand, SetLilypondFillCommand,
+                            SaveFormatStateCommand, CheckFormatStateCommand,
+                            CheckUndo, SetLilypondFormatCommand)
+import GUI.DBMidi as DBMidi
+from GUI.DBFSM import Waiting
+from GUI.DBFSMEvents import Escape
 from Data import DBErrors
 from Data.Score import ScoreFactory
 from Data.NotePosition import NotePosition
-from DBCommands import (MetaDataCommand, ScoreWidthCommand,
-                        DeleteMeasureCommand, InsertAndPasteMeasures,
-                        ClearMeasureCommand, PasteMeasuresCommand,
-                        SetPaperSizeCommand, SetDefaultCountCommand,
-                        SetSystemSpacingCommand, InsertMeasuresCommand,
-                        SetFontCommand, SetFontSizeCommand,
-                        SetVisibilityCommand, SetLilypondSizeCommand,
-                        SetLilypondPagesCommand, SetLilypondFillCommand,
-                        SaveFormatStateCommand, CheckFormatStateCommand,
-                        CheckUndo, SetLilypondFormatCommand)
-import DBMidi
-from DBFSM import Waiting
-from DBFSMEvents import Escape
 _SCORE_FACTORY = ScoreFactory()
 
 class _HeadShortcut(object):
