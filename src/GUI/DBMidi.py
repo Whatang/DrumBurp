@@ -49,7 +49,7 @@ DRAG_TIME_CONSTANT = 96
 try:
     import pygame
     import pygame.midi
-    pygame.init()
+    pygame.init()  # IGNORE:no-member
     pygame.midi.init()
     pygame.mixer.init(_FREQ, _BITSIZE, _CHANNELS, _NUMSAMPLES)
     pygame.mixer.music.set_volume(0.8)
@@ -61,7 +61,7 @@ try:
         _PLAYER.cleanup()
         pygame.mixer.quit()
         pygame.midi.quit()
-        pygame.quit()
+        pygame.quit()  # IGNORE:no-member
 
 except ImportError:
     HAS_MIDI = False
