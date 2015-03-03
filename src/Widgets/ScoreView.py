@@ -128,6 +128,11 @@ class ScoreView(QtGui.QGraphicsView):
     @QtCore.pyqtSlot(int)
     def showSection(self, sectionIndex):
         section = self.scene().getQSection(sectionIndex)
-        sectionPos = section.scenePos()
+        self.showItem(section)
+        
+    @QtCore.pyqtSlot(QtGui.QGraphicsItem)
+    def showItem(self, item):
+        itemPos = item.scenePos()
         self.horizontalScrollBar().setValue(0)
-        self.verticalScrollBar().setValue(sectionPos.y())
+        self.verticalScrollBar().setValue(itemPos.y())
+        self.ensureVisible(item.sceneBoundingRect(), xMargin = 10, yMargin = 10)
