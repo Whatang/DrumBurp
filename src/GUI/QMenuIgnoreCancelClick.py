@@ -37,6 +37,7 @@ class QMenuIgnoreCancelClick(QMenu):
         def wrapper(self, *args, **kwargs):
             val = method(self, *args, **kwargs)
             self._qScore.sendFsmEvent(MenuSelect())
+            return val
         return wrapper
 
 
