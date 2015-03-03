@@ -153,6 +153,7 @@ class QScore(QtGui.QGraphicsScene):
         self._ignoreNext = False
         self.measureClipboard = []
         self._playingMeasure = None
+        self._nextMeasure = None
         self._dragStart = None
         self._lastDrag = None
         self._dragSelection = []
@@ -820,6 +821,18 @@ class QScore(QtGui.QGraphicsScene):
             return
         qMeasure = self.getQMeasure(self._playingMeasure)
         qMeasure.setPlaying(True)
+
+    def highlightNextMeasure(self, position):
+        if position == self._nextMeasure:
+            return
+        if self._nextMeasure != None:
+            qMeasure = self.getQMeasure(self._nextMeasure)
+            qMeasure.setNextToPlay(False)
+        self._nextMeasure = position
+        if self._nextMeasure == None:
+            return
+        qMeasure = self.getQMeasure(self._nextMeasure)
+        qMeasure.setNextToPlay(True)
 
     def editKit(self):
         emptyDrums = set(self.score.drumKit)

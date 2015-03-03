@@ -812,7 +812,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             self.musicDone()
             DBMidi.shutUp()
 
-    def highlightPlayingMeasure(self, index):
+    def highlightPlayingMeasure(self, index, nextIndex):
         if index == -1:
             self.scoreScene.highlightPlayingMeasure(None)
         else:
@@ -820,6 +820,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             self.scoreScene.highlightPlayingMeasure(position)
             measure = self.scoreScene.getQMeasure(position)
             self.scoreView.showItemAtTop(measure)
+        if nextIndex == -1:
+            self.scoreScene.highlightNextMeasure(None)
+        else:
+            position = self.scoreScene.score.getMeasurePosition(nextIndex)
+            self.scoreScene.highlightNextMeasure(position)
 
     @staticmethod
     @pyqtSignature("bool")

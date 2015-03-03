@@ -157,7 +157,7 @@ class _midi(QObject):
     def isMuted(self):
         return self._mute
 
-    highlightMeasure = pyqtSignal(int)
+    highlightMeasure = pyqtSignal(int, int)
 
     def playNote(self, drumIndex, head):
         if self.kit is None or self._mute:
@@ -245,7 +245,7 @@ class _midi(QObject):
             self.timer.stop()
             self._measureDetails = []
             self._measureTimer.stop()
-            self.highlightMeasure.emit(-1)
+            self.highlightMeasure.emit(-1, -1)
             if self._midiOut:
                 del self._midiOut
                 self._midiOut = None
@@ -262,13 +262,16 @@ class _midi(QObject):
     def _highlight(self):
         delay = -1
         measureIndex = None
+        nextMeasure = -1
         while delay < 0 and self._measureDetails:
             measureIndex, measureEnd = self._measureDetails.pop()
+            if self._measureDetails:
+                nextMeasure = self._measureDetails[-1][0]
             delay = (measureEnd - 1000 * (time.clock() - self._songStart))
         if measureIndex is not None:
-            self.highlightMeasure.emit(measureIndex)
+            self.highlightMeasure.emit(measureIndex, nextMeasure)
         else:
-            self.highlightMeasure.emit(-1)
+            self.highlightMeasure.emit(-1, -1)
         if delay > 0:
             self._measureTimer.start(delay)
 

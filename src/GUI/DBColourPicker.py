@@ -77,16 +77,20 @@ DEFAULT_SELECTED_MEASURE = ColouredItem(QColor(QtCore.Qt.gray).lighter(),
 DEFAULT_PLAYING_HIGHLIGHT = ColouredItem(QColor(QtCore.Qt.transparent),
                                          "Solid",
                                          QColor(QtCore.Qt.blue).lighter())
-
+DEFAULT_NEXTPLAY_HIGHLIGHT = ColouredItem(QColor(QtCore.Qt.transparent),
+                                          "Dashed",
+                                          QColor(QtCore.Qt.blue).lighter())
 class ColourScheme(object):
     def __init__(self, noteHighlight = DEFAULT_NOTE_HIGHLIGHT, 
                  timeHighlight = DEFAULT_TIME_HIGHLIGHT,
                  selectedMeasure = DEFAULT_SELECTED_MEASURE,
-                 playingHighlight = DEFAULT_PLAYING_HIGHLIGHT):
+                 playingHighlight = DEFAULT_PLAYING_HIGHLIGHT,
+                 nextHighlight = DEFAULT_NEXTPLAY_HIGHLIGHT):
         self.noteHighlight = noteHighlight
         self.timeHighlight = timeHighlight
         self.selectedMeasure = selectedMeasure
         self.playingHighlight = playingHighlight
+        self.nextPlayingHighlight = nextHighlight
         
     @staticmethod
     def iterColourNames():
@@ -94,6 +98,7 @@ class ColourScheme(object):
         yield "Time Highlight", "timeHighlight"
         yield "Selected Measure", "selectedMeasure"
         yield "Playing Highlight", "playingHighlight"
+        yield "Next Playing Highlight", "nextPlayingHighlight"
 
 class DBColourPicker(QDialog, Ui_ColourPicker):
     

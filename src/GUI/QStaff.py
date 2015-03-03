@@ -144,8 +144,10 @@ class QStaff(QtGui.QGraphicsItemGroup):
                                           self._measures):
             qMeasureLine.setPos(xOffset, base)
             qMeasureLine.setDimensions()
+            qMeasureLine.setZValue(0)
             xOffset += qMeasureLine.width()
             qMeasure.setPos(xOffset, 0)
+            qMeasure.setZValue(1)
             xOffset += qMeasure.width()
         self._measureLines[-1].setPos(xOffset, base)
         self._measureLines[-1].setDimensions()

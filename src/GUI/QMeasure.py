@@ -68,6 +68,7 @@ class QMeasure(QtGui.QGraphicsItem):
         self._repeatCountRect = None
         self._alternate = None
         self._playing = False
+        self._nextToPlay = False
         self._dragHighlight = False
         self._potentials = []
         self._potentialDrum = None
@@ -223,9 +224,13 @@ class QMeasure(QtGui.QGraphicsItem):
     @_painter_saver
     def _paintPlayingHighlight(self, painter):
         scheme = self._colourScheme()
-        self._setPainterColour(painter, scheme.playingHighlight)
+        if self._playing:
+            self._setPainterColour(painter, scheme.playingHighlight)
+        elif self._nextToPlay:
+            self._setPainterColour(painter, scheme.nextPlayingHighlight)
+        else:
+            return
         painter.drawRect(-1, -1, self.width() + 1, self.height() + 1)
-        painter.setPen(QtGui.QColor(QtCore.Qt.blue).lighter())
         painter.drawRect(0, 0, self.width() - 1, self.height() - 1)
 
     @_painter_saver
@@ -265,7 +270,7 @@ class QMeasure(QtGui.QGraphicsItem):
             self._paintRepeatCount(painter)
         else:
             self._repeatCountRect = None
-        if self._playing:
+        if self._playing or self._nextToPlay:
             self._paintPlayingHighlight(painter)
         if self._measure.alternateText is not None:
             self._paintAlternate(painter)
@@ -437,6 +442,10 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def setPlaying(self, onOff):
         self._playing = onOff
+        self.update()
+
+    def setNextToPlay(self, onOff):
+        self._nextToPlay = onOff
         self.update()
 
     def setDragHighlight(self, onOff):
