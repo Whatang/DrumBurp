@@ -25,7 +25,6 @@ Created on May 11, 2014
 
 from GUI.QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 from GUI.DBCommands import ChangeMeasureCountCommand
-from GUI.DBFSMEvents import MenuSelect
 from Data.MeasureCount import makeSimpleCount
 # from Data.Beat import Beat
 
