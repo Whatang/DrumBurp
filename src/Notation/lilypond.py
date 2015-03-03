@@ -472,7 +472,7 @@ class LilypondScore(object):
             self._writeLayout()
         self._writeMacros(handle)
         self._lilyKit.write(handle)
-        with LILY_CONTEXT(self.indenter, '\score'):
+        with LILY_CONTEXT(self.indenter, r'\score'):
             self._writeScore()
 
     def _writePaper(self):

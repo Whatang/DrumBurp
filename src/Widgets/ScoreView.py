@@ -26,37 +26,37 @@ from PyQt4 import QtGui, QtCore
 
 class SmoothScroller(object):
     NUM_STEPS = 100
-    
+
     def __init__(self, view):
         self.view = view
         self._timeline = None
-        self._x_start =None
-        self._x_end = None
-        self._y_start = None
-        self._y_end = None
+        self._xStart = None
+        self._xEnd = None
+        self._yStart = None
+        self._yEnd = None
         self._mutex = QtCore.QMutex()
-        
-    def scrollTo(self, x_end, y_end, timeInMs = 250):
+
+    def scrollTo(self, xEnd, yEnd, timeInMs = 250):
         if not timeInMs:
-            self.view.horizontalScrollBar().setValue(x_end)
-            self.view.verticalScrollBar().setValue(y_end)
+            self.view.horizontalScrollBar().setValue(xEnd)
+            self.view.verticalScrollBar().setValue(yEnd)
             return
-        self._x_start = self.view.horizontalScrollBar().value()
-        self._y_start = self.view.verticalScrollBar().value()
-        self._x_end = x_end
-        self._y_end = y_end
+        self._xStart = self.view.horizontalScrollBar().value()
+        self._yStart = self.view.verticalScrollBar().value()
+        self._xEnd = xEnd
+        self._yEnd = yEnd
         self._timeline = QtCore.QTimeLine(duration = timeInMs)
         self._timeline.setFrameRange(0, self.NUM_STEPS)
         self._timeline.frameChanged.connect(self._frame)
         self._timeline.finished.connect(self._finished)
         self._timeline.start()
-        
+
     def _frame(self, frameNum):
-        deltaX = ((self._x_end - self._x_start) * frameNum) / self.NUM_STEPS
-        deltaY = ((self._y_end - self._y_start) * frameNum) / self.NUM_STEPS
-        self.view.horizontalScrollBar().setValue(self._x_start + deltaX)
-        self.view.verticalScrollBar().setValue(self._y_start + deltaY)
-        
+        deltaX = ((self._xEnd - self._xStart) * frameNum) / self.NUM_STEPS
+        deltaY = ((self._yEnd - self._yStart) * frameNum) / self.NUM_STEPS
+        self.view.horizontalScrollBar().setValue(self._xStart + deltaX)
+        self.view.verticalScrollBar().setValue(self._yStart + deltaY)
+
     def _finished(self):
         del self._timeline
         self._timeline = None
@@ -166,10 +166,10 @@ class ScoreView(QtGui.QGraphicsView):
     def showSection(self, sectionIndex):
         section = self.scene().getQSection(sectionIndex)
         self.showItemAtTop(section)
-        
+
     def setTopLeft(self, left, top, timeInMs = 250):
         self._scroller.scrollTo(left, top, timeInMs)
-        
+
     @QtCore.pyqtSlot(QtGui.QGraphicsItem)
     def showItemAtTop(self, item, timeInMs = 250, margins = 20):
         itemRect = item.sceneBoundingRect()
@@ -198,4 +198,3 @@ class ScoreView(QtGui.QGraphicsView):
             vleft = max(0, right + margins - vwidth)
             vtop = max(0, top - margins)
             self.setTopLeft(vleft, vtop, timeInMs)
-        
