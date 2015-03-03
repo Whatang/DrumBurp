@@ -245,6 +245,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
 
     def _startUp(self, errored_files):
+        self._doUpdateSplashScreen()
         self._refreshMidiDevices()
         self.scoreView.startUp()
         self.updateStatus("Welcome to %s v%s" % (APPNAME, DB_VERSION))
@@ -256,6 +257,31 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             QMessageBox.warning(self, "Problem during startup",
                                 "Error opening files:\n %s" % "\n".join(errored_files))
 
+
+    def _doUpdateSplashScreen(self):
+        settings = self._makeQSettings()
+        if settings.value("NoUpdateSplash").toBool():
+            print settings.value("NoUpdateSplash").toBool()
+            return
+        splashUpdates = QMessageBox(self)
+        splashUpdates.setStandardButtons(QMessageBox.Ok)
+        splashUpdates.setText("<b>DrumBurp can check for updates.</b>")
+        text = ("DrumBurp can automatically check for updates every time it "
+                "starts, or you can manually check for a new version. Both "
+                "options are available from the Help menu.\n\nWhen DrumBurp "
+                "tries to check for an update it will try to access the "
+                "internet. You may need to allow it access in order for the "
+                "update check to work.")
+        splashUpdates.setInformativeText(text)
+        splashUpdates.setDefaultButton(QMessageBox.Ok)
+        splashUpdates.setEscapeButton(QMessageBox.Ok)
+        neverAgain = splashUpdates.addButton("Do not show this again",
+                                             QMessageBox.ActionRole)
+        splashUpdates.setWindowTitle("Update Checks")
+        splashUpdates.exec_()
+        if splashUpdates.clickedButton() == neverAgain:
+            settings.setValue("NoUpdateSplash", QVariant(True))
+            settings.sync()
 
     def _makeQSettings(self):
         if self._fakeStartup:

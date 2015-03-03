@@ -1017,8 +1017,8 @@ p, li { white-space: pre-wrap; }
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuView_2"/>
-   <addaction name="menuHelp"/>
    <addaction name="menu_MIDI"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="fileToolBar">
@@ -2217,7 +2217,7 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionCheckForUpdates">
    <property name="text">
-    <string>Check for updates</string>
+    <string>Check for updates now</string>
    </property>
   </action>
   <action name="actionCheckOnStartup">
@@ -2225,7 +2225,7 @@ p, li { white-space: pre-wrap; }
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Check on startup</string>
+    <string>Check for updates on startup</string>
    </property>
   </action>
   <action name="actionShowMeasureCounts">

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\mike_000\workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Tue Mar 03 17:01:43 2015
+# Created: Tue Mar 03 22:54:38 2015
 #      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -728,8 +728,8 @@ class Ui_DrumBurpWindow(object):
         self.menubar.addAction(self.menuEdit.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
         self.menubar.addAction(self.menuView_2.menuAction())
-        self.menubar.addAction(self.menuHelp.menuAction())
         self.menubar.addAction(self.menu_MIDI.menuAction())
+        self.menubar.addAction(self.menuHelp.menuAction())
         self.fileToolBar.addAction(self.actionNew)
         self.fileToolBar.addAction(self.actionLoad)
         self.fileToolBar.addAction(self.actionSave)
@@ -1224,8 +1224,8 @@ class Ui_DrumBurpWindow(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Export this score to a Lilypond file.</p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Lilypond is a TeX based music typesetting system available from <a href=\"http://www.lilypond.org\"><span style=\" text-decoration: underline; color:#0000ff;\">lilypond.org</span></a>. DrumBurp can export its scores to the Lilypond input format. Run Lilypond on the resulting files to have your score set in notation rather than as tab.</p></body></html>", None))
-        self.actionCheckForUpdates.setText(_translate("DrumBurpWindow", "Check for updates", None))
-        self.actionCheckOnStartup.setText(_translate("DrumBurpWindow", "Check on startup", None))
+        self.actionCheckForUpdates.setText(_translate("DrumBurpWindow", "Check for updates now", None))
+        self.actionCheckOnStartup.setText(_translate("DrumBurpWindow", "Check for updates on startup", None))
         self.actionShowMeasureCounts.setText(_translate("DrumBurpWindow", "Show Measure Indexes", None))
         self.actionShowMeasureCounts.setIconText(_translate("DrumBurpWindow", "Show Measure Indexes", None))
         self.actionShowMeasureCounts.setToolTip(_translate("DrumBurpWindow", "Show/Hide Measure Indexes", None))
