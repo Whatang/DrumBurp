@@ -470,10 +470,12 @@ class QScore(QtGui.QGraphicsScene):
     scoreDisplayChanged = QtCore.pyqtSignal()
 
     @delayCall
-    def reBuild(self):
+    def reBuild(self, afterwards = None):
         if self._score.formatScore(None):
             self.scoreDisplayChanged.emit()
         self._build()
+        if afterwards:
+            afterwards()
 
     def checkFormatting(self):
         if self._score.formatScore(None):

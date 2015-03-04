@@ -500,12 +500,14 @@ class SetSectionEndCommand(SetMeasureLineCommand):
 
     def _redo(self):
         self._score.setSectionEnd(self._np, self._onOff)
-        if self._onOff:
-            section = self._qScore.getQSection(self._index)
-            self._qScore.showItem.emit(section)
-        self._qScore.reBuild()
-        self._qScore.sectionsChanged.emit()
-        self._qScore.invalidate()
+        def after():
+            self._qScore.sectionsChanged.emit()
+            self._qScore.invalidate()
+            if self._onOff:
+                index = self._score.getSectionIndex(self._np)
+                section = self._qScore.getQSection(index)
+                self._qScore.showItem.emit(section)
+        self._qScore.reBuild(after)
 
 class SetLineBreakCommand(SetMeasureLineCommand):
     def __init__(self, qScore, note, onOff):
