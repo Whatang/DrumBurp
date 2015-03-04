@@ -52,9 +52,85 @@ from Data.NotePosition import NotePosition
 _SCORE_FACTORY = ScoreFactory()
 
 class DragSelection(object):
-    def __init__(self, start, end):
-        self.start = start
-        self.end = end
+    def __init__(self, qscore):
+        self.qscore = qscore
+        self.start = None
+        self.end = None
+        self._isDragging = False
+        self._dragged = []
+        
+    def startDragging(self, notePos):
+        self._isDragging = True
+        self.start = notePos
+        self.end = notePos
+        self._dragged = []
+
+    def drag(self, np):
+        if not self.isDragging():
+            self.startDragging(np)
+        elif self.end != np:
+            self.end = np
+        self._updateDragged()
+
+    def isDragging(self):
+        return self._isDragging
+
+    def endDragging(self):
+        self._isDragging = False
+
+    def hasDragSelection(self):
+        return (self.start is not None and self.end is not None)
+
+    def inDragSelection(self, np):
+        if not self.hasDragSelection():
+            return False
+        start = self.start
+        end = self.end
+        return ((start.staffIndex == np.staffIndex
+                 and start.measureIndex <= np.measureIndex
+                 and (np.staffIndex < end.staffIndex or
+                      np.measureIndex <= end.measureIndex))
+                or (start.staffIndex < np.staffIndex < end.staffIndex)
+                or (np.staffIndex == end.staffIndex
+                    and np.measureIndex <= end.measureIndex))
+
+    def iterDragSelection(self):
+        if self.hasDragSelection():
+            return self.qscore.score.iterMeasuresBetween(self.start,
+                                                         self.end)
+        else:
+            return iter([])
+
+    def clear(self):
+        self.start = None
+        self.end = None
+        self._updateDragged()
+
+    def _updateDragged(self):
+        if not self.hasDragSelection():
+            for index, position in self._dragged:
+                # Turn off
+                self._setDragHighlight(position, False)
+            self._dragged = []
+            return
+        newDragged = [(index, position) for (unused, index, position) in
+                      self.qscore.score.iterMeasuresBetween(self.start,
+                                                            self.end)]
+        oldIndexes = set(x[0] for x in self._dragged)
+        for index, position in newDragged:
+            if index not in oldIndexes:
+                # Turn on
+                self._setDragHighlight(position, True)
+        newIndexes = set(x[0] for x in newDragged)
+        for index, position in self._dragged:
+            if index not in newIndexes:
+                # Turn off
+                self._setDragHighlight(position, False)
+        self._dragged = newDragged
+
+    def _setDragHighlight(self, position, onOff):
+        qmeasure = self.qscore.getQMeasure(position)
+        qmeasure.setDragHighlight(onOff)
 
 class _HeadShortcut(object):
     def __init__(self, currentHeads):
@@ -159,10 +235,7 @@ class QScore(QtGui.QGraphicsScene):
         self.measureClipboard = []
         self._playingMeasure = None
         self._nextMeasure = None
-        self._dragStart = None
-        self._lastDrag = None
-        self._dragSelection = DragSelection(None, None)
-        self._dragged = []
+        self._dragSelection = DragSelection(self)
         self._saved = False
         self._undoStack = QtGui.QUndoStack(self)
         self._inMacro = False
@@ -867,82 +940,25 @@ class QScore(QtGui.QGraphicsScene):
             self.reBuild()
             self.dirty = True
 
-    def _startDragging(self, qmeasure):
-        self._dragStart = qmeasure
-        self._lastDrag = qmeasure
-        self._dragSelection.start = qmeasure.makeNotePosition(None, None)
-        self._dragSelection.end = qmeasure.makeNotePosition(None, None)
-        self._dragged = []
-        self._updateDragged()
+    def dragging(self, qmeasure):
+        self._dragSelection.drag(qmeasure.makeNotePosition(None, None))
         self.dragHighlight.emit(True)
 
-    def _updateDragged(self):
-        if not self.hasDragSelection():
-            for index, position in self._dragged:
-                # Turn off
-                self._setDragHighlight(position, False)
-            self._dragged = []
-            return
-        newDragged = [(index, position) for (unused, index, position) in
-                      self.score.iterMeasuresBetween(self._dragSelection.start,
-                                                     self._dragSelection.end)]
-        for index, position in newDragged:
-            if all(x[0] != index for x in self._dragged):  # Turn on
-                self._setDragHighlight(position, True)
-        for index, position in self._dragged:
-            if all(x[0] != index for x in newDragged):  # Turn off
-                self._setDragHighlight(position, False)
-        self._dragged = newDragged
-
-    def dragging(self, qmeasure):
-        if self._dragStart is None:
-            self._startDragging(qmeasure)
-        elif self._lastDrag != qmeasure:
-            self._lastDrag = qmeasure
-            self._dragSelection.end = self._lastDrag.makeNotePosition(None, None)
-            self._updateDragged()
-
-    def isDragging(self):
-        return self._dragStart is not None
-
     def endDragging(self):
-        self._dragStart = None
-        self._lastDrag = None
+        self._dragSelection.endDragging()
 
     def hasDragSelection(self):
-        return (self._dragSelection.start is not None and
-                self._dragSelection.end is not None)
+        return self._dragSelection.hasDragSelection()
 
     def iterDragSelection(self):
-        if self.hasDragSelection():
-            return self.score.iterMeasuresBetween(self._dragSelection.start,
-                                                  self._dragSelection.end)
-        else:
-            return iter([])
+        return self._dragSelection.iterDragSelection()
 
     def clearDragSelection(self):
-        self._dragSelection.start = None
-        self._dragSelection.end = None
-        self._updateDragged()
+        self._dragSelection.clear()
         self.dragHighlight.emit(False)
 
-    def _setDragHighlight(self, position, onOff):
-        staff = self._qStaffs[position.staffIndex]
-        qmeasure = staff.getQMeasure(position)
-        qmeasure.setDragHighlight(onOff)
-
     def inDragSelection(self, np):
-        if not self.hasDragSelection():
-            return False
-        start = self._dragSelection.start
-        end = self._dragSelection.end
-        return ((start.staffIndex == np.staffIndex
-                 and start.measureIndex <= np.measureIndex
-                 and (np.staffIndex < end.staffIndex or
-                      np.measureIndex <= end.measureIndex))
-                or (start.staffIndex < np.staffIndex < end.staffIndex)
-                or (np.staffIndex == end.staffIndex
-                    and np.measureIndex <= end.measureIndex))
+        return self._dragSelection.inDragSelection(np)
 
     def metaChange(self):
         return _metaChangeContext(self, self._metaData)
