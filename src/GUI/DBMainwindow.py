@@ -258,7 +258,6 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def _doUpdateSplashScreen(self):
         settings = self._makeQSettings()
         if settings.value("NoUpdateSplash").toBool():
-            print settings.value("NoUpdateSplash").toBool()
             return
         splashUpdates = QMessageBox(self)
         splashUpdates.setStandardButtons(QMessageBox.Ok)
