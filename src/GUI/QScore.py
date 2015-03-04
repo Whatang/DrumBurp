@@ -51,6 +51,11 @@ from Data.Score import ScoreFactory
 from Data.NotePosition import NotePosition
 _SCORE_FACTORY = ScoreFactory()
 
+class DragSelection(object):
+    def __init__(self, start, end):
+        self.start = start
+        self.end = end
+
 class _HeadShortcut(object):
     def __init__(self, currentHeads):
         self._headDict = dict((unicode(x), y) for (x, y) in currentHeads)
@@ -156,7 +161,7 @@ class QScore(QtGui.QGraphicsScene):
         self._nextMeasure = None
         self._dragStart = None
         self._lastDrag = None
-        self._dragSelection = []
+        self._dragSelection = DragSelection(None, None)
         self._dragged = []
         self._saved = False
         self._undoStack = QtGui.QUndoStack(self)
@@ -587,7 +592,7 @@ class QScore(QtGui.QGraphicsScene):
         else:
             if not self.hasDragSelection():
                 return
-            start = self._dragSelection[0]
+            start = self._dragSelection.start
             measureIndex = self._score.getMeasureIndex(start)
             measures = list(self.iterDragSelection())
             self.clearDragSelection()
@@ -608,7 +613,7 @@ class QScore(QtGui.QGraphicsScene):
     def pasteMeasuresOver(self, repeating = False):
         if len(self.measureClipboard) == 0 or not self.hasDragSelection():
             return
-        start = self._dragSelection[0]
+        start = self._dragSelection.start
         measureIndex = self._score.getMeasureIndex(start)
         sourceLength = len(self.measureClipboard)
         targetLength = len(list(self.iterDragSelection()))
@@ -865,8 +870,8 @@ class QScore(QtGui.QGraphicsScene):
     def _startDragging(self, qmeasure):
         self._dragStart = qmeasure
         self._lastDrag = qmeasure
-        self._dragSelection = [qmeasure.makeNotePosition(None, None),
-                               qmeasure.makeNotePosition(None, None)]
+        self._dragSelection.start = qmeasure.makeNotePosition(None, None)
+        self._dragSelection.end = qmeasure.makeNotePosition(None, None)
         self._dragged = []
         self._updateDragged()
         self.dragHighlight.emit(True)
@@ -879,7 +884,8 @@ class QScore(QtGui.QGraphicsScene):
             self._dragged = []
             return
         newDragged = [(index, position) for (unused, index, position) in
-                      self.score.iterMeasuresBetween(*self._dragSelection)]
+                      self.score.iterMeasuresBetween(self._dragSelection.start,
+                                                     self._dragSelection.end)]
         for index, position in newDragged:
             if all(x[0] != index for x in self._dragged):  # Turn on
                 self._setDragHighlight(position, True)
@@ -893,7 +899,7 @@ class QScore(QtGui.QGraphicsScene):
             self._startDragging(qmeasure)
         elif self._lastDrag != qmeasure:
             self._lastDrag = qmeasure
-            self._dragSelection[1] = self._lastDrag.makeNotePosition(None, None)
+            self._dragSelection.end = self._lastDrag.makeNotePosition(None, None)
             self._updateDragged()
 
     def isDragging(self):
@@ -904,16 +910,19 @@ class QScore(QtGui.QGraphicsScene):
         self._lastDrag = None
 
     def hasDragSelection(self):
-        return len(self._dragSelection) == 2
+        return (self._dragSelection.start is not None and
+                self._dragSelection.end is not None)
 
     def iterDragSelection(self):
         if self.hasDragSelection():
-            return self.score.iterMeasuresBetween(*self._dragSelection)
+            return self.score.iterMeasuresBetween(self._dragSelection.start,
+                                                  self._dragSelection.end)
         else:
             return iter([])
 
     def clearDragSelection(self):
-        self._dragSelection = []
+        self._dragSelection.start = None
+        self._dragSelection.end = None
         self._updateDragged()
         self.dragHighlight.emit(False)
 
@@ -925,7 +934,8 @@ class QScore(QtGui.QGraphicsScene):
     def inDragSelection(self, np):
         if not self.hasDragSelection():
             return False
-        start, end = self._dragSelection
+        start = self._dragSelection.start
+        end = self._dragSelection.end
         return ((start.staffIndex == np.staffIndex
                  and start.measureIndex <= np.measureIndex
                  and (np.staffIndex < end.staffIndex or
