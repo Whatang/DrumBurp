@@ -54,9 +54,11 @@ try:
     pygame.mixer.init(_FREQ, _BITSIZE, _CHANNELS, _NUMSAMPLES)
     pygame.mixer.music.set_volume(0.8)
 
-    getDefaultId = pygame.midi.get_default_output_id
+    def getDefaultId():
+        return pygame.midi.get_default_output_id()
 
-    iterDeviceIds = lambda : xrange(pygame.midi.get_count())
+    def iterDeviceIds():
+        return xrange(pygame.midi.get_count())
 
     def getDeviceInfo(deviceId):
         int_, name, isIn, isOut, isOpen = pygame.midi.get_device_info(deviceId)
