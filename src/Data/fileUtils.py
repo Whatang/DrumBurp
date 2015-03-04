@@ -56,7 +56,7 @@ class dbFileIterator(object):
                         break
 
 
-        def _parseInteger(self, data, lineName):
+        def _parseInteger(self, data, lineName_):
             try:
                 data = int(data)
             except (TypeError, ValueError):
