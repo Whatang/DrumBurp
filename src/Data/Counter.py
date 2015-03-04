@@ -146,7 +146,7 @@ class CounterRegistry(object):
         for index, (unusedName, count) in enumerate(self):
             if count.matchesAlternative(beatStr):
                 return index
-        return(-1)
+        return -1
 
     def findMaster(self, countString):
         index = self.lookupIndex(countString)

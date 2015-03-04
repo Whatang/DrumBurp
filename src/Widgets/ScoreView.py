@@ -52,10 +52,10 @@ class SmoothScroller(object):
         self._timeline.start()
 
     def _frame(self, frameNum):
-        deltaX = ((self._xEnd - self._xStart) * frameNum) / self.NUM_STEPS
-        deltaY = ((self._yEnd - self._yStart) * frameNum) / self.NUM_STEPS
-        self.view.horizontalScrollBar().setValue(self._xStart + deltaX)
-        self.view.verticalScrollBar().setValue(self._yStart + deltaY)
+        xDelta = ((self._xEnd - self._xStart) * frameNum) / self.NUM_STEPS
+        yDelta = ((self._yEnd - self._yStart) * frameNum) / self.NUM_STEPS
+        self.view.horizontalScrollBar().setValue(self._xStart + xDelta)
+        self.view.verticalScrollBar().setValue(self._yStart + yDelta)
 
     def _finished(self):
         del self._timeline
