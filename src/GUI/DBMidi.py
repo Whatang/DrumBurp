@@ -325,12 +325,42 @@ def encodeSevenBitDelta(delta, midiData):
     values.reverse()
     midiData.extend(values)
 
-def exportMidi(measureIterator, score, handle):
-    handle.write("MThd\x00\x00\x00\x06\x00\x00\x00\x01")
-    handle.write("%c" % chr((MIDITICKSPERBEAT >> 8) & 0xFF))
-    handle.write("%c" % chr((MIDITICKSPERBEAT >> 0) & 0xFF))
-    notes = []
+def _makeMidiStart(score):
     msPerBeat = int(60000000 / score.scoreData.bpm)
+    midiData = [0, 0xff, 0x51, 03, (msPerBeat >> 16) & 0xff,
+                (msPerBeat >> 8) & 0xff, msPerBeat & 0xff]
+    signature = "Created with DrumBurp"
+    midiData.extend([0, 0xff, 0x1, len(signature)])
+    midiData.extend([ord(ch) for ch in signature])
+    return midiData
+
+def _writeMidiNotes(notes, baseTime):
+    lastNoteTime = 0
+    midiData = []
+    for noteTime, headData in notes:
+        deltaTime = noteTime - lastNoteTime
+        lastNoteTime = noteTime
+        encodeSevenBitDelta(deltaTime, midiData)
+        if headData == "choke":
+            midiData.extend([_PERCUSSION_CHOKE, _CHOKE_MSG, _CHOKE_VELOCITY])
+        else:
+            midiData.extend([_PERCUSSION_NOTE_ON, headData.midiNote, headData.midiVolume])
+    # Turn off drum notes
+    deltaTime = baseTime - lastNoteTime
+    # Insert a delay before the end of the track.
+    encodeSevenBitDelta(deltaTime + 4 * MIDITICKSPERBEAT, midiData)
+    midiData.extend([_PERCUSSION_NOTE_OFF, 38, 0])
+    encodeSevenBitDelta(0, midiData)
+    midiData.extend([0xFF, 0x2F, 0])
+    return midiData
+
+def _finishMidiData(midiData):
+    numBytes = len(midiData)
+    lenBytes = [((numBytes >> i) & 0xff) for i in xrange(24, -8, -8)]
+    return lenBytes + midiData
+
+def _calculateMidiTimes(measureIterator, score):
+    notes = []
     baseTime = 1
     for measure, unusedIndex in measureIterator:
         measureNotes = []
@@ -344,8 +374,7 @@ def exportMidi(measureIterator, score, handle):
                 if headData.effect == "flam":
                     headCopy = copy.copy(headData)
                     headCopy.midiVolume = headData.midiVolume / FLAM_VOLUME_CONSTANT
-                    measureNotes.append((noteTime - (MIDITICKSPERBEAT / FLAM_TIME_CONSTANT),
-                                         headCopy))
+                    measureNotes.append((noteTime - (MIDITICKSPERBEAT / FLAM_TIME_CONSTANT), headCopy))
                 elif headData.effect == "drag":
                     measureNotes.append((noteTime + divisionTicks / 2, headData))
                 elif headData.effect == "choke":
@@ -354,32 +383,16 @@ def exportMidi(measureIterator, score, handle):
         baseTime += times[-1]
         measureNotes.sort()
         notes.extend(measureNotes)
-    lastNoteTime = 0
-    midiData = [0, 0xff, 0x51, 03, (msPerBeat >> 16) & 0xff,
-                (msPerBeat >> 8) & 0xff, msPerBeat & 0xff]
-    signature = "Created with DrumBurp"
-    midiData.extend([0, 0xff, 0x1, len(signature)])
-    midiData.extend([ord(ch) for ch in signature])
-    for noteTime, headData in notes:
-        deltaTime = noteTime - lastNoteTime
-        lastNoteTime = noteTime
-        encodeSevenBitDelta(deltaTime, midiData)
-        if headData == "choke":
-            midiData.extend([_PERCUSSION_CHOKE, _CHOKE_MSG, _CHOKE_VELOCITY])
-        else:
-            midiData.extend([_PERCUSSION_NOTE_ON,
-                             headData.midiNote,
-                             headData.midiVolume])
-    # Turn off drum notes
-    deltaTime = baseTime - lastNoteTime
-    # Insert a delay before the end of the track.
-    encodeSevenBitDelta(deltaTime + 4 * MIDITICKSPERBEAT, midiData)
-    midiData.extend([_PERCUSSION_NOTE_OFF, 38, 0])
-    encodeSevenBitDelta(0, midiData)
-    midiData.extend([0xFF, 0x2F, 0])
-    numBytes = len(midiData)
-    lenBytes = [((numBytes >> i) & 0xff) for i in xrange(24, -8, -8)]
-    midiData = lenBytes + midiData
+    return notes, baseTime
+
+def exportMidi(measureIterator, score, handle):
+    handle.write("MThd\x00\x00\x00\x06\x00\x00\x00\x01")
+    handle.write("%c" % chr((MIDITICKSPERBEAT >> 8) & 0xFF))
+    handle.write("%c" % chr((MIDITICKSPERBEAT >> 0) & 0xFF))
+    notes, baseTime = _calculateMidiTimes(measureIterator, score)
+    midiData = _makeMidiStart(score)
+    midiData += _writeMidiNotes(notes, baseTime)
+    midiData = _finishMidiData(midiData)
     handle.write("MTrk")
     for byte in midiData:
         handle.write("%c" % byte)
