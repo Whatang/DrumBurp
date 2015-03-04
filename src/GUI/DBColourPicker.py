@@ -83,17 +83,29 @@ DEFAULT_PLAYING_HIGHLIGHT = ColouredItem(QColor(QtCore.Qt.transparent),
 DEFAULT_NEXTPLAY_HIGHLIGHT = ColouredItem(QColor(QtCore.Qt.transparent),
                                           "Dashed",
                                           QColor(QtCore.Qt.blue).lighter())
+
+class ColAttrs(object):
+    def __init__(self, background = True, border = True):
+        self.background = background
+        self.border = border
+
 class ColourScheme(object):
+    noteHighlightAttrs = ColAttrs(True, True)
+    timeHighlightAttrs = ColAttrs(False, True)
+    selectedMeasureAttrs = ColAttrs(True, True)
+    playingHighlightAttrs = ColAttrs(False, True)
+    nextPlayingHighlightAttrs = ColAttrs(False, True)
+
     def __init__(self, noteHighlight = DEFAULT_NOTE_HIGHLIGHT,
                  timeHighlight = DEFAULT_TIME_HIGHLIGHT,
                  selectedMeasure = DEFAULT_SELECTED_MEASURE,
                  playingHighlight = DEFAULT_PLAYING_HIGHLIGHT,
                  nextHighlight = DEFAULT_NEXTPLAY_HIGHLIGHT):
-        self.noteHighlight = noteHighlight
-        self.timeHighlight = timeHighlight
-        self.selectedMeasure = selectedMeasure
-        self.playingHighlight = playingHighlight
-        self.nextPlayingHighlight = nextHighlight
+        self.noteHighlight = copy.deepcopy(noteHighlight)
+        self.timeHighlight = copy.deepcopy(timeHighlight)
+        self.selectedMeasure = copy.deepcopy(selectedMeasure)
+        self.playingHighlight = copy.deepcopy(playingHighlight)
+        self.nextPlayingHighlight = copy.deepcopy(nextHighlight)
 
     @staticmethod
     def iterColourNames():
@@ -121,12 +133,14 @@ class DBColourPicker(QDialog, Ui_ColourPicker):
             label.setText(colourName)
             label.setAlignment(QtCore.Qt.AlignRight)
             self.gridLayout.addWidget(label, row + 1, 0, 1, 1)
-            backgroundButton = self._makeBackgroundButton(colourRef)
-            self.gridLayout.addWidget(backgroundButton, row + 1, 1, 1, 1)
-            combo = self._makeLineCombo(colourRef)
-            self.gridLayout.addWidget(combo, row + 1, 2, 1, 1)
-            lineButton = self._makeLineButton(colourRef)
-            self.gridLayout.addWidget(lineButton, row + 1, 3, 1, 1)
+            if self._getColourAttrs(colourRef).background:
+                backgroundButton = self._makeBackgroundButton(colourRef)
+                self.gridLayout.addWidget(backgroundButton, row + 1, 1, 1, 1)
+            if self._getColourAttrs(colourRef).border:
+                combo = self._makeLineCombo(colourRef)
+                self.gridLayout.addWidget(combo, row + 1, 2, 1, 1)
+                lineButton = self._makeLineButton(colourRef)
+                self.gridLayout.addWidget(lineButton, row + 1, 3, 1, 1)
         self._setColourValues()
 
     @staticmethod
@@ -147,6 +161,9 @@ class DBColourPicker(QDialog, Ui_ColourPicker):
 
     def _getColourItem(self, colourRef):
         return getattr(self._currentScheme, colourRef)
+
+    def _getColourAttrs(self, colourRef):
+        return getattr(self._currentScheme, colourRef + "Attrs")
 
     def _makeColourSelector(self, button, colourRef, colourType):
         def selectColour():
