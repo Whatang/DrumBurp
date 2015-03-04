@@ -111,17 +111,14 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.lilyPreview.setScene(self._lilyScene)
         # Create scene
         erroredFiles = []
-        try:
-            self.scoreScene = QScore(self)
-        except:
-            erroredFiles.append(self.filename)
+        oldFilename = self.filename
+        self.scoreScene = QScore(self)
+        if oldFilename is not None and self.filename is None:
+            erroredFiles.append(oldFilename)
             try:
                 self.recentFiles.remove(self.filename)
             except ValueError:
                 pass
-            self.filename = None
-            self.scoreScene = QScore(self)
-
         self.restoreGeometry(settings.value("Geometry").toByteArray())
         self.restoreState(settings.value("MainWindow/State").toByteArray())
         self._readColours(settings)
