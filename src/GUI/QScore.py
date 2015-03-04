@@ -27,29 +27,110 @@ Created on 4 Jan 2011
 from PyQt4 import QtGui, QtCore
 import itertools
 import functools
-from QStaff import QStaff
-from QSection import QSection
-from QMeasure import QMeasure
-from QMetaData import QMetaData
-from QKitData import QKitData
-from QEditKitDialog import QEditKitDialog
+from GUI.QStaff import QStaff
+from GUI.QSection import QSection
+from GUI.QMeasure import QMeasure
+from GUI.QMetaData import QMetaData
+from GUI.QKitData import QKitData
+from GUI.QEditKitDialog import QEditKitDialog
+from GUI.DBCommands import (MetaDataCommand, ScoreWidthCommand,
+                            DeleteMeasureCommand, InsertAndPasteMeasures,
+                            ClearMeasureCommand, PasteMeasuresCommand,
+                            SetPaperSizeCommand, SetDefaultCountCommand,
+                            SetSystemSpacingCommand, InsertMeasuresCommand,
+                            SetFontCommand, SetFontSizeCommand,
+                            SetVisibilityCommand, SetLilypondSizeCommand,
+                            SetLilypondPagesCommand, SetLilypondFillCommand,
+                            SaveFormatStateCommand, CheckFormatStateCommand,
+                            CheckUndo, SetLilypondFormatCommand)
+import GUI.DBMidi as DBMidi
+from GUI.DBFSM import Waiting
+from GUI.DBFSMEvents import Escape
 from Data import DBErrors
 from Data.Score import ScoreFactory
 from Data.NotePosition import NotePosition
-from DBCommands import (MetaDataCommand, ScoreWidthCommand,
-                        DeleteMeasureCommand, InsertAndPasteMeasures,
-                        ClearMeasureCommand, PasteMeasuresCommand,
-                        SetPaperSizeCommand, SetDefaultCountCommand,
-                        SetSystemSpacingCommand, InsertMeasuresCommand,
-                        SetFontCommand, SetFontSizeCommand,
-                        SetVisibilityCommand, SetLilypondSizeCommand,
-                        SetLilypondPagesCommand, SetLilypondFillCommand,
-                        SaveFormatStateCommand, CheckFormatStateCommand,
-                        CheckUndo, SetLilypondFormatCommand)
-import DBMidi
-from DBFSM import Waiting
-from DBFSMEvents import Escape
 _SCORE_FACTORY = ScoreFactory()
+
+class DragSelection(object):
+    def __init__(self, qscore):
+        self.qscore = qscore
+        self.start = None
+        self.end = None
+        self._isDragging = False
+        self._dragged = []
+        
+    def startDragging(self, notePos):
+        self._isDragging = True
+        self.start = notePos
+        self.end = notePos
+        self._dragged = []
+
+    def drag(self, np):
+        if not self.isDragging():
+            self.startDragging(np)
+        elif self.end != np:
+            self.end = np
+        self._updateDragged()
+
+    def isDragging(self):
+        return self._isDragging
+
+    def endDragging(self):
+        self._isDragging = False
+
+    def hasDragSelection(self):
+        return (self.start is not None and self.end is not None)
+
+    def inDragSelection(self, np):
+        if not self.hasDragSelection():
+            return False
+        start = self.start
+        end = self.end
+        return ((start.staffIndex == np.staffIndex
+                 and start.measureIndex <= np.measureIndex
+                 and (np.staffIndex < end.staffIndex or
+                      np.measureIndex <= end.measureIndex))
+                or (start.staffIndex < np.staffIndex < end.staffIndex)
+                or (np.staffIndex == end.staffIndex
+                    and np.measureIndex <= end.measureIndex))
+
+    def iterDragSelection(self):
+        if self.hasDragSelection():
+            return self.qscore.score.iterMeasuresBetween(self.start,
+                                                         self.end)
+        else:
+            return iter([])
+
+    def clear(self):
+        self.start = None
+        self.end = None
+        self._updateDragged()
+
+    def _updateDragged(self):
+        if not self.hasDragSelection():
+            for index, position in self._dragged:
+                # Turn off
+                self._setDragHighlight(position, False)
+            self._dragged = []
+            return
+        newDragged = [(index, position) for (unused, index, position) in
+                      self.qscore.score.iterMeasuresBetween(self.start,
+                                                            self.end)]
+        oldIndexes = set(x[0] for x in self._dragged)
+        for index, position in newDragged:
+            if index not in oldIndexes:
+                # Turn on
+                self._setDragHighlight(position, True)
+        newIndexes = set(x[0] for x in newDragged)
+        for index, position in self._dragged:
+            if index not in newIndexes:
+                # Turn off
+                self._setDragHighlight(position, False)
+        self._dragged = newDragged
+
+    def _setDragHighlight(self, position, onOff):
+        qmeasure = self.qscore.getQMeasure(position)
+        qmeasure.setDragHighlight(onOff)
 
 class _HeadShortcut(object):
     def __init__(self, currentHeads):
@@ -154,10 +235,7 @@ class QScore(QtGui.QGraphicsScene):
         self.measureClipboard = []
         self._playingMeasure = None
         self._nextMeasure = None
-        self._dragStart = None
-        self._lastDrag = None
-        self._dragSelection = []
-        self._dragged = []
+        self._dragSelection = DragSelection(self)
         self._saved = False
         self._undoStack = QtGui.QUndoStack(self)
         self._inMacro = False
@@ -587,7 +665,7 @@ class QScore(QtGui.QGraphicsScene):
         else:
             if not self.hasDragSelection():
                 return
-            start = self._dragSelection[0]
+            start = self._dragSelection.start
             measureIndex = self._score.getMeasureIndex(start)
             measures = list(self.iterDragSelection())
             self.clearDragSelection()
@@ -608,7 +686,7 @@ class QScore(QtGui.QGraphicsScene):
     def pasteMeasuresOver(self, repeating = False):
         if len(self.measureClipboard) == 0 or not self.hasDragSelection():
             return
-        start = self._dragSelection[0]
+        start = self._dragSelection.start
         measureIndex = self._score.getMeasureIndex(start)
         sourceLength = len(self.measureClipboard)
         targetLength = len(list(self.iterDragSelection()))
@@ -862,77 +940,25 @@ class QScore(QtGui.QGraphicsScene):
             self.reBuild()
             self.dirty = True
 
-    def _startDragging(self, qmeasure):
-        self._dragStart = qmeasure
-        self._lastDrag = qmeasure
-        self._dragSelection = [qmeasure.makeNotePosition(None, None),
-                               qmeasure.makeNotePosition(None, None)]
-        self._dragged = []
-        self._updateDragged()
+    def dragging(self, qmeasure):
+        self._dragSelection.drag(qmeasure.makeNotePosition(None, None))
         self.dragHighlight.emit(True)
 
-    def _updateDragged(self):
-        if not self.hasDragSelection():
-            for index, position in self._dragged:
-                # Turn off
-                self._setDragHighlight(position, False)
-            self._dragged = []
-            return
-        newDragged = [(index, position) for (unused, index, position) in
-                      self.score.iterMeasuresBetween(*self._dragSelection)]
-        for index, position in newDragged:
-            if all(x[0] != index for x in self._dragged):  # Turn on
-                self._setDragHighlight(position, True)
-        for index, position in self._dragged:
-            if all(x[0] != index for x in newDragged):  # Turn off
-                self._setDragHighlight(position, False)
-        self._dragged = newDragged
-
-    def dragging(self, qmeasure):
-        if self._dragStart is None:
-            self._startDragging(qmeasure)
-        elif self._lastDrag != qmeasure:
-            self._lastDrag = qmeasure
-            self._dragSelection[1] = self._lastDrag.makeNotePosition(None, None)
-            self._updateDragged()
-
-    def isDragging(self):
-        return self._dragStart is not None
-
     def endDragging(self):
-        self._dragStart = None
-        self._lastDrag = None
+        self._dragSelection.endDragging()
 
     def hasDragSelection(self):
-        return len(self._dragSelection) == 2
+        return self._dragSelection.hasDragSelection()
 
     def iterDragSelection(self):
-        if self.hasDragSelection():
-            return self.score.iterMeasuresBetween(*self._dragSelection)
-        else:
-            return iter([])
+        return self._dragSelection.iterDragSelection()
 
     def clearDragSelection(self):
-        self._dragSelection = []
-        self._updateDragged()
+        self._dragSelection.clear()
         self.dragHighlight.emit(False)
 
-    def _setDragHighlight(self, position, onOff):
-        staff = self._qStaffs[position.staffIndex]
-        qmeasure = staff.getQMeasure(position)
-        qmeasure.setDragHighlight(onOff)
-
     def inDragSelection(self, np):
-        if not self.hasDragSelection():
-            return False
-        start, end = self._dragSelection
-        return ((start.staffIndex == np.staffIndex
-                 and start.measureIndex <= np.measureIndex
-                 and (np.staffIndex < end.staffIndex or
-                      np.measureIndex <= end.measureIndex))
-                or (start.staffIndex < np.staffIndex < end.staffIndex)
-                or (np.staffIndex == end.staffIndex
-                    and np.measureIndex <= end.measureIndex))
+        return self._dragSelection.inDragSelection(np)
 
     def metaChange(self):
         return _metaChangeContext(self, self._metaData)

@@ -21,17 +21,17 @@
 @author: Mike
 '''
 
-from DBCommands import (ToggleNote, RepeatNoteCommand,
-                        ChangeMeasureCountCommand, SetRepeatCountCommand,
-                        SetAlternateCommand)
-from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
-from QMeasureContextMenu import QMeasureContextMenu
-from QMeasureLineContextMenu import QMeasureLineContextMenu
-from QCountContextMenu import QCountContextMenu
-from QEditMeasureDialog import QEditMeasureDialog
-from QRepeatCountDialog import QRepeatCountDialog
-from QAlternateDialog import QAlternateDialog
-import DBFSMEvents as Event
+from GUI.DBCommands import (ToggleNote, RepeatNoteCommand,
+                            ChangeMeasureCountCommand, SetRepeatCountCommand,
+                            SetAlternateCommand)
+from GUI.QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
+from GUI.QMeasureContextMenu import QMeasureContextMenu
+from GUI.QMeasureLineContextMenu import QMeasureLineContextMenu
+from GUI.QCountContextMenu import QCountContextMenu
+from GUI.QEditMeasureDialog import QEditMeasureDialog
+from GUI.QRepeatCountDialog import QRepeatCountDialog
+from GUI.QAlternateDialog import QAlternateDialog
+import GUI.DBFSMEvents as Event
 from PyQt4 import QtCore
 
 class FsmState(object):
@@ -399,7 +399,7 @@ class EditMeasurePropertiesState(DialogState):
 
     def _accepted(self):
         newCounter = self.dialog.getValues()
-        if (newCounter.countString() != self.counter.countString()):
+        if newCounter.countString() != self.counter.countString():
             command = ChangeMeasureCountCommand(self.qscore,
                                                 self.measurePosition,
                                                 newCounter)

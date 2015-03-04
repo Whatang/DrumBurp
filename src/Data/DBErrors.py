@@ -39,8 +39,9 @@ class OverSizeMeasure(StandardError):
 
 class DbReadError(StandardError):
     "There was an error reading the score."
-    
+
     def __init__(self, scoreIterator):
+        super(DbReadError, self).__init__()
         self.lineNumber = scoreIterator.lineNumber
         self.line = scoreIterator.currentLine
 

@@ -23,15 +23,15 @@ Created on 12 Dec 2010
 
 '''
 
-from Drum import Drum, HeadData
-from DefaultKits import STEM_DOWN, STEM_UP, NAMED_DEFAULTS
-from DBErrors import DuplicateDrumError, NoSuchDrumError
+from Data.Drum import Drum, HeadData
+from Data.DefaultKits import STEM_DOWN, STEM_UP, NAMED_DEFAULTS
+from Data.DBErrors import DuplicateDrumError, NoSuchDrumError
 
 class DrumKit(object):
     '''
     classdocs
     '''
-    UP = STEM_UP
+    UP = STEM_UP  # IGNORE:invalid-name
     DOWN = STEM_DOWN
 
     def __init__(self):
@@ -53,8 +53,8 @@ class DrumKit(object):
         self._drums.append(drum)
 
     def deleteDrum(self, name = None, index = None):
-        assert(not(index is None and name is None))
-        assert(not(index is not None and name is not None))
+        assert not(index is None and name is None)
+        assert not(index is not None and name is not None)
         if name is not None:
             index = [i for i, dr in enumerate(self._drums)
                      if dr.name == name]

@@ -23,8 +23,8 @@ Created on 22 Feb 2011
 
 '''
 from PyQt4 import QtGui
-from ui_alternateRepeats import Ui_AlternateDialog
-from QAlternateWidget import QAlternateWidget
+from GUI.ui_alternateRepeats import Ui_AlternateDialog
+from GUI.QAlternateWidget import QAlternateWidget
 
 class QAlternateDialog(QtGui.QDialog, Ui_AlternateDialog):
     def __init__(self, alternate, parent = None):

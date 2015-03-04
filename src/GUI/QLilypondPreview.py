@@ -12,7 +12,7 @@ import os
 import glob
 
 from Notation.lilypond import LilypondScore, LilypondProblem
-from LilypondExporter import LilypondExporter
+from GUI.LilypondExporter import LilypondExporter
 
 class QLilypondPreview(QGraphicsScene):
     buildCompleted = pyqtSignal()
@@ -71,7 +71,7 @@ class QLilypondPreview(QGraphicsScene):
         for pngFile in pngFiles:
             os.unlink(pngFile)
         self._exporter.start()
-        
+
     def _setLilypondControlsEnabled(self, onOff):
         self.mainWindow.lilyPreviewControls.setEnabled(onOff)
         self.mainWindow.setLilypondControlsEnabled(onOff)
@@ -100,7 +100,6 @@ class QLilypondPreview(QGraphicsScene):
         finally:
             # Enable controls
             self._setLilypondControlsEnabled(True)
-            # TODO: Enable appropriate page controls
 
     def _readPages(self):
         pngFiles = glob.glob(os.path.join(self._tempdir, 'db*.png'))
@@ -123,12 +122,12 @@ class QLilypondPreview(QGraphicsScene):
                 self.removeItem(self._pixmap)
             self._pixmap = None
         self._checkButtons()
-    
+
     def setNoPreview(self):
         self._pages = []
         self.mainWindow.refreshLilypond.setText("Preview")
         self._displayPage()
-        
+
     def cleanup(self):
         for toDelete in glob.glob(os.path.join(self._tempdir, '*')):
             os.unlink(toDelete)

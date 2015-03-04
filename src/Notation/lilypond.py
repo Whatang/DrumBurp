@@ -92,53 +92,62 @@ class SevenTwelfthsProblem(BadNoteDuration):
 class ElevenTwelfthsProblem(BadNoteDuration):
     "DrumBurp cannot set notes of length 11/12 beat."
 
+
+def _getCompoundDuration(beat, ticks):
+    if ticks * 12 == beat.numTicks: # 1/12
+        dur = "@32"
+    elif ticks * 6 == beat.numTicks: # 2/12
+        dur = "@16"
+    elif ticks * 4 == beat.numTicks: # 3/12
+        dur = "@16."
+    elif ticks * 3 == beat.numTicks: # 4/12
+        dur = "@8"
+    elif ticks * 12 == 5 * beat.numTicks: # 5/12
+        dur = "@8,32"
+    elif ticks * 2 == beat.numTicks: # 6/12
+        dur = "@8."
+    elif ticks * 12 == 7 * beat.numTicks: # 7/12
+        dur = "@8.,32"
+    elif ticks * 3 == 2 * beat.numTicks: # 8/12
+        dur = "@4"
+    elif ticks * 4 == 3 * beat.numTicks: # 9/12
+        dur = "@4,32"
+    elif ticks * 6 == 5 * beat.numTicks: # 10/12
+        dur = "@4,16"
+    elif ticks * 12 == 11 * beat.numTicks: # 11/12
+        dur = "@4,16."
+    else:
+        raise LilypondProblem("Note duration not recognised")
+    return dur
+
+
+def _getStraightDuration(beat, ticks):
+    if 2 * ticks == beat.numTicks:
+        dur = "8"
+    elif 4 * ticks == beat.numTicks:
+        dur = "16"
+    elif 4 * ticks == 3 * beat.numTicks:
+        dur = "8."
+    elif 8 * ticks == beat.numTicks:
+        dur = "32"
+    elif 8 * ticks == 3 * beat.numTicks:
+        dur = "16."
+    elif 8 * ticks == 5 * beat.numTicks:
+        dur = "8,32"
+    elif 8 * ticks == 7 * beat.numTicks:
+        dur = "8.,32"
+    else:
+        raise LilypondProblem("Note duration not recognised")
+    return dur
+
 def lilyDuration(beat, ticks):
     dur = None
     if ticks == beat.numTicks:
         dur = "4"
     elif beat.numTicks % 3 == 0:
-        if ticks * 12 == beat.numTicks:  # 1/12
-            dur = "@32"
-        elif ticks * 6 == beat.numTicks:  # 2/12
-            dur = "@16"
-        elif ticks * 4 == beat.numTicks:  # 3/12
-            dur = "@16."
-        elif ticks * 3 == beat.numTicks:  # 4/12
-            dur = "@8"
-        elif ticks * 12 == 5 * beat.numTicks:  # 5/12
-            dur = "@8,32"
-            # raise FiveTwelfthsProblem()
-        elif ticks * 2 == beat.numTicks:  # 6/12
-            dur = "@8."
-        elif ticks * 12 == 7 * beat.numTicks:  # 7/12
-            dur = "@8.,32"
-            # raise SevenTwelfthsProblem()
-        elif ticks * 3 == 2 * beat.numTicks:  # 8/12
-            dur = "@4"
-        elif ticks * 4 == 3 * beat.numTicks:  # 9/12
-            dur = "@4,32"
-        elif ticks * 6 == 5 * beat.numTicks:  # 10/12
-            dur = "@4,16"
-            # raise FiveSixthsProblem()
-        elif ticks * 12 == 11 * beat.numTicks:  # 11/12
-            dur = "@4,16."
+        dur = _getCompoundDuration(beat, ticks)
     else:
-        if 2 * ticks == beat.numTicks:
-            dur = "8"
-        elif 4 * ticks == beat.numTicks:
-            dur = "16"
-        elif 4 * ticks == 3 * beat.numTicks:
-            dur = "8."
-        elif 8 * ticks == beat.numTicks:
-            dur = "32"
-        elif 8 * ticks == 3 * beat.numTicks:
-            dur = "16."
-        elif 8 * ticks == 5 * beat.numTicks:
-            dur = "8,32"
-            # raise FiveEighthsProblem()
-        elif 8 * ticks == 7 * beat.numTicks:
-            dur = "8.,32"
-            # raise SevenEighthsProblem()
+        dur = _getStraightDuration(beat, ticks)
     return dur
 
 
@@ -229,6 +238,24 @@ class LilyMeasure(object):
         return noteString
 
 
+    def _makeNoteEffect(self, lNotes, lEffects, voice, noteTime, dur):
+        if noteTime not in lEffects:
+            return ""
+        accent = ""
+        for noteIndicator, effect in lEffects[noteTime]:
+            if effect == "flam":
+                voice.append(self._FLAM_STRING % noteIndicator)
+            elif effect == "accent":
+                accent += self._ACCENT_STRING
+            elif effect == "choke":
+                accent += self._CHOKE_STRING
+            elif effect == "drag":
+                accent = self._makeDrag(dur) + accent
+            elif effect == "ghost":
+                noteIndex = lNotes[noteTime].index(noteIndicator)
+                lNotes[noteTime][noteIndex] = r"\parenthesize " + noteIndicator
+        return accent
+
     def _buildVoices(self, noteTimes, durations, lilyNotes, effects):
         wholeRests = collections.defaultdict(dict)
         for direction, timeList in noteTimes.iteritems():
@@ -252,21 +279,8 @@ class LilyMeasure(object):
                 elif isTriplet:
                     voice.append("}")
                     isTriplet = False
-                accent = ""
-                if noteTime in lEffects:
-                    for noteIndicator, effect in lEffects[noteTime]:
-                        if effect == "flam":
-                            voice.append(self._FLAM_STRING % noteIndicator)
-                        elif effect == "accent":
-                            accent += self._ACCENT_STRING
-                        elif effect == "choke":
-                            accent += self._CHOKE_STRING
-                        elif effect == "drag":
-                            accent = self._makeDrag(dur) + accent
-                        elif effect == "ghost":
-                            noteIndex = lNotes[noteTime].index(noteIndicator)
-                            lNotes[noteTime][noteIndex] = (r"\parenthesize " +
-                                                           noteIndicator)
+                accent = self._makeNoteEffect(lNotes, lEffects, voice,
+                                              noteTime, dur)
                 if noteTime not in lNotes:
                     lNotes[noteTime] = ["r"]
                 if lNotes[noteTime] == ["r"] and dur == "4":
@@ -472,7 +486,7 @@ class LilypondScore(object):
             self._writeLayout()
         self._writeMacros(handle)
         self._lilyKit.write(handle)
-        with LILY_CONTEXT(self.indenter, '\score'):
+        with LILY_CONTEXT(self.indenter, r'\score'):
             self._writeScore()
 
     def _writePaper(self):

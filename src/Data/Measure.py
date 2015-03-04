@@ -24,9 +24,9 @@ Created on 12 Dec 2010
 '''
 
 from collections import defaultdict
-from DBConstants import EMPTY_NOTE, BAR_TYPES
-from DBErrors import BadTimeError, TooManyBarLines
-from NotePosition import NotePosition
+from Data.DBConstants import EMPTY_NOTE, BAR_TYPES
+from Data.DBErrors import BadTimeError, TooManyBarLines
+from Data.NotePosition import NotePosition
 from Data import MeasureCount
 from Data import Counter
 import copy
@@ -240,13 +240,13 @@ class Measure(object):
     def toggleNote(self, position, head):
         self._checkValidPosition(position)
         oldHead = self._notes.getNote(position.noteTime, position.drumIndex)
-        if (oldHead == head):
+        if oldHead == head:
             self.deleteNote(position)
         else:
             self.addNote(position, head)
 
     def _setWidth(self, newWidth):
-        assert(newWidth > 0)
+        assert newWidth > 0
         if newWidth == len(self):
             return
         self._width = newWidth
@@ -341,7 +341,7 @@ class Measure(object):
                              head)
 
     def lineIsVisible(self, index):
-        return (self._notes.notesOnLine(index) > 0)
+        return self._notes.notesOnLine(index) > 0
 
     def write(self, indenter):
         with indenter.section("START_BAR %d" % len(self), "END_BAR"):
@@ -425,7 +425,7 @@ class Measure(object):
         numBeats = self.counter.numBeats()
         maxLen = len(self)
         newCount = None
-        for _, count in Counter.DEFAULT_REGISTRY:
+        for unused_, count in Counter.DEFAULT_REGISTRY:
             if len(count) * numBeats >= maxLen:
                 continue
             mcount = MeasureCount.makeSimpleCount(count, numBeats)

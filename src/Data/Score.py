@@ -23,16 +23,16 @@ Created on 12 Dec 2010
 
 '''
 
-import DrumKit
-from Staff import Staff
-from Measure import Measure
-from Counter import CounterRegistry
-from MeasureCount import makeSimpleCount
-from DBErrors import BadTimeError, OverSizeMeasure, DBVersionError
-from NotePosition import NotePosition
-from ScoreMetaData import ScoreMetaData
-from FontOptions import FontOptions
-import fileUtils
+import Data.DrumKit as DrumKit
+from Data.Staff import Staff
+from Data.Measure import Measure
+from Data.Counter import CounterRegistry
+from Data.MeasureCount import makeSimpleCount
+from Data.DBErrors import BadTimeError, OverSizeMeasure, DBVersionError
+from Data.NotePosition import NotePosition
+from Data.ScoreMetaData import ScoreMetaData
+from Data.FontOptions import FontOptions
+import Data.fileUtils as fileUtils
 import bisect
 import hashlib
 import gzip
@@ -567,7 +567,7 @@ class Score(object):
         return pos
 
     def tickDifference(self, second, first):
-        """Calculate the difference in ticks between NotePositions first and 
+        """Calculate the difference in ticks between NotePositions first and
         second.
         """
         current = first.makeMeasurePosition()
@@ -705,9 +705,9 @@ class Score(object):
 
     def read(self, handle):
         # Check the file format version
-        handle, handle_copy = itertools.tee(handle)
-        firstline = handle_copy.next()
-        del handle_copy
+        handle, handleCopy = itertools.tee(handle)
+        firstline = handleCopy.next()
+        del handleCopy
         scoreIterator = fileUtils.dbFileIterator(handle)
         if firstline.startswith("DB_FILE_FORMAT"):
             versionDict = {}

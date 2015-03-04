@@ -24,7 +24,7 @@ Created on 17 Apr 2011
 '''
 
 from PyQt4.QtDesigner import QPyDesignerCustomWidgetPlugin
-from measureTabs import measureTabs
+from .measureTabs import measureTabs
 
 class measureTabs_plugin(QPyDesignerCustomWidgetPlugin):
     '''

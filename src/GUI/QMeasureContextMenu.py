@@ -24,14 +24,14 @@ Created on 16 Apr 2011
 '''
 from PyQt4 import QtGui
 
-from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
-import DBIcons
+from GUI.QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
+import GUI.DBIcons as DBIcons
+from GUI.DBCommands import (InsertMeasuresCommand,
+                            InsertSectionCommand, DeleteMeasureCommand,
+                            SetAlternateCommand)
+from GUI.QInsertMeasuresDialog import QInsertMeasuresDialog
+from GUI.DBFSMEvents import RepeatNotes
 from Data import DBConstants
-from DBCommands import (InsertMeasuresCommand,
-                        InsertSectionCommand, DeleteMeasureCommand,
-                        SetAlternateCommand)
-from QInsertMeasuresDialog import QInsertMeasuresDialog
-from DBFSMEvents import RepeatNotes
 
 class QMeasureContextMenu(QMenuIgnoreCancelClick):
     def __init__(self, qScore, qmeasure, firstNote, alternateText):

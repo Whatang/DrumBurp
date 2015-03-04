@@ -66,8 +66,7 @@ disable-msg-cat=I
 #enable-msg=
 
 # Disable the message(s) with the given id(s).
-disable-msg=C0111,W0142
-#disable-msg=W0704,C0321,W0201,W0142,R0903
+disable=missing-docstring,line-too-long,star-args,superfluous-parens,too-many-public-methods
 
 
 [REPORTS]
@@ -267,10 +266,10 @@ defining-attr-methods=__init__,__new__,setUp
 [DESIGN]
 
 # Maximum number of arguments for function / method
-max-args=5
+max-args=7
 
 # Maximum number of locals for function / method body
-max-locals=15
+max-locals=20
 
 # Maximum number of return / yield for function / method body
 max-returns=6
@@ -279,13 +278,13 @@ max-returns=6
 max-branchs=12
 
 # Maximum number of statements in function / method body
-max-statements=50
+max-statements=70
 
 # Maximum number of parents for a class (see R0901).
 max-parents=7
 
 # Maximum number of attributes for a class (see R0902).
-max-attributes=10
+max-attributes=20
 
 # Minimum number of public methods for a class (see R0903).
 min-public-methods=0

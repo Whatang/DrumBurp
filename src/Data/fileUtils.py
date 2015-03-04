@@ -22,7 +22,7 @@ Created on 7 Oct 2012
 @author: Mike Thomas
 '''
 
-import DBErrors
+import Data.DBErrors as DBErrors
 
 class dbFileIterator(object):
     class _Section(object):
@@ -33,8 +33,6 @@ class dbFileIterator(object):
             self._convertNone = convertNone
             self._lines = {}
             self._readLines = readLines
-            self.lineNumber = 0
-            self.currentLine = ""
 
         def __enter__(self):
             return self
@@ -58,7 +56,7 @@ class dbFileIterator(object):
                         break
 
 
-        def _parseInteger(self, data, lineName):
+        def _parseInteger(self, data, lineName_):
             try:
                 data = int(data)
             except (TypeError, ValueError):
@@ -130,10 +128,12 @@ class dbFileIterator(object):
 
     def __init__(self, handle):
         self._handle = handle
+        self.lineNumber = 0
+        self.currentLine = ""
 
     def __iter__(self):
-        for line_number, line in enumerate(self._handle):
-            self.lineNumber = line_number
+        for lineNumber, line in enumerate(self._handle):
+            self.lineNumber = lineNumber
             line = line.strip()
             self.currentLine = line
             fields = line.split(None, 1)

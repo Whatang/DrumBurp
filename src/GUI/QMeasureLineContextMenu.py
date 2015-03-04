@@ -22,10 +22,10 @@ Created on Feb 26, 2012
 @author: Mike
 '''
 
-from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
-from DBCommands import (SetSectionEndCommand, SetLineBreakCommand,
-                        SetRepeatEndCommand, SetRepeatStartCommand)
-from DBFSMEvents import MenuSelect, ChangeRepeatCount
+from GUI.QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
+from GUI.DBCommands import (SetSectionEndCommand, SetLineBreakCommand,
+                            SetRepeatEndCommand, SetRepeatStartCommand)
+from GUI.DBFSMEvents import MenuSelect, ChangeRepeatCount
 
 class QMeasureLineContextMenu(QMenuIgnoreCancelClick):
     def __init__(self, qScore, lastMeasure, nextMeasure,

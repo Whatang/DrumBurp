@@ -24,11 +24,11 @@ Created on 4 Jan 2011
 '''
 
 from PyQt4 import QtGui
-from QMeasure import QMeasure
-from QMeasureLine import QMeasureLine
-from QLineLabel import QLineLabel
-from Data.NotePosition import NotePosition
 import itertools
+from GUI.QMeasure import QMeasure
+from GUI.QMeasureLine import QMeasureLine
+from GUI.QLineLabel import QLineLabel
+from Data.NotePosition import NotePosition
 
 class QStaff(QtGui.QGraphicsItemGroup):
     '''

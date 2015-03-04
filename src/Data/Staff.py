@@ -22,7 +22,7 @@ Created on 12 Dec 2010
 @author: Mike Thomas
 
 '''
-from DBErrors import BadTimeError
+from Data.DBErrors import BadTimeError
 
 # pylint:disable-msg=R0904
 class Staff(object):

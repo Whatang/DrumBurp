@@ -27,7 +27,7 @@ Created on 13 Mar 2011
 from PyQt4.QtGui import QGraphicsItem, QFontMetrics
 from PyQt4.QtCore import QPoint, QRectF, QPointF, Qt
 
-class QGraphicsListData(QGraphicsItem):
+class QGraphicsListData(QGraphicsItem):  # IGNORE:abstract-class-not-used
     '''
     classdocs
     '''

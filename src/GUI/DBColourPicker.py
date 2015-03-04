@@ -4,9 +4,10 @@ Created on Feb 22, 2015
 @author: mike_000
 '''
 import copy
-from PyQt4.QtGui import QDialog, QColor, QLabel, QPushButton, QComboBox, QColorDialog
+from PyQt4.QtGui import (QDialog, QColor, QLabel, QPushButton,
+                         QComboBox, QColorDialog)
 from PyQt4 import QtCore
-from ui_dbColours import Ui_ColourPicker
+from GUI.ui_dbColours import Ui_ColourPicker
 
 STYLE_MAP = {"None":QtCore.Qt.NoPen,
              "Solid":QtCore.Qt.SolidLine,
@@ -36,8 +37,8 @@ class ColouredItem(object):
         return name + ":%02x,%02x,%02x,%02x" % colour.getRgb()
 
     @staticmethod
-    def _colourFromString(c_string):
-        rgba = [int(x, 16) for x in c_string.split(",")]
+    def _colourFromString(colString):
+        rgba = [int(x, 16) for x in colString.split(",")]
         return QColor.fromRgb(*rgba)
 
     @staticmethod
@@ -45,18 +46,20 @@ class ColouredItem(object):
         return "%s:%s" % (name, REVERSE_STYLE_MAP[line])
 
     @staticmethod
-    def _lineFromString(l_string):
-        return STYLE_MAP[l_string]
-
+    def _lineFromString(lineString):
+        return STYLE_MAP[lineString]
 
     def toString(self):
-        answer = "/".join([self._colourToString("backgroundColour", self.backgroundColour),
-                          self._lineToString("borderStyle", self.borderStyle),
-                          self._colourToString("borderColour", self.borderColour)])
+        answer = "/".join([self._colourToString("backgroundColour",
+                                                self.backgroundColour),
+                          self._lineToString("borderStyle",
+                                             self.borderStyle),
+                          self._colourToString("borderColour",
+                                               self.borderColour)])
         return answer
 
-    def fromString(self, c_string):
-        for item in str(c_string).split("/"):
+    def fromString(self, colString):
+        for item in str(colString).split("/"):
             if ":" not in item:
                 continue
             name, detail = item.split(":")
@@ -81,7 +84,7 @@ DEFAULT_NEXTPLAY_HIGHLIGHT = ColouredItem(QColor(QtCore.Qt.transparent),
                                           "Dashed",
                                           QColor(QtCore.Qt.blue).lighter())
 class ColourScheme(object):
-    def __init__(self, noteHighlight = DEFAULT_NOTE_HIGHLIGHT, 
+    def __init__(self, noteHighlight = DEFAULT_NOTE_HIGHLIGHT,
                  timeHighlight = DEFAULT_TIME_HIGHLIGHT,
                  selectedMeasure = DEFAULT_SELECTED_MEASURE,
                  playingHighlight = DEFAULT_PLAYING_HIGHLIGHT,
@@ -91,7 +94,7 @@ class ColourScheme(object):
         self.selectedMeasure = selectedMeasure
         self.playingHighlight = playingHighlight
         self.nextPlayingHighlight = nextHighlight
-        
+
     @staticmethod
     def iterColourNames():
         yield "Note Highlight", "noteHighlight"
@@ -101,7 +104,7 @@ class ColourScheme(object):
         yield "Next Playing Highlight", "nextPlayingHighlight"
 
 class DBColourPicker(QDialog, Ui_ColourPicker):
-    
+
     def __init__(self, colour_scheme, parent = None):
         super(DBColourPicker, self).__init__(parent)
         self.setupUi(self)
@@ -125,7 +128,7 @@ class DBColourPicker(QDialog, Ui_ColourPicker):
             lineButton = self._makeLineButton(colourRef)
             self.gridLayout.addWidget(lineButton, row + 1, 3, 1, 1)
         self._setColourValues()
-           
+
     @staticmethod
     def _styleButton(button, colour):
         button.setText("")
@@ -168,8 +171,8 @@ class DBColourPicker(QDialog, Ui_ColourPicker):
         combo.setObjectName(colourRef + "border_style")
         for lineStyle in STYLES:
             combo.addItem(lineStyle)
-        def setLineStyle(new_index):
-            self._getColourItem(colourRef).borderStyle = STYLES[new_index]
+        def setLineStyle(newIndex):
+            self._getColourItem(colourRef).borderStyle = STYLES[newIndex]
         combo.currentIndexChanged.connect(setLineStyle)
         self._lineSelectors.append((combo, colourRef))
         return combo

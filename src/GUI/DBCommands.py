@@ -23,7 +23,7 @@ Created on 13 Feb 2011
 '''
 from PyQt4.QtGui import QUndoCommand
 import functools
-import DBMidi
+import GUI.DBMidi as DBMidi
 from Data import DBConstants
 from Data.NotePosition import NotePosition
 from Data.Measure import Measure
@@ -58,10 +58,10 @@ class ScoreCommand(QUndoCommand):
         @functools.wraps(method)
         def wrapper(self, *args, **kwargs):
             try:
-                self._score.turnOffCallBacks()
+                self._score.turnOffCallBacks()  # IGNORE:protected-access
                 return method(self, *args, **kwargs)
             finally:
-                self._score.turnOnCallBacks()
+                self._score.turnOnCallBacks()  # IGNORE:protected-access
         return wrapper
 
 class CheckUndo(ScoreCommand):
@@ -79,7 +79,7 @@ class CheckUndo(ScoreCommand):
         def _undo(self):
             newHash = self._score.hashScore()
             print newHash.encode('hex'), self._hash.encode('hex')
-            assert(newHash == self._hash)
+            assert newHash == self._hash
 
         def _redo(self):
             self._hash = self._score.hashScore()
@@ -93,7 +93,7 @@ class DebugScoreCommand(ScoreCommand):  # pylint:disable-msg=W0223
         super(DebugScoreCommand, self).undo()
         newHash = self._score.hashScore()
         print newHash.encode('hex'), self._hash.encode('hex')
-        assert(newHash == self._hash)
+        assert newHash == self._hash
 
 class SaveFormatStateCommand(ScoreCommand):
     def __init__(self, qscore):
@@ -142,7 +142,7 @@ class ToggleNote(NoteCommand):
     def _redo(self):
         self._score.toggleNote(self._np, self._head)
         newHead = self._score.getItemAtPosition(self._np)
-        if (newHead != DBConstants.EMPTY_NOTE):
+        if newHead != DBConstants.EMPTY_NOTE:
             DBMidi.playNote(self._np.drumIndex, self._head)
 
 class MetaDataCommand(ScoreCommand):
@@ -444,7 +444,7 @@ class ContractAllMeasureCountsCommand(ScoreCommand):
                                                               name)
         self._newCounts = [measure.getSmallestSimpleCount() for measure in
                            self._score.iterMeasures()]
-        self._oldCounts = [measure.counter for measure in 
+        self._oldCounts = [measure.counter for measure in
                            self._score.iterMeasures()]
 
     @ScoreCommand.suspendCallbacks
