@@ -33,8 +33,6 @@ class dbFileIterator(object):
             self._convertNone = convertNone
             self._lines = {}
             self._readLines = readLines
-            self.lineNumber = 0
-            self.currentLine = ""
 
         def __enter__(self):
             return self
@@ -130,10 +128,12 @@ class dbFileIterator(object):
 
     def __init__(self, handle):
         self._handle = handle
+        self.lineNumber = 0
+        self.currentLine = ""
 
     def __iter__(self):
-        for line_number, line in enumerate(self._handle):
-            self.lineNumber = line_number
+        for lineNumber, line in enumerate(self._handle):
+            self.lineNumber = lineNumber
             line = line.strip()
             self.currentLine = line
             fields = line.split(None, 1)
