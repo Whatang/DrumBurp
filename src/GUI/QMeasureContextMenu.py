@@ -28,7 +28,7 @@ from GUI.QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 import GUI.DBIcons as DBIcons
 from GUI.DBCommands import (InsertMeasuresCommand,
                             InsertSectionCommand, DeleteMeasureCommand,
-                            SetAlternateCommand)
+                            SetAlternateCommand, ToggleSimileCommand)
 from GUI.QInsertMeasuresDialog import QInsertMeasuresDialog
 from GUI.DBFSMEvents import RepeatNotes
 from Data import DBConstants
@@ -56,6 +56,13 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         else:
             self.addAction("Add Alternate Ending",
                            self._qmeasure.setAlternate)
+        simile = QtGui.QAction("Set simile mark", self,
+                               checkable = True)
+        np = self._np.makeMeasurePosition()
+        measure = score.getItemAtPosition(np)
+        simile.setChecked(measure.isSimile)
+        self.addAction(simile)
+        simile.triggered.connect(self._toggleSimile)
 
     def _setupEditSection(self):
         if (self._noteText !=
@@ -277,3 +284,8 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
     @QMenuIgnoreCancelClick.menuSelection
     def _clearOneMeasure(self):
         self._qScore.clearMeasures(self._np)
+
+    @QMenuIgnoreCancelClick.menuSelection
+    def _toggleSimile(self, unused_):
+        command = ToggleSimileCommand(self._qScore, self._np)
+        self._qScore.addCommand(command)

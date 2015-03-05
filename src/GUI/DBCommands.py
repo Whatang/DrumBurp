@@ -739,3 +739,19 @@ class SetVisibilityCommand(ScoreCommand):
 
     def _undo(self):
         setattr(self._qScore.displayProperties, self._name, not self._new)
+
+class ToggleSimileCommand(ScoreCommand):
+    canReformat = True
+    def __init__(self, qScore, np):
+        super(ToggleSimileCommand, self).__init__(qScore, np,
+                                                  "toggle simile mark")
+        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        self._onOff = not measure.isSimile
+
+    def _redo(self):
+        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        measure.isSimile = self._onOff
+
+    def _undo(self):
+        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        measure.isSimile = not self._onOff
