@@ -128,11 +128,14 @@ class QMeasure(QtGui.QGraphicsItem):
         baseline = (self.numLines() - 1) * self._qScore.ySpacing + self._base + self.parentItem().alternateHeight()
         dot = self._qScore.scale
         potential = False
+        isSimile = self._measure.isSimile
         for drumIndex in range(0, self.numLines()):
             lineHeight = baseline + (self._qScore.ySpacing / 2.0) - 1
             lineIndex = self.lineIndex(drumIndex)
             for noteTime, x in enumerate(xValues):
-                if (lineIndex == self._potentialDrum
+                if isSimile:
+                    text = "%"
+                elif (lineIndex == self._potentialDrum
                     and noteTime in self._potentialSet):
                     text = self._potentialHead
                     potential = True
@@ -183,7 +186,11 @@ class QMeasure(QtGui.QGraphicsItem):
         font = painter.font()
         fontMetric = QtGui.QFontMetrics(font)
         baseline = (self.numLines() * self._qScore.ySpacing) + self._base + self.parentItem().alternateHeight()
-        for noteTime, count in enumerate(self._measure.count()):
+        if self._measure.isSimile:
+            counter = ["%d" % (beat + 1) for beat in xrange(len(self._measure))]
+        else:
+            counter = self._measure.count()
+        for noteTime, count in enumerate(counter):
             x = xValues[noteTime]
             br = fontMetric.tightBoundingRect(count)
             left = x + (self._qScore.xSpacing - br.width()) / 2
@@ -262,7 +269,7 @@ class QMeasure(QtGui.QGraphicsItem):
         painter.setFont(font)
         xValues = [noteTime * self._qScore.xSpacing
                    for noteTime in range(0, len(self._measure))]
-        if self._highlight:
+        if not self._measure.isSimile and self._highlight:
             self._paintHighlight(painter, xValues)
         self._paintNotes(painter, xValues)
         if self._props.beatCountVisible:

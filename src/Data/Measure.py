@@ -142,7 +142,10 @@ class Measure(object):
                          fset = _setrepeatCount)
 
     def __len__(self):
-        return self._width
+        if self.isSimile:
+            return self.counter.numBeats()
+        else:
+            return self._width
 
     def __iter__(self):
         return self._notes.iterNotesAndHeads()

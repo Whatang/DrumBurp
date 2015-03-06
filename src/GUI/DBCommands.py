@@ -751,7 +751,9 @@ class ToggleSimileCommand(ScoreCommand):
     def _redo(self):
         measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
         measure.isSimile = self._onOff
+        self._qScore.dataChanged(self._np)
 
     def _undo(self):
         measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
         measure.isSimile = not self._onOff
+        self._qScore.dataChanged(self._np)
