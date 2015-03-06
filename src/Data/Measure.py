@@ -365,7 +365,7 @@ class Measure(object):
                 indenter("REPEAT_COUNT %d" % self.repeatCount)
             if self.alternateText is not None:
                 indenter("ALTERNATE %s" % self.alternateText)
-            if self.simileDistance:
+            if self.simileDistance > 0:
                 indenter("SIMILE %d" % self.simileDistance)
                 indenter("SIMINDEX %d" % self.simileIndex)
 

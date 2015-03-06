@@ -46,7 +46,7 @@ class QCountContextMenu(QMenuIgnoreCancelClick):
         self._setup()
 
     def _setup(self):
-        if not self._measure.isSimile:
+        if not self._measure.simileDistance > 0:
             self.addAction("Edit Measure Count", self._editMeasureCount)
             # beatMenu = self.addMenu("Beat Count")
             measureMenu = self.addMenu("Measure Count")

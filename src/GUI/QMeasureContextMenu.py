@@ -54,7 +54,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                                   for measure, unusedIndex, unusedPos
                                   in self._draggedMeasures)
         else:
-            self._hasSimile = self._measure.simileDistance
+            self._hasSimile = self._measure.simileDistance > 0
         self._alternate = alternateText
         self._setup()
 
@@ -69,7 +69,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
             self.addAction("Add Alternate Ending",
                            self._qmeasure.setAlternate)
         if self._draggedMeasures is None:
-            if self._measure.simileDistance:
+            if self._measure.simileDistance > 0:
                 self.addAction("Remove simile mark",
                                self._toggleSimile)
             else:
@@ -92,7 +92,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                                self._toggleSimile)
 
     def _setupEditSection(self):
-        if self._measure.simileDistance:
+        if self._measure.simileDistance > 0:
             return
         if self._noteText != DBConstants.EMPTY_NOTE:
             actionText = "Repeat note"

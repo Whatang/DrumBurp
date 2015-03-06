@@ -751,7 +751,7 @@ class ToggleSimileCommand(ScoreCommand):
         self._measureIndex = self._score.getMeasureIndex(self._np)
         measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
         self._index=index
-        if measure.simileDistance:
+        if measure.simileDistance > 0:
             self._oldDistance = measure.simileDistance
             self._newDistance = 0
         else:

@@ -87,7 +87,7 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def _setDimensions(self):
         self.prepareGeometryChange()
-        if self._measure.simileDistance:
+        if self._measure.simileDistance > 0:
             referredMeasure = self._qScore.score.getReferredMeasure(self._measureIndex)
             self._displayCols = referredMeasure.counter.numBeats()
         else:
@@ -129,7 +129,7 @@ class QMeasure(QtGui.QGraphicsItem):
         baseline = (self.numLines() - 1) * self._qScore.ySpacing + self._base + self.parentItem().alternateHeight()
         dot = self._qScore.scale
         potential = False
-        isSimile = self._measure.simileDistance
+        isSimile = self._measure.simileDistance > 0
         for drumIndex in xrange(self.numLines()):
             lineHeight = baseline + (self._qScore.ySpacing / 2.0) - 1
             lineIndex = self.lineIndex(drumIndex)
@@ -187,7 +187,7 @@ class QMeasure(QtGui.QGraphicsItem):
         font = painter.font()
         fontMetric = QtGui.QFontMetrics(font)
         baseline = (self.numLines() * self._qScore.ySpacing) + self._base + self.parentItem().alternateHeight()
-        if self._measure.simileDistance:
+        if self._measure.simileDistance > 0:
             counter = ["%d" % (beat + 1) for beat in
                        xrange(self._displayCols)]
         else:
@@ -271,7 +271,7 @@ class QMeasure(QtGui.QGraphicsItem):
         painter.setFont(font)
         xValues = [noteTime * self._qScore.xSpacing
                    for noteTime in xrange(self._displayCols)]
-        if not self._measure.simileDistance and self._highlight:
+        if not self._measure.simileDistance > 0 and self._highlight:
             self._paintHighlight(painter, xValues)
         self._paintNotes(painter, xValues)
         if self._props.beatCountVisible:
@@ -421,7 +421,7 @@ class QMeasure(QtGui.QGraphicsItem):
     def mouseDoubleClickEvent(self, event):
         point = self.mapFromScene(event.scenePos())
         lineIndex = self._getMouseLine(point)
-        if self._isOverCount(lineIndex) and not self._measure.simileDistance:
+        if self._isOverCount(lineIndex) and not self._measure.simileDistance > 0:
             counter = self._measure.counter
             fsmEvent = EditMeasureProperties(counter,
                                              self._props.counterRegistry,
