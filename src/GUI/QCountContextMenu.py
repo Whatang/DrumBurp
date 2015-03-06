@@ -46,22 +46,24 @@ class QCountContextMenu(QMenuIgnoreCancelClick):
         self._setup()
 
     def _setup(self):
-        self.addAction("Edit Measure Count", self._editMeasureCount)
-        # beatMenu = self.addMenu("Beat Count")
-        measureMenu = self.addMenu("Measure Count")
-        # self._addCountActions(beatMenu, self._setBeatCount)
-        self._addCountActions(measureMenu, self._setMeasureCount)
-        self.addSeparator()
-        # self.addAction("Insert Before", self._insertBeatBefore)
-        # after = self.addAction("Insert After", self._insertBeatAfter)
-        # if self._counter.endsWithPartialBeat():
-        #    after.setDisabled(True)
-        self.addSeparator()
-        # self.addAction("Delete", self._deleteBeat)
-        contractAction = self.addAction("Contract Count", self._contractCount)
-        index = self._qScore.score.getMeasureIndex(self._np)
-        measure = self._qScore.score.getMeasure(index)
-        contractAction.setEnabled(measure.getSmallestSimpleCount() != None)
+        if not self._measure.simileDistance > 0:
+            self.addAction("Edit Measure Count", self._editMeasureCount)
+            # beatMenu = self.addMenu("Beat Count")
+            measureMenu = self.addMenu("Measure Count")
+            # self._addCountActions(beatMenu, self._setBeatCount)
+            self._addCountActions(measureMenu, self._setMeasureCount)
+            self.addSeparator()
+            # self.addAction("Insert Before", self._insertBeatBefore)
+            # after = self.addAction("Insert After", self._insertBeatAfter)
+            # if self._counter.endsWithPartialBeat():
+            #    after.setDisabled(True)
+            self.addSeparator()
+            # self.addAction("Delete", self._deleteBeat)
+            contractAction = self.addAction("Contract Count",
+                                            self._contractCount)
+            index = self._qScore.score.getMeasureIndex(self._np)
+            measure = self._qScore.score.getMeasure(index)
+            contractAction.setEnabled(measure.getSmallestSimpleCount() != None)
         self.addAction("Contract All Counts", self._contractAllCounts)
 
 

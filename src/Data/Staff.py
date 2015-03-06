@@ -98,7 +98,7 @@ class Staff(object):
         self._isValidPosition(position, True)
         self._measures.insert(position.measureIndex, measure)
         self._visibleLines = {}
-        for index in range(position.measureIndex, self.numMeasures()):
+        for index in xrange(position.measureIndex, self.numMeasures()):
             nextMeasure = self[index]
             self._setMeasureCallBack(nextMeasure, index)
 
@@ -130,11 +130,6 @@ class Staff(object):
             measure.clearCallBack()
         self._measures = []
         self._visibleLines = {}
-
-    def gridWidth(self):
-        if self.numMeasures() == 0:
-            return 0
-        return (len(self) + self.numMeasures() + 1)
 
     def getItemAtPosition(self, position):
         self._isValidPosition(position)

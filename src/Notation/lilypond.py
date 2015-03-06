@@ -93,48 +93,48 @@ class ElevenTwelfthsProblem(BadNoteDuration):
     "DrumBurp cannot set notes of length 11/12 beat."
 
 
-def _getCompoundDuration(beat, ticks):
-    if ticks * 12 == beat.numTicks: # 1/12
+def _getCompoundDuration(ticksInFullBeat, ticks):
+    if ticks * 12 == ticksInFullBeat:  # 1/12
         dur = "@32"
-    elif ticks * 6 == beat.numTicks: # 2/12
+    elif ticks * 6 == ticksInFullBeat:  # 2/12
         dur = "@16"
-    elif ticks * 4 == beat.numTicks: # 3/12
+    elif ticks * 4 == ticksInFullBeat:  # 3/12
         dur = "@16."
-    elif ticks * 3 == beat.numTicks: # 4/12
+    elif ticks * 3 == ticksInFullBeat:  # 4/12
         dur = "@8"
-    elif ticks * 12 == 5 * beat.numTicks: # 5/12
+    elif ticks * 12 == 5 * ticksInFullBeat:  # 5/12
         dur = "@8,32"
-    elif ticks * 2 == beat.numTicks: # 6/12
+    elif ticks * 2 == ticksInFullBeat:  # 6/12
         dur = "@8."
-    elif ticks * 12 == 7 * beat.numTicks: # 7/12
+    elif ticks * 12 == 7 * ticksInFullBeat:  # 7/12
         dur = "@8.,32"
-    elif ticks * 3 == 2 * beat.numTicks: # 8/12
+    elif ticks * 3 == 2 * ticksInFullBeat:  # 8/12
         dur = "@4"
-    elif ticks * 4 == 3 * beat.numTicks: # 9/12
+    elif ticks * 4 == 3 * ticksInFullBeat:  # 9/12
         dur = "@4,32"
-    elif ticks * 6 == 5 * beat.numTicks: # 10/12
+    elif ticks * 6 == 5 * ticksInFullBeat:  # 10/12
         dur = "@4,16"
-    elif ticks * 12 == 11 * beat.numTicks: # 11/12
+    elif ticks * 12 == 11 * ticksInFullBeat:  # 11/12
         dur = "@4,16."
     else:
         raise LilypondProblem("Note duration not recognised")
     return dur
 
 
-def _getStraightDuration(beat, ticks):
-    if 2 * ticks == beat.numTicks:
+def _getStraightDuration(ticksInFullBeat, ticks):
+    if 2 * ticks == ticksInFullBeat:
         dur = "8"
-    elif 4 * ticks == beat.numTicks:
+    elif 4 * ticks == ticksInFullBeat:
         dur = "16"
-    elif 4 * ticks == 3 * beat.numTicks:
+    elif 4 * ticks == 3 * ticksInFullBeat:
         dur = "8."
-    elif 8 * ticks == beat.numTicks:
+    elif 8 * ticks == ticksInFullBeat:
         dur = "32"
-    elif 8 * ticks == 3 * beat.numTicks:
+    elif 8 * ticks == 3 * ticksInFullBeat:
         dur = "16."
-    elif 8 * ticks == 5 * beat.numTicks:
+    elif 8 * ticks == 5 * ticksInFullBeat:
         dur = "8,32"
-    elif 8 * ticks == 7 * beat.numTicks:
+    elif 8 * ticks == 7 * ticksInFullBeat:
         dur = "8.,32"
     else:
         raise LilypondProblem("Note duration not recognised")
@@ -142,12 +142,13 @@ def _getStraightDuration(beat, ticks):
 
 def lilyDuration(beat, ticks):
     dur = None
-    if ticks == beat.numTicks:
+    ticksInFullBeat = beat.ticksPerBeat
+    if ticks == ticksInFullBeat:
         dur = "4"
-    elif beat.numTicks % 3 == 0:
-        dur = _getCompoundDuration(beat, ticks)
+    elif ticksInFullBeat % 3 == 0:
+        dur = _getCompoundDuration(ticksInFullBeat, ticks)
     else:
-        dur = _getStraightDuration(beat, ticks)
+        dur = _getStraightDuration(ticksInFullBeat, ticks)
     return dur
 
 
@@ -531,6 +532,9 @@ class LilypondScore(object):
             self.indenter(r'\tempo 4 = %d' % self.scoreData.bpm)
         self.indenter(r"\override Score.RehearsalMark " +
                       r"#'self-alignment-X = #LEFT")
+        self.indenter(r'\override Score.TimeSignature.break-visibility '
+                      '= #end-of-line-invisible')
+
 
 
     @staticmethod
@@ -630,6 +634,7 @@ class LilypondScore(object):
         hasAlternate = False
         self._lastTimeSig = None
         self._firstMeasureRepeat()
+        percentRepeated = False
         for measureIndex, measure in enumerate(self.score.iterMeasures()):
             hasAlternate = self._getNextRepeats(repeatCommands,
                                                 hasAlternate, measure)
@@ -637,17 +642,29 @@ class LilypondScore(object):
                 self.indenter(r"\set Score.repeatCommands = #'(%s)" %
                               " ".join(repeatCommands))
                 repeatCommands = []
-            self._timeSig = self._getTimeSig(measure)
+            referredMeasure = self.score.getReferredMeasure(measureIndex)
+            self._timeSig = self._getTimeSig(referredMeasure)
             secTitle = self._writeSectionTitle(secTitle)
             if self._timeSig != self._lastTimeSig:
-                self.indenter(r"\time %s" % self._timeSig)
+                if not measure.simileDistance > 0:
+                    self.indenter(r"\time %s" % self._timeSig)
                 self._lastTimeSig = self._timeSig
-            with VOICE_CONTEXT(self.indenter, ""):
-                try:
-                    self._writeMeasure(measure)
-                except LilypondProblem:
-                    print("Problem at measure %d" % measureIndex)
-                    raise
+            elif percentRepeated:
+                self.indenter(r"\once \omit Score.TimeSignature \time %s" % self._timeSig)
+            if measure.simileDistance:
+                if measure.simileIndex == 0:
+                    self.indenter(r"\once \omit Score.TimeSignature \time 2/4")
+                    self.indenter(r"\makePercent s2*%d"
+                                  % measure.simileDistance)
+                    percentRepeated = True
+            else:
+                percentRepeated = False
+                with VOICE_CONTEXT(self.indenter, ""):
+                    try:
+                        self._writeMeasure(measure)
+                    except LilypondProblem:
+                        print("Problem at measure %d" % measureIndex)
+                        raise
             hasAlternate = self._getLastRepeats(repeatCommands,
                                                 hasAlternate, measure)
             if measure.isSectionEnd():
@@ -669,7 +686,7 @@ class LilypondScore(object):
 
     @staticmethod
     def _writeMacros(handle):
-        handle.write("""
+        handle.write(r"""
 #(define (rest-score r)
   (let ((score 0)
     (yoff (ly:grob-property-data r 'Y-offset))
@@ -730,4 +747,10 @@ class LilypondScore(object):
     #t
     (ly:rest-collision::calc-positioning-done grob))))
     
+    makePercent =
+    #(define-music-function (parser location note) (ly:music?)
+       "Make a percent repeat the same length as NOTE."
+       (make-music 'PercentEvent
+                   'length (ly:music-length note)))
+
 """)

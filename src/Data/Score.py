@@ -214,7 +214,10 @@ class Score(object):
                     index = alternateStarts.get(repeatNum + 1,
                                                 latestRepeatEnd + 1)
                     continue
-            yield measure, index
+            realMeasure = measure
+            if measure.simileDistance:
+                realMeasure = self.getReferredMeasure(index)
+            yield realMeasure, index
             if measure.isRepeatEnd() and repeatNum > -1:
                 if alternateStarts:
                     if repeatNum < numRepeats - 1:
@@ -241,6 +244,16 @@ class Score(object):
         self._checkMeasureIndex(index)
         staff, index = self._staffContainingMeasure(index)
         return staff[index]
+
+    def getReferredMeasure(self, index):
+        self._checkMeasureIndex(index)
+        measure = self.getMeasure(index)
+        while index > 0 and measure.simileDistance > 0:
+            index -= measure.simileDistance
+            if index <= 0:
+                index = 0
+            measure = self.getMeasure(index)
+        return measure
 
     def getItemAtPosition(self, position):
         if position.staffIndex is None:
@@ -297,7 +310,7 @@ class Score(object):
     def getMeasureIndex(self, position):
         self._checkStaffIndex(position.staffIndex)
         index = 0
-        for staffIndex in range(0, position.staffIndex):
+        for staffIndex in xrange(0, position.staffIndex):
             index += self.getStaff(staffIndex).numMeasures()
         index += position.measureIndex
         return index
@@ -610,9 +623,24 @@ class Score(object):
             staff.clear()
         staff = self.getStaff(0)
         staffIndex = 0
+        staffWidth = 0
         for measureIndex, measure in enumerate(measures):
             staff.addMeasure(measure)
-            while staff.gridWidth() > width:
+            if staffWidth == 0:
+                staffWidth = 2
+            if measure.simileDistance > 0:
+                referredMeasure = measure
+                refIndex = measureIndex
+                while refIndex > 0 and referredMeasure.simileDistance > 0:
+                    refIndex -= referredMeasure.simileDistance
+                    if refIndex < 0:
+                        refIndex = 0
+                    referredMeasure = measures[refIndex]
+                measureWidth = referredMeasure.numBeats()
+            else:
+                measureWidth = len(measure)
+            staffWidth += measureWidth + 1
+            while staffWidth > width:
                 if staff.numMeasures() == 1:
                     if ignoreErrors:
                         break
@@ -625,12 +653,14 @@ class Score(object):
                         self._addStaff()
                     staff = self.getStaff(staffIndex)
                     staff.addMeasure(measure)
+                    staffWidth = 2 + measureWidth
             if (measure.isLineEnd() and
                 measureIndex != len(measures) - 1):
                 staffIndex += 1
                 if staffIndex == self.numStaffs():
                     self._addStaff()
                 staff = self.getStaff(staffIndex)
+                staffWidth = 0
         while self.numStaffs() > staffIndex + 1:
             staff = self._staffs.pop()
             staff.clearCallBack()
@@ -786,7 +816,7 @@ class ScoreFactory(object):
             counter = list(registry.countsByTicks(2))
             counter = counter[0][1]
             counter = makeSimpleCount(counter, 4)
-        for dummy in range(0, numMeasures):
+        for dummy in xrange(numMeasures):
             score.insertMeasureByIndex(len(counter), counter = counter)
         score.scoreData.makeEmpty()
         return score

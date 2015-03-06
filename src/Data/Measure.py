@@ -127,6 +127,8 @@ class Measure(object):
         self._info = MeasureInfo()
         self.counter = None
         self.alternateText = None
+        self.simileDistance = 0
+        self.simileIndex = 0
 
     def _getrepeatCount(self):
         return self._info.repeatCount
@@ -148,6 +150,9 @@ class Measure(object):
 
     def numNotes(self):
         return self._notes.numNotes()
+
+    def numBeats(self):
+        return self.counter.numBeats()
 
     def _runCallBack(self, position):
         if self._callBack is not None:
@@ -321,6 +326,7 @@ class Measure(object):
             self.setLineBreak(other.isLineBreak())
             self.repeatCount = other.repeatCount
             self.alternateText = other.alternateText
+            self.simileDistance = other.simileDistance
         return oldMeasure
 
 
@@ -359,6 +365,9 @@ class Measure(object):
                 indenter("REPEAT_COUNT %d" % self.repeatCount)
             if self.alternateText is not None:
                 indenter("ALTERNATE %s" % self.alternateText)
+            if self.simileDistance > 0:
+                indenter("SIMILE %d" % self.simileDistance)
+                indenter("SIMINDEX %d" % self.simileIndex)
 
     class _BarlineTracker(object):
         @staticmethod
@@ -418,6 +427,8 @@ class Measure(object):
             section.readCallback("BEATLENGTH", self._makeOldMeasure)
             section.readPositiveInteger("REPEAT_COUNT", self, "repeatCount")
             section.readString("ALTERNATE", self, "alternateText")
+            section.readNonNegativeInteger("SIMILE", self, "simileDistance")
+            section.readNonNegativeInteger("SIMINDEX", self, "simileIndex")
 
     def getSmallestSimpleCount(self):
         if not self.counter.isSimpleCount():

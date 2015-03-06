@@ -69,7 +69,7 @@ class QComplexCountDialog(QDialog, Ui_complexCountDialog):
     def preview(self):
         self._checkDeleteEnabled()
         text = "".join(unicode(self.beatList.item(beatNum).text())
-                       for beatNum in range(0, self.beatList.count()))
+                       for beatNum in xrange(self.beatList.count()))
         self.previewText.setText(text)
 
     def _checkDeleteEnabled(self):
@@ -100,7 +100,7 @@ class QComplexCountDialog(QDialog, Ui_complexCountDialog):
         self.preview()
 
     def _updateBeatText(self):
-        for row in range(0, self.beatList.count()):
+        for row in xrange(self.beatList.count()):
             item = self.beatList.item(row)
             index = item.data(Qt.UserRole).toInt()[0]
             counter = self._registry.getCounterByIndex(index)
@@ -139,7 +139,7 @@ class QComplexCountDialog(QDialog, Ui_complexCountDialog):
 
     def getCount(self):
         mc = MeasureCount()
-        for row in range(0, self.beatList.count()):
+        for row in xrange(self.beatList.count()):
             item = self.beatList.item(row)
             index = item.data(Qt.UserRole).toInt()[0]
             counter = self._registry.getCounterByIndex(index)

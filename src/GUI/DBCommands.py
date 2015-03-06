@@ -304,7 +304,7 @@ class RepeatNoteCommand(ScoreCommand):
         self._head = self._score.getItemAtPosition(firstNote)
         note = firstNote.makeCopy()
         self._oldNotes = [(note, self._score.getItemAtPosition(note))]
-        for dummyIndex in range(nRepeats):
+        for dummyIndex in xrange(nRepeats):
             note = note.makeCopy()
             note = self._score.notePlus(note, repInterval)
             self._oldNotes.append((note, self._score.getItemAtPosition(note)))
@@ -338,7 +338,7 @@ class InsertMeasuresCommand(ScoreCommand):
             moveEnd = measure.isSectionEnd()
             if moveEnd:
                 measure.setSectionEnd(False)
-        for dummyMeasureIndex in range(self._numMeasures):
+        for dummyMeasureIndex in xrange(self._numMeasures):
             self._score.insertMeasureByIndex(self._width, self._index,
                                              counter = self._counter)
         if moveEnd:
@@ -354,7 +354,7 @@ class InsertMeasuresCommand(ScoreCommand):
                 measure.setSectionEnd(False)
                 measure = self._score.getMeasure(self._index - 1)
                 measure.setSectionEnd(True)
-        for dummyMeasureIndex in range(self._numMeasures):
+        for dummyMeasureIndex in xrange(self._numMeasures):
             self._score.deleteMeasureByIndex(self._index)
 
 
@@ -397,6 +397,7 @@ class SetRepeatCountCommand(ScoreCommand):
             self._qScore.reBuild()
 
 class ChangeMeasureCountCommand(ScoreCommand):
+    canReformat = True
     def __init__(self, qScore, note, newCounter):
         name = "change measure count"
         super(ChangeMeasureCountCommand, self).__init__(qScore,
@@ -409,10 +410,12 @@ class ChangeMeasureCountCommand(ScoreCommand):
     def _redo(self):
         measure = self._score.getItemAtPosition(self._np)
         measure.setBeatCount(self._newCounter)
+        self._qScore.reBuild()
 
     def _undo(self):
         self._score.pasteMeasureByIndex(self._measureIndex, self._oldMeasure,
                                         True)
+        self._qScore.reBuild()
 
 class ContractMeasureCountCommand(ScoreCommand):
     def __init__(self, qScore, note):
@@ -739,3 +742,34 @@ class SetVisibilityCommand(ScoreCommand):
 
     def _undo(self):
         setattr(self._qScore.displayProperties, self._name, not self._new)
+
+class ToggleSimileCommand(ScoreCommand):
+    canReformat = True
+    def __init__(self, qScore, np, index = 0, distance = 1):
+        super(ToggleSimileCommand, self).__init__(qScore, np,
+                                                  "toggle simile mark")
+        self._measureIndex = self._score.getMeasureIndex(self._np)
+        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        self._index=index
+        if measure.simileDistance > 0:
+            self._oldDistance = measure.simileDistance
+            self._newDistance = 0
+        else:
+            self._newDistance = distance
+            self._oldDistance = 0
+
+    def _setSimile(self, distance):
+        measure = self._score.getMeasure(self._measureIndex)
+        measure.simileDistance = distance
+        if distance == 0:
+            measure.simileIndex = 0
+        else:
+            measure.simileIndex = self._index
+        self._qScore.dataChanged(self._np)
+        self._qScore.reBuild()
+
+    def _redo(self):
+        self._setSimile(self._newDistance)
+
+    def _undo(self):
+        self._setSimile(self._oldDistance)
