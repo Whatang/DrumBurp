@@ -245,8 +245,8 @@ class Score(object):
     def getReferredMeasure(self, index):
         self._checkMeasureIndex(index)
         measure = self.getMeasure(index)
-        while index > 0 and measure.isSimile:
-            index -= measure.isSimile
+        while index > 0 and measure.simileDistance:
+            index -= measure.simileDistance
             if index <= 0:
                 index = 0
             measure = self.getMeasure(index)
@@ -625,11 +625,11 @@ class Score(object):
             staff.addMeasure(measure)
             if staffWidth == 0:
                 staffWidth = 2
-            if measure.isSimile:
+            if measure.simileDistance:
                 referredMeasure = measure
                 refIndex = measureIndex
-                while refIndex > 0 and referredMeasure.isSimile:
-                    refIndex -= referredMeasure.isSimile
+                while refIndex > 0 and referredMeasure.simileDistance:
+                    refIndex -= referredMeasure.simileDistance
                     if refIndex < 0:
                         refIndex = 0
                     referredMeasure = measures[refIndex]

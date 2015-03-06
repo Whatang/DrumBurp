@@ -44,6 +44,17 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         self._score = self._qScore.score
         self._measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
         self._noteText = qmeasure.noteAt(firstNote)
+        self._draggedMeasures = None
+        if self._qScore.hasDragSelection():
+            self._draggedMeasures = list(self._qScore.iterDragSelection())
+            if len(self._draggedMeasures) <= 1:
+                self._draggedMeasures = None
+        if self._draggedMeasures is not None:
+            self._hasSimile = any(measure.simileDistance > 0
+                                  for measure, unusedIndex, unusedPos
+                                  in self._draggedMeasures)
+        else:
+            self._hasSimile = self._measure.simileDistance
         self._alternate = alternateText
         self._setup()
 
@@ -57,24 +68,36 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         else:
             self.addAction("Add Alternate Ending",
                            self._qmeasure.setAlternate)
-        simile = QtGui.QAction("Set simile mark", self,
-                               checkable = True)
-        simile.setChecked(self._measure.isSimile)
-        self.addAction(simile)
-        simile.triggered.connect(self._toggleSimile)
+        if self._draggedMeasures is None:
+            if self._measure.simileDistance:
+                self.addAction("Remove simile mark",
+                               self._toggleSimile)
+            else:
+                self.addAction("Add simile mark",
+                               self._toggleSimile)
+        else:
+            if self._hasSimile:
+                self.addAction("Remove simile marks",
+                               self._toggleSimile)
+            elif not any(measure.isSectionEnd() or measure.isRepeatEnd()
+                         for measure, unusedIndex, unusedPos
+                         in self._draggedMeasures[:-1]):
+                self.addAction("Add %d bar simile mark"
+                               % len(self._draggedMeasures),
+                               self._toggleSimile)
 
     def _setupEditSection(self):
-        if (not self._measure.isSimile and self._noteText !=
-            DBConstants.EMPTY_NOTE):
+        if self._measure.simileDistance:
+            return
+        if self._noteText != DBConstants.EMPTY_NOTE:
             actionText = "Repeat note"
             self.addAction(DBIcons.getIcon("repeat"),
                            actionText, self._repeatNote)
         self.addSeparator()
         if self._qScore.hasDragSelection():
-            if not self._measure.isSimile:
-                self.addAction(DBIcons.getIcon("copy"),
-                               "Copy Selected Measures",
-                               self._copyMeasures)
+            self.addAction(DBIcons.getIcon("copy"),
+                           "Copy Selected Measures",
+                           self._copyMeasures)
             pasteAction = self.addAction(DBIcons.getIcon("paste"),
                                          "Paste Over Selected Measures",
                                          self._pasteMeasuresOver)
@@ -83,9 +106,8 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                                          self._fillPaste)
             fillAction.setEnabled(len(self._qScore.measureClipboard) > 0)
         else:
-            if not self._measure.isSimile:
-                self.addAction(DBIcons.getIcon("copy"), "Copy Measure",
-                               self._copyOneMeasure)
+            self.addAction(DBIcons.getIcon("copy"), "Copy Measure",
+                           self._copyOneMeasure)
             pasteAction = self.addAction(DBIcons.getIcon("paste"),
                                          "Insert Measures From Clipboard",
                                          self._insertOneMeasure)
@@ -93,6 +115,8 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         self.addSeparator()
 
     def _setupInsertSection(self):
+        if self._hasSimile:
+            return
         actionText = "Insert Default Measure"
         self.addAction(actionText, self._insertMeasureBefore)
         insertMenu = self.addMenu("Insert...")
@@ -106,24 +130,25 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         self.addSeparator()
 
     def _setupDeleteSection(self):
-        if self._qScore.hasDragSelection():
-            deleteAction = self.addAction(DBIcons.getIcon("delete"),
-                                          "Delete Selected Measures",
-                                          self._deleteMeasures)
-            deleteAction.setEnabled(self._score.numMeasures() >
-                                    len(list(self._qScore.iterDragSelection())))
-            self.addAction("Clear Selected Measures",
-                           self._clearMeasures)
-        else:
-            deleteAction = self.addAction(DBIcons.getIcon("delete"),
-                                          "Delete Measure",
-                                          self._deleteOneMeasure)
-            deleteAction.setEnabled(self._score.numMeasures() > 1)
-            self.addAction("Clear Measure",
-                           self._clearOneMeasure)
+        if not self._hasSimile:
+            if self._qScore.hasDragSelection():
+                deleteAction = self.addAction(DBIcons.getIcon("delete"),
+                                              "Delete Selected Measures",
+                                              self._deleteMeasures)
+                deleteAction.setEnabled(self._score.numMeasures() >
+                                        len(list(self._qScore.iterDragSelection())))
+                self.addAction("Clear Selected Measures",
+                               self._clearMeasures)
+            else:
+                deleteAction = self.addAction(DBIcons.getIcon("delete"),
+                                              "Delete Measure",
+                                              self._deleteOneMeasure)
+                deleteAction.setEnabled(self._score.numMeasures() > 1)
+                self.addAction("Clear Measure",
+                               self._clearOneMeasure)
         deleteMenu = self.addMenu("Delete...")
-        deleteStaffAction = deleteMenu.addAction("Staff", self._deleteStaff)
-        deleteStaffAction.setEnabled(self._score.numStaffs() > 1)
+#         deleteStaffAction = deleteMenu.addAction("Staff", self._deleteStaff)
+#         deleteStaffAction.setEnabled(self._score.numStaffs() > 1)
         deleteSectionAction = deleteMenu.addAction("Section",
                                                    self._deleteSection)
         deleteSectionAction.setEnabled(self._score.numSections() > 1)
@@ -217,9 +242,9 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                    and not self._score.getStaff(np.staffIndex).isSectionEnd()):
                 np.staffIndex += 1
             arguments = []
-            for np.staffIndex in range(np.staffIndex, startIndex - 1, -1):
+            for np.staffIndex in xrange(np.staffIndex, startIndex - 1, -1):
                 staff = self._score.getStaff(np.staffIndex)
-                for np.measureIndex in range(staff.numMeasures() - 1, -1, -1):
+                for np.measureIndex in xrange(staff.numMeasures() - 1, -1, -1):
                     arguments.append((np.makeCopy(),))
                 np.staffIndex -= 1
             self._qScore.clearDragSelection()
@@ -285,6 +310,39 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         self._qScore.clearMeasures(self._np)
 
     @QMenuIgnoreCancelClick.menuSelection
-    def _toggleSimile(self, unused_):
-        command = ToggleSimileCommand(self._qScore, self._np)
-        self._qScore.addCommand(command)
+    def _toggleSimile(self):
+        self._qScore.clearDragSelection()
+        if self._draggedMeasures is None:
+            startIndex = self._score.getMeasureIndex(self._np)
+            endIndex = startIndex 
+        else:
+            startIndex = self._draggedMeasures[0][1]
+            endIndex = self._draggedMeasures[-1][1]
+        if self._hasSimile:
+            startMeasure = self._score.getMeasure(startIndex)
+            while startIndex > 0 and startMeasure.simileIndex > 0:
+                startIndex -=1
+                startMeasure = self._score.getMeasure(startIndex)
+            endMeasure = self._score.getMeasure(endIndex)
+            while (endIndex < self._score.numMeasures() - 1 and
+                   endMeasure.simileIndex < endMeasure.simileDistance - 1):
+                endIndex += 1
+                endMeasure = self._score.getMeasure(endIndex)
+            simileDistance = 0
+            macroName = "Remove simile mark"
+        else:
+            if self._draggedMeasures is None:
+                simileDistance = 1
+            else:
+                simileDistance = len(self._draggedMeasures)
+            macroName = "Add simile mark"
+        if endIndex - startIndex > 0:
+            macroName += "s"
+        self._qScore.beginMacro(macroName)
+        for simileIndex, measureIndex in enumerate(xrange(startIndex,
+                                                          endIndex + 1)):
+            np = self._score.getMeasurePosition(measureIndex)
+            command = ToggleSimileCommand(self._qScore, np,
+                                          simileIndex, simileDistance)
+            self._qScore.addCommand(command)
+        self._qScore.endMacro()

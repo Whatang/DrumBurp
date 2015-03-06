@@ -745,20 +745,31 @@ class SetVisibilityCommand(ScoreCommand):
 
 class ToggleSimileCommand(ScoreCommand):
     canReformat = True
-    def __init__(self, qScore, np):
+    def __init__(self, qScore, np, index = 0, distance = 1):
         super(ToggleSimileCommand, self).__init__(qScore, np,
                                                   "toggle simile mark")
+        self._measureIndex = self._score.getMeasureIndex(self._np)
         measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
-        self._simileReference = 1 - measure.isSimile
+        self._index=index
+        if measure.simileDistance:
+            self._oldDistance = measure.simileDistance
+            self._newDistance = 0
+        else:
+            self._newDistance = distance
+            self._oldDistance = 0
+
+    def _setSimile(self, distance):
+        measure = self._score.getMeasure(self._measureIndex)
+        measure.simileDistance = distance
+        if distance == 0:
+            measure.simileIndex = 0
+        else:
+            measure.simileIndex = self._index
+        self._qScore.dataChanged(self._np)
+        self._qScore.reBuild()
 
     def _redo(self):
-        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
-        measure.isSimile = self._simileReference
-        self._qScore.dataChanged(self._np)
-        self._qScore.reBuild()
+        self._setSimile(self._newDistance)
 
     def _undo(self):
-        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
-        measure.isSimile = 1 - self._simileReference
-        self._qScore.dataChanged(self._np)
-        self._qScore.reBuild()
+        self._setSimile(self._oldDistance)
