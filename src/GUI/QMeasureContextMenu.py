@@ -64,15 +64,17 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         simile.triggered.connect(self._toggleSimile)
 
     def _setupEditSection(self):
-        if (self._noteText !=
+        if (not self._measure.isSimile and self._noteText !=
             DBConstants.EMPTY_NOTE):
             actionText = "Repeat note"
             self.addAction(DBIcons.getIcon("repeat"),
                            actionText, self._repeatNote)
         self.addSeparator()
         if self._qScore.hasDragSelection():
-            self.addAction(DBIcons.getIcon("copy"), "Copy Selected Measures",
-                           self._copyMeasures)
+            if not self._measure.isSimile:
+                self.addAction(DBIcons.getIcon("copy"),
+                               "Copy Selected Measures",
+                               self._copyMeasures)
             pasteAction = self.addAction(DBIcons.getIcon("paste"),
                                          "Paste Over Selected Measures",
                                          self._pasteMeasuresOver)
@@ -81,8 +83,9 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                                          self._fillPaste)
             fillAction.setEnabled(len(self._qScore.measureClipboard) > 0)
         else:
-            self.addAction(DBIcons.getIcon("copy"), "Copy Measure",
-                           self._copyOneMeasure)
+            if not self._measure.isSimile:
+                self.addAction(DBIcons.getIcon("copy"), "Copy Measure",
+                               self._copyOneMeasure)
             pasteAction = self.addAction(DBIcons.getIcon("paste"),
                                          "Insert Measures From Clipboard",
                                          self._insertOneMeasure)
