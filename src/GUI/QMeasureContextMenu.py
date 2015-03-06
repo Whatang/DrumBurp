@@ -41,15 +41,16 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         super(QMeasureContextMenu, self).__init__(qScore)
         self._qmeasure = qmeasure
         self._np = firstNote
+        self._score = self._qScore.score
+        self._measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
         self._noteText = qmeasure.noteAt(firstNote)
         self._alternate = alternateText
         self._setup()
 
     def _setup(self):
-        score = self._qScore.score
         self._setupEditSection()
-        self._setupInsertSection(score)
-        self._setupDeleteSection(score)
+        self._setupInsertSection()
+        self._setupDeleteSection()
         if self._alternate is not None:
             self.addAction("Delete Alternate Ending",
                            self._deleteAlternate)
@@ -58,9 +59,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                            self._qmeasure.setAlternate)
         simile = QtGui.QAction("Set simile mark", self,
                                checkable = True)
-        np = self._np.makeMeasurePosition()
-        measure = score.getItemAtPosition(np)
-        simile.setChecked(measure.isSimile)
+        simile.setChecked(self._measure.isSimile)
         self.addAction(simile)
         simile.triggered.connect(self._toggleSimile)
 
@@ -90,25 +89,25 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         pasteAction.setEnabled(len(self._qScore.measureClipboard) > 0)
         self.addSeparator()
 
-    def _setupInsertSection(self, score):
+    def _setupInsertSection(self):
         actionText = "Insert Default Measure"
         self.addAction(actionText, self._insertMeasureBefore)
         insertMenu = self.addMenu("Insert...")
         insertMenu.addAction("Default Measure After", self._insertMeasureAfter)
         insertMenu.addAction("Other Measures...", self._insertOtherMeasures)
         sectionCopyMenu = insertMenu.addMenu("Section Copy")
-        sectionCopyMenu.setEnabled(score.numSections() > 0)
-        for si, sectionTitle in enumerate(score.iterSections()):
+        sectionCopyMenu.setEnabled(self._score.numSections() > 0)
+        for si, sectionTitle in enumerate(self._score.iterSections()):
             copyIt = lambda i = si:self._copySection(i)
             sectionCopyMenu.addAction(sectionTitle, copyIt)
         self.addSeparator()
 
-    def _setupDeleteSection(self, score):
+    def _setupDeleteSection(self):
         if self._qScore.hasDragSelection():
             deleteAction = self.addAction(DBIcons.getIcon("delete"),
                                           "Delete Selected Measures",
                                           self._deleteMeasures)
-            deleteAction.setEnabled(score.numMeasures() >
+            deleteAction.setEnabled(self._score.numMeasures() >
                                     len(list(self._qScore.iterDragSelection())))
             self.addAction("Clear Selected Measures",
                            self._clearMeasures)
@@ -116,19 +115,19 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
             deleteAction = self.addAction(DBIcons.getIcon("delete"),
                                           "Delete Measure",
                                           self._deleteOneMeasure)
-            deleteAction.setEnabled(score.numMeasures() > 1)
+            deleteAction.setEnabled(self._score.numMeasures() > 1)
             self.addAction("Clear Measure",
                            self._clearOneMeasure)
         deleteMenu = self.addMenu("Delete...")
         deleteStaffAction = deleteMenu.addAction("Staff", self._deleteStaff)
-        deleteStaffAction.setEnabled(score.numStaffs() > 1)
+        deleteStaffAction.setEnabled(self._score.numStaffs() > 1)
         deleteSectionAction = deleteMenu.addAction("Section",
                                                    self._deleteSection)
-        deleteSectionAction.setEnabled(score.numSections() > 1)
+        deleteSectionAction.setEnabled(self._score.numSections() > 1)
         deleteEmptyAction = deleteMenu.addAction("Empty Trailing Measures",
                                                  self._deleteEmptyMeasures)
-        emptyPositions = score.trailingEmptyMeasures()
-        deleteEmptyAction.setEnabled(score.numMeasures() > 1
+        emptyPositions = self._score.trailingEmptyMeasures()
+        deleteEmptyAction.setEnabled(self._score.numMeasures() > 1
                                      and len(emptyPositions) > 0)
         self.addSeparator()
 
@@ -179,7 +178,6 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
 
     @QMenuIgnoreCancelClick.menuSelection
     def _deleteStaff(self):
-        score = self._qScore.score
         msg = "Really delete this staff?"
         yesNo = QtGui.QMessageBox.question(self._qScore.parent(),
                                            "Delete Staff?",
@@ -188,7 +186,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                                            QtGui.QMessageBox.Cancel)
         if yesNo == QtGui.QMessageBox.Ok:
             np = self._np.makeStaffPosition()
-            staff = score.getItemAtPosition(np)
+            staff = self._score.getItemAtPosition(np)
             arguments = []
             np.measureIndex = staff.numMeasures() - 1
             while np.measureIndex >= 0:
@@ -200,7 +198,6 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
 
     @QMenuIgnoreCancelClick.menuSelection
     def _deleteSection(self):
-        score = self._qScore.score
         msg = "Really delete this section?"
         yesNo = QtGui.QMessageBox.question(self._qScore.parent(),
                                            "Delete Section?",
@@ -209,16 +206,16 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                                            QtGui.QMessageBox.Cancel)
         if yesNo == QtGui.QMessageBox.Ok:
             np = self._np.makeMeasurePosition()
-            startIndex = score.getSectionStartStaffIndex(np)
-            sectionIndex = score.getSectionIndex(np)
-            sectionName = score.getSectionTitle(sectionIndex)
+            startIndex = self._score.getSectionStartStaffIndex(np)
+            sectionIndex = self._score.getSectionIndex(np)
+            sectionName = self._score.getSectionTitle(sectionIndex)
             np.staffIndex = startIndex
-            while (np.staffIndex < score.numStaffs()
-                   and not score.getStaff(np.staffIndex).isSectionEnd()):
+            while (np.staffIndex < self._score.numStaffs()
+                   and not self._score.getStaff(np.staffIndex).isSectionEnd()):
                 np.staffIndex += 1
             arguments = []
             for np.staffIndex in range(np.staffIndex, startIndex - 1, -1):
-                staff = score.getStaff(np.staffIndex)
+                staff = self._score.getStaff(np.staffIndex)
                 for np.measureIndex in range(staff.numMeasures() - 1, -1, -1):
                     arguments.append((np.makeCopy(),))
                 np.staffIndex -= 1
@@ -228,7 +225,6 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
 
     @QMenuIgnoreCancelClick.menuSelection
     def _deleteEmptyMeasures(self):
-        score = self._qScore.score
         msg = "This will delete all empty trailing measures.\nContinue?"
         yesNo = QtGui.QMessageBox.question(self._qScore.parent(),
                                            "Delete Empty Measures",
@@ -236,7 +232,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                                            QtGui.QMessageBox.Ok,
                                            QtGui.QMessageBox.Cancel)
         if yesNo == QtGui.QMessageBox.Ok:
-            positions = score.trailingEmptyMeasures()
+            positions = self._score.trailingEmptyMeasures()
             arguments = [(np,) for np in positions]
             self._qScore.clearDragSelection()
             self._qScore.addRepeatedCommand("delete empty measures",
