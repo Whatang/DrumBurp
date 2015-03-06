@@ -532,6 +532,9 @@ class LilypondScore(object):
             self.indenter(r'\tempo 4 = %d' % self.scoreData.bpm)
         self.indenter(r"\override Score.RehearsalMark " +
                       r"#'self-alignment-X = #LEFT")
+        self.indenter(r'\override Score.TimeSignature.break-visibility '
+                      '= #end-of-line-invisible')
+
 
 
     @staticmethod
@@ -631,6 +634,7 @@ class LilypondScore(object):
         hasAlternate = False
         self._lastTimeSig = None
         self._firstMeasureRepeat()
+        percentRepeated = False
         for measureIndex, measure in enumerate(self.score.iterMeasures()):
             hasAlternate = self._getNextRepeats(repeatCommands,
                                                 hasAlternate, measure)
@@ -638,17 +642,29 @@ class LilypondScore(object):
                 self.indenter(r"\set Score.repeatCommands = #'(%s)" %
                               " ".join(repeatCommands))
                 repeatCommands = []
-            self._timeSig = self._getTimeSig(measure)
+            referredMeasure = self.score.getReferredMeasure(measureIndex)
+            self._timeSig = self._getTimeSig(referredMeasure)
             secTitle = self._writeSectionTitle(secTitle)
             if self._timeSig != self._lastTimeSig:
-                self.indenter(r"\time %s" % self._timeSig)
+                if not measure.simileDistance > 0:
+                    self.indenter(r"\time %s" % self._timeSig)
                 self._lastTimeSig = self._timeSig
-            with VOICE_CONTEXT(self.indenter, ""):
-                try:
-                    self._writeMeasure(measure)
-                except LilypondProblem:
-                    print("Problem at measure %d" % measureIndex)
-                    raise
+            elif percentRepeated:
+                self.indenter(r"\once \omit Score.TimeSignature \time %s" % self._timeSig)
+            if measure.simileDistance:
+                if measure.simileIndex == 0:
+                    self.indenter(r"\once \omit Score.TimeSignature \time 2/4")
+                    self.indenter(r"\makePercent s2*%d"
+                                  % measure.simileDistance)
+                    percentRepeated = True
+            else:
+                percentRepeated = False
+                with VOICE_CONTEXT(self.indenter, ""):
+                    try:
+                        self._writeMeasure(measure)
+                    except LilypondProblem:
+                        print("Problem at measure %d" % measureIndex)
+                        raise
             hasAlternate = self._getLastRepeats(repeatCommands,
                                                 hasAlternate, measure)
             if measure.isSectionEnd():
@@ -670,7 +686,7 @@ class LilypondScore(object):
 
     @staticmethod
     def _writeMacros(handle):
-        handle.write("""
+        handle.write(r"""
 #(define (rest-score r)
   (let ((score 0)
     (yoff (ly:grob-property-data r 'Y-offset))
@@ -731,4 +747,10 @@ class LilypondScore(object):
     #t
     (ly:rest-collision::calc-positioning-done grob))))
     
+    makePercent =
+    #(define-music-function (parser location note) (ly:music?)
+       "Make a percent repeat the same length as NOTE."
+       (make-music 'PercentEvent
+                   'length (ly:music-length note)))
+
 """)
