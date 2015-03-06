@@ -62,7 +62,7 @@ class QMeasure(QtGui.QGraphicsItem):
         self._width = 0
         self._height = 0
         self._base = 0
-        self._measureCount = qScore.score.getMeasureIndex(self.measurePosition())
+        self._measureIndex = qScore.score.getMeasureIndex(self.measurePosition())
         self._highlight = None
         self._rect = QtCore.QRectF(0, 0, 0, 0)
         self._repeatCountRect = None
@@ -249,7 +249,7 @@ class QMeasure(QtGui.QGraphicsItem):
         font = painter.font()
         font.setItalic(True)
         painter.setFont(font)
-        painter.drawText(1, self._base - 2, "%d" % (1 + self._measureCount))
+        painter.drawText(1, self._base - 2, "%d" % (1 + self._measureIndex))
 
 
     @_painterSaver
