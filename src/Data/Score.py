@@ -214,7 +214,10 @@ class Score(object):
                     index = alternateStarts.get(repeatNum + 1,
                                                 latestRepeatEnd + 1)
                     continue
-            yield measure, index
+            realMeasure = measure
+            if measure.simileDistance:
+                realMeasure = self.getReferredMeasure(index)
+            yield realMeasure, index
             if measure.isRepeatEnd() and repeatNum > -1:
                 if alternateStarts:
                     if repeatNum < numRepeats - 1:

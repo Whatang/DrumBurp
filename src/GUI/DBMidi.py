@@ -240,6 +240,10 @@ class _midi(QObject):
         measureList = [(measure, measureIndex) for
                        (measure, measureIndex, unused)
                        in measureIterator] * loopCount
+        for index, (measure, measureIndex) in enumerate(measureList):
+            if measure.simileDistance > 0:
+                measure = score.getReferredMeasure(measureIndex)
+                measureList[index] = (measure, measureIndex)
         self._playMIDINow(measureList, score)
 
     def shutUp(self):
