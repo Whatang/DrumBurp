@@ -42,6 +42,8 @@ class QMeasureLineContextMenu(QMenuIgnoreCancelClick):
                                                setIt)
             repeatStartAction.setCheckable(True)
             repeatStartAction.setChecked(onOff)
+            if nextMeasure.simileIndex > 0:
+                repeatStartAction.setEnabled(False)
         if lastMeasure is not None:
             # Repeat End
             onOff = lastMeasure.isRepeatEnd()
@@ -64,6 +66,11 @@ class QMeasureLineContextMenu(QMenuIgnoreCancelClick):
                                              setIt)
             lineBreakAction.setCheckable(True)
             lineBreakAction.setChecked(onOff)
+            # Disable actions if in multi-bar simile
+            if (lastMeasure.simileIndex < lastMeasure.simileDistance - 1):
+                repeatEndAction.setEnabled(False)
+                sectionEndAction.setEnabled(False)
+                lineBreakAction.setEnabled(False)
             self.addSeparator()
             # Repeat count
             repeatCountAction = self.addAction("Set repeat count",
