@@ -130,7 +130,7 @@ class QMeasure(QtGui.QGraphicsItem):
         dot = self._qScore.scale
         potential = False
         isSimile = self._measure.isSimile
-        for drumIndex in range(0, self.numLines()):
+        for drumIndex in xrange(self.numLines()):
             lineHeight = baseline + (self._qScore.ySpacing / 2.0) - 1
             lineIndex = self.lineIndex(drumIndex)
             for noteTime, x in enumerate(xValues):

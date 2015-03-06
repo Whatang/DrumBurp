@@ -68,7 +68,7 @@ class Exporter(object):
             barString = self._barString(lastBar, measure)
             lineString += barString
             lastBar = measure
-            for noteTime in range(len(measure)):
+            for noteTime in xrange(len(measure)):
                 position.noteTime = noteTime
                 note = measure.getNote(position)
                 lineString += note

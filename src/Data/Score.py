@@ -307,7 +307,7 @@ class Score(object):
     def getMeasureIndex(self, position):
         self._checkStaffIndex(position.staffIndex)
         index = 0
-        for staffIndex in range(0, position.staffIndex):
+        for staffIndex in xrange(0, position.staffIndex):
             index += self.getStaff(staffIndex).numMeasures()
         index += position.measureIndex
         return index
@@ -813,7 +813,7 @@ class ScoreFactory(object):
             counter = list(registry.countsByTicks(2))
             counter = counter[0][1]
             counter = makeSimpleCount(counter, 4)
-        for dummy in range(0, numMeasures):
+        for dummy in xrange(numMeasures):
             score.insertMeasureByIndex(len(counter), counter = counter)
         score.scoreData.makeEmpty()
         return score

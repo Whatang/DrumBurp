@@ -304,7 +304,7 @@ class RepeatNoteCommand(ScoreCommand):
         self._head = self._score.getItemAtPosition(firstNote)
         note = firstNote.makeCopy()
         self._oldNotes = [(note, self._score.getItemAtPosition(note))]
-        for dummyIndex in range(nRepeats):
+        for dummyIndex in xrange(nRepeats):
             note = note.makeCopy()
             note = self._score.notePlus(note, repInterval)
             self._oldNotes.append((note, self._score.getItemAtPosition(note)))
@@ -338,7 +338,7 @@ class InsertMeasuresCommand(ScoreCommand):
             moveEnd = measure.isSectionEnd()
             if moveEnd:
                 measure.setSectionEnd(False)
-        for dummyMeasureIndex in range(self._numMeasures):
+        for dummyMeasureIndex in xrange(self._numMeasures):
             self._score.insertMeasureByIndex(self._width, self._index,
                                              counter = self._counter)
         if moveEnd:
@@ -354,7 +354,7 @@ class InsertMeasuresCommand(ScoreCommand):
                 measure.setSectionEnd(False)
                 measure = self._score.getMeasure(self._index - 1)
                 measure.setSectionEnd(True)
-        for dummyMeasureIndex in range(self._numMeasures):
+        for dummyMeasureIndex in xrange(self._numMeasures):
             self._score.deleteMeasureByIndex(self._index)
 
 
