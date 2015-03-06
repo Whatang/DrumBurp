@@ -131,11 +131,6 @@ class Staff(object):
         self._measures = []
         self._visibleLines = {}
 
-    def gridWidth(self):
-        if self.numMeasures() == 0:
-            return 0
-        return (len(self) + self.numMeasures() + 1)
-
     def getItemAtPosition(self, position):
         self._isValidPosition(position)
         measure = self[position.measureIndex]

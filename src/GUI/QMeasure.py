@@ -57,7 +57,6 @@ class QMeasure(QtGui.QGraphicsItem):
         super(QMeasure, self).__init__(parent)
         self._props = qScore.displayProperties
         self._qScore = qScore
-        self._measure = None
         self._index = index
         self._width = 0
         self._height = 0
@@ -75,7 +74,10 @@ class QMeasure(QtGui.QGraphicsItem):
         self._potentialHead = None
         self._potentialSet = None
         self.setAcceptsHoverEvents(True)
-        self._setMeasure(measure)
+        self._measure = measure
+        self._displayCols = 0
+        self._setDimensions()
+        self.update()
 
     def numLines(self):
         return self.parentItem().numLines()
@@ -85,7 +87,12 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def _setDimensions(self):
         self.prepareGeometryChange()
-        self._width = self._qScore.xSpacing * len(self._measure)
+        if self._measure.isSimile:
+            referredMeasure = self._qScore.score.getReferredMeasure(self._measureIndex)
+            self._displayCols = referredMeasure.counter.numBeats()
+        else:
+            self._displayCols = len(self._measure)
+        self._width = self._qScore.xSpacing * self._displayCols
         self._height = self.numLines() * self._qScore.ySpacing
         self._height += self.parentItem().alternateHeight()
         if self._props.beatCountVisible:
@@ -104,12 +111,6 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def height(self):
         return self._height
-
-    def _setMeasure(self, measure):
-        if self._measure != measure:
-            self._measure = measure
-            self._setDimensions()
-            self.update()
 
     def _colourScheme(self):
         return self._qScore.parent().colourScheme
@@ -187,7 +188,8 @@ class QMeasure(QtGui.QGraphicsItem):
         fontMetric = QtGui.QFontMetrics(font)
         baseline = (self.numLines() * self._qScore.ySpacing) + self._base + self.parentItem().alternateHeight()
         if self._measure.isSimile:
-            counter = ["%d" % (beat + 1) for beat in xrange(len(self._measure))]
+            counter = ["%d" % (beat + 1) for beat in
+                       xrange(self._displayCols)]
         else:
             counter = self._measure.count()
         for noteTime, count in enumerate(counter):
@@ -268,7 +270,7 @@ class QMeasure(QtGui.QGraphicsItem):
             font = painter.font()
         painter.setFont(font)
         xValues = [noteTime * self._qScore.xSpacing
-                   for noteTime in range(0, len(self._measure))]
+                   for noteTime in xrange(self._displayCols)]
         if not self._measure.isSimile and self._highlight:
             self._paintHighlight(painter, xValues)
         self._paintNotes(painter, xValues)
@@ -288,13 +290,10 @@ class QMeasure(QtGui.QGraphicsItem):
             self._alternate = None
         painter.restore()
 
-    def dataChanged(self, notePosition):
-        if None not in (notePosition.noteTime, notePosition.drumIndex):
-            self.update()
-        else:
-            self._setDimensions()
-            self.update()
-            self.parentItem().placeMeasures()
+    def dataChanged(self, notePosition_):
+        self._setDimensions()
+        self.update()
+        self.parentItem().placeMeasures()
 
     def xSpacingChanged(self):
         self._setDimensions()
@@ -422,7 +421,7 @@ class QMeasure(QtGui.QGraphicsItem):
     def mouseDoubleClickEvent(self, event):
         point = self.mapFromScene(event.scenePos())
         lineIndex = self._getMouseLine(point)
-        if self._isOverCount(lineIndex):
+        if self._isOverCount(lineIndex) and not self._measure.isSimile:
             counter = self._measure.counter
             fsmEvent = EditMeasureProperties(counter,
                                              self._props.counterRegistry,

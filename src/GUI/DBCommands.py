@@ -397,6 +397,7 @@ class SetRepeatCountCommand(ScoreCommand):
             self._qScore.reBuild()
 
 class ChangeMeasureCountCommand(ScoreCommand):
+    canReformat = True
     def __init__(self, qScore, note, newCounter):
         name = "change measure count"
         super(ChangeMeasureCountCommand, self).__init__(qScore,
@@ -409,10 +410,12 @@ class ChangeMeasureCountCommand(ScoreCommand):
     def _redo(self):
         measure = self._score.getItemAtPosition(self._np)
         measure.setBeatCount(self._newCounter)
+        self._qScore.reBuild()
 
     def _undo(self):
         self._score.pasteMeasureByIndex(self._measureIndex, self._oldMeasure,
                                         True)
+        self._qScore.reBuild()
 
 class ContractMeasureCountCommand(ScoreCommand):
     def __init__(self, qScore, note):
@@ -746,14 +749,16 @@ class ToggleSimileCommand(ScoreCommand):
         super(ToggleSimileCommand, self).__init__(qScore, np,
                                                   "toggle simile mark")
         measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
-        self._onOff = not measure.isSimile
+        self._simileReference = 1 - measure.isSimile
 
     def _redo(self):
         measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
-        measure.isSimile = self._onOff
+        measure.isSimile = self._simileReference
         self._qScore.dataChanged(self._np)
+        self._qScore.reBuild()
 
     def _undo(self):
         measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
-        measure.isSimile = not self._onOff
+        measure.isSimile = 1 - self._simileReference
         self._qScore.dataChanged(self._np)
+        self._qScore.reBuild()

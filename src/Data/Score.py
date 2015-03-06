@@ -242,6 +242,16 @@ class Score(object):
         staff, index = self._staffContainingMeasure(index)
         return staff[index]
 
+    def getReferredMeasure(self, index):
+        self._checkMeasureIndex(index)
+        measure = self.getMeasure(index)
+        while index > 0 and measure.isSimile:
+            index -= measure.isSimile
+            if index <= 0:
+                index = 0
+            measure = self.getMeasure(index)
+        return measure
+
     def getItemAtPosition(self, position):
         if position.staffIndex is None:
             return self
@@ -610,9 +620,24 @@ class Score(object):
             staff.clear()
         staff = self.getStaff(0)
         staffIndex = 0
+        staffWidth = 0
         for measureIndex, measure in enumerate(measures):
             staff.addMeasure(measure)
-            while staff.gridWidth() > width:
+            if staffWidth == 0:
+                staffWidth = 2
+            if measure.isSimile:
+                referredMeasure = measure
+                refIndex = measureIndex
+                while refIndex > 0 and referredMeasure.isSimile:
+                    refIndex -= referredMeasure.isSimile
+                    if refIndex < 0:
+                        refIndex = 0
+                    referredMeasure = measures[refIndex]
+                measureWidth = referredMeasure.numBeats()
+            else:
+                measureWidth = len(measure)
+            staffWidth += measureWidth + 1
+            while staffWidth > width:
                 if staff.numMeasures() == 1:
                     if ignoreErrors:
                         break
@@ -625,12 +650,14 @@ class Score(object):
                         self._addStaff()
                     staff = self.getStaff(staffIndex)
                     staff.addMeasure(measure)
+                    staffWidth = 2 + measureWidth
             if (measure.isLineEnd() and
                 measureIndex != len(measures) - 1):
                 staffIndex += 1
                 if staffIndex == self.numStaffs():
                     self._addStaff()
                 staff = self.getStaff(staffIndex)
+                staffWidth = 0
         while self.numStaffs() > staffIndex + 1:
             staff = self._staffs.pop()
             staff.clearCallBack()
