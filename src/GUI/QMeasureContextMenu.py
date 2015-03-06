@@ -79,9 +79,14 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
             if self._hasSimile:
                 self.addAction("Remove simile marks",
                                self._toggleSimile)
-            elif not any(measure.isSectionEnd() or measure.isRepeatEnd()
+            elif (not any(measure.isSectionEnd() or measure.isRepeatEnd()
+                         or measure.isLineBreak()
                          for measure, unusedIndex, unusedPos
-                         in self._draggedMeasures[:-1]):
+                         in self._draggedMeasures[:-1])
+                  and
+                  not any(measure.isRepeatStart()
+                         for measure, unusedIndex, unusedPos
+                         in self._draggedMeasures[1:])):
                 self.addAction("Add %d bar simile mark"
                                % len(self._draggedMeasures),
                                self._toggleSimile)
