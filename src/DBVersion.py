@@ -3,38 +3,39 @@ Created on 18 Mar 2012
 
 @author: Mike Thomas
 '''
-import os
+import re
+from DBVersionNum import DB_VERSION_STRING
 APPNAME = "DrumBurp"
 _ALPHA_STRING = "a"
 
-DB_VERSION_FILE = 'dbversion.txt'
-
-def readVersion():
-    try:
-        filename = os.path.dirname(__file__)
-        filename = os.path.join(filename, DB_VERSION_FILE)
-        versionText = open(filename, 'rU').read().strip()
-        return versionText, not versionText.endswith(_ALPHA_STRING)
-    except IOError:
-        return "Unknown", True
+DB_VERSION_FILE = 'DBVersionNum.py'
 
 def versionStringToTuple(vstr):
     vstr = vstr.rstrip(_ALPHA_STRING)
     try:
-        versionInfo = [int(x) for x in vstr.split(".")]
+        versionInfo = tuple(int(x) for x in vstr.split("."))
         return versionInfo[:2]
     except (ValueError, TypeError):
         return (0, 0)
 
+
+def readVersion(text):
+    finder = re.compile(r"DB_VERSION_STRING\s*=\s*'(.*)'")
+    for line in text.splitlines():
+        line = line.strip()
+        match = finder.match(line)
+        if match:
+            versionText = match.groups(1)
+            return versionStringToTuple(versionText[0])
+    return (0, 0)
 
 def getLatestVersion():
     import urllib2
     try:
         versionUrl = urllib2.urlopen('http://github.com/Whatang/DrumBurp/raw/master/src/' + DB_VERSION_FILE,
                                      timeout = 10)
-        versionString = versionUrl.read()
-        newVersion = versionStringToTuple(versionString)
-        return newVersion
+        versionText = versionUrl.read()
+        return readVersion(versionText)
     except urllib2.HTTPError:
         return (0, 0)
 
@@ -46,10 +47,12 @@ def doesNewerVersionExist():
     else:
         return ""
 
-DB_VERSION, FULL_RELEASE = readVersion()
+DB_VERSION, FULL_RELEASE = (DB_VERSION_STRING,
+                            not DB_VERSION_STRING.endswith(_ALPHA_STRING))
 
 if __name__ == "__main__":
     print DB_VERSION, FULL_RELEASE
     print getLatestVersion()
-    print "'%s'" % doesNewerVersionExist()
+    print readVersion(open(DB_VERSION_FILE, 'rU').read())
+    print "'%s'" % str(doesNewerVersionExist())
 
