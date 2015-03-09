@@ -161,7 +161,8 @@ class Exporter(object):
         repeatString = "  "
         lastMeasure = None
         delta = 0
-        for measure in list(staff) + [None]:
+        for measureIndex, measure in enumerate(list(staff) + [None]):
+            position.measureIndex = measureIndex
             repeatString, delta = self._measureBegin(repeatString,
                                                      measure, lastMeasure,
                                                      delta)
