@@ -217,6 +217,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.actionClearMeasures.setEnabled(False)
         self.actionDeleteMeasures.setEnabled(False)
         self.MIDIToolBar.setEnabled(DBMidi.HAS_MIDI)
+        self.menu_MIDI.setEnabled(DBMidi.HAS_MIDI)
         # Undo/redo
         self.actionUndo.setEnabled(False)
         self.actionRedo.setEnabled(False)
