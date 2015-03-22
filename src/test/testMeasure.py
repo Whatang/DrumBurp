@@ -342,8 +342,7 @@ class TestRead(unittest.TestCase):
                 END_BAR"""
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
-        measure = Measure()
-        measure.read(iterator)
+        measure = fileUtils.MeasureStructureV0().read(iterator)
         self.assertEqual(len(measure), 8)
         self.assertEqual(measure.numNotes(), 13)
         self.assertEqual(measure.noteAt(0, 1), "o")
@@ -380,8 +379,7 @@ class TestRead(unittest.TestCase):
                   END_BAR"""
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
-        measure = Measure()
-        measure.read(iterator)
+        measure = fileUtils.MeasureStructureV0().read(iterator)
         self.assertEqual(measure.repeatCount, 6)
         self.assert_(measure.isRepeatStart())
         self.assert_(measure.isRepeatEnd())
@@ -415,8 +413,7 @@ class TestRead(unittest.TestCase):
         """
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
-        measure = Measure()
-        measure.read(iterator)
+        measure = fileUtils.MeasureStructureV0().read(iterator)
         self.assert_(measure.isRepeatEnd())
         self.assertEqual(measure.alternateText, "2.")
 
@@ -446,8 +443,7 @@ class TestRead(unittest.TestCase):
         """
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
-        measure = Measure()
-        measure.read(iterator)
+        measure = fileUtils.MeasureStructureV0().read(iterator)
         self.assert_(measure.isLineBreak())
 
     def testReadSectionEnd(self):
@@ -478,8 +474,7 @@ class TestRead(unittest.TestCase):
         """
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
-        measure = Measure()
-        measure.read(iterator)
+        measure = fileUtils.MeasureStructureV0().read(iterator)
         self.assert_(measure.isSectionEnd())
 
     def testReadOldMeasure(self):
@@ -503,8 +498,7 @@ class TestRead(unittest.TestCase):
                 END_BAR"""
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
-        measure = Measure(8)
-        measure.read(iterator)
+        measure = fileUtils.MeasureStructureV0().read(iterator)
         self.assertEqual(len(measure), 8)
         self.assertEqual(measure.numNotes(), 13)
         self.assertEqual(measure.noteAt(0, 1), "o")

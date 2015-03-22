@@ -45,7 +45,6 @@ class TestFontOptions(unittest.TestCase):
                           "FONT_OPTIONS_END"])
 
     def testRead(self):
-        options = FontOptions.FontOptions()
         data = """FONT_OPTIONS_START
                   NOTEFONT mynotefont
                   NOTEFONTSIZE 8
@@ -56,7 +55,7 @@ class TestFontOptions(unittest.TestCase):
                 FONT_OPTIONS_END"""
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
-        options.read(iterator)
+        options = fileUtils.FontOptionsStructureV0().read(iterator)
         self.assertEqual(options.noteFont, "mynotefont")
         self.assertEqual(options.noteFontSize, 8)
         self.assertEqual(options.sectionFont, "sectionfont")
