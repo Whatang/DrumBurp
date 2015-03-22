@@ -793,8 +793,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     def _refreshMidiDevices(self):
         self.menuSelectMidiOut.clear()
-        self.menuSelectMidiOut.addAction(self.actionRefreshMidiDevices)
-        self.menuSelectMidiOut.addSeparator()
+#         self.menuSelectMidiOut.addAction(self.actionRefreshMidiDevices)
+#         self.menuSelectMidiOut.addSeparator()
         DBMidi.refreshOutputDevices()
         current = DBMidi.currentDevice()
         for device in DBMidi.iterMidiDevices():
