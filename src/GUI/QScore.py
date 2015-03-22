@@ -286,6 +286,7 @@ class QScore(QtGui.QGraphicsScene):
     lilypagesChanged = QtCore.pyqtSignal(int)
     lilyFillChanged = QtCore.pyqtSignal(bool)
     lilyFormatChanged = QtCore.pyqtSignal(int)
+    widthChanged = QtCore.pyqtSignal(int)
 
     def addCommand(self, command):
         if not self._inMacro:
@@ -412,8 +413,7 @@ class QScore(QtGui.QGraphicsScene):
             self._undoStack.clear()
             self._undoStack.setClean()
             self._inMacro = False
-            for view in self.views():
-                view.setWidth(self.scoreWidth)
+            self.widthChanged.emit(self.scoreWidth)
             self.reBuild()
             self.dirty = False
             self._state = Waiting(self)

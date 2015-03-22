@@ -159,6 +159,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         scene.lilyFillChanged.connect(self._setLilyFill)
         scene.lilyFormatChanged.connect(self._setLilyFormat)
         scene.showItem.connect(self.scoreView.showItemAtTop)
+        scene.widthChanged.connect(self.scoreView.setWidth)
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)

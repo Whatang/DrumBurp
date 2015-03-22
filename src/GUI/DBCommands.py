@@ -247,13 +247,11 @@ class ScoreWidthCommand(ScoreCommand):
 
     def _redo(self):
         self._score.scoreData.width = self._value
-        for view in self._qScore.views():
-            view.setWidth(self._value)
+        self._qScore.widthChanged.emit(self._value)
 
     def _undo(self):
         self._score.scoreData.width = self._oldValue
-        for view in self._qScore.views():
-            view.setWidth(self._oldValue)
+        self._qScore.widthChanged.emit(self._oldValue)
 
 class InsertAndPasteMeasures(ScoreCommand):
     def __init__(self, qScore, startPosition, measureData):
