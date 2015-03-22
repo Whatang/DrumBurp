@@ -88,10 +88,10 @@ class TestSimple(unittest.TestCase):
 
     def testIterMidiTicks(self):
         ticks = list(self.count.iterMidiTicks())
-        self.assertEqual(ticks, [0, 24, 48, 72,
-                                 96, 120, 144, 168,
-                                 192, 216, 240, 264,
-                                 288, 312, 336, 360, 384])
+        self.assertEqual(ticks, [0, 48, 96, 144,
+                                 192, 240, 288, 336,
+                                 384, 432, 480, 528,
+                                 576, 624, 672, 720, 768])
 
     def testIterTime(self):
         ticks = list(self.count.iterTime())
@@ -182,10 +182,10 @@ class TestComplex(unittest.TestCase):
 
     def testIterMidiTicks(self):
         ticks = list(self.count.iterMidiTicks())
-        self.assertEqual(ticks, [0, 24, 48, 72,
-                                 96, 128, 160,
-                                 192, 240,
-                                 288, 312, 336])
+        self.assertEqual(ticks, [0, 48, 96, 144,
+                                 192, 256, 320,
+                                 384, 480,
+                                 576, 624, 672])
 
     def testIterTime(self):
         ticks = list(self.count.iterTime())

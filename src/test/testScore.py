@@ -366,7 +366,6 @@ class TestFormatScore(unittest.TestCase):
         for staff in self.score.iterStaffs():
             self.assertEqual(staff.numMeasures(), 4)
             self.assertEqual(len(staff), 64)
-            self.assertEqual(staff.gridWidth(), 69)
 
     def testFormatScore(self):
         for dummy in range(0, 20):
@@ -376,7 +375,6 @@ class TestFormatScore(unittest.TestCase):
         for staff in self.score.iterStaffs():
             self.assertEqual(staff.numMeasures(), 4)
             self.assertEqual(len(staff), 64)
-            self.assertEqual(staff.gridWidth(), 69)
 
     def testFormatScoreWithSections(self):
         for dummy in range(0, 20):
@@ -384,7 +382,6 @@ class TestFormatScore(unittest.TestCase):
         self.score.getMeasure(5).setSectionEnd(True)
         self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 6)
-        self.assertEqual(self.score.getStaff(1).gridWidth(), 35)
 
     def testFormatScore_SectionEndAtScoreEnd(self):
         for dummy in range(0, 20):
@@ -401,7 +398,6 @@ class TestFormatScore(unittest.TestCase):
         self.score.getMeasure(5).setRepeatEnd(True)
         self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 6)
-        self.assertEqual(self.score.getStaff(1).gridWidth(), 35)
 
     def testFormatScoreWithLargeBar(self):
         for dummy in range(0, 12):
@@ -411,7 +407,6 @@ class TestFormatScore(unittest.TestCase):
             self.score.insertMeasureByIndex(16)
         self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 7)
-        self.assertEqual(self.score.getStaff(3).gridWidth(), 72)
 
     def testFormatScoreWithOverSizeBar_IgnoreErrors(self):
         for dummy in range(0, 12):
@@ -421,7 +416,6 @@ class TestFormatScore(unittest.TestCase):
             self.score.insertMeasureByIndex(16)
         self.score.formatScore(80, ignoreErrors = True)
         self.assertEqual(self.score.numStaffs(), 7)
-        self.assertEqual(self.score.getStaff(3).gridWidth(), 82)
 
     def testFormatScoreWithOverSizeBar_DontIgnoreErrors(self):
         for dummy in range(0, 12):
@@ -652,7 +646,7 @@ class TestSections(unittest.TestCase):
         np = self.score.getMeasurePosition(3)
         self.score.setSectionEnd(np, True)
         self.assertEqual(self.score.numSections(), 1)
-        self.assertEqual(self.score.getSectionTitle(0), "Section Title")
+        self.assertEqual(self.score.getSectionTitle(0), "New Section")
 
     def testSetSectionTitle(self):
         np = self.score.getMeasurePosition(3)
@@ -1059,11 +1053,12 @@ class TestWrite(unittest.TestCase):
                          '  BARLINE NORMAL_BAR,NO_BAR',
                          '  BARLINE NORMAL_BAR,NO_BAR,SECTION_END',
                          'END_BAR',
-                         'SECTION_TITLE Section Title',
+                         'SECTION_TITLE New Section',
                          'PAPER_SIZE Letter',
                          'LILYSIZE 20',
                          'LILYPAGES 0',
                          'LILYFILL YES',
+                         'LILYFORMAT 0',
                          'DEFAULT_COUNT_INFO_START',
                          '  REPEAT_BEATS 4',
                          '  BEAT_START',
@@ -1165,7 +1160,7 @@ class TestHash(unittest.TestCase):
     def testEmpty(self):
         hash_val = self.score.hashScore()
         self.assertEqual(hash_val.encode("hex"),
-                         "cba71883bc214fefb62ca2b86c0f23ae")
+                         "0bc1a56ea6085a688c4c46e538645bab")
 
 class TestRead(unittest.TestCase):
     ff_zero_data = """
