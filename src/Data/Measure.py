@@ -125,10 +125,18 @@ class Measure(object):
         self.endBar = BAR_TYPES["NORMAL_BAR"]
         self._callBack = None
         self._info = MeasureInfo()
-        self.counter = None
+        self._counter = None
         self.alternateText = None
         self.simileDistance = 0
         self.simileIndex = 0
+
+    @property
+    def counter(self):
+        return self._counter
+
+    @counter.setter
+    def counter(self, counter):
+        self.setBeatCount(counter)
 
     def _getrepeatCount(self):
         return self._info.repeatCount
@@ -262,14 +270,15 @@ class Measure(object):
         self._runCallBack(NotePosition())
 
     def setBeatCount(self, counter):
-        if counter == self.counter:
+        self.counter
+        if counter == self._counter:
             return
-        if self.counter is None:
-            self.counter = counter
+        if self._counter is None:
+            self._counter = counter
             self._setWidth(len(counter))
             return
         oldNotes = copy.deepcopy(self._notes)
-        oldTimes = list(self.counter.iterTime())
+        oldTimes = list(self._counter.iterTime())
         self._setWidth(len(counter))
         self.clear()
         newTimes = list(counter.iterTime())
@@ -297,7 +306,7 @@ class Measure(object):
                     self._notes.setNote(newIndex, position.drumIndex, head)
             oldIndex += 1
             newIndex += 1
-        self.counter = counter
+        self._counter = counter
         self._runCallBack(NotePosition())
 
     def copyMeasure(self):
@@ -390,13 +399,11 @@ class Measure(object):
             if not self.seenStartLine:
                 self.measure.startBar = 0
                 for barType in lineData.split(","):
-                    self.measure.startBar |= BAR_TYPES[barType]
                     self.mapping[barType](True)
                 self.seenStartLine = True
             elif not self.seenEndLine:
                 self.measure.endBar = 0
                 for barType in lineData.split(","):
-                    self.measure.endBar |= BAR_TYPES[barType]
                     self.mapping[barType](True)
                 self.seenEndLine = True
             else:
@@ -419,7 +426,7 @@ class Measure(object):
 
     def read(self, scoreIterator):
         tracker = self._BarlineTracker(self, scoreIterator)
-        self.counter = MeasureCount.MeasureCount()
+        self._counter = MeasureCount.MeasureCount()
         with scoreIterator.section("START_BAR", "END_BAR") as section:
             section.readCallback("BARLINE", tracker.processBarline)
             section.readCallback("NOTE", self._readNote)
