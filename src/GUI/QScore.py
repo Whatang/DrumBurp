@@ -887,8 +887,8 @@ class QScore(QtGui.QGraphicsScene):
     def getQMeasure(self, position):
         return self._qStaffs[position.staffIndex].getQMeasure(position)
 
-    def getQStaff(self, possition):
-        return self._qStaffs[possition.staffIndex]
+    def getQStaff(self, position):
+        return self._qStaffs[position.staffIndex]
 
     def highlightPlayingMeasure(self, position):
         if position == self._playingMeasure:
