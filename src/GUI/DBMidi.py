@@ -415,7 +415,7 @@ def currentDevice():
     return None
 
 def _initialize():
-    global HAS_MIDI, _PLAYER, _MIDI_INITIALIZED
+    global HAS_MIDI, _MIDI_INITIALIZED
     if _MIDI_INITIALIZED:
         return
     if _HAS_PYGAME:
