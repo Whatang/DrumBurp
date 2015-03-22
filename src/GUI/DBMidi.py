@@ -1,4 +1,4 @@
-# Copyright 2011-2012 Michael Thomas
+# Copyright 2011-2015 Michael Thomas
 #
 # See www.whatang.org for more information.
 #
@@ -24,7 +24,8 @@ Created on 17 Sep 2011
 '''
 import copy
 
-HAS_MIDI = True
+HAS_MIDI = False
+_MIDI_INITIALIZED = False
 _PERCUSSION_CHANNEL = 0x09
 _NOTE_ON = 0x90
 _NOTE_OFF = 0x80
@@ -46,13 +47,15 @@ FLAM_TIME_CONSTANT = 32
 FLAM_VOLUME_CONSTANT = 2
 DRAG_TIME_CONSTANT = 96
 
+from PyQt4.Qt import QThread
+import atexit
+import time
+import StringIO
+
 try:
     import pygame
     import pygame.midi
-    pygame.init()  # IGNORE:no-member
-    pygame.midi.init()
-    pygame.mixer.init(_FREQ, _BITSIZE, _CHANNELS, _NUMSAMPLES)
-    pygame.mixer.music.set_volume(0.8)
+    _HAS_PYGAME = True
 
     def getDefaultId():
         return pygame.midi.get_default_output_id()
@@ -71,7 +74,7 @@ try:
         pygame.quit()  # IGNORE:no-member
 
 except ImportError:
-    HAS_MIDI = False
+    _HAS_PYGAME = False
     def getDefaultId():
         return -1
 
@@ -82,12 +85,8 @@ except ImportError:
         return None, False, False, False
 
     def cleanup():
-        _PLAYER.cleanup()
-
-import atexit
-atexit.register(cleanup)
-import time
-import StringIO
+        if _PLAYER is not None:
+            _PLAYER.cleanup()
 
 class MidiDevice(object):
     def __init__(self, deviceId):
@@ -123,10 +122,8 @@ from Data.MeasureCount import MIDITICKSPERBEAT
 class _midi(QObject):
     def __init__(self):
         super(_midi, self).__init__()
-        self._port = getDefaultId()
+        self._port = None
         self._midiOut = None
-        if self._port != -1:
-            self._midiOut = pygame.midi.Output(self._port, _LATENCY, _BUFSIZE)
         self.timer = QTimer()
         self.timer.setSingleShot(True)
         self._measureDetails = []
@@ -138,14 +135,21 @@ class _midi(QObject):
         self._musicPlaying = False
         self.kit = None
 
+    def initialize(self):
+        if not _MIDI_INITIALIZED:
+            raise RuntimeError("MIDI not initialized yet!")
+        if self._port is None:
+            self._port = getDefaultId()
+        if self._port != -1:
+            self._midiOut = pygame.midi.Output(self._port, _LATENCY, _BUFSIZE)
+
     def setPort(self, port):
         if self._midiOut:
             self._midiOut.abort()
             del self._midiOut
             self._midiOut = None
         self._port = port
-        if self._port != -1:
-            self._midiOut = pygame.midi.Output(self._port, _LATENCY, _BUFSIZE)
+        self.initialize()
 
     def port(self):
         return self._port
@@ -283,8 +287,6 @@ class _midi(QObject):
 
 
 _PLAYER = _midi()
-HAS_MIDI = HAS_MIDI and _PLAYER.isGood()
-
 SONGEND_SIGNAL = _PLAYER.timer.timeout
 HIGHLIGHT_SIGNAL = _PLAYER.highlightMeasure
 
@@ -412,7 +414,29 @@ def currentDevice():
             return dev
     return None
 
+def _initialize():
+    global HAS_MIDI, _PLAYER, _MIDI_INITIALIZED
+    if _MIDI_INITIALIZED:
+        return
+    if _HAS_PYGAME:
+        pygame.init()  # IGNORE:no-member
+        pygame.midi.init()
+        pygame.mixer.init(_FREQ, _BITSIZE, _CHANNELS, _NUMSAMPLES)
+        pygame.mixer.music.set_volume(0.8)
+    _MIDI_INITIALIZED = True
+    _PLAYER.initialize()
+    atexit.register(cleanup)
+    HAS_MIDI = _HAS_PYGAME and _PLAYER.isGood()
+
+class MidiInit(QThread):
+    def __init__(self, parent = None):
+        super(MidiInit, self).__init__(parent)
+
+    def run(self):
+        _initialize()
+
 def main():
+    _initialize()
     refreshOutputDevices()
     for device in iterMidiDevices():
         print device.name

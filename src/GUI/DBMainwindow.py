@@ -132,6 +132,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.setSections()
         self._versionThread = VersionCheckThread()
         self._versionThread.finished.connect(self._finishedVersionCheck)
+        self._midiInitThread = DBMidi.MidiInit()
+        self._midiInitThread.finished.connect(self._midiInitFinished)
         QTimer.singleShot(0, lambda : self._startUp(erroredFiles))
         self.actionCheckOnStartup.setChecked(settings.value("CheckOnStartup").toBool())
 
@@ -217,8 +219,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.actionFillPasteMeasures.setEnabled(False)
         self.actionClearMeasures.setEnabled(False)
         self.actionDeleteMeasures.setEnabled(False)
-        self.menu_MIDI.setEnabled(DBMidi.HAS_MIDI)
-        self.MIDIToolBar.setEnabled(DBMidi.HAS_MIDI)
+        self.menu_MIDI.setEnabled(False)
+        self.MIDIToolBar.setEnabled(False)
         # Undo/redo
         self.actionUndo.setEnabled(False)
         self.actionRedo.setEnabled(False)
@@ -244,13 +246,13 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     def _startUp(self, erroredFiles):
         self._doUpdateSplashScreen()
-        self._refreshMidiDevices()
         self.scoreView.startUp()
         self.updateStatus("Welcome to %s v%s" % (APPNAME, DB_VERSION))
         self.scoreView.setFocus()
         if self.actionCheckOnStartup.isChecked():
 #             self.on_actionCheckForUpdates_triggered()
             self._versionThread.start()
+        self._midiInitThread.start()
         if erroredFiles:
             QMessageBox.warning(self, "Problem during startup",
                                 "Error opening files:\n %s" %
@@ -388,6 +390,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             self._versionThread.wait(1000)
             if not self._versionThread.isFinished():
                 self._versionThread.terminate()
+            self._midiInitThread.exit()
+            self._midiInitThread.wait(1000)
+            if not self._midiInitThread.isFinished():
+                self._midiInitThread.terminate()
             if self._exporter is not None:
                 self._exporter.exit()
                 self._exporter.wait(1000)
@@ -1049,6 +1055,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             self.statusbar.showMessage("Failed to get latest version info from www.whatang.org", 5000)
         else:
             self.statusbar.showMessage("Check successful: You have the latest version of DrumBurp", 5000)
+
+    def _midiInitFinished(self):
+        self._refreshMidiDevices()
+        self.menu_MIDI.setEnabled(DBMidi.HAS_MIDI)
+        self.MIDIToolBar.setEnabled(DBMidi.HAS_MIDI)
 
     @pyqtSignature("")
     def on_actionEditColours_triggered(self):
