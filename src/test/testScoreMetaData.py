@@ -8,7 +8,10 @@ from cStringIO import StringIO
 
 # pylint: disable-msg=R0904
 
-from Data import ScoreMetaData, fileUtils, DBErrors
+import Data.ScoreMetaData as ScoreMetaData
+import Data.DBErrors as DBErrors
+import Data.fileStructures.dbfsv0 as dbfsv0
+import Data.fileUtils as fileUtils
 
 class Test(unittest.TestCase):
     def testWrite(self):
@@ -53,7 +56,7 @@ class Test(unittest.TestCase):
                   END_SCORE_METADATA"""
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
-        meta = fileUtils.MetadataStructureV0().read(iterator)
+        meta = dbfsv0.MetadataStructureV0().read(iterator)
         self.assertEqual(meta.title, "Song")
         self.assertEqual(meta.artist, "xxx")
         self.assertEqual(meta.artistVisible, False)
@@ -87,7 +90,7 @@ class Test(unittest.TestCase):
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
         self.assertRaises(DBErrors.UnrecognisedLine,
-                          fileUtils.MetadataStructureV0().read, iterator)
+                          dbfsv0.MetadataStructureV0().read, iterator)
 
     def testBadBpm(self):
         data = """SCORE_METADATA
@@ -107,7 +110,7 @@ class Test(unittest.TestCase):
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
         self.assertRaises(DBErrors.InvalidInteger,
-                          fileUtils.MetadataStructureV0().read, iterator)
+                          dbfsv0.MetadataStructureV0().read, iterator)
 
     def testNegativeBpm(self):
         data = """SCORE_METADATA
@@ -127,7 +130,7 @@ class Test(unittest.TestCase):
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
         self.assertRaises(DBErrors.InvalidPositiveInteger,
-                          fileUtils.MetadataStructureV0().read, iterator)
+                          dbfsv0.MetadataStructureV0().read, iterator)
 
     def testBadWidth(self):
         data = """SCORE_METADATA
@@ -147,7 +150,7 @@ class Test(unittest.TestCase):
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
         self.assertRaises(DBErrors.InvalidInteger,
-                          fileUtils.MetadataStructureV0().read, iterator)
+                          dbfsv0.MetadataStructureV0().read, iterator)
 
     def testNegativeWidth(self):
         data = """SCORE_METADATA
@@ -167,7 +170,7 @@ class Test(unittest.TestCase):
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
         self.assertRaises(DBErrors.InvalidPositiveInteger,
-                         fileUtils.MetadataStructureV0().read, iterator)
+                         dbfsv0.MetadataStructureV0().read, iterator)
 
 if __name__ == "__main__":
     unittest.main()

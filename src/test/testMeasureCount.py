@@ -27,6 +27,7 @@ from cStringIO import StringIO
 # pylint: disable-msg=R0904
 
 from Data import MeasureCount, Counter, Beat, fileUtils, DBErrors
+from Data.fileStructures import dbfsv0
 
 class TestSimple(unittest.TestCase):
     my_counter = Counter.Counter(Counter.BEAT_COUNT + "e+a")
@@ -227,7 +228,7 @@ class TestRead(unittest.TestCase):
                   COUNT_INFO_END"""
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
-        count = fileUtils.MeasureCountStructureV0().read(iterator)
+        count = dbfsv0.MeasureCountStructureV0().read(iterator)
         self.assert_(count.isSimpleCount())
         self.assertEqual(len(count), 16)
 
@@ -240,7 +241,7 @@ class TestRead(unittest.TestCase):
                   COUNT_INFO_END"""
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
-        count = fileUtils.MeasureCountStructureV0(startTag = "DEFAULT_COUNT_INFO_START").read(iterator)
+        count = dbfsv0.MeasureCountStructureV0(startTag = "DEFAULT_COUNT_INFO_START").read(iterator)
         self.assert_(count.isSimpleCount())
         self.assertEqual(len(count), 16)
 
@@ -263,7 +264,7 @@ class TestRead(unittest.TestCase):
                 COUNT_INFO_END"""
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
-        count = fileUtils.MeasureCountStructureV0().read(iterator)
+        count = dbfsv0.MeasureCountStructureV0().read(iterator)
         self.assertFalse(count.isSimpleCount())
         self.assertEqual(len(count), 11)
 
@@ -278,7 +279,7 @@ class TestRead(unittest.TestCase):
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
         self.assertRaises(DBErrors.UnrecognisedLine,
-                          fileUtils.MeasureCountStructureV0().read,
+                          dbfsv0.MeasureCountStructureV0().read,
                           iterator)
 
     def testBadBeatCount(self):
@@ -292,7 +293,7 @@ class TestRead(unittest.TestCase):
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
         self.assertRaises(DBErrors.InvalidInteger,
-                          fileUtils.MeasureCountStructureV0().read, iterator)
+                          dbfsv0.MeasureCountStructureV0().read, iterator)
 
     def testNegativeBeatCount(self):
         data = """COUNT_INFO_START
@@ -305,7 +306,7 @@ class TestRead(unittest.TestCase):
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
         self.assertRaises(DBErrors.InvalidPositiveInteger,
-                          fileUtils.MeasureCountStructureV0().read, iterator)
+                          dbfsv0.MeasureCountStructureV0().read, iterator)
 
 class TestCounterMaker(unittest.TestCase):
     def testMake(self):

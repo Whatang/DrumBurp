@@ -28,6 +28,8 @@ from Data import DrumKit, Drum, DBErrors
 from Data.DBErrors import BadTimeError, OverSizeMeasure
 from Data.DBConstants import EMPTY_NOTE
 from Data.NotePosition import NotePosition
+from Data import fileUtils
+from Data.fileStructures import dbfsv0
 
 # pylint: disable-msg=R0904
 
@@ -1365,8 +1367,8 @@ class TestRead(unittest.TestCase):
 
     def testReadVersionZeroNoFileFormatNumber(self):
         handle = StringIO(self.ff_zero_data)
-        score = Score()
-        score.read(handle)
+        iterator = fileUtils.dbFileIterator(handle)
+        score = dbfsv0.ScoreStructureV0().read(iterator, ("START_SCORE", ""))
         self.assert_(score.lilyFill)
         self.assertEqual(score.lilypages, 0)
         self.assertEqual(score.lilysize, 20)

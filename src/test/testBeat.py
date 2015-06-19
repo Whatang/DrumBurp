@@ -24,6 +24,7 @@ Created on 12 Dec 2012
 import unittest
 from cStringIO import StringIO
 from Data import Beat, Counter, fileUtils, DBErrors
+from Data.fileStructures import dbfsv0
 
 # pylint: disable-msg=R0904
 
@@ -108,7 +109,7 @@ class TestReadBeats(unittest.TestCase):
         COUNT |^e+a|
         BEAT_END""")
         iterator = fileUtils.dbFileIterator(handle)
-        beat = fileUtils.BeatStructureV0().read(iterator)
+        beat = dbfsv0.BeatStructureV0().read(iterator)
         self.assertEqual("".join(beat.count(1)), "1e+a")
 
     def testReadPartial(self):
@@ -117,7 +118,7 @@ class TestReadBeats(unittest.TestCase):
         COUNT |^e+a|
         BEAT_END""")
         iterator = fileUtils.dbFileIterator(handle)
-        beat = fileUtils.BeatStructureV0().read(iterator)
+        beat = dbfsv0.BeatStructureV0().read(iterator)
         self.assertEqual("".join(beat.count(1)), "1e")
 
     def testReadBadCount(self):
@@ -125,7 +126,7 @@ class TestReadBeats(unittest.TestCase):
         COUNT |^e+d|
         BEAT_END""")
         iterator = fileUtils.dbFileIterator(handle)
-        self.assertRaises(DBErrors.BadCount, fileUtils.BeatStructureV0().read,
+        self.assertRaises(DBErrors.BadCount, dbfsv0.BeatStructureV0().read,
                           iterator)
 
     def testReadBadTicks(self):
@@ -134,7 +135,7 @@ class TestReadBeats(unittest.TestCase):
         COUNT |^e+a|
         BEAT_END""")
         iterator = fileUtils.dbFileIterator(handle)
-        self.assertRaises(DBErrors.InvalidInteger, fileUtils.BeatStructureV0().read,
+        self.assertRaises(DBErrors.InvalidInteger, dbfsv0.BeatStructureV0().read,
                           iterator)
 
     def testReadBadNegativeTicks(self):
@@ -144,7 +145,7 @@ class TestReadBeats(unittest.TestCase):
         BEAT_END""")
         iterator = fileUtils.dbFileIterator(handle)
         self.assertRaises(DBErrors.InvalidPositiveInteger,
-                          fileUtils.BeatStructureV0().read,
+                          dbfsv0.BeatStructureV0().read,
                           iterator)
 
     def testReadBadLine(self):
@@ -154,7 +155,7 @@ class TestReadBeats(unittest.TestCase):
         BEAT_END""")
         iterator = fileUtils.dbFileIterator(handle)
         self.assertRaises(DBErrors.UnrecognisedLine,
-                          fileUtils.BeatStructureV0().read, iterator)
+                          dbfsv0.BeatStructureV0().read, iterator)
 
 if __name__ == "__main__":
     unittest.main()

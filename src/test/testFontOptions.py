@@ -26,6 +26,7 @@ from cStringIO import StringIO
 # pylint: disable-msg=R0904
 
 from Data import FontOptions, fileUtils
+from Data.fileStructures import dbfsv0
 
 class TestFontOptions(unittest.TestCase):
     def testWrite(self):
@@ -55,7 +56,7 @@ class TestFontOptions(unittest.TestCase):
                 FONT_OPTIONS_END"""
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
-        options = fileUtils.FontOptionsStructureV0().read(iterator)
+        options = dbfsv0.FontOptionsStructureV0().read(iterator)
         self.assertEqual(options.noteFont, "mynotefont")
         self.assertEqual(options.noteFontSize, 8)
         self.assertEqual(options.sectionFont, "sectionfont")

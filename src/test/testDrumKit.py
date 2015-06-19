@@ -27,6 +27,8 @@ from Data import DrumKit
 from Data.DBErrors import DuplicateDrumError, NoSuchDrumError
 from Data.Drum import Drum, HeadData
 from Data import fileUtils, DBErrors
+from Data.fileStructures import dbfsv0
+
 # pylint: disable-msg=R0904
 
 class TestDrumKit(unittest.TestCase):
@@ -98,7 +100,7 @@ class TestDrumKit(unittest.TestCase):
         """
         handle = StringIO(kitData)
         iterator = fileUtils.dbFileIterator(handle)
-        kit = fileUtils.DrumKitStructureV0().read(iterator)
+        kit = dbfsv0.DrumKitStructureV0().read(iterator)
         self.assertEqual(len(kit), 2)
         self.assertEqual(kit[0].name, "Snare")
         self.assertEqual(len(kit[0]), 6)
@@ -120,7 +122,7 @@ class TestDrumKit(unittest.TestCase):
         iterator = fileUtils.dbFileIterator(handle)
         kit = DrumKit.DrumKit()
         self.assertRaises(DBErrors.UnrecognisedLine,
-                          fileUtils.DrumKitStructureV0().read, iterator)
+                          dbfsv0.DrumKitStructureV0().read, iterator)
 
     def testRead_OldNoteHeads(self):
         kitData = """KIT_START
@@ -134,7 +136,7 @@ class TestDrumKit(unittest.TestCase):
         """
         handle = StringIO(kitData)
         iterator = fileUtils.dbFileIterator(handle)
-        kit = fileUtils.DrumKitStructureV0().read(iterator)
+        kit = dbfsv0.DrumKitStructureV0().read(iterator)
         self.assertEqual(len(kit), 2)
         self.assertEqual(len(kit), 2)
         self.assertEqual(kit[0].name, "Snare")
@@ -154,7 +156,7 @@ class TestDrumKit(unittest.TestCase):
         """
         handle = StringIO(kitData)
         iterator = fileUtils.dbFileIterator(handle)
-        kit = fileUtils.DrumKitStructureV0().read(iterator)
+        kit = dbfsv0.DrumKitStructureV0().read(iterator)
         self.assertEqual(len(kit), 2)
         self.assertEqual(len(kit), 2)
         self.assertEqual(kit[0].name, "Snare")
@@ -174,7 +176,7 @@ class TestDrumKit(unittest.TestCase):
         """
         handle = StringIO(kitData)
         iterator = fileUtils.dbFileIterator(handle)
-        kit = fileUtils.DrumKitStructureV0().read(iterator)
+        kit = dbfsv0.DrumKitStructureV0().read(iterator)
         self.assertEqual(kit.getDefaultHead(0), "x")
         self.assertEqual(kit.getDefaultHead(1), "o")
         self.assertEqual(kit.allowedNoteHeads(0),
