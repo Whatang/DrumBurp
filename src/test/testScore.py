@@ -1339,11 +1339,6 @@ class TestRead(unittest.TestCase):
       ALTERNATE 15.
     END_BAR
     SECTION_TITLE A title
-    SECTION_TITLE Bridge
-    SECTION_TITLE Chorus 1
-    SECTION_TITLE Middle
-    SECTION_TITLE Bridge & Chorus 2
-    SECTION_TITLE Outro
     PAPER_SIZE Letter
     LILYSIZE 20
     LILYPAGES 0
@@ -1368,12 +1363,14 @@ class TestRead(unittest.TestCase):
     def testReadVersionZeroNoFileFormatNumber(self):
         handle = StringIO(self.ff_zero_data)
         iterator = fileUtils.dbFileIterator(handle)
-        score = dbfsv0.ScoreStructureV0().read(iterator, ("START_SCORE", ""))
+        score = dbfsv0.ScoreStructureV0().read(iterator)
         self.assert_(score.lilyFill)
         self.assertEqual(score.lilypages, 0)
         self.assertEqual(score.lilysize, 20)
         self.assertEqual(score.scoreData.title, "Sample")
+        self.assertEqual(score.numSections(), 1)
         self.assertEqual(score.getSectionTitle(0), "A title")
+        self.assertEqual(score.numMeasures(), 7)
         self.assert_(score.drumKit[1].isAllowedHead('q'))
 
     def testReadVersionZeroWithFileFormatNumber(self):
@@ -1385,7 +1382,9 @@ class TestRead(unittest.TestCase):
         self.assertEqual(score.lilypages, 0)
         self.assertEqual(score.lilysize, 20)
         self.assertEqual(score.scoreData.title, "Sample")
+        self.assertEqual(score.numSections(), 1)
         self.assertEqual(score.getSectionTitle(0), "A title")
+        self.assertEqual(score.numMeasures(), 7)
         self.assert_(score.drumKit[1].isAllowedHead('q'))
 
     def testReadTooHighVersionNumber(self):

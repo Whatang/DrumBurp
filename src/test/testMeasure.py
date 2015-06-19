@@ -338,7 +338,7 @@ class TestRead(unittest.TestCase):
                   NOTE 5,2,o
                   NOTE 6,2,o
                   NOTE 6,3,o
-                  NOTE 7,2,o
+                  NOTE 7,2,x
                   BARLINE NORMAL_BAR,NO_BAR
                 END_BAR"""
         handle = StringIO(data)
@@ -358,7 +358,7 @@ class TestRead(unittest.TestCase):
         self.assertEqual(measure.noteAt(5, 2), "o")
         self.assertEqual(measure.noteAt(6, 2), "o")
         self.assertEqual(measure.noteAt(6, 3), "o")
-        self.assertEqual(measure.noteAt(7, 2), "o")
+        self.assertEqual(measure.noteAt(7, 2), "x")
         self.assertFalse(measure.isRepeatStart())
         self.assertFalse(measure.isRepeatEnd())
         self.assertFalse(measure.isSectionEnd())

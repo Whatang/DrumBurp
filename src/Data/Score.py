@@ -330,7 +330,7 @@ class Score(object):
                             measureIndex = index)
 
 
-    def insertMeasureByIndex(self, width, index = None, counter = None):
+    def insertMeasureByIndex(self, width, index = None, counter = None, measure = None):
         if index is None:
             index = self.numMeasures()
         if self.numStaffs() == 0:
@@ -341,8 +341,11 @@ class Score(object):
             index = staff.numMeasures()
         else:
             staff, index = self._staffContainingMeasure(index)
-        newMeasure = Measure(width)
-        newMeasure.counter = counter
+        if measure is None:
+            newMeasure = Measure(width)
+            newMeasure.counter = counter
+        else:
+            newMeasure = measure
         staff.insertMeasure(NotePosition(measureIndex = index),
                             newMeasure)
         return newMeasure
@@ -748,6 +751,7 @@ class Score(object):
             fileVersion = 0
         if fileVersion > CURRENT_FILE_FORMAT:
             raise DBVersionError(scoreIterator)
+
         # Read from the input file
         self.lilyFill = False
         self.lilyFormat = 0
@@ -771,6 +775,9 @@ class Score(object):
             section.readNonNegativeInteger("SYSTEM_SPACE", self,
                                            "systemSpacing")
             section.readSubsection("FONT_OPTIONS_START", self.fontOptions.read)
+        self.postReadProcessing()
+
+    def postReadProcessing(self):
         # Check that all the note heads are valid
         for measure in self.iterMeasures():
             for np, head in measure:

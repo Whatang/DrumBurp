@@ -322,6 +322,7 @@ class FileStructure(object):
     tag = None
     startTag = None
     endTag = None
+    autoMake = False
     _fields = []
     _structures = []
 
@@ -336,6 +337,8 @@ class FileStructure(object):
 
     def read(self, fileIterator, startData = None):
         instance = None
+        if self.autoMake:
+            instance = self.makeObject(None)
         fieldDict = dict((field.title, field) for field in self._fields)
         structDict = dict((structure.startTag, structure)
                           for structure in self._structures)
@@ -345,7 +348,7 @@ class FileStructure(object):
             iterator = fileIterator
         try:
             for lineType, lineData in iterator:
-                print lineType, lineData
+#                 print lineType, lineData
                 if lineType in fieldDict:
                     field = fieldDict[lineType]
                     field.read(instance, lineData)

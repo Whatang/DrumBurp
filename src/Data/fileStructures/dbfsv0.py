@@ -197,6 +197,7 @@ class FontOptionsStructureV0(FileStructure):
 class ScoreStructureV0(FileStructure):
     tag = "SCORE"
     targetClass = Data.Score.Score
+    autoMake = True
 
     scoreData = MetadataStructureV0()
     measures = MeasureStructureV0(singleton = False)
@@ -211,3 +212,9 @@ class ScoreStructureV0(FileStructure):
                                            startTag = "DEFAULT_COUNT_INFO_START")
     systemSpacing = NonNegativeIntegerField("SYSTEM_SPACE")
     fontOptions = FontOptionsStructureV0()
+
+    def postProcessObject(self, instance):
+        for measure in instance.measures:
+            instance.insertMeasureByIndex(0, measure = measure)
+        instance.postReadProcessing()
+        return instance
