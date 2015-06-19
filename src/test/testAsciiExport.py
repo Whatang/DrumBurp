@@ -27,13 +27,12 @@ class TestExport(unittest.TestCase):
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
+                          '',
                           'Title     : ',
                           'Artist    : ',
                           'BPM       : 120',
                           'Tabbed by : ',
                           'Date      : ' + self.exportDate,
-                          '',
-                          '',
                           '',
                           'Tabbed with DrumBurp, a drum tab editor from www.whatang.org'])
 
@@ -46,6 +45,7 @@ class TestExport(unittest.TestCase):
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
+                          '',
                           'Title     : ',
                           'Artist    : ',
                           'BPM       : 120',
@@ -54,7 +54,6 @@ class TestExport(unittest.TestCase):
                           '',
                           'Cr - Crash',
                           'Hh - HiHat',
-                          '',
                           '',
                           'Tabbed with DrumBurp, a drum tab editor from www.whatang.org'])
 
@@ -70,6 +69,7 @@ class TestExport(unittest.TestCase):
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
+                          '',
                           'Title     : ',
                           'Artist    : ',
                           'BPM       : 120',
@@ -102,6 +102,7 @@ class TestExport(unittest.TestCase):
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
+                          '',
                           'Title     : ',
                           'Artist    : ',
                           'BPM       : 120',
@@ -135,6 +136,7 @@ class TestExport(unittest.TestCase):
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
+                          '',
                           'Title     : ',
                           'Artist    : ',
                           'BPM       : 120',
@@ -177,6 +179,7 @@ class TestExport(unittest.TestCase):
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
+                          '',
                           'Title     : ',
                           'Artist    : ',
                           'BPM       : 120',
@@ -192,7 +195,6 @@ class TestExport(unittest.TestCase):
                           'Cr|----------------|----------------|',
                           'Hh|x---------------|y---------------|',
                           '   1e+a2e+a3e+a4e+a 1e+a2e+a3e+a4e+a ',
-                          '',
                           '',
                           'Section 2',
                           '~~~~~~~~~',
@@ -223,6 +225,7 @@ class TestExport(unittest.TestCase):
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
+                          '',
                           'Title     : ',
                           'Artist    : ',
                           'BPM       : 120',
@@ -266,6 +269,7 @@ class TestExport(unittest.TestCase):
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
+                          '',
                           'Title     : ',
                           'Artist    : ',
                           'BPM       : 120',
@@ -309,6 +313,7 @@ class TestExport(unittest.TestCase):
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
+                          '',
                           'Title     : ',
                           'Artist    : ',
                           'BPM       : 120',
@@ -349,6 +354,7 @@ class TestExport(unittest.TestCase):
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
+                          '',
                           'Title     : ',
                           'Artist    : ',
                           'BPM       : 120',
