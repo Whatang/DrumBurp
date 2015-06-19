@@ -387,6 +387,6 @@ class FileStructure(object):
     def postProcessObject(self, instance):
         return instance
 
-    def write(self, indenter):
+    def write(self, src, indenter):
         # TODO:
         raise RuntimeError("Not implemented")

@@ -23,7 +23,8 @@ Created on 12 Dec 2010
 '''
 import unittest
 from cStringIO import StringIO
-from Data.Score import Score, InconsistentRepeats, ScoreFactory
+from Data.Score import Score, InconsistentRepeats
+from Data.ScoreFactory import ScoreFactory
 from Data import DrumKit, Drum, DBErrors
 from Data.DBErrors import BadTimeError, OverSizeMeasure
 from Data.DBConstants import EMPTY_NOTE
@@ -1360,10 +1361,9 @@ class TestRead(unittest.TestCase):
     FONT_OPTIONS_END
     """
 
-    def testReadVersionZeroNoFileFormatNumber(self):
+    def testReadNoFileFormatNumber(self):
         handle = StringIO(self.ff_zero_data)
-        iterator = fileUtils.dbFileIterator(handle)
-        score = dbfsv0.ScoreStructureV0().read(iterator)
+        score = ScoreFactory.read(handle)
         self.assert_(score.lilyFill)
         self.assertEqual(score.lilypages, 0)
         self.assertEqual(score.lilysize, 20)
@@ -1376,8 +1376,7 @@ class TestRead(unittest.TestCase):
     def testReadVersionZeroWithFileFormatNumber(self):
         handle = StringIO("""DB_FILE_FORMAT 0
         """ + self.ff_zero_data)
-        score = Score()
-        score.read(handle)
+        score = ScoreFactory.read(handle)
         self.assert_(score.lilyFill)
         self.assertEqual(score.lilypages, 0)
         self.assertEqual(score.lilysize, 20)
@@ -1391,8 +1390,7 @@ class TestRead(unittest.TestCase):
         data = """DB_FILE_FORMAT 10000
         """ + self.ff_zero_data
         handle = StringIO(data)
-        score = Score()
-        self.assertRaises(DBErrors.DBVersionError, score.read, handle)
+        self.assertRaises(DBErrors.DBVersionError, ScoreFactory.read, handle)
 
 class TestScoreFactory(unittest.TestCase):
     def testMakeEmptyDefault(self):

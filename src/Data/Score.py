@@ -28,19 +28,15 @@ from Data.Staff import Staff
 from Data.Measure import Measure
 from Data.Counter import CounterRegistry
 from Data.MeasureCount import makeSimpleCount
-from Data.DBErrors import BadTimeError, OverSizeMeasure, DBVersionError
+from Data.DBErrors import BadTimeError, OverSizeMeasure
 from Data.NotePosition import NotePosition
 from Data.ScoreMetaData import ScoreMetaData
 from Data.FontOptions import FontOptions
 import Data.fileUtils as fileUtils
 import bisect
 import hashlib
-import gzip
-import itertools
-import codecs
 from StringIO import StringIO
 
-CURRENT_FILE_FORMAT = 0
 
 class InconsistentRepeats(StandardError):
     "Bad repeat data"
@@ -735,48 +731,6 @@ class Score(object):
         indenter("SYSTEM_SPACE", self.systemSpacing)
         self.fontOptions.write(indenter)
 
-
-    def read(self, handle):
-        # Check the file format version
-        handle, handleCopy = itertools.tee(handle)
-        firstline = handleCopy.next()
-        del handleCopy
-        scoreIterator = fileUtils.dbFileIterator(handle)
-        if firstline.startswith("DB_FILE_FORMAT"):
-            versionDict = {}
-            with scoreIterator.section(None, None, readLines = 1) as section:
-                section.readNonNegativeInteger("DB_FILE_FORMAT", versionDict, "fileVersion")
-            fileVersion = versionDict.get("fileVersion", 0)
-        else:
-            fileVersion = 0
-        if fileVersion > CURRENT_FILE_FORMAT:
-            raise DBVersionError(scoreIterator)
-
-        # Read from the input file
-        self.lilyFill = False
-        self.lilyFormat = 0
-        def _readMeasure(lineData):
-            measureWidth = int(lineData)
-            measure = self.insertMeasureByIndex(measureWidth)
-            measure.read(scoreIterator)
-        with scoreIterator.section(None, None) as section:
-            section.readSubsection("SCORE_METADATA", self.scoreData.load)
-            section.readCallback("START_BAR", _readMeasure)
-            section.readSubsection("KIT_START", self.drumKit.read)
-            section.readCallback("SECTION_TITLE",
-                                 self._sections.append)
-            section.readString("PAPER_SIZE", self, "paperSize")
-            section.readPositiveInteger("LILYSIZE", self, "lilySize")
-            section.readNonNegativeInteger("LILYPAGES", self, "lilyPages")
-            section.readBoolean("LILYFILL", self, "lilyFill")
-            section.readNonNegativeInteger("LILYFORMAT", self, "lilyFormat")
-            section.readSubsection("DEFAULT_COUNT_INFO_START",
-                                   lambda i: self.defaultCount.read(i, True))
-            section.readNonNegativeInteger("SYSTEM_SPACE", self,
-                                           "systemSpacing")
-            section.readSubsection("FONT_OPTIONS_START", self.fontOptions.read)
-        self.postReadProcessing()
-
     def postReadProcessing(self):
         # Check that all the note heads are valid
         for measure in self.iterMeasures():
@@ -800,51 +754,3 @@ class Score(object):
         self.write(scoreString)
         scoreString = scoreString.getvalue()
         return hashlib.md5(scoreString.encode('utf-8')).digest()  # pylint:disable-msg=E1121
-
-class ScoreFactory(object):
-    def __call__(self, filename = None,
-                 numMeasures = 32,
-                 counter = None,
-                 kit = None):
-        if filename is not None:
-            score = self.loadScore(filename)
-        else:
-            score = self.makeEmptyScore(numMeasures, counter, kit)
-        return score
-
-    @classmethod
-    def makeEmptyScore(cls, numMeasures, counter, kit):
-        score = Score()
-        if kit is None:
-            kit = DrumKit.getNamedDefaultKit()
-        score.drumKit = kit
-        if counter is None:
-            registry = CounterRegistry()
-            counter = list(registry.countsByTicks(2))
-            counter = counter[0][1]
-            counter = makeSimpleCount(counter, 4)
-        for dummy in xrange(numMeasures):
-            score.insertMeasureByIndex(len(counter), counter = counter)
-        score.scoreData.makeEmpty()
-        return score
-
-    @classmethod
-    def loadScore(cls, filename):
-        score = Score()
-        try:
-            with gzip.open(filename, 'rb') as handle:
-                with codecs.getreader('utf-8')(handle) as reader:
-                    score.read(reader)
-        except IOError:
-            score = Score()
-            with open(filename, 'rU') as handle:
-                score.read(handle)
-        return score
-
-    @classmethod
-    def saveScore(cls, score, filename):
-        scoreBuffer = StringIO()
-        score.write(scoreBuffer)
-        with gzip.open(filename, 'wb') as handle:
-            with codecs.getwriter('utf-8')(handle) as writer:
-                writer.write(scoreBuffer.getvalue())
