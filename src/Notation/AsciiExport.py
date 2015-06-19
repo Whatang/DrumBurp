@@ -26,6 +26,7 @@ from Data.DBConstants import (REPEAT_EXTENDER, BARLINE, DRUM_ABBR_WIDTH,
                               ALTERNATE_EXTENDER)
 from Data.NotePosition import NotePosition
 import time
+from StringIO import StringIO
 
 def getExportDate():
     return time.strftime("%d %B %Y")
@@ -230,11 +231,12 @@ class Exporter(object):
         asciiString = asciiString[:-1]
         return asciiString
 
-    def export(self, handle):
+    def export(self, outHandle):
         metadataString = self._exportScoreData()
         asciiString = []
         asciiString = self._exportMusic(asciiString)
         kitString = self._exportKit()
+        handle = StringIO()
         print >> handle, ("Tabbed with DrumBurp, "
                           "a drum tab editor from www.whatang.org")
         print >> handle, ""
@@ -251,4 +253,9 @@ class Exporter(object):
         print >> handle, ""
         print >> handle, ("Tabbed with DrumBurp, "
                           "a drum tab editor from www.whatang.org")
-
+        lines = handle.getvalue().splitlines()
+        lastBlank = False
+        for line in lines:
+            if line or not lastBlank:
+                print >> outHandle, line
+            lastBlank = (len(line) == 0)
