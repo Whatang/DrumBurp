@@ -212,7 +212,11 @@ class ObjectsOrderedByID(object):
     def __init__(self):
         self.ordered_id = _IDMaker.get()
 
-class Field(ObjectsOrderedByID):
+class WriteAllInterface(object):
+    def write_all(self, src, indenter):
+        raise NotImplementedError()
+
+class Field(ObjectsOrderedByID, WriteAllInterface):
     def __init__(self, title, attributeName = None, singleton = True,
                  getter = None):
         super(Field, self).__init__()
@@ -232,6 +236,16 @@ class Field(ObjectsOrderedByID):
 
     def write(self, source):
         raise NotImplementedError()
+
+    def write_all(self, src, indenter):
+        valueList = self.getValue(src)
+        if self.singleton and valueList is not None:
+            valueList = [valueList]
+        elif valueList is None:
+            valueList = []
+        for value in valueList:
+            for subValue in self.write(value):
+                indenter(subValue)
 
     def format(self, outdata):
         return "%s %s" % (self.title, outdata)
@@ -388,7 +402,7 @@ class FileStructureMetaClass(type):
                 cls.endTag = "END_" + cls.tag
 
 
-class FileStructure(ObjectsOrderedByID):
+class FileStructure(ObjectsOrderedByID, WriteAllInterface):
     __metaclass__ = FileStructureMetaClass
     targetClass = dict
     tag = None
@@ -479,18 +493,11 @@ class FileStructure(ObjectsOrderedByID):
                 startTag += " " + extra
         with indenter.section(startTag, self.endTag):
             for _, attr, structure in self._ordered_data:
-                if structure in self._fields:
-                    valueList = structure.getValue(src)
-                    if structure.singleton and valueList is not None:
-                        valueList = [valueList]
-                    elif valueList is None:
-                        valueList = []
-                    for value in valueList:
-                        for subValue in structure.write(value):
-                            indenter(subValue)
-                elif structure in self._structures:
-                    valueList = structure.getValue(src)
-                    if structure.singleton:
-                        valueList = [valueList]
-                    for subValue in valueList:
-                        structure.write(subValue, indenter)
+                structure.write_all(src, indenter)
+
+    def write_all(self, src, indenter):
+        valueList = self.getValue(src)
+        if self.singleton:
+            valueList = [valueList]
+        for subValue in valueList:
+            self.write(subValue, indenter)
