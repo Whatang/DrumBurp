@@ -55,72 +55,6 @@ class dbFileIterator(object):
                     if linesRead == self._readLines:
                         break
 
-
-        def _parseInteger(self, data, lineName_):
-            try:
-                data = int(data)
-            except (TypeError, ValueError):
-                raise DBErrors.InvalidInteger(self._iterator)
-            return data
-
-        def _parsePositiveInteger(self, data, lineName):
-            data = self._parseInteger(data, lineName)
-            if data <= 0:
-                raise DBErrors.InvalidPositiveInteger(self._iterator)
-            return data
-
-        def _parseNonNegativeInteger(self, data, lineName):
-            data = self._parseInteger(data, lineName)
-            if data < 0:
-                raise DBErrors.InvalidNonNegativeInteger(self._iterator)
-            return data
-
-        @staticmethod
-        def _parseBoolean(data, unusedLineName):
-            return (data == "True" or data.upper() == "YES")
-
-
-        @staticmethod
-        def _parseString(data, unusedLineName):
-            return data if data is not None else ""
-
-        @staticmethod
-        def _updateDict(target, key, value):
-            target[key] = value
-
-        def _storeReader(self, lineType, target, attrName, parser):
-            if isinstance(target, dict):
-                setter = self._updateDict
-            else:
-                setter = setattr
-            self._lines[lineType] = lambda data: setter(target, attrName,
-                                                        parser(data, lineType))
-
-        def readInteger(self, lineType, target, attrName):
-            self._storeReader(lineType, target, attrName, self._parseInteger)
-
-        def readPositiveInteger(self, lineType, target, attrName):
-            self._storeReader(lineType, target, attrName,
-                              self._parsePositiveInteger)
-
-        def readNonNegativeInteger(self, lineType, target, attrName):
-            self._storeReader(lineType, target, attrName,
-                              self._parseNonNegativeInteger)
-
-        def readBoolean(self, lineType, target, attrName):
-            self._storeReader(lineType, target, attrName,
-                              self._parseBoolean)
-
-        def readString(self, lineType, target, attrName):
-            self._storeReader(lineType, target, attrName,
-                              self._parseString)
-
-        def readSubsection(self, lineType, callback):
-            self._lines[lineType] = lambda unused: callback(self._iterator)
-
-        def readCallback(self, lineType, callback):
-            self._lines[lineType] = callback
-
         def __exit__(self, excType, excValue, excTraceback):
             if excType is None:
                 self._process()
@@ -145,6 +79,9 @@ class dbFileIterator(object):
             lineType, lineData = fields
             lineType = lineType.upper()
             yield lineType, lineData
+
+    def next(self):
+        return self._handle.next()
 
     def section(self, startLine, endLine, convertNone = None, readLines = None):
         return self._Section(self, startLine, endLine, convertNone, readLines)

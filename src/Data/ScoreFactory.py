@@ -119,11 +119,13 @@ class ScoreFactory(object):
         del handleCopy
         scoreIterator = fileUtils.dbFileIterator(handle)
         if firstline.startswith("DB_FILE_FORMAT"):
-            versionDict = {}
-            with scoreIterator.section(None, None, readLines = 1) as section:
-                section.readNonNegativeInteger("DB_FILE_FORMAT", versionDict,
-                                               "fileVersion")
-            fileVersion = versionDict.get("fileVersion", DBFF_0)
+            fileVersion = firstline.split()
+            try:
+                if len(fileVersion) >= 2:
+                    fileVersion = int(fileVersion[1])
+            except (TypeError, ValueError):
+                fileVersion = DBFF_0
+            scoreIterator.next()
         else:
             fileVersion = DBFF_0
         if fileVersion > CURRENT_FILE_FORMAT:
