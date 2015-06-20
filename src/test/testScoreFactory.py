@@ -264,6 +264,16 @@ class Test(unittest.TestCase):
                 pass
             class NoLilyFormat(RuntimeError):
                 pass
+            class NoLilySize(RuntimeError):
+                pass
+            class NoLilyPages(RuntimeError):
+                pass
+            class ShortNoteHeads(RuntimeError):
+                pass
+            class OldTriplets(RuntimeError):
+                pass
+            class NoNoteheads(RuntimeError):
+                pass
             while True:
                 try:
                     for line1, line2 in zip(data, written):
@@ -274,10 +284,20 @@ class Test(unittest.TestCase):
                                 raise NoFF()
                             elif line2.lstrip().startswith('LILYFORMAT'):
                                 raise NoLilyFormat()
+                            elif line2.lstrip().startswith('LILYSIZE'):
+                                raise NoLilySize()
+                            elif line2.lstrip().startswith('LILYPAGES'):
+                                raise NoLilyPages()
                             elif line2.startswith("  MEASURECOUNTSVISIBLE"):
                                 raise MCounts()
                             elif "NORMAL_BAR," in line1:
                                 raise Barline()
+                            elif line1.lstrip().startswith("NOTEHEAD"):
+                                raise ShortNoteHeads()
+                            elif "|^ea|" in line1:
+                                raise OldTriplets()
+                            elif line1.lstrip().startswith("DRUM") and "NOTEHEAD" in line2:
+                                raise NoNoteheads()
                             else:
                                 raise
                     break
@@ -291,10 +311,29 @@ class Test(unittest.TestCase):
                 except NoLilyFormat:
                     written = [x for x in written
                                if not x.lstrip().startswith("LILYFORMAT")]
-
-                        
-
-
+                except NoLilySize:
+                    written = [x for x in written
+                               if not x.lstrip().startswith("LILYSIZE")]
+                except NoLilyPages:
+                    written = [x for x in written
+                               if not x.lstrip().startswith("LILYPAGES")]
+                except ShortNoteHeads:
+                    for line1 in data:
+                        numCommas = 0
+                        if "NOTEHEAD" in line1:
+                            numCommas = len([ch for ch in line1 if ch == ","])
+                            break
+                    written = [",".join(x.split(",", numCommas + 1)[:numCommas + 1])
+                               if "NOTEHEAD" in x else x
+                               for x in written]
+                    data = [x.rstrip(",") for x in data]
+                except OldTriplets:
+                    data = [x.replace("|^ea|", "|^+a|") for x in data]
+                except NoNoteheads:
+                    written = [x for x in written
+                             if "NOTEHEAD" not in x]
+                    data = [x for x in data
+                             if "NOTEHEAD" not in x]
 
 
 if __name__ == "__main__":
