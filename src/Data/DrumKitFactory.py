@@ -23,7 +23,6 @@ Created on Jun 20, 2015
 '''
 from Data.Drum import Drum, HeadData, Drum
 from Data.DefaultKits import NAMED_DEFAULTS
-from Data import DBConstants
 from Data import DrumKit
 
 def _loadDefaultKit(kit, kitInfo = None):

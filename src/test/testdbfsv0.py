@@ -609,8 +609,8 @@ class TestWrite(unittest.TestCase):
 
 class TestMeasureCount(unittest.TestCase):
     def testSimpleWrite(self):
-        my_counter = Counter.Counter("e+a")
-        count = MeasureCount.makeSimpleCount(my_counter, 4)
+        myCounter = Counter.Counter("e+a")
+        count = MeasureCount.makeSimpleCount(myCounter, 4)
         handle = StringIO()
         indenter = fileUtils.Indenter(handle)
         dbfsv0.MeasureCountStructureV0().write(count, indenter)
