@@ -23,8 +23,7 @@ Created on 12 Dec 2010
 
 '''
 
-from Data.Drum import Drum, HeadData
-from Data.DefaultKits import STEM_DOWN, STEM_UP, NAMED_DEFAULTS
+from Data.DefaultKits import STEM_DOWN, STEM_UP
 from Data.DBErrors import DuplicateDrumError, NoSuchDrumError
 
 class DrumKit(object):
@@ -72,41 +71,4 @@ class DrumKit(object):
     def getDefaultHead(self, index):
         return self[index].head
 
-def _loadDefaultKit(kit, kitInfo = None):
-    for (drumData, midiNote, notationHead,
-         notationLine, stemDirection) in kitInfo["drums"]:
-        drum = Drum(*drumData)
-        headData = HeadData(midiNote = midiNote,
-                            notationHead = notationHead,
-                            notationLine = notationLine,
-                            stemDirection = stemDirection)
-        drum.addNoteHead(drum.head, headData)
-        for (extraHead,
-             newMidi,
-             newMidiVolume,
-             newEffect,
-             newNotationHead,
-             newNotationEffect,
-             shortcut) in kitInfo["heads"].get(drum.abbr, []):
-            if newMidi is None:
-                newMidi = midiNote
-            if newMidiVolume is None:
-                newMidiVolume = headData.midiVolume
-            newData = HeadData(newMidi, newMidiVolume, newEffect,
-                               notationLine = notationLine,
-                               notationHead = newNotationHead,
-                               notationEffect = newNotationEffect,
-                               stemDirection = stemDirection,
-                               shortcut = shortcut)
-            drum.addNoteHead(extraHead, newData)
-        drum.checkShortcuts()
-        kit.addDrum(drum)
-
-def getNamedDefaultKit(defaultName = None):
-    if defaultName is None:
-        defaultName = "Default"
-    kitInfo = NAMED_DEFAULTS[defaultName]
-    kit = DrumKit()
-    _loadDefaultKit(kit, kitInfo)
-    return kit
 

@@ -22,6 +22,8 @@ Created on 7 Oct 2012
 @author: Mike Thomas
 '''
 import itertools
+import gzip
+import codecs
 import Data.DBErrors as DBErrors
 
 class dbFileIterator(object):
@@ -135,6 +137,50 @@ class Indenter(object):
 
     def section(self, sectionStart, sectionEnd):
         return self.Section(self, sectionStart, sectionEnd)
+
+class DataReader(object):
+    def __init__(self, filename):
+        self.filename = filename
+        self._reader = None
+        self._gzHandle = None
+
+    def __enter__(self):
+        try:
+            with gzip.open(self.filename, 'rb') as handle:
+                with codecs.getreader('utf-8')(handle) as reader:
+                    reader.read(50)
+            self._gzHandle = gzip.open(self.filename, 'rb')
+            self._reader = codecs.getreader('utf-8')(self._gzHandle)
+        except IOError:
+            self._gzHandle = None
+            self._reader = codecs.getreader('utf-8')(open(self.filename))
+        return self._reader
+
+    def __exit__(self, excType, excValue, traceback):
+        self._reader.close()
+        if self._gzHandle is not None:
+            self._gzHandle.close()
+
+class DataWriter(object):
+    def __init__(self, filename, compressed):
+        self.filename = filename
+        self.compressed = compressed
+        self._writer = None
+        self._gzHandle = None
+
+    def __enter__(self):
+        if self.compressed:
+            self._gzHandle = gzip.open(self.filename, 'wb')
+            self._writer = codecs.getwriter('utf-8')(self._gzHandle)
+        else:
+            self._gzHandle = None
+            self._writer = codecs.getwriter('utf-8')(open(self.filename, 'w'))
+        return self._writer
+
+    def __exit__(self, excType, excValue, traceback):
+        self._writer.close()
+        if self._gzHandle is not None:
+            self._gzHandle.close()
 
 class _IDMaker(object):
     _next_id = 0

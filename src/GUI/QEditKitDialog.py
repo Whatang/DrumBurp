@@ -32,10 +32,9 @@ from GUI.ui_editKit import Ui_editKitDialog
 from GUI.QDefaultKitManager import QDefaultKitManager
 import GUI.DBMidi as DBMidi
 from GUI.QNotationScene import QNotationScene
-from Data import DrumKit
+from Data import DrumKit, DrumKitFactory
 from Data.Drum import Drum
 from Data.DefaultKits import GHOST_VOLUME, ACCENT_VOLUME
-from Data import fileUtils
 
 _KIT_FILE_EXT = ".dbk"
 _KIT_FILTER = "DrumBurp kits (*%s)" % _KIT_FILE_EXT
@@ -229,10 +228,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
                                             filter = _KIT_FILTER)
         if len(fname) == 0:
             return
-        with open(fname, 'rU') as handle:
-            fileIterator = fileUtils.dbFileIterator(handle)
-            newKit = DrumKit.DrumKit()
-            newKit.read(fileIterator)
+        newKit = DrumKitFactory.DrumKitFactory.loadKit(fname)
         self._currentKit = list(reversed(newKit))
         self._oldLines.clear()
         for drum in self._currentKit:
@@ -263,11 +259,8 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             return
         fname = unicode(fname)
         newKit, unused = self.getNewKit()
-        with open(fname, 'w') as handle:
-            indenter = fileUtils.Indenter(handle)
-            newKit.write(indenter)
+        DrumKitFactory.DrumKitFactory.saveKit(newKit, fname)
         QMessageBox.information(self, "Kit saved", "Successfully saved drumkit")
-
 
     def _drumNameEdited(self):
         self._currentDrum.name = unicode(self.drumName.text())
@@ -547,7 +540,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         super(QEditKitDialog, self).accept()
 
     def getNewKit(self):
-        newKit = DrumKit.DrumKit()
+        newKit = DrumKitFactory.DrumKitFactory.emptyKit()
         oldLines = []
         for drum in reversed(self._currentKit):
             newKit.addDrum(drum)
@@ -612,7 +605,7 @@ def main():
     from PyQt4.QtGui import QApplication
     import sys
     app = QApplication(sys.argv)
-    kit = DrumKit.getNamedDefaultKit()
+    kit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit()
     dialog = QEditKitDialog(kit, [kit[0]])
     dialog.show()
     app.exec_()

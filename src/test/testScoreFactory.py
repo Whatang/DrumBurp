@@ -21,9 +21,10 @@ import unittest
 import glob
 import os
 from cStringIO import StringIO
-from Data.ScoreFactory import ScoreFactory, DataReader
+from Data.ScoreFactory import ScoreFactory
 from Data import DBConstants
 from Data import DBErrors
+from Data import fileUtils
 
 class TestScoreFactory(unittest.TestCase):
     def testMakeEmptyDefault(self):
@@ -268,7 +269,7 @@ class TestScoreFactory(unittest.TestCase):
             score = ScoreFactory.loadScore(testfile)
             written = StringIO()
             ScoreFactory.write(score, written, DBConstants.DBFF_0)
-            with DataReader(testfile) as reader:
+            with fileUtils.DataReader(testfile) as reader:
                 data = reader.read().splitlines()
             written = written.getvalue().splitlines()
             class NoFF(RuntimeError):

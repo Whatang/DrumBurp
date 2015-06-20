@@ -26,7 +26,7 @@ Created on 13 Oct 2012
 from PyQt4 import QtGui, QtCore
 from cStringIO import StringIO
 from GUI.ui_defaultKitManager import Ui_DefaulKitManager
-from Data import DefaultKits, DrumKit, fileUtils
+from Data import DefaultKits, DrumKitFactory
 
 _IS_USER_KIT = QtCore.Qt.UserRole
 
@@ -84,9 +84,8 @@ class QDefaultKitManager(Ui_DefaulKitManager, QtGui.QDialog):
                 self.defaultKitList.setCurrentRow(index)
 
     def _writeKit(self, name):
-        indenter = fileUtils.Indenter("")
         handle = StringIO()
-        self._currentKit.write(handle, indenter)
+        DrumKitFactory.DrumKitFactory.write(self._currentKit, handle)
         self._settings.setValue(name, handle.getvalue())
         self._populate()
 
@@ -117,6 +116,10 @@ class QDefaultKitManager(Ui_DefaulKitManager, QtGui.QDialog):
                 kitName = unicode(item.text())
                 self._writeKit(kitName)
                 self.defaultKitList.setCurrentRow(index)
+            else:
+                QtGui.QMessageBox.information(self,
+                                              "Default kit",
+                                              "Cannot overwrite default kits!")
 
     def getKit(self):
         item = self.defaultKitList.currentItem()
@@ -125,12 +128,9 @@ class QDefaultKitManager(Ui_DefaulKitManager, QtGui.QDialog):
         if isUser:
             kitString = unicode(self._settings.value(kitName).toString())
             handle = StringIO(kitString)
-            dbfile = fileUtils.dbFileIterator(handle)
-            kit = DrumKit.DrumKit()
-            kit.read(dbfile)
-            return kit
+            return DrumKitFactory.DrumKitFactory.read(handle)
         else:
-            return DrumKit.getNamedDefaultKit(kitName)
+            return DrumKitFactory.DrumKitFactory.getNamedDefaultKit(kitName)
 
 
 def main():
@@ -140,7 +140,7 @@ def main():
     app.setOrganizationName("Whatang Software")
     app.setOrganizationDomain("whatang.org")
     app.setApplicationName("DefaultKitManagerTest")
-    oldkit = DrumKit.getNamedDefaultKit()
+    oldkit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit()
     dialog = QDefaultKitManager(oldkit)
     dialog.show()
     app.exec_()

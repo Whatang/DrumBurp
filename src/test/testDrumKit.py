@@ -22,7 +22,7 @@ Created on 12 Dec 2010
 @author: Mike Thomas
 '''
 import unittest
-from Data import DrumKit
+from Data import DrumKitFactory
 from Data.DBErrors import DuplicateDrumError, NoSuchDrumError
 from Data.Drum import Drum
 
@@ -30,24 +30,21 @@ from Data.Drum import Drum
 
 class TestDrumKit(unittest.TestCase):
     def setUp(self):
-        self.kit = DrumKit.DrumKit()
+        self.kit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit()
 
     def testEmptyDrumKit(self):
-        self.assertEqual(len(self.kit), 0)
+        self.assertEqual(len(DrumKitFactory.DrumKitFactory.emptyKit()), 0)
 
     def testLoadDefault(self):
-        self.kit = DrumKit.getNamedDefaultKit()
         self.assert_(len(self.kit) > 0)
 
     def testAddDrum(self):
-        self.kit = DrumKit.getNamedDefaultKit()
         numDrums = len(self.kit)
         drum = Drum("test drum", "td", "x")
         self.kit.addDrum(drum)
         self.assertEqual(len(self.kit), numDrums + 1)
 
     def testAddDuplicate(self):
-        self.kit = DrumKit.getNamedDefaultKit()
         self.assertRaises(DuplicateDrumError,
                           self.kit.addDrum, self.kit[0])
 
@@ -58,7 +55,6 @@ class TestDrumKit(unittest.TestCase):
         self.assertRaises(AssertionError, self.kit.deleteDrum)
 
     def testDeleteDrumByName(self):
-        self.kit = DrumKit.getNamedDefaultKit()
         numDrums = len(self.kit)
         self.assert_(numDrums > 0)
         drum = self.kit[0]
@@ -68,12 +64,10 @@ class TestDrumKit(unittest.TestCase):
             self.assertNotEqual(drum, remainingDrum)
 
     def testDeleteDrumByName_DrumNotFound(self):
-        self.kit = DrumKit.getNamedDefaultKit()
         self.assertRaises(NoSuchDrumError,
                           self.kit.deleteDrum, name = "no such drum")
 
     def testDeleteDrumByIndex(self):
-        self.kit = DrumKit.getNamedDefaultKit()
         numDrums = len(self.kit)
         self.assert_(numDrums > 0)
         drum = self.kit[0]
@@ -83,7 +77,6 @@ class TestDrumKit(unittest.TestCase):
             self.assertNotEqual(drum, remainingDrum)
 
     def testDeleteDrumByIndex_BadIndex(self):
-        self.kit = DrumKit.getNamedDefaultKit()
         self.assertRaises(NoSuchDrumError,
                           self.kit.deleteDrum, index = -1)
         self.assertRaises(NoSuchDrumError,
