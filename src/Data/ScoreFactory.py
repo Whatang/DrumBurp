@@ -15,6 +15,51 @@ CURRENT_FILE_FORMAT = DBFF_0
 
 FS_MAPS = {DBFF_0: dbfsv0.ScoreStructureV0}
 
+class DataReader(object):
+    def __init__(self, filename):
+        self.filename = filename
+        self._reader = None
+        self._gzHandle = None
+
+    def __enter__(self):
+        try:
+            with gzip.open(self.filename, 'rb') as handle:
+                with codecs.getreader('utf-8')(handle) as reader:
+                    reader.read(50)
+            self._gzHandle = gzip.open(self.filename, 'rb')
+            self._reader = codecs.getreader('utf-8')(self._gzHandle)
+        except IOError:
+            self._gzHandle = None
+            self._reader = codecs.getreader('utf-8')(open(self.filename))
+        return self._reader
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._reader.close()
+        if self._gzHandle is not None:
+            self._gzHandle.close()
+
+class DataWriter(object):
+    def __init__(self, filename, compressed):
+        self.filename = filename
+        self.compressed = compressed
+        self._writer = None
+        self._gzHandle = None
+
+    def __enter__(self):
+        if self.compressed:
+            self._gzHandle = gzip.open(self.filename, 'wb')
+            self._writer = codecs.getwriter('utf-8')(self._gzHandle)
+        else:
+            self._gzHandle = None
+            self._writer = codecs.getwriter('utf-8')(open(self.filename, 'w'))
+        return self._writer
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._writer.close()
+        if self._gzHandle is not None:
+            self._gzHandle.close()
+
+
 class ScoreFactory(object):
     def __call__(self, filename = None,
                  numMeasures = 32,
@@ -44,15 +89,10 @@ class ScoreFactory(object):
 
     @classmethod
     def loadScore(cls, filename):
-        try:
-            with gzip.open(filename, 'rb') as handle:
-                with codecs.getreader('utf-8')(handle) as reader:
-                    score = cls.read(reader)
-        except IOError:
-            with open(filename, 'rU') as handle:
-                score = cls.read(handle)
+        with DataReader(filename) as reader:
+            score = cls.read(reader)
         return score
-    
+
     @staticmethod
     def read(handle):
         # Check the file format version
@@ -70,17 +110,20 @@ class ScoreFactory(object):
             fileVersion = DBFF_0
         if fileVersion > CURRENT_FILE_FORMAT:
             raise DBVersionError(scoreIterator)
-        # TODO
         fileStructure = FS_MAPS[CURRENT_FILE_FORMAT]()
         return fileStructure.read(scoreIterator)
-
+    
     @staticmethod
-    def saveScore(score, filename):
+    def write(score, handle, version = CURRENT_FILE_FORMAT):
         scoreBuffer = StringIO()
         indenter = fileUtils.Indenter(scoreBuffer)
-        indenter("DB_FILE_FORMAT", CURRENT_FILE_FORMAT)
-        fileStructure = FS_MAPS[CURRENT_FILE_FORMAT]()
-        fileStructure.write(score, indenter)
-        with gzip.open(filename, 'wb') as handle:
-            with codecs.getwriter('utf-8')(handle) as writer:
-                writer.write(scoreBuffer.getvalue())
+        indenter("DB_FILE_FORMAT", version)
+#         fileStructure = FS_MAPS.get(version, CURRENT_FILE_FORMAT)()
+#         fileStructure.write(score, indenter)
+        score.write(scoreBuffer)
+        handle.write(scoreBuffer.getvalue())
+        
+    @classmethod
+    def saveScore(cls, score, filename, version = CURRENT_FILE_FORMAT, compressed = True):
+        with DataWriter(filename, compressed) as writer:
+            cls.write(score, writer, version)

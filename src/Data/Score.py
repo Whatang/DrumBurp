@@ -714,7 +714,7 @@ class Score(object):
 
     def write(self, handle):
         indenter = fileUtils.Indenter(handle)
-        indenter("DB_FILE_FORMAT", CURRENT_FILE_FORMAT)
+#         indenter("DB_FILE_FORMAT", CURRENT_FILE_FORMAT)
         self.scoreData.save(indenter)
         self.drumKit.write(indenter)
         for measure in self.iterMeasures():
