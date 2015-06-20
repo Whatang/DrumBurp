@@ -29,6 +29,7 @@ from cStringIO import StringIO
 from Data.Drum import Drum, HeadData
 from Data.fileUtils import Indenter
 from Data import DefaultKits
+from Data.fileStructures import dbfsv0
 
 class TestHeadData(unittest.TestCase):
     def testWrite_Default(self):
@@ -265,7 +266,7 @@ class TestDrum(unittest.TestCase):
         second_.shortcut = "a"
         outstring = StringIO()
         indenter = Indenter(outstring)
-        drum.write(indenter)
+        dbfsv0.DrumField("DRUM", getter = lambda _:drum).write_all(self, indenter)
         outlines = outstring.getvalue().splitlines()
         self.assertEqual(len(outlines), 4)
         self.assertEqual(outlines[0], "DRUM test,td,x,False")

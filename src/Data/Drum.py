@@ -265,17 +265,6 @@ class Drum(object):
             shortcuts.append((unicode(shortcut), head))
         return shortcuts
 
-
-    def write(self, indenter):
-        indenter("DRUM %s,%s,%s,%s" % (self.name, self.abbr, self.head,
-                                       str(self.locked)))
-        with indenter:
-            for head in self:
-                headData = self.headData(head)
-                headData.write(head, indenter)
-
-
-
 def _guessMidiNote(abbr):
     for drumData, midiNote, x_, y_, z_ in DefaultKits.DEFAULT_KIT:
         if abbr == drumData[1]:

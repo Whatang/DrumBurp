@@ -24,7 +24,7 @@ from Data.fileUtils import (FileStructure, PositiveIntegerField,
                             SimpleValueField, Field, StringField,
                             NonNegativeIntegerField, BooleanField,
                             NoWriteField, NoReadField, conditionalWriteField,
-    YesNoField)
+                            YesNoField)
 
 import Data.Beat
 import Data.MeasureCount

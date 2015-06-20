@@ -58,7 +58,7 @@ class TestFullBeat(unittest.TestCase):
     def testWrite(self):
         handle = StringIO()
         indenter = fileUtils.Indenter(handle)
-        self.beat.write(indenter)
+        dbfsv0.BeatStructureV0().write(self.beat, indenter)
         output = handle.getvalue().splitlines()
         self.assertEqual(output,
                          ["BEAT_START",
@@ -95,7 +95,7 @@ class TestPartialBeat(unittest.TestCase):
     def testWrite(self):
         handle = StringIO()
         indenter = fileUtils.Indenter(handle)
-        self.beat.write(indenter)
+        dbfsv0.BeatStructureV0().write(self.beat, indenter)
         output = handle.getvalue().splitlines()
         self.assertEqual(output,
                          ["BEAT_START",

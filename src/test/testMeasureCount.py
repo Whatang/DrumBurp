@@ -105,7 +105,7 @@ class TestSimple(unittest.TestCase):
     def testWrite(self):
         handle = StringIO()
         indenter = fileUtils.Indenter(handle)
-        self.count.write(indenter)
+        dbfsv0.MeasureCountStructureV0().write(self.count, indenter)
         output = handle.getvalue().splitlines()
         self.assertEqual(output,
                          ["COUNT_INFO_START",
@@ -199,7 +199,7 @@ class TestComplex(unittest.TestCase):
     def testWrite(self):
         handle = StringIO()
         indenter = fileUtils.Indenter(handle)
-        self.count.write(indenter)
+        dbfsv0.MeasureCountStructureV0().write(self.count, indenter)
         output = handle.getvalue().splitlines()
         self.assertEqual(output,
                          ["COUNT_INFO_START",

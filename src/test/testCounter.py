@@ -25,6 +25,8 @@ import unittest
 from cStringIO import StringIO
 from Data import Counter
 from Data import fileUtils
+from Data.fileStructures import dbfsv0
+
 # pylint: disable-msg=R0904
 
 class TestCounter(unittest.TestCase):
@@ -46,7 +48,8 @@ class TestCounter(unittest.TestCase):
     def testWrite(self):
         handle = StringIO()
         indenter = fileUtils.Indenter(handle)
-        self.counter.write(indenter)
+        dbfsv0.CounterFieldV0("COUNT",
+                              getter = lambda _:self.counter).write_all(self, indenter)
         self.assertEqual(handle.getvalue(), "COUNT |^bcd|\n")
 
     def testMatchExact(self):

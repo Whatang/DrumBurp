@@ -200,7 +200,7 @@ class TestDrumKit(unittest.TestCase):
         kit.addDrum(drum)
         handle = StringIO()
         indenter = fileUtils.Indenter(handle)
-        kit.write(indenter)
+        dbfsv0.DrumKitStructureV0().write(kit, indenter)
         outlines = handle.getvalue().splitlines()
         self.assertEqual(outlines,
                          ["KIT_START",

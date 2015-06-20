@@ -33,6 +33,9 @@ from Data.NotePosition import NotePosition
 from Data.ScoreMetaData import ScoreMetaData
 from Data.FontOptions import FontOptions
 import Data.fileUtils as fileUtils
+import Data.ASCIISettings as ASCIISettings
+
+from Notation import AsciiExport
 import bisect
 import hashlib
 from StringIO import StringIO
@@ -712,25 +715,6 @@ class Score(object):
         else:
             return self._iterLinesLockedOrWithNotes(staffIndex)
 
-    def write(self, handle):
-        indenter = fileUtils.Indenter(handle)
-#         indenter("DB_FILE_FORMAT", CURRENT_FILE_FORMAT)
-        self.scoreData.save(indenter)
-        self.drumKit.write(indenter)
-        for measure in self.iterMeasures():
-            measure.write(indenter)
-        for title in self._sections:
-            indenter("SECTION_TITLE", title)
-        indenter("PAPER_SIZE", self.paperSize)
-        indenter("LILYSIZE", self.lilysize)
-        indenter("LILYPAGES", self.lilypages)
-        if self.lilyFill:
-            indenter("LILYFILL", "YES")
-        indenter("LILYFORMAT", self.lilyFormat)
-        self.defaultCount.write(indenter, True)
-        indenter("SYSTEM_SPACE", self.systemSpacing)
-        self.fontOptions.write(indenter)
-
     def postReadProcessing(self):
         # Check that all the note heads are valid
         for measure in self.iterMeasures():
@@ -750,7 +734,8 @@ class Score(object):
             self._sections = self._sections[:numSections]
 
     def hashScore(self):
+        exporter = AsciiExport.Exporter(self, ASCIISettings.ASCIISettings(), False)
         scoreString = StringIO()
-        self.write(scoreString)
+        exporter.export(scoreString)
         scoreString = scoreString.getvalue()
         return hashlib.md5(scoreString.encode('utf-8')).digest()  # pylint:disable-msg=E1121

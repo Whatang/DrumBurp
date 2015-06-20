@@ -1102,7 +1102,7 @@ class TestHash(unittest.TestCase):
     def testEmpty(self):
         hash_val = self.score.hashScore()
         self.assertEqual(hash_val.encode("hex"),
-                         "0bc1a56ea6085a688c4c46e538645bab")
+                         "95b319c82f934d9abfce950b58a7c3bd")
 
 if __name__ == "__main__":
     unittest.main()

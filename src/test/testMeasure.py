@@ -535,7 +535,7 @@ class TestWrite(unittest.TestCase):
     def get_output(self):
         handle = StringIO()
         indenter = fileUtils.Indenter(handle)
-        self.measure.write(indenter)
+        dbfsv0.MeasureStructureV0().write(self.measure, indenter)
         return handle.getvalue().splitlines()
 
     def testWriteEmpty(self):

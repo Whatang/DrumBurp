@@ -33,7 +33,7 @@ class TestFontOptions(unittest.TestCase):
         options = FontOptions.FontOptions()
         handle = StringIO()
         indenter = fileUtils.Indenter(handle)
-        options.write(indenter)
+        dbfsv0.FontOptionsStructureV0().write(options, indenter)
         output = handle.getvalue().splitlines()
         self.assertEqual(output,
                          ["FONT_OPTIONS_START",
