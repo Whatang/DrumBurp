@@ -130,18 +130,18 @@ class ScoreFactory(object):
             raise DBVersionError(scoreIterator)
         fileStructure = FS_MAPS[CURRENT_FILE_FORMAT]()
         return fileStructure.read(scoreIterator)
-    
+
     @staticmethod
     def write(score, handle, version = CURRENT_FILE_FORMAT):
         scoreBuffer = StringIO()
         indenter = fileUtils.Indenter(scoreBuffer)
         indenter("DB_FILE_FORMAT", version)
-#         fileStructure = FS_MAPS.get(version, CURRENT_FILE_FORMAT)()
-#         fileStructure.write(score, indenter)
-        score.write(scoreBuffer)
+        fileStructure = FS_MAPS.get(version, CURRENT_FILE_FORMAT)()
+        fileStructure.write(score, indenter)
         handle.write(scoreBuffer.getvalue())
-        
+
     @classmethod
-    def saveScore(cls, score, filename, version = CURRENT_FILE_FORMAT, compressed = True):
+    def saveScore(cls, score, filename, version = CURRENT_FILE_FORMAT,
+                  compressed = True):
         with DataWriter(filename, compressed) as writer:
             cls.write(score, writer, version)
