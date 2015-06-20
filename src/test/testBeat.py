@@ -22,9 +22,8 @@ Created on 12 Dec 2012
 @author: Mike Thomas
 '''
 import unittest
-from cStringIO import StringIO
-from Data import Beat, Counter, fileUtils, DBErrors
-from Data.fileStructures import dbfsv0
+from Data import Beat, Counter
+
 
 # pylint: disable-msg=R0904
 
@@ -55,16 +54,6 @@ class TestFullBeat(unittest.TestCase):
         count = list(self.beat.count(2))
         self.assertEqual(count, ["2", "e", "+", "a"])
 
-    def testWrite(self):
-        handle = StringIO()
-        indenter = fileUtils.Indenter(handle)
-        dbfsv0.BeatStructureV0().write(self.beat, indenter)
-        output = handle.getvalue().splitlines()
-        self.assertEqual(output,
-                         ["BEAT_START",
-                          "  COUNT |^e+a|",
-                          "BEAT_END"])
-
 class TestPartialBeat(unittest.TestCase):
     beat = Beat.Beat(Counter.Counter(Counter.BEAT_COUNT + "e+a"), 2)
 
@@ -91,71 +80,6 @@ class TestPartialBeat(unittest.TestCase):
     def testCount(self):
         count = list(self.beat.count(2))
         self.assertEqual(count, ["2", "e"])
-
-    def testWrite(self):
-        handle = StringIO()
-        indenter = fileUtils.Indenter(handle)
-        dbfsv0.BeatStructureV0().write(self.beat, indenter)
-        output = handle.getvalue().splitlines()
-        self.assertEqual(output,
-                         ["BEAT_START",
-                          "  NUM_TICKS 2",
-                          "  COUNT |^e+a|",
-                          "BEAT_END"])
-
-class TestReadBeats(unittest.TestCase):
-    def testReadFull(self):
-        handle = StringIO("""BEAT_START
-        COUNT |^e+a|
-        BEAT_END""")
-        iterator = fileUtils.dbFileIterator(handle)
-        beat = dbfsv0.BeatStructureV0().read(iterator)
-        self.assertEqual("".join(beat.count(1)), "1e+a")
-
-    def testReadPartial(self):
-        handle = StringIO("""BEAT_START
-        NUM_TICKS 2
-        COUNT |^e+a|
-        BEAT_END""")
-        iterator = fileUtils.dbFileIterator(handle)
-        beat = dbfsv0.BeatStructureV0().read(iterator)
-        self.assertEqual("".join(beat.count(1)), "1e")
-
-    def testReadBadCount(self):
-        handle = StringIO("""BEAT_START
-        COUNT |^e+d|
-        BEAT_END""")
-        iterator = fileUtils.dbFileIterator(handle)
-        self.assertRaises(DBErrors.BadCount, dbfsv0.BeatStructureV0().read,
-                          iterator)
-
-    def testReadBadTicks(self):
-        handle = StringIO("""BEAT_START
-        NUM_TICKS x
-        COUNT |^e+a|
-        BEAT_END""")
-        iterator = fileUtils.dbFileIterator(handle)
-        self.assertRaises(DBErrors.InvalidInteger, dbfsv0.BeatStructureV0().read,
-                          iterator)
-
-    def testReadBadNegativeTicks(self):
-        handle = StringIO("""BEAT_START
-        NUM_TICKS -1
-        COUNT |^e+a|
-        BEAT_END""")
-        iterator = fileUtils.dbFileIterator(handle)
-        self.assertRaises(DBErrors.InvalidPositiveInteger,
-                          dbfsv0.BeatStructureV0().read,
-                          iterator)
-
-    def testReadBadLine(self):
-        handle = StringIO("""BEAT_START
-        COUNT |^e+a|
-        BAD_LINE xxx
-        BEAT_END""")
-        iterator = fileUtils.dbFileIterator(handle)
-        self.assertRaises(DBErrors.UnrecognisedLine,
-                          dbfsv0.BeatStructureV0().read, iterator)
 
 if __name__ == "__main__":
     unittest.main()

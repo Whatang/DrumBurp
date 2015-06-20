@@ -27,27 +27,9 @@ from cStringIO import StringIO
 
 # pylint: disable-msg=R0904
 from Data.Drum import Drum, HeadData
-from Data.fileUtils import Indenter
 from Data import DefaultKits
-from Data.fileStructures import dbfsv0
 
 class TestHeadData(unittest.TestCase):
-    def testWrite_Default(self):
-        handle = StringIO()
-        headData = HeadData()
-        indenter = Indenter(handle)
-        headData.write("x", indenter)
-        self.assertEqual(handle.getvalue().rstrip(),
-                         "NOTEHEAD x 71,96,normal,default,0,none,0,")
-
-    def testWrite_Different(self):
-        handle = StringIO()
-        headData = HeadData(72, 100, "ghost", "cross", 1, "choke", 1, "c")
-        indenter = Indenter(handle)
-        headData.write("x", indenter)
-        self.assertEqual(handle.getvalue().rstrip(),
-                         "NOTEHEAD x 72,100,ghost,cross,1,choke,1,c")
-
     def testRead_New(self):
         dataString = "x 72,100,ghost,cross,1,choke,1,c"
         head, data = HeadData.read("Hh", dataString)
@@ -260,26 +242,6 @@ class TestDrum(unittest.TestCase):
         self.assertEqual(list(drum), ["o", "O", "g", "f", "d"])
         headData = drum.headData(None)
         self.assertEqual(headData.midiNote, 50)
-
-    def testWrite(self):
-        drum, first_, second_ = self.makeDrum()
-        second_.shortcut = "a"
-        outstring = StringIO()
-        indenter = Indenter(outstring)
-        dbfsv0.DrumField("DRUM", getter = lambda _:drum).write_all(self, indenter)
-        outlines = outstring.getvalue().splitlines()
-        self.assertEqual(len(outlines), 4)
-        self.assertEqual(outlines[0], "DRUM test,td,x,False")
-        self.assertEqual(outlines[1],
-                         "  NOTEHEAD x 71,96,normal,default,0,none,0,y")
-        self.assertEqual(outlines[2],
-                         "  NOTEHEAD y 100,96,normal,default,0,none,0,a")
-        self.assertEqual(outlines[3],
-                         "  NOTEHEAD z 71,96,normal,default,0,none,0,z")
-
-
-
-
 
 if __name__ == "__main__":
     unittest.main()

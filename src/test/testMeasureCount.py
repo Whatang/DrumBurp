@@ -22,12 +22,11 @@ Created on 12 Dec 2012
 @author: Mike Thomas
 '''
 import unittest
-from cStringIO import StringIO
 
 # pylint: disable-msg=R0904
 
-from Data import MeasureCount, Counter, Beat, fileUtils, DBErrors
-from Data.fileStructures import dbfsv0
+from Data import MeasureCount, Counter, Beat
+
 
 class TestSimple(unittest.TestCase):
     my_counter = Counter.Counter(Counter.BEAT_COUNT + "e+a")
@@ -101,19 +100,6 @@ class TestSimple(unittest.TestCase):
                           (1, 0, 4), (1, 1, 4), (1, 2, 4), (1, 3, 4),
                           (2, 0, 4), (2, 1, 4), (2, 2, 4), (2, 3, 4),
                           (3, 0, 4), (3, 1, 4), (3, 2, 4), (3, 3, 4)])
-
-    def testWrite(self):
-        handle = StringIO()
-        indenter = fileUtils.Indenter(handle)
-        dbfsv0.MeasureCountStructureV0().write(self.count, indenter)
-        output = handle.getvalue().splitlines()
-        self.assertEqual(output,
-                         ["COUNT_INFO_START",
-                          "  REPEAT_BEATS 4",
-                          "  BEAT_START",
-                          "    COUNT |^e+a|",
-                          "  BEAT_END",
-                          "COUNT_INFO_END"])
 
 class TestComplex(unittest.TestCase):
     counter1 = Counter.Counter(Counter.BEAT_COUNT + "e+a")
@@ -195,118 +181,6 @@ class TestComplex(unittest.TestCase):
                           (1, 0, 3), (1, 1, 3), (1, 2, 3),
                           (2, 0, 2), (2, 1, 2),
                           (3, 0, 4), (3, 1, 4)])
-
-    def testWrite(self):
-        handle = StringIO()
-        indenter = fileUtils.Indenter(handle)
-        dbfsv0.MeasureCountStructureV0().write(self.count, indenter)
-        output = handle.getvalue().splitlines()
-        self.assertEqual(output,
-                         ["COUNT_INFO_START",
-                          "  BEAT_START",
-                          "    COUNT |^e+a|",
-                          "  BEAT_END",
-                          "  BEAT_START",
-                          "    COUNT |^+a|",
-                          "  BEAT_END",
-                          "  BEAT_START",
-                          "    COUNT |^+|",
-                          "  BEAT_END",
-                          "  BEAT_START",
-                          "    NUM_TICKS 2",
-                          "    COUNT |^e+a|",
-                          "  BEAT_END",
-                          "COUNT_INFO_END"])
-
-class TestRead(unittest.TestCase):
-    def testReadSimple(self):
-        data = """COUNT_INFO_START
-                      REPEAT_BEATS 4
-                      BEAT_START
-                          COUNT |^e+a|
-                      BEAT_END
-                  COUNT_INFO_END"""
-        handle = StringIO(data)
-        iterator = fileUtils.dbFileIterator(handle)
-        count = dbfsv0.MeasureCountStructureV0().read(iterator)
-        self.assert_(count.isSimpleCount())
-        self.assertEqual(len(count), 16)
-
-    def testReadSimpleDefault(self):
-        data = """DEFAULT_COUNT_INFO_START
-                      REPEAT_BEATS 4
-                      BEAT_START
-                          COUNT |^e+a|
-                      BEAT_END
-                  COUNT_INFO_END"""
-        handle = StringIO(data)
-        iterator = fileUtils.dbFileIterator(handle)
-        count = dbfsv0.MeasureCountStructureV0(startTag = "DEFAULT_COUNT_INFO_START").read(iterator)
-        self.assert_(count.isSimpleCount())
-        self.assertEqual(len(count), 16)
-
-
-    def testReadComplex(self):
-        data = """COUNT_INFO_START
-                  BEAT_START
-                    COUNT |^e+a|
-                  BEAT_END
-                  BEAT_START
-                    COUNT |^+a|
-                  BEAT_END
-                  BEAT_START
-                    COUNT |^+|
-                  BEAT_END
-                  BEAT_START
-                    NUM_TICKS 2
-                    COUNT |^e+a|
-                  BEAT_END
-                COUNT_INFO_END"""
-        handle = StringIO(data)
-        iterator = fileUtils.dbFileIterator(handle)
-        count = dbfsv0.MeasureCountStructureV0().read(iterator)
-        self.assertFalse(count.isSimpleCount())
-        self.assertEqual(len(count), 11)
-
-    def testBadLine(self):
-        data = """COUNT_INFO_START
-              REPEAT_BEATS 4
-              UNRECOGNISED LINE
-              BEAT_START
-                  COUNT |^e+a|
-              BEAT_END
-          COUNT_INFO_END"""
-        handle = StringIO(data)
-        iterator = fileUtils.dbFileIterator(handle)
-        self.assertRaises(DBErrors.UnrecognisedLine,
-                          dbfsv0.MeasureCountStructureV0().read,
-                          iterator)
-
-    def testBadBeatCount(self):
-        data = """COUNT_INFO_START
-              REPEAT_BEATS xxx
-              UNRECOGNISED LINE
-              BEAT_START
-                  COUNT |^e+a|
-              BEAT_END
-          COUNT_INFO_END"""
-        handle = StringIO(data)
-        iterator = fileUtils.dbFileIterator(handle)
-        self.assertRaises(DBErrors.InvalidInteger,
-                          dbfsv0.MeasureCountStructureV0().read, iterator)
-
-    def testNegativeBeatCount(self):
-        data = """COUNT_INFO_START
-              REPEAT_BEATS -1
-              UNRECOGNISED LINE
-              BEAT_START
-                  COUNT |^e+a|
-              BEAT_END
-          COUNT_INFO_END"""
-        handle = StringIO(data)
-        iterator = fileUtils.dbFileIterator(handle)
-        self.assertRaises(DBErrors.InvalidPositiveInteger,
-                          dbfsv0.MeasureCountStructureV0().read, iterator)
 
 class TestCounterMaker(unittest.TestCase):
     def testMake(self):

@@ -24,7 +24,7 @@ from cStringIO import StringIO
 from Data.ScoreFactory import ScoreFactory, DataReader, DataWriter, DBFF_0
 from Data import DBErrors
 
-class Test(unittest.TestCase):
+class TestScoreFactory(unittest.TestCase):
     def testMakeEmptyDefault(self):
         score = ScoreFactory.makeEmptyScore(16, None, None)
         self.assertEqual(score.numMeasures(), 16)
