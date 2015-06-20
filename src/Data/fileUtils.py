@@ -21,7 +21,7 @@ Created on 7 Oct 2012
 
 @author: Mike Thomas
 '''
-
+import itertools
 import Data.DBErrors as DBErrors
 
 class dbFileIterator(object):
@@ -55,72 +55,6 @@ class dbFileIterator(object):
                     if linesRead == self._readLines:
                         break
 
-
-        def _parseInteger(self, data, lineName_):
-            try:
-                data = int(data)
-            except (TypeError, ValueError):
-                raise DBErrors.InvalidInteger(self._iterator)
-            return data
-
-        def _parsePositiveInteger(self, data, lineName):
-            data = self._parseInteger(data, lineName)
-            if data <= 0:
-                raise DBErrors.InvalidPositiveInteger(self._iterator)
-            return data
-
-        def _parseNonNegativeInteger(self, data, lineName):
-            data = self._parseInteger(data, lineName)
-            if data < 0:
-                raise DBErrors.InvalidNonNegativeInteger(self._iterator)
-            return data
-
-        @staticmethod
-        def _parseBoolean(data, unusedLineName):
-            return (data == "True" or data.upper() == "YES")
-
-
-        @staticmethod
-        def _parseString(data, unusedLineName):
-            return data if data is not None else ""
-
-        @staticmethod
-        def _updateDict(target, key, value):
-            target[key] = value
-
-        def _storeReader(self, lineType, target, attrName, parser):
-            if isinstance(target, dict):
-                setter = self._updateDict
-            else:
-                setter = setattr
-            self._lines[lineType] = lambda data: setter(target, attrName,
-                                                        parser(data, lineType))
-
-        def readInteger(self, lineType, target, attrName):
-            self._storeReader(lineType, target, attrName, self._parseInteger)
-
-        def readPositiveInteger(self, lineType, target, attrName):
-            self._storeReader(lineType, target, attrName,
-                              self._parsePositiveInteger)
-
-        def readNonNegativeInteger(self, lineType, target, attrName):
-            self._storeReader(lineType, target, attrName,
-                              self._parseNonNegativeInteger)
-
-        def readBoolean(self, lineType, target, attrName):
-            self._storeReader(lineType, target, attrName,
-                              self._parseBoolean)
-
-        def readString(self, lineType, target, attrName):
-            self._storeReader(lineType, target, attrName,
-                              self._parseString)
-
-        def readSubsection(self, lineType, callback):
-            self._lines[lineType] = lambda unused: callback(self._iterator)
-
-        def readCallback(self, lineType, callback):
-            self._lines[lineType] = callback
-
         def __exit__(self, excType, excValue, excTraceback):
             if excType is None:
                 self._process()
@@ -146,6 +80,9 @@ class dbFileIterator(object):
             lineType = lineType.upper()
             yield lineType, lineData
 
+    def next(self):
+        return self._handle.next()
+
     def section(self, startLine, endLine, convertNone = None, readLines = None):
         return self._Section(self, startLine, endLine, convertNone, readLines)
 
@@ -154,17 +91,20 @@ class Indenter(object):
     class Section(object):
         def __init__(self, indenter, sectionStart, sectionEnd):
             self.indenter = indenter
+            self._doIndent = sectionStart is not None and sectionEnd is not None
             self.start = sectionStart
             self.end = sectionEnd
 
         def __enter__(self):
-            self.indenter(self.start)
-            self.indenter.increase()
+            if self._doIndent:
+                self.indenter(self.start)
+                self.indenter.increase()
             return self
 
         def __exit__(self, excType, excValue, excTraceback):
-            self.indenter.decrease()
-            self.indenter(self.end)
+            if self._doIndent:
+                self.indenter.decrease()
+                self.indenter(self.end)
             return False
 
     def __init__(self, handle, indent = "  "):
@@ -195,3 +135,309 @@ class Indenter(object):
 
     def section(self, sectionStart, sectionEnd):
         return self.Section(self, sectionStart, sectionEnd)
+
+class _IDMaker(object):
+    _next_id = 0
+
+    @classmethod
+    def get(cls):
+        nextId = cls._next_id
+        cls._next_id += 1
+        return nextId
+
+class ObjectsOrderedByID(object):
+    def __init__(self):
+        self.ordered_id = _IDMaker.get()
+
+class WriteAllInterface(object):
+    def write_all(self, src, indenter):
+        raise NotImplementedError()
+
+class Field(ObjectsOrderedByID, WriteAllInterface):
+    def __init__(self, title, attributeName = None, singleton = True,
+                 getter = None):
+        super(Field, self).__init__()
+        self.title = title.upper()
+        self.attributeName = attributeName
+        self.singleton = singleton
+        self.getter = getter
+
+    def getValue(self, src):
+        if self.getter is None:
+            return getattr(src, self.attributeName)
+        else:
+            return self.getter(src)
+
+    def read(self, target, data):
+        raise NotImplementedError()
+
+    def write(self, source):
+        raise NotImplementedError()
+
+    def write_all(self, src, indenter):
+        valueList = self.getValue(src)
+        if self.singleton and valueList is not None:
+            valueList = [valueList]
+        elif valueList is None:
+            valueList = []
+        for value in valueList:
+            for subValue in self.write(value):
+                indenter(subValue)
+
+    def format(self, outdata):
+        return "%s %s" % (self.title, outdata)
+
+def conditionalWriteField(field, predicate):
+    getter = field.getValue
+    def getterWrapper(source):
+        if predicate(source):
+            return getter(source)
+    field.getValue = getterWrapper
+    return field
+
+class SimpleReadField(Field):
+    def __init__(self, title, attributeName = None, singleton = True,
+                 getter = None):
+        super(SimpleReadField, self).__init__(title, attributeName, singleton,
+                                               getter)
+
+    def read(self, target, data):
+        data = self._processData(data)
+        if self.singleton:
+            if isinstance(target, dict):
+                target[self.attributeName] = data
+            else:
+                setattr(target, self.attributeName, data)
+        else:
+            if isinstance(target, dict):
+                if self.attributeName not in target:
+                    target[self.attributeName] = []
+                target[self.attributeName].append(data)
+            else:
+                if not hasattr(target, self.attributeName):
+                    setattr(target, self.attributeName, [])
+                getattr(target, self.attributeName).append(data)
+
+    def _processData(self, data):
+        raise NotImplementedError()
+
+class SimpleWriteField(Field):
+    def __init__(self, title, attributeName = None, singleton = True,
+                 getter = None):
+        super(SimpleWriteField, self).__init__(title, attributeName, singleton,
+                                               getter)
+
+    def write(self, source):
+        value = self._toString(source)
+        if value:
+            yield self.format(value)
+
+    def _toString(self, value):
+        raise NotImplementedError()
+
+class SimpleValueField(SimpleReadField, SimpleWriteField):
+    pass
+
+class NoReadField(Field):
+    def __init__(self, title, attributeName = None, singleton = True,
+                 getter = None):
+        super(NoReadField, self).__init__(title, attributeName, singleton,
+                                          getter)
+
+    def read(self, target, data):
+        pass
+
+class NoWriteField(Field):
+    def __init__(self, title, attributeName = None, singleton = True):
+        super(NoWriteField, self).__init__(title, attributeName, singleton,
+                                           getter = lambda _:None)
+
+    def write(self, src):
+        pass
+
+class StringField(SimpleValueField):
+    def _processData(self, data):
+        return data
+
+    def _toString(self, value):
+        return unicode(value)
+
+class IntegerField(SimpleValueField):
+    def _processData(self, data):
+        try:
+            data = int(data)
+        except (TypeError, ValueError):
+            raise DBErrors.InvalidInteger()
+        return data
+
+    def _toString(self, value):
+        return "%d" % value
+
+class NonNegativeIntegerField(IntegerField):
+    def _processData(self, data):
+        data = IntegerField._processData(self, data)
+        if data < 0:
+            raise DBErrors.InvalidNonNegativeInteger()
+        return data
+
+class PositiveIntegerField(IntegerField):
+    def _processData(self, data):
+        data = IntegerField._processData(self, data)
+        if data <= 0:
+            raise DBErrors.InvalidPositiveInteger()
+        return data
+
+class BooleanField(SimpleValueField):
+    def _processData(self, data):
+        data = data.upper()
+        return data in ("TRUE", "YES")
+
+    def _toString(self, value):
+        if value:
+            return "True"
+        else:
+            return "False"
+
+class YesNoField(BooleanField):
+    def _toString(self, value):
+        if value:
+            return "YES"
+        else:
+            return "NO"
+
+class CallbackField(Field):
+    def __init__(self, title, readCallback, writeCallback, attributeName = None,
+                 singleton = None):
+        super(CallbackField, self).__init__(title,
+                                            attributeName = attributeName,
+                                            singleton = singleton)
+        self.readCallback = readCallback
+        self.writeCallback = writeCallback
+
+class FileStructureMetaClass(type):
+    def __init__(cls, name, bases, dct):
+        super(FileStructureMetaClass, cls).__init__(name, bases, dct)
+        cls._fields = []
+        cls._structures = []
+        cls._ordered_data = []
+        for attr, value in dct.iteritems():
+            if isinstance(value, Field):
+                cls._fields.append(value)
+                cls._ordered_data.append((value.ordered_id, attr, value))
+                if value.attributeName is None:
+                    value.attributeName = attr
+            elif name != 'FileStructure' and isinstance(value, FileStructure):
+                if value.attributeName is None:
+                    value.attributeName = attr
+                cls._structures.append(value)
+                cls._ordered_data.append((value.ordered_id, attr, value))
+        cls._ordered_data.sort()
+        if cls.tag is not None:
+            if cls.startTag is None:
+                cls.startTag = "START_" + cls.tag
+            if cls.endTag is None:
+                cls.endTag = "END_" + cls.tag
+
+
+class FileStructure(ObjectsOrderedByID, WriteAllInterface):
+    __metaclass__ = FileStructureMetaClass
+    targetClass = dict
+    tag = None
+    startTag = None
+    endTag = None
+    autoMake = False
+    _fields = []
+    _structures = []
+    _ordered_data = []
+
+    def __init__(self, attributeName = None, singleton = True,
+                 startTag = None, endTag = None, getter = None):
+        super(FileStructure, self).__init__()
+        self.attributeName = attributeName
+        self.singleton = singleton
+        self.getter = getter
+        if startTag is not None:
+            self.startTag = startTag
+        if endTag is not None:
+            self.endTag = endTag
+
+    def getValue(self, src):
+        if self.getter is None:
+            return getattr(src, self.attributeName)
+        else:
+            return self.getter(src)
+
+
+    def _recordStructure(self, instance, subInstance):
+        if self.singleton:
+            if isinstance(instance, dict):
+                instance[self.attributeName] = subInstance
+            else:
+                setattr(instance, self.attributeName, subInstance)
+        elif isinstance(instance, dict):
+            if self.attributeName not in instance:
+                instance[self.attributeName] = []
+            instance[self.attributeName].append(subInstance)
+        else:
+            if not hasattr(instance, self.attributeName):
+                setattr(instance, self.attributeName, [])
+            getattr(instance, self.attributeName).append(subInstance)
+
+    def read(self, fileIterator, startData = None):
+        instance = None
+        if self.autoMake:
+            instance = self.makeObject(None)
+        fieldDict = dict((field.title, field) for field in self._fields)
+        structDict = dict((structure.startTag, structure)
+                          for structure in self._structures)
+        if startData is not None:
+            iterator = itertools.chain([startData], fileIterator)
+        else:
+            iterator = fileIterator
+        try:
+            for lineType, lineData in iterator:
+#                 print lineType, lineData
+                if lineType in fieldDict:
+                    field = fieldDict[lineType]
+                    field.read(instance, lineData)
+                elif lineType in structDict:
+                    structure = structDict[lineType]
+                    subInstance = structure.read(fileIterator,
+                                                 (lineType, lineData))
+                    structure._recordStructure(instance, subInstance)
+                elif lineType == self.startTag:
+                    instance = self.makeObject(lineData)
+                elif lineType == self.endTag:
+                    break
+                else:
+                    raise DBErrors.UnrecognisedLine()
+            return self.postProcessObject(instance)
+        except DBErrors.DbReadError, exc:
+            exc.setIterator(fileIterator)
+            raise
+
+    def makeObject(self, objectData):
+        return self.targetClass()
+
+    def startTagData(self, source):
+        return None
+
+    def postProcessObject(self, instance):
+        return instance
+
+    def write(self, src, indenter):
+        startTag = self.startTag
+        if startTag is not None:
+            extra = self.startTagData(src)
+            if extra is not None:
+                startTag += " " + extra
+        with indenter.section(startTag, self.endTag):
+            for _, attr, structure in self._ordered_data:
+                structure.write_all(src, indenter)
+
+    def write_all(self, src, indenter):
+        valueList = self.getValue(src)
+        if self.singleton:
+            valueList = [valueList]
+        for subValue in valueList:
+            self.write(subValue, indenter)

@@ -45,17 +45,6 @@ class HeadData(object):
         self.stemDirection = stemDirection
         self.shortcut = shortcut
 
-    def write(self, noteHead, indenter):
-        dataString = "%s %d,%d,%s,%s,%d,%s,%d,%s" % (noteHead, self.midiNote,
-                                                  self.midiVolume,
-                                                  self.effect,
-                                                  self.notationHead,
-                                                  self.notationLine,
-                                                  self.notationEffect,
-                                                  self.stemDirection,
-                                                  self.shortcut)
-        indenter("NOTEHEAD", dataString)
-
     @classmethod
     def read(cls, abbr, dataString):
         head, data = dataString.split(None, 1)
@@ -264,17 +253,6 @@ class Drum(object):
             shortcut = self._headData[head].shortcut
             shortcuts.append((unicode(shortcut), head))
         return shortcuts
-
-
-    def write(self, indenter):
-        indenter("DRUM %s,%s,%s,%s" % (self.name, self.abbr, self.head,
-                                       str(self.locked)))
-        with indenter:
-            for head in self:
-                headData = self.headData(head)
-                headData.write(head, indenter)
-
-
 
 def _guessMidiNote(abbr):
     for drumData, midiNote, x_, y_, z_ in DefaultKits.DEFAULT_KIT:

@@ -47,8 +47,9 @@ import GUI.DBMidi as DBMidi
 from GUI.DBFSM import Waiting
 from GUI.DBFSMEvents import Escape
 from Data import DBErrors
-from Data.Score import ScoreFactory
+from Data.ScoreFactory import ScoreFactory
 from Data.NotePosition import NotePosition
+
 _SCORE_FACTORY = ScoreFactory()
 
 class DragSelection(object):
@@ -58,7 +59,7 @@ class DragSelection(object):
         self.end = None
         self._isDragging = False
         self._dragged = []
-        
+
     def startDragging(self, notePos):
         self._isDragging = True
         self.start = notePos

@@ -40,10 +40,17 @@ class OverSizeMeasure(StandardError):
 class DbReadError(StandardError):
     "There was an error reading the score."
 
-    def __init__(self, scoreIterator):
+    def __init__(self, scoreIterator = None):
         super(DbReadError, self).__init__()
-        self.lineNumber = scoreIterator.lineNumber
-        self.line = scoreIterator.currentLine
+        self.lineNumber = None
+        self.line = None
+        if scoreIterator is not None:
+            self.lineNumber = scoreIterator.lineNumber
+            self.line = scoreIterator.currentLine
+
+    def setIterator(self, iterator):
+        self.lineNumber = iterator.lineNumber
+        self.line = iterator.currentLine
 
     def __str__(self):
         return "\n".join([self.__doc__, "", "Line %d" % self.lineNumber, self.line])

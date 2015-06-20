@@ -125,10 +125,18 @@ class Measure(object):
         self.endBar = BAR_TYPES["NORMAL_BAR"]
         self._callBack = None
         self._info = MeasureInfo()
-        self.counter = None
+        self._counter = None
         self.alternateText = None
         self.simileDistance = 0
         self.simileIndex = 0
+
+    @property
+    def counter(self):
+        return self._counter
+
+    @counter.setter
+    def counter(self, counter):
+        self.setBeatCount(counter)
 
     def _getrepeatCount(self):
         return self._info.repeatCount
@@ -214,6 +222,14 @@ class Measure(object):
     def isLineEnd(self):
         return self.isLineBreak() or self.isSectionEnd()
 
+    def startBarlineString(self):
+        return ",".join([name for name, value in BAR_TYPES.iteritems()
+                         if (self.startBar & value) == value])
+
+    def endBarlineString(self):
+        return ",".join([name for name, value in BAR_TYPES.iteritems()
+                         if (self.endBar & value) == value])
+
     def getNote(self, position):
         return self.noteAt(position.noteTime, position.drumIndex)
 
@@ -262,14 +278,15 @@ class Measure(object):
         self._runCallBack(NotePosition())
 
     def setBeatCount(self, counter):
-        if counter == self.counter:
+        self.counter
+        if counter == self._counter:
             return
-        if self.counter is None:
-            self.counter = counter
+        if self._counter is None:
+            self._counter = counter
             self._setWidth(len(counter))
             return
         oldNotes = copy.deepcopy(self._notes)
-        oldTimes = list(self.counter.iterTime())
+        oldTimes = list(self._counter.iterTime())
         self._setWidth(len(counter))
         self.clear()
         newTimes = list(counter.iterTime())
@@ -297,7 +314,7 @@ class Measure(object):
                     self._notes.setNote(newIndex, position.drumIndex, head)
             oldIndex += 1
             newIndex += 1
-        self.counter = counter
+        self._counter = counter
         self._runCallBack(NotePosition())
 
     def copyMeasure(self):
@@ -348,87 +365,6 @@ class Measure(object):
 
     def lineIsVisible(self, index):
         return self._notes.notesOnLine(index) > 0
-
-    def write(self, indenter):
-        with indenter.section("START_BAR %d" % len(self), "END_BAR"):
-            if self.counter is not None:
-                self.counter.write(indenter)
-            startString = [name for name, value in BAR_TYPES.iteritems()
-                           if (self.startBar & value) == value]
-            indenter("BARLINE %s" % ",".join(startString))
-            for pos, head in self:
-                indenter("NOTE %d,%d,%s" % (pos.noteTime, pos.drumIndex, head))
-            endString = [name for name, value in BAR_TYPES.iteritems()
-                         if (self.endBar & value) == value ]
-            indenter("BARLINE %s" % ",".join(endString))
-            if self.repeatCount != 1:
-                indenter("REPEAT_COUNT %d" % self.repeatCount)
-            if self.alternateText is not None:
-                indenter("ALTERNATE %s" % self.alternateText)
-            if self.simileDistance > 0:
-                indenter("SIMILE %d" % self.simileDistance)
-                indenter("SIMINDEX %d" % self.simileIndex)
-
-    class _BarlineTracker(object):
-        @staticmethod
-        def doNothing(dummy):
-            pass
-
-        def __init__(self, measure, iterator):
-            self.measure = measure
-            self.seenStartLine = False
-            self.seenEndLine = False
-            self._iterator = iterator
-            self.mapping = {"NO_BAR" : self.doNothing,
-                            "NORMAL_BAR" : self.doNothing,
-                            "REPEAT_START": measure.setRepeatStart,
-                            "REPEAT_END": measure.setRepeatEnd,
-                            "SECTION_END": measure.setSectionEnd,
-                            "LINE_BREAK": measure.setLineBreak}
-
-        def processBarline(self, lineData):
-            if not self.seenStartLine:
-                self.measure.startBar = 0
-                for barType in lineData.split(","):
-                    self.measure.startBar |= BAR_TYPES[barType]
-                    self.mapping[barType](True)
-                self.seenStartLine = True
-            elif not self.seenEndLine:
-                self.measure.endBar = 0
-                for barType in lineData.split(","):
-                    self.measure.endBar |= BAR_TYPES[barType]
-                    self.mapping[barType](True)
-                self.seenEndLine = True
-            else:
-                raise TooManyBarLines(self._iterator)
-
-    def _readNote(self, lineData):
-        noteTime, drumIndex, head = lineData.split(",")
-        pos = NotePosition(noteTime = int(noteTime),
-                           drumIndex = int(drumIndex))
-        self.addNote(pos, head)
-
-    def _makeOldMeasure(self, lineData):
-        self.counter = MeasureCount.counterMaker(int(lineData),
-                                                 len(self))
-
-    def _readCounter(self, scoreIterator):
-        counter = MeasureCount.MeasureCount()
-        counter.read(scoreIterator)
-        self.setBeatCount(counter)
-
-    def read(self, scoreIterator):
-        tracker = self._BarlineTracker(self, scoreIterator)
-        self.counter = MeasureCount.MeasureCount()
-        with scoreIterator.section("START_BAR", "END_BAR") as section:
-            section.readCallback("BARLINE", tracker.processBarline)
-            section.readCallback("NOTE", self._readNote)
-            section.readSubsection("COUNT_INFO_START", self._readCounter)
-            section.readCallback("BEATLENGTH", self._makeOldMeasure)
-            section.readPositiveInteger("REPEAT_COUNT", self, "repeatCount")
-            section.readString("ALTERNATE", self, "alternateText")
-            section.readNonNegativeInteger("SIMILE", self, "simileDistance")
-            section.readNonNegativeInteger("SIMINDEX", self, "simileIndex")
 
     def getSmallestSimpleCount(self):
         if not self.counter.isSimpleCount():

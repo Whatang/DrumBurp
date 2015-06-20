@@ -73,27 +73,3 @@ class Beat(object):
 
     def isPartial(self):
         return self._numTicks < len(self.counter)
-
-    def write(self, indenter):
-        with indenter.section("BEAT_START", "BEAT_END"):
-            if self.numTicks != self.ticksPerBeat:
-                indenter("NUM_TICKS", self.numTicks)
-            self.counter.write(indenter)
-
-    @staticmethod
-    def read(scoreIterator):
-        targetValues = {"numTicks" : None, "counter" : None }
-        registry = CounterRegistry()
-        def readCount(lineData):
-            if lineData[0] == "|" and lineData[-1] == "|":
-                lineData = lineData[1:-1]
-            lineData = BEAT_COUNT + lineData[1:]
-            try:
-                targetValues["counter"] = registry.findMaster(lineData)
-            except KeyError:
-                raise DBErrors.BadCount(scoreIterator)
-        with scoreIterator.section("BEAT_START", "BEAT_END") as section:
-            section.readPositiveInteger("NUM_TICKS", targetValues, "numTicks")
-            section.readCallback("COUNT", readCount)
-        return Beat(targetValues["counter"], targetValues["numTicks"])
-

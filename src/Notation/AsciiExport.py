@@ -32,10 +32,11 @@ def getExportDate():
     return time.strftime("%d %B %Y")
 
 class Exporter(object):
-    def __init__(self, score, settings):
+    def __init__(self, score, settings, date = True):
         self.score = score
         self.settings = settings
         self._isRepeating = False
+        self._date = date
         self._repeatExtender = None
 
     def _exportScoreData(self):
@@ -48,7 +49,8 @@ class Exporter(object):
             metadataString.append("BPM       : " + str(scoreData.bpm))
         if scoreData.creatorVisible:
             metadataString.append("Tabbed by : " + scoreData.creator)
-        metadataString.append("Date      : " + getExportDate())
+        if self._date:
+            metadataString.append("Date      : " + getExportDate())
         metadataString.append("")
         return metadataString
 

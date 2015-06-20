@@ -73,9 +73,6 @@ class Counter(object):
     def matchesAlternative(self, beatStr):
         return any(beatStr == alt for alt in self._alternatives)
 
-    def write(self, indenter):
-        indenter("COUNT", "|" + self._counts + "|")
-
 _COUNTER_BEAT = Counter(BEAT_COUNT)
 _EIGHTH_COUNT = Counter(BEAT_COUNT + "+", BEAT_COUNT + "&")
 _TRIPLET_COUNT = Counter(BEAT_COUNT + "+a", BEAT_COUNT + "ea")

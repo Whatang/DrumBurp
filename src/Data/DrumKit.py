@@ -72,36 +72,6 @@ class DrumKit(object):
         drum = self._drums[drumIndex]
         return drum.shortcutsAndNoteHeads()
 
-    def write(self, indenter):
-        with indenter.section("KIT_START", "KIT_END"):
-            for drum in self:
-                drum.write(indenter)
-
-    def read(self, scoreIterator):
-        class DrumTracker(object):
-            lastDrum = None
-            @classmethod
-            def addDrum(cls, lineData):
-                fields = lineData.split(",")
-                if len(fields) > 3:
-                    fields[3] = (fields[3] == "True")
-                    if len(fields) > 4:
-                        fields = fields[:3]
-                drum = Drum(*fields)
-                self.addDrum(drum)
-                cls.lastDrum = drum
-            @classmethod
-            def readHeadData(cls, headData):
-                cls.lastDrum.readHeadData(headData)
-        tracker = DrumTracker
-        with scoreIterator.section("KIT_START", "KIT_END") as section:
-            section.readCallback("DRUM", tracker.addDrum)
-            section.readCallback("NOTEHEAD", tracker.readHeadData)
-        for drum in self:
-            if len(drum) == 0:
-                drum.guessHeadData()
-            drum.checkShortcuts()
-
     def getDefaultHead(self, index):
         return self[index].head
 

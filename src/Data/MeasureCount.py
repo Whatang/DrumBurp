@@ -124,38 +124,6 @@ class MeasureCount(object):
     def numBeats(self):
         return len(self.beats)
 
-    def write(self, indenter, default = False):
-        title = "COUNT_INFO_START"
-        if default:
-            title = "DEFAULT_" + title
-        with indenter.section(title, "COUNT_INFO_END"):
-            if self.isSimpleCount():
-                # All beats are the same
-                indenter("REPEAT_BEATS %d" % len(self.beats))
-                self.beats[0].write(indenter)
-            else:
-                for beat in self.beats:
-                    beat.write(indenter)
-
-    def read(self, scoreIterator, default = False):
-        title = "COUNT_INFO_START"
-        if default:
-            title = "DEFAULT_" + title
-        self.beats = []
-        class RepeatTracker(object):
-            repeat = False
-            @classmethod
-            def readBeat(cls, unused):
-                beat = Beat.read(scoreIterator)
-                if cls.repeat:
-                    self.beats.extend([beat] * cls.repeat)
-                else:
-                    self.beats.append(beat)
-        tracker = RepeatTracker
-        with scoreIterator.section(title, "COUNT_INFO_END") as section:
-            section.readPositiveInteger("REPEAT_BEATS", tracker, "repeat")
-            section.readCallback("BEAT_START", tracker.readBeat)
-
 def counterMaker(beatLength, numTicks):
     # Create a MeasureCount from an 'old style' specification, where
     # all we are given is the number of ticks in a beat and the total number
