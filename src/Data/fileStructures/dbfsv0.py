@@ -35,7 +35,6 @@ import Data.FontOptions
 from Data.Counter import CounterRegistry
 import Data.Score
 
-
 class CounterFieldV0(SimpleValueField):
     registry = CounterRegistry()
     def _processData(self, data):
@@ -128,8 +127,8 @@ class MeasureStructureV0(FileStructure):
     simileDistance = NonNegativeIntegerField("SIMILE")
     simileIndex = NonNegativeIntegerField("SIMINDEX")
 
-    def makeObject(self, startData):
-        return self.targetClass(int(startData))
+    def makeObject(self, objectData):
+        return self.targetClass(int(objectData))
 
 class MetadataStructureV0(FileStructure):
     tag = "SCORE_METADATA"
@@ -195,7 +194,7 @@ class FontOptionsStructureV0(FileStructure):
     metadataFontSize = PositiveIntegerField("METADATAFONTSIZE")
 
 class ScoreStructureV0(FileStructure):
-    tag = "SCORE"
+    tag = None
     targetClass = Data.Score.Score
     autoMake = True
 
@@ -204,8 +203,8 @@ class ScoreStructureV0(FileStructure):
     drumKit = DrumKitStructureV0()
     _sections = StringField("SECTION_TITLE", singleton = False)
     paperSize = StringField("PAPER_SIZE")
-    lilySize = PositiveIntegerField("LILYSIZE")
-    lilyPages = NonNegativeIntegerField("LILYPAGES")
+    lilysize = PositiveIntegerField("LILYSIZE")
+    lilypages = NonNegativeIntegerField("LILYPAGES")
     lilyFill = BooleanField("LILYFILL")
     lilyFormat = NonNegativeIntegerField("LILYFORMAT")
     defaultCount = MeasureCountStructureV0(singleton = True,
