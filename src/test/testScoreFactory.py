@@ -321,7 +321,7 @@ class Test(unittest.TestCase):
                     written = [x for x in written
                                if not x.startswith("  MEASURECOUNTSVISIBLE")]
                 except Barline:
-                    data = [x.replace('NORMAL_BAR,','') for x in data]
+                    data = [x.replace('NORMAL_BAR,', '') for x in data]
                 except NoLilyFormat:
                     written = [x for x in written
                                if not x.lstrip().startswith("LILYFORMAT")]
