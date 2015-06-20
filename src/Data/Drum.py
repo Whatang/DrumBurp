@@ -45,17 +45,6 @@ class HeadData(object):
         self.stemDirection = stemDirection
         self.shortcut = shortcut
 
-    def write(self, noteHead, indenter):
-        dataString = "%s %d,%d,%s,%s,%d,%s,%d,%s" % (noteHead, self.midiNote,
-                                                  self.midiVolume,
-                                                  self.effect,
-                                                  self.notationHead,
-                                                  self.notationLine,
-                                                  self.notationEffect,
-                                                  self.stemDirection,
-                                                  self.shortcut)
-        indenter("NOTEHEAD", dataString)
-
     @classmethod
     def read(cls, abbr, dataString):
         head, data = dataString.split(None, 1)
