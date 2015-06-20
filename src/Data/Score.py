@@ -23,7 +23,7 @@ Created on 12 Dec 2010
 
 '''
 
-import Data.DrumKit as DrumKit
+import Data.DrumKitFactory as DrumKitFactory
 from Data.Staff import Staff
 from Data.Measure import Measure
 from Data.Counter import CounterRegistry
@@ -43,7 +43,7 @@ from StringIO import StringIO
 class Score(object):
     def __init__(self):
         self._staffs = []
-        self.drumKit = DrumKit.DrumKit()
+        self.drumKit = DrumKitFactory.DrumKitFactory.emptyKit()
         self._callBack = None
         self._callBacksEnabled = True
         self.scoreData = ScoreMetaData()

@@ -25,7 +25,7 @@ Created on 4 Apr 2012
 from __future__ import print_function
 from contextlib import contextmanager
 import collections
-from Data.DrumKit import DrumKit
+from Data.DefaultKits import STEM_DOWN, STEM_UP
 from DBVersion import DB_VERSION
 
 import sys
@@ -165,12 +165,12 @@ class LilyMeasure(object):
         self.measure = measure
         self.kit = kit
         self._beats = list(self.measure.counter.iterBeatTicks())
-        self._voices = {DrumKit.UP:[], DrumKit.DOWN:[]}
+        self._voices = {STEM_UP:[], STEM_DOWN:[]}
         self._build()
 
 
     def _separateNotesByDirection(self):
-        notes = {DrumKit.UP:[], DrumKit.DOWN:[]}
+        notes = {STEM_UP:[], STEM_DOWN:[]}
         for notePos, head in self.measure:
             direction = self.kit.getDirection(notePos.drumIndex, head)
             notes[direction].append((notePos, head))
@@ -208,7 +208,7 @@ class LilyMeasure(object):
 
     def _getLilyNotesAndEffects(self, notes):
         lilyNotes = {}
-        effects = {DrumKit.UP:{}, DrumKit.DOWN:{}}
+        effects = {STEM_UP:{}, STEM_DOWN:{}}
         for direction, timeList in notes.iteritems():
             lilyDict = {}
             effectsDict = collections.defaultdict(list)
@@ -306,8 +306,8 @@ class LilyMeasure(object):
                 if (otherDirection not in wholeRests
                     or rest not in wholeRests[otherDirection]):
                     self._voices[direction][index] = "s4"
-        self._mergeWholeRests(DrumKit.UP)
-        self._mergeWholeRests(DrumKit.DOWN)
+        self._mergeWholeRests(STEM_UP)
+        self._mergeWholeRests(STEM_DOWN)
 
     def _mergeWholeRests(self, direction):
         resting = False
@@ -339,11 +339,11 @@ class LilyMeasure(object):
         self._voices[direction] = newVoice
 
     def voiceOne(self, indenter):
-        voice = self._voices[DrumKit.UP]
+        voice = self._voices[STEM_UP]
         indenter(" ".join(voice))
 
     def voiceTwo(self, indenter):
-        voice = self._voices[DrumKit.DOWN]
+        voice = self._voices[STEM_DOWN]
         indenter(" ".join(voice))
 
 class LilyKit(object):
@@ -714,7 +714,7 @@ class LilypondScore(object):
            (v2-rest (ly:grob-object v2-grob 'rest)))
       (and
        (ly:grob? v1-rest)
-       (ly:grob? v2-rest)                
+       (ly:grob? v2-rest)
        (let* ((v1-duration-log (ly:grob-property v1-rest 'duration-log))
           (v2-duration-log (ly:grob-property v2-rest 'duration-log))
           (v1-dot (ly:grob-object v1-rest 'dot))
@@ -724,7 +724,7 @@ class LilypondScore(object):
           (v2-dot-count (and (ly:grob? v2-dot)
                      (ly:grob-property v2-dot 'dot-count -1))))
          (set! can-merge
-           (and 
+           (and
             (number? v1-duration-log)
             (number? v2-duration-log)
             (= v1-duration-log v2-duration-log)
@@ -746,7 +746,7 @@ class LilypondScore(object):
     (if can-merge
     #t
     (ly:rest-collision::calc-positioning-done grob))))
-    
+
     makePercent =
     #(define-music-function (parser location note) (ly:music?)
        "Make a percent repeat the same length as NOTE."

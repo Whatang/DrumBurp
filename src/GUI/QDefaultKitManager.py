@@ -26,7 +26,7 @@ Created on 13 Oct 2012
 from PyQt4 import QtGui, QtCore
 from cStringIO import StringIO
 from GUI.ui_defaultKitManager import Ui_DefaulKitManager
-from Data import DefaultKits, DrumKitFactory
+from Data import DefaultKits, DrumKitFactory, DrumKitSerializer
 
 _IS_USER_KIT = QtCore.Qt.UserRole
 
@@ -85,7 +85,7 @@ class QDefaultKitManager(Ui_DefaulKitManager, QtGui.QDialog):
 
     def _writeKit(self, name):
         handle = StringIO()
-        DrumKitFactory.DrumKitFactory.write(self._currentKit, handle)
+        DrumKitSerializer.DrumKitSerializer.write(self._currentKit, handle)
         self._settings.setValue(name, handle.getvalue())
         self._populate()
 
@@ -128,7 +128,7 @@ class QDefaultKitManager(Ui_DefaulKitManager, QtGui.QDialog):
         if isUser:
             kitString = unicode(self._settings.value(kitName).toString())
             handle = StringIO(kitString)
-            return DrumKitFactory.DrumKitFactory.read(handle)
+            return DrumKitSerializer.DrumKitSerializer.read(handle)
         else:
             return DrumKitFactory.DrumKitFactory.getNamedDefaultKit(kitName)
 

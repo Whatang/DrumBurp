@@ -48,9 +48,8 @@ from GUI.DBFSM import Waiting
 from GUI.DBFSMEvents import Escape
 from Data import DBErrors
 from Data.ScoreFactory import ScoreFactory
+from Data.ScoreSerializer import ScoreSerializer
 from Data.NotePosition import NotePosition
-
-_SCORE_FACTORY = ScoreFactory()
 
 class DragSelection(object):
     def __init__(self, qscore):
@@ -734,7 +733,7 @@ class QScore(QtGui.QGraphicsScene):
 
     def loadScore(self, filename, quiet = False):
         try:
-            newScore = _SCORE_FACTORY(filename = filename)
+            newScore = ScoreSerializer.loadScore(filename)
         except DBErrors.DbReadError, exc:
             if not quiet:
                 msg = "Error loading DrumBurp file %s" % filename
@@ -750,7 +749,7 @@ class QScore(QtGui.QGraphicsScene):
 
     def saveScore(self, filename):
         try:
-            _SCORE_FACTORY.saveScore(self._score, filename)
+            ScoreSerializer.saveScore(self._score, filename)
         except StandardError, exc:
             msg = "Error saving DrumBurp file: %s" % unicode(exc)
             QtGui.QMessageBox.warning(self.parent(),
@@ -769,9 +768,9 @@ class QScore(QtGui.QGraphicsScene):
                 counter = None
             else:
                 counter = self.defaultCount
-        newScore = _SCORE_FACTORY(numMeasures = numMeasures,
-                                  counter = counter,
-                                  kit = kit)
+        newScore = ScoreFactory.makeEmptyScore(numMeasures = numMeasures,
+                                               counter = counter,
+                                               kit = kit)
         self._setScore(newScore)
 
     def numPages(self, pageHeight):

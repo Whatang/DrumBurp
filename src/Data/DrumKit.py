@@ -23,13 +23,10 @@ Created on 12 Dec 2010
 
 '''
 
-from Data.DefaultKits import STEM_DOWN, STEM_UP
+# from Data.DefaultKits import STEM_DOWN, STEM_UP
 from Data.DBErrors import DuplicateDrumError, NoSuchDrumError
 
 class DrumKit(object):
-    UP = STEM_UP  # IGNORE:invalid-name
-    DOWN = STEM_DOWN
-
     def __init__(self):
         self._drums = []
         self._lily = {}

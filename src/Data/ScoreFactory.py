@@ -16,32 +16,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with DrumBurp.  If not, see <http://www.gnu.org/licenses/>
-import itertools
-from cStringIO import StringIO
-from Data.fileStructures import dbfsv0
 from Data.Score import Score
 from Data import DrumKitFactory
 from Data.Counter import CounterRegistry
 from Data.MeasureCount import makeSimpleCount
-from Data.DBErrors import DBVersionError
-from Data import DBConstants
-import Data.fileUtils as fileUtils
-
-_FS_MAP = {DBConstants.DBFF_0: dbfsv0.ScoreStructureV0}
 
 class ScoreFactory(object):
-    def __call__(self, filename = None,
-                 numMeasures = 32,
-                 counter = None,
-                 kit = None):
-        if filename is not None:
-            score = self.loadScore(filename)
-        else:
-            score = self.makeEmptyScore(numMeasures, counter, kit)
-        return score
-
     @staticmethod
-    def makeEmptyScore(numMeasures, counter, kit):
+    def makeEmptyScore(numMeasures, counter = None, kit = None):
         score = Score()
         if kit is None:
             kit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit()
@@ -56,47 +38,3 @@ class ScoreFactory(object):
         score.scoreData.makeEmpty()
         return score
 
-    @classmethod
-    def loadScore(cls, filename):
-        with fileUtils.DataReader(filename) as reader:
-            score = cls.read(reader)
-        return score
-
-    @staticmethod
-    def read(handle):
-        # Check the file format version
-        handle, handleCopy = itertools.tee(handle)
-        firstline = handleCopy.next()
-        del handleCopy
-        scoreIterator = fileUtils.dbFileIterator(handle)
-        if firstline.startswith(DBConstants.DB_FILE_FORMAT_STR):
-            fileVersion = firstline.split()
-            try:
-                if len(fileVersion) >= 2:
-                    fileVersion = int(fileVersion[1])
-            except (TypeError, ValueError):
-                fileVersion = DBConstants.DBFF_0
-            scoreIterator.next()
-        else:
-            fileVersion = DBConstants.DBFF_0
-        if fileVersion > DBConstants.CURRENT_FILE_FORMAT:
-            raise DBVersionError(scoreIterator)
-        fileStructure = _FS_MAP[fileVersion]()
-        return fileStructure.read(scoreIterator)
-
-    @staticmethod
-    def write(score, handle, version = DBConstants.CURRENT_FILE_FORMAT):
-        scoreBuffer = StringIO()
-        indenter = fileUtils.Indenter(scoreBuffer)
-        indenter(DBConstants.DB_FILE_FORMAT_STR, version)
-        fileStructure = _FS_MAP.get(version,
-                                    _FS_MAP[DBConstants.CURRENT_FILE_FORMAT])()
-        fileStructure.write(score, indenter)
-        handle.write(scoreBuffer.getvalue())
-
-    @classmethod
-    def saveScore(cls, score, filename,
-                  version = DBConstants.CURRENT_FILE_FORMAT,
-                  compressed = True):
-        with fileUtils.DataWriter(filename, compressed) as writer:
-            cls.write(score, writer, version)

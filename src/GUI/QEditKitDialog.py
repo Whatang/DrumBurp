@@ -32,9 +32,9 @@ from GUI.ui_editKit import Ui_editKitDialog
 from GUI.QDefaultKitManager import QDefaultKitManager
 import GUI.DBMidi as DBMidi
 from GUI.QNotationScene import QNotationScene
-from Data import DrumKit, DrumKitFactory
+from Data import DrumKitFactory, DrumKitSerializer
 from Data.Drum import Drum
-from Data.DefaultKits import GHOST_VOLUME, ACCENT_VOLUME
+from Data.DefaultKits import GHOST_VOLUME, ACCENT_VOLUME, STEM_DOWN, STEM_UP
 
 _KIT_FILE_EXT = ".dbk"
 _KIT_FILTER = "DrumBurp kits (*%s)" % _KIT_FILE_EXT
@@ -228,7 +228,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
                                             filter = _KIT_FILTER)
         if len(fname) == 0:
             return
-        newKit = DrumKitFactory.DrumKitFactory.loadKit(fname)
+        newKit = DrumKitSerializer.DrumKitSerializer.loadKit(fname)
         self._currentKit = list(reversed(newKit))
         self._oldLines.clear()
         for drum in self._currentKit:
@@ -259,7 +259,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             return
         fname = unicode(fname)
         newKit, unused = self.getNewKit()
-        DrumKitFactory.DrumKitFactory.saveKit(newKit, fname)
+        DrumKitSerializer.DrumKitSerializer.saveKit(newKit, fname)
         QMessageBox.information(self, "Kit saved", "Successfully saved drumkit")
 
     def _drumNameEdited(self):
@@ -491,7 +491,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
     def _setNotation(self):
         headData = self._currentHeadData
         self.stemUpDownBox.setChecked(headData.stemDirection
-                                      == DrumKit.STEM_UP)
+                                      == STEM_UP)
         effectIndex = self.effectBox.findText(headData.notationEffect)
         self.effectBox.setCurrentIndex(effectIndex)
         headIndex = self.noteHeadBox.findText(headData.notationHead)
@@ -509,9 +509,9 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
 
     def _stemDirectionChanged(self):
         if self.stemUpDownBox.isChecked():
-            self._currentHeadData.stemDirection = DrumKit.STEM_UP
+            self._currentHeadData.stemDirection = STEM_UP
         else:
-            self._currentHeadData.stemDirection = DrumKit.STEM_DOWN
+            self._currentHeadData.stemDirection = STEM_DOWN
         self._notationScene.setHeadData(self._currentHeadData)
 
     def _moveNotationUp(self):
@@ -627,7 +627,7 @@ def main():
             values = (drum.name, drum.abbr, drum.head, str(drum.locked),
                       headData.midiNote, headData.notationHead,
                       headData.notationLine,
-                      "UP" if headData.stemDirection == DrumKit.STEM_UP
+                      "UP" if headData.stemDirection == STEM_UP
                       else "DOWN")
             line += '(("%s", "%s", "%s", %s), %d, "%s", %d, STEM_%s)' % values
             lines.append(line)
