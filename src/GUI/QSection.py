@@ -28,15 +28,7 @@ from PyQt4.QtCore import Qt
 from GUI.DBCommands import SetSectionTitleCommand
 
 class QSection(QGraphicsTextItem):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self, title, qScore = None, parent = None):
-        '''
-        Constructor
-        '''
         super(QSection, self).__init__(parent = parent, scene = qScore)
         font = qScore.displayProperties.sectionFont
         if font is None:

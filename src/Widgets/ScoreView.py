@@ -62,10 +62,6 @@ class SmoothScroller(object):
         self._timeline = None
 
 class ScoreView(QtGui.QGraphicsView):
-    '''
-    classdocs
-    '''
-
     def __init__(self, parent = None):
         super(ScoreView, self).__init__(parent)
         self._props = None

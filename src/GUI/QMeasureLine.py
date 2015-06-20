@@ -28,16 +28,8 @@ from Data.NotePosition import NotePosition
 from GUI.DBFSMEvents import MeasureLineContext
 
 class QMeasureLine(QtGui.QGraphicsItem):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self, qScore, lastMeasure, nextMeasure, index,
                  staffIndex, parent = None):
-        '''
-        Constructor
-        '''
         super(QMeasureLine, self).__init__(parent)
         self._qStaff = parent
         self._qScore = qScore

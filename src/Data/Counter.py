@@ -44,9 +44,6 @@ class Counter(object):
 
 
     def __init__(self, counts, *alternatives):
-        '''
-        Constructor
-        '''
         if not counts.startswith(DBConstants.BEAT_COUNT):
             counts = DBConstants.BEAT_COUNT + counts
         self._counts = counts

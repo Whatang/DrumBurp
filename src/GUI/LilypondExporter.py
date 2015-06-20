@@ -9,10 +9,6 @@ import os
 import platform
 
 class LilypondExporter(QThread):
-    '''
-    classdocs
-    '''
-
     NOT_STARTED = 0
     STARTED = 1
     WROTE_LY = 2

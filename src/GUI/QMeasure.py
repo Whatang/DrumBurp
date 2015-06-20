@@ -45,15 +45,7 @@ def _painterSaver(method):
     return wrapper
 
 class QMeasure(QtGui.QGraphicsItem):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self, index, qScore, measure, parent):
-        '''
-        Constructor
-        '''
         super(QMeasure, self).__init__(parent)
         self._props = qScore.displayProperties
         self._qScore = qScore

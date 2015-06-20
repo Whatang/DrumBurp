@@ -28,16 +28,9 @@ from PyQt4.QtGui import QGraphicsItem, QFontMetrics
 from PyQt4.QtCore import QPoint, QRectF, QPointF, Qt
 
 class QGraphicsListData(QGraphicsItem):  # IGNORE:abstract-class-not-used
-    '''
-    classdocs
-    '''
-
     _editName = ""
 
     def __init__(self, qScore, parent = None):
-        '''
-        Constructor
-        '''
         super(QGraphicsListData, self).__init__(parent = parent, scene = qScore)
         self._qScore = qScore
         self._props = qScore.displayProperties

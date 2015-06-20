@@ -35,9 +35,6 @@ from Data import DBConstants
 
 class QMeasureContextMenu(QMenuIgnoreCancelClick):
     def __init__(self, qScore, qmeasure, firstNote, alternateText):
-        '''
-        Constructor
-        '''
         super(QMeasureContextMenu, self).__init__(qScore)
         self._qmeasure = qmeasure
         self._np = firstNote
@@ -319,14 +316,14 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         self._qScore.clearDragSelection()
         if self._draggedMeasures is None:
             startIndex = self._score.getMeasureIndex(self._np)
-            endIndex = startIndex 
+            endIndex = startIndex
         else:
             startIndex = self._draggedMeasures[0][1]
             endIndex = self._draggedMeasures[-1][1]
         if self._hasSimile:
             startMeasure = self._score.getMeasure(startIndex)
             while startIndex > 0 and startMeasure.simileIndex > 0:
-                startIndex -=1
+                startIndex -= 1
                 startMeasure = self._score.getMeasure(startIndex)
             endMeasure = self._score.getMeasure(endIndex)
             while (endIndex < self._score.numMeasures() - 1 and

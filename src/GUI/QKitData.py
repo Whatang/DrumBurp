@@ -25,10 +25,6 @@ Created on 13 Mar 2011
 from GUI.QGraphicsListData import QGraphicsListData
 
 class QKitData(QGraphicsListData):
-    '''
-    classdocs
-    '''
-
     _editName = "kit information"
 
     def _iterData(self):

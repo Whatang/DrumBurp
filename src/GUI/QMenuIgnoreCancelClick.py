@@ -28,9 +28,6 @@ from functools import wraps
 from GUI.DBFSMEvents import MenuCancel, MenuSelect
 
 class QMenuIgnoreCancelClick(QMenu):
-    '''
-    classdocs
-    '''
     @staticmethod
     def menuSelection(method):
         @wraps(method)
@@ -42,9 +39,6 @@ class QMenuIgnoreCancelClick(QMenu):
 
 
     def __init__(self, qScore, parent = None):
-        '''
-        Constructor
-        '''
         super(QMenuIgnoreCancelClick, self).__init__(parent)
         self._qScore = qScore
         self._props = self._qScore.displayProperties

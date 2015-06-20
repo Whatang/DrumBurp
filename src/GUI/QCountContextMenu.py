@@ -34,9 +34,6 @@ from GUI.DBFSMEvents import EditMeasureProperties
 
 class QCountContextMenu(QMenuIgnoreCancelClick):
     def __init__(self, qScore, np, qmeasure):
-        '''
-        Constructor
-        '''
         super(QCountContextMenu, self).__init__(qScore)
         self._np = np
         self._qmeasure = qmeasure

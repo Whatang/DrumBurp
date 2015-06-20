@@ -29,18 +29,10 @@ from GUI.QComplexCountDialog import QComplexCountDialog
 import Data.MeasureCount
 
 class QEditMeasureDialog(QDialog, Ui_measurePropertiesDialog):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self, measureCount,
                  defaultCounter,
                  counterRegistry,
                  parent = None):
-        '''
-        Constructor
-        '''
         super(QEditMeasureDialog, self).__init__(parent = parent)
         self.setupUi(self)
         self.measureTabs.setup(measureCount,

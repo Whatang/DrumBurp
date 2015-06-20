@@ -31,15 +31,7 @@ from Data.MeasureCount import MeasureCount
 from GUI.ui_DBComplextCountDialog import Ui_complexCountDialog
 
 class QComplexCountDialog(QDialog, Ui_complexCountDialog):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self, registry, measureCount, parent = None):
-        '''
-        Constructor
-        '''
         super(QComplexCountDialog, self).__init__(parent)
         self.setupUi(self)
         self._default = measureCount

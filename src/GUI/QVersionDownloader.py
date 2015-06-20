@@ -29,9 +29,6 @@ from GUI.ui_versionDownloader import Ui_VersionDownloader
 
 class QVersionDownloader(QDialog, Ui_VersionDownloader):
     def __init__(self, newer = None, parent = None):
-        '''
-        Constructor
-        '''
         super(QVersionDownloader, self).__init__(parent = parent)
         self.setupUi(self)
         QTimer.singleShot(0, lambda : self._download(newer))

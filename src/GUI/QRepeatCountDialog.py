@@ -26,15 +26,7 @@ from PyQt4.QtGui import QDialog
 from GUI.ui_repeatCountDialog import Ui_repeatCountDialog
 
 class QRepeatCountDialog(QDialog, Ui_repeatCountDialog):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self, repeatCount, parent = None):
-        '''
-        Constructor
-        '''
         super(QRepeatCountDialog, self).__init__(parent = parent)
         self._repeatCount = repeatCount
         self.setupUi(self)

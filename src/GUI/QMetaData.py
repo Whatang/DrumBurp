@@ -26,9 +26,6 @@ from GUI.QMetaDataDialog import QMetadataDialog
 from GUI.QGraphicsListData import QGraphicsListData
 
 class QMetaData(QGraphicsListData):
-    '''
-    classdocs
-    '''
     _editName = "score information."
 
     def _iterData(self):

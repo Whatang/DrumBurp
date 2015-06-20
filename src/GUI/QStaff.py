@@ -31,15 +31,7 @@ from GUI.QLineLabel import QLineLabel
 from Data.NotePosition import NotePosition
 
 class QStaff(QtGui.QGraphicsItemGroup):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self, staff, index, scene, qScore = None):
-        '''
-        Constructor
-        '''
         super(QStaff, self).__init__(scene = scene)
         self._qScore = qScore if qScore is not None else scene
         self._props = self._qScore.displayProperties

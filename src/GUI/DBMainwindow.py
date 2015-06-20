@@ -60,16 +60,9 @@ class FakeQSettings(object):
 
 
 class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
-    '''
-    classdocs
-    '''
-
     exporterDone = pyqtSignal(unicode)
 
     def __init__(self, parent = None, fakeStartup = False, filename = None):
-        '''
-        Constructor
-        '''
         self._fakeStartup = fakeStartup
         super(DrumBurp, self).__init__(parent)
         self._state = None

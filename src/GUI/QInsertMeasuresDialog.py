@@ -27,13 +27,7 @@ from GUI.QComplexCountDialog import QComplexCountDialog
 import Data.MeasureCount
 
 class QInsertMeasuresDialog(QDialog, Ui_InsertMeasuresDialog):
-    '''
-    classdocs
-    '''
     def __init__(self, parent, measureCount, counterRegistry):
-        '''
-        Constructor
-        '''
         super(QInsertMeasuresDialog, self).__init__(parent)
         self.setupUi(self)
         self.measureTabs.setup(measureCount, counterRegistry,

@@ -44,14 +44,7 @@ _BAD_ABBR_COLOR = QColor("red")
 _GOOD_ABBR_COLOR = QColor("black")
 
 class QEditKitDialog(QDialog, Ui_editKitDialog):
-    '''
-    classdocs
-    '''
-
     def __init__(self, kit, emptyDrums = None, parent = None, directory = None):
-        '''
-        Constructor
-        '''
         super(QEditKitDialog, self).__init__(parent)
         self.setupUi(self)
         self.muteButton.setChecked(DBMidi.isMuted())

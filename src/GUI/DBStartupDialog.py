@@ -26,9 +26,6 @@ from PyQt4.QtGui import QDialog
 
 class DBStartupDialog(QDialog, Ui_dbStartup):
     def __init__(self, version, parent = None):
-        '''
-        Constructor
-        '''
         super(DBStartupDialog, self).__init__(parent)
         self.setupUi(self)
         self.setWindowTitle("Welcome to DrumBurp v" + version)

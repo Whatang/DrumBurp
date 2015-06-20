@@ -32,14 +32,8 @@ import Data.MeasureCount
 from Data import DefaultKits, DrumKit, fileUtils
 
 class QNewScoreDialog(QDialog, Ui_newScoreDialog):
-    '''
-    classdocs
-    '''
     def __init__(self, parent = None,
                  counter = None, registry = None):
-        '''
-        Constructor
-        '''
         super(QNewScoreDialog, self).__init__(parent)
         self.setupUi(self)
         self.measureTabs.setup(counter, registry,

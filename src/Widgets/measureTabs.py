@@ -28,15 +28,7 @@ from PyQt4.QtCore import pyqtSignal
 from .ui_measureTabs import Ui_measureTabs
 
 class measureTabs(QWidget, Ui_measureTabs):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self, parent = None):
-        '''
-        Constructor
-        '''
         super(measureTabs, self).__init__(parent)
         self.setupUi(self)
         self._measureCount = None
