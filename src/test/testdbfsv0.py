@@ -31,7 +31,7 @@ from Data.fileStructures import dbfsv0
 
 class TestBeat(unittest.TestCase):
     def testWriteFullBeat(self):
-        beat = Beat.Beat(Counter.Counter(Counter.BEAT_COUNT + "e+a"))
+        beat = Beat.Beat(Counter.Counter("e+a"))
         handle = StringIO()
         indenter = fileUtils.Indenter(handle)
         dbfsv0.BeatStructureV0().write(beat, indenter)
@@ -43,7 +43,7 @@ class TestBeat(unittest.TestCase):
 
 
     def testWritePartialBeat(self):
-        beat = Beat.Beat(Counter.Counter(Counter.BEAT_COUNT + "e+a"), 2)
+        beat = Beat.Beat(Counter.Counter("e+a"), 2)
         handle = StringIO()
         indenter = fileUtils.Indenter(handle)
         dbfsv0.BeatStructureV0().write(beat, indenter)
@@ -174,7 +174,6 @@ class TestDrumKit(unittest.TestCase):
         """
         handle = StringIO(kitData)
         iterator = fileUtils.dbFileIterator(handle)
-        kit = DrumKit.DrumKit()
         self.assertRaises(DBErrors.UnrecognisedLine,
                           dbfsv0.DrumKitStructureV0().read, iterator)
 
@@ -610,7 +609,7 @@ class TestWrite(unittest.TestCase):
 
 class TestMeasureCount(unittest.TestCase):
     def testSimpleWrite(self):
-        my_counter = Counter.Counter(Counter.BEAT_COUNT + "e+a")
+        my_counter = Counter.Counter("e+a")
         count = MeasureCount.makeSimpleCount(my_counter, 4)
         handle = StringIO()
         indenter = fileUtils.Indenter(handle)
@@ -625,10 +624,10 @@ class TestMeasureCount(unittest.TestCase):
                           "COUNT_INFO_END"])
 
     def testComplexWrite(self):
-        counter1 = Counter.Counter(Counter.BEAT_COUNT + "e+a")
-        counter2 = Counter.Counter(Counter.BEAT_COUNT + "+a")
-        counter3 = Counter.Counter(Counter.BEAT_COUNT + "+")
-        counter4 = Counter.Counter(Counter.BEAT_COUNT + "e+a")
+        counter1 = Counter.Counter("e+a")
+        counter2 = Counter.Counter("+a")
+        counter3 = Counter.Counter("+")
+        counter4 = Counter.Counter("e+a")
         count = MeasureCount.MeasureCount()
         count.addBeats(Beat.Beat(counter1), 1)
         count.addBeats(Beat.Beat(counter2), 1)

@@ -22,11 +22,9 @@ Created on 12 Dec 2010
 @author: Mike Thomas
 '''
 import unittest
-from cStringIO import StringIO
-from Data.Score import Score, InconsistentRepeats
-from Data.ScoreFactory import ScoreFactory
-from Data import DrumKit, Drum, DBErrors
-from Data.DBErrors import BadTimeError, OverSizeMeasure
+from Data.Score import Score
+from Data import DrumKit, Drum
+from Data.DBErrors import BadTimeError, OverSizeMeasure, InconsistentRepeats
 from Data.DBConstants import EMPTY_NOTE
 from Data.NotePosition import NotePosition
 
@@ -1100,8 +1098,8 @@ class TestHash(unittest.TestCase):
             self.score.insertMeasureByIndex(16)
 
     def testEmpty(self):
-        hash_val = self.score.hashScore()
-        self.assertEqual(hash_val.encode("hex"),
+        hashVal = self.score.hashScore()
+        self.assertEqual(hashVal.encode("hex"),
                          "95b319c82f934d9abfce950b58a7c3bd")
 
 if __name__ == "__main__":

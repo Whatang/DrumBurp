@@ -29,7 +29,7 @@ from Data import MeasureCount, Counter, Beat
 
 
 class TestSimple(unittest.TestCase):
-    my_counter = Counter.Counter(Counter.BEAT_COUNT + "e+a")
+    my_counter = Counter.Counter("e+a")
     count = MeasureCount.makeSimpleCount(my_counter, 4)
 
     def testLength(self):
@@ -102,10 +102,10 @@ class TestSimple(unittest.TestCase):
                           (3, 0, 4), (3, 1, 4), (3, 2, 4), (3, 3, 4)])
 
 class TestComplex(unittest.TestCase):
-    counter1 = Counter.Counter(Counter.BEAT_COUNT + "e+a")
-    counter2 = Counter.Counter(Counter.BEAT_COUNT + "+a")
-    counter3 = Counter.Counter(Counter.BEAT_COUNT + "+")
-    counter4 = Counter.Counter(Counter.BEAT_COUNT + "e+a")
+    counter1 = Counter.Counter("e+a")
+    counter2 = Counter.Counter("+a")
+    counter3 = Counter.Counter("+")
+    counter4 = Counter.Counter("e+a")
     count = MeasureCount.MeasureCount()
     count.addBeats(Beat.Beat(counter1), 1)
     count.addBeats(Beat.Beat(counter2), 1)
@@ -190,9 +190,9 @@ class TestCounterMaker(unittest.TestCase):
         self.assertEqual(len(count), 16)
 
 class TestTimeSigs(unittest.TestCase):
-    sixteenths = Counter.Counter(Counter.BEAT_COUNT + "e+a")
-    triplets = Counter.Counter(Counter.BEAT_COUNT + "+a")
-    eighths = Counter.Counter(Counter.BEAT_COUNT + "+")
+    sixteenths = Counter.Counter("e+a")
+    triplets = Counter.Counter("+a")
+    eighths = Counter.Counter("+")
 
     def testTwoFour(self):
         count = MeasureCount.makeSimpleCount(self.eighths, 2)

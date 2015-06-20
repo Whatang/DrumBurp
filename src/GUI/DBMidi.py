@@ -38,10 +38,10 @@ _PERCUSSION_CHOKE = _PERCUSSION_CHANNEL | _CHOKE
 _BUFSIZE = 1024
 _LATENCY = 1
 
-_FREQ = 44100    # audio CD quality
-_BITSIZE = -16   # unsigned 16 bit
-_CHANNELS = 2    # 1 is mono, 2 is stereo
-_NUMSAMPLES = 4096    # number of samples
+_FREQ = 44100  # audio CD quality
+_BITSIZE = -16  # unsigned 16 bit
+_CHANNELS = 2  # 1 is mono, 2 is stereo
+_NUMSAMPLES = 4096  # number of samples
 
 FLAM_TIME_CONSTANT = 32
 FLAM_VOLUME_CONSTANT = 2
@@ -117,7 +117,7 @@ def iterMidiDevices():
 
 
 from PyQt4.QtCore import QTimer, pyqtSignal, QObject
-from Data.MeasureCount import MIDITICKSPERBEAT
+from Data.DBConstants import MIDITICKSPERBEAT
 
 class _midi(QObject):
     def __init__(self):
@@ -432,7 +432,7 @@ class MidiInit(QThread):
     def __init__(self, parent = None):
         super(MidiInit, self).__init__(parent)
 
-    def run(self):
+    def run(self):  # IGNORE:no-self-use
         _initialize()
 
 def main():

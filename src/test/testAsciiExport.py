@@ -10,7 +10,6 @@ from Data import DrumKit, Drum, MeasureCount
 from Data.Score import Score
 from Data.NotePosition import NotePosition
 from Notation.AsciiExport import Exporter, getExportDate
-# pylint:disable-msg=C0301
 
 class TestExport(unittest.TestCase):
     exportDate = getExportDate()
@@ -235,7 +234,7 @@ class TestExport(unittest.TestCase):
                           'Cr - Crash',
                           'Hh - HiHat',
                           '',
-                          '  /-------------2x-\                ',
+                          r'  /-------------2x-\                ',
                           'Cr|----------------|----------------|',
                           'Hh|x---------------|y---------------|',
                           '   1e+a2e+a3e+a4e+a 1e+a2e+a3e+a4e+a ',

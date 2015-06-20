@@ -28,7 +28,8 @@ from Data.DBConstants import DRUM_ABBR_WIDTH
 import Data.DefaultKits as DefaultKits
 
 class HeadData(object):
-    def __init__(self, midiNote = DefaultKits.DEFAULT_NOTE,
+    def __init__(self,  # IGNORE:too-many-arguments
+                 midiNote = DefaultKits.DEFAULT_NOTE,
                  midiVolume = DefaultKits.DEFAULT_VOLUME,
                  effect = "normal",
                  notationHead = "default",
@@ -94,9 +95,6 @@ _DEFAULTEFFECT = {"x":"normal",
 
 
 class Drum(object):
-    '''
-    classdocs
-    '''
     def __init__(self, name, abbr, head, locked = False):
         self.name = name
         self.abbr = abbr

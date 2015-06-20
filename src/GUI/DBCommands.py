@@ -84,7 +84,7 @@ class CheckUndo(ScoreCommand):
         def _redo(self):
             self._hash = self._score.hashScore()
 
-class DebugScoreCommand(ScoreCommand):  # pylint:disable-msg=W0223
+class DebugScoreCommand(ScoreCommand):  # IGNORE:abstract-method
     def __init__(self, qScore, note, description):
         super(DebugScoreCommand, self).__init__(qScore, note, description)
         self._hash = self._score.hashScore()
@@ -115,7 +115,7 @@ class CheckFormatStateCommand(ScoreCommand):
     def _redo(self):
         self._qScore.checkFormatting()
 
-class NoteCommand(ScoreCommand):  # pylint:disable-msg=W0223
+class NoteCommand(ScoreCommand):  # IGNORE:abstract-method
     canReformat = False
     def __init__(self, qScore, notePosition, head = None):
         super(NoteCommand, self).__init__(qScore, notePosition,
@@ -748,7 +748,7 @@ class ToggleSimileCommand(ScoreCommand):
                                                   "toggle simile mark")
         self._measureIndex = self._score.getMeasureIndex(self._np)
         measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
-        self._index=index
+        self._index = index
         if measure.simileDistance > 0:
             self._oldDistance = measure.simileDistance
             self._newDistance = 0

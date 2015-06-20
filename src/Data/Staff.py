@@ -24,17 +24,8 @@ Created on 12 Dec 2010
 '''
 from Data.DBErrors import BadTimeError
 
-# pylint:disable-msg=R0904
 class Staff(object):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self):
-        '''
-        Constructor
-        '''
         self._measures = []
         self._callBack = None
         self._visibleLines = {}

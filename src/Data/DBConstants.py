@@ -22,7 +22,7 @@ Created on 12 Dec 2010
 @author: Mike Thomas
 '''
 
-#pylint:disable-msg=C0301
+# Storage & text constants
 
 EMPTY_NOTE = "-"
 BAR_TYPES = {"NO_BAR": 0,
@@ -38,3 +38,10 @@ REPEAT_EXTENDER = EMPTY_NOTE
 ALTERNATE_EXTENDER = "_"
 DRUM_ABBR_WIDTH = 2
 BEAT_COUNT = "^"
+
+# MIDI
+MIDITICKSPERBEAT = 192
+
+# File format numbers
+DBFF_0 = 0
+CURRENT_FILE_FORMAT = DBFF_0

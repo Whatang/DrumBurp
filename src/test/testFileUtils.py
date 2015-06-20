@@ -23,23 +23,9 @@ Created on 12 Dec 2012
 '''
 import unittest
 from cStringIO import StringIO
-from Data import fileUtils, DBErrors
+from Data import fileUtils
 
 # pylint: disable-msg=R0904
-
-class _Target(object):
-    s1 = None
-    s2 = None
-    e = None
-    i1 = None
-    i2 = None
-    pi = None
-    nni = None
-    b1 = None
-    b2 = None
-    cb = None
-    sub_read = None
-
 
 class TestDbFileIterator(unittest.TestCase):
     def testIterate(self):

@@ -38,7 +38,6 @@ class TestCounter(unittest.TestCase):
         self.assertEqual(str(self.counter), "^bcd")
 
     def testBadCounter(self):
-        self.assertRaises(ValueError, Counter.Counter, "abcd")
         self.assertRaises(ValueError, Counter.Counter, "^bcd", "defg")
         self.assertRaises(ValueError, Counter.Counter, "^bcd", "^de")
 

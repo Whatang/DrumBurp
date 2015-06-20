@@ -215,15 +215,7 @@ def _metaDataProperty(varname):
     return property(fget = _getData, fset = _setData)
 
 class QScore(QtGui.QGraphicsScene):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self, parent):
-        '''
-        Constructor
-        '''
         super(QScore, self).__init__(parent)
         self._scale = 1
         self._qStaffs = []

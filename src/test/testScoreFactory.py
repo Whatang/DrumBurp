@@ -21,7 +21,8 @@ import unittest
 import glob
 import os
 from cStringIO import StringIO
-from Data.ScoreFactory import ScoreFactory, DataReader, DataWriter, DBFF_0
+from Data.ScoreFactory import ScoreFactory, DataReader
+from Data import DBConstants
 from Data import DBErrors
 
 class TestScoreFactory(unittest.TestCase):
@@ -266,7 +267,7 @@ class TestScoreFactory(unittest.TestCase):
             print testfile
             score = ScoreFactory.loadScore(testfile)
             written = StringIO()
-            ScoreFactory.write(score, written, DBFF_0)
+            ScoreFactory.write(score, written, DBConstants.DBFF_0)
             with DataReader(testfile) as reader:
                 data = reader.read().splitlines()
             written = written.getvalue().splitlines()
@@ -316,7 +317,7 @@ class TestScoreFactory(unittest.TestCase):
                                 raise
                     break
                 except NoFF:
-                     written = written[1:]
+                    written = written[1:]
                 except MCounts:
                     written = [x for x in written
                                if not x.startswith("  MEASURECOUNTSVISIBLE")]

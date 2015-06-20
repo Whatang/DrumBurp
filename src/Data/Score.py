@@ -32,7 +32,7 @@ from Data.DBErrors import BadTimeError, OverSizeMeasure
 from Data.NotePosition import NotePosition
 from Data.ScoreMetaData import ScoreMetaData
 from Data.FontOptions import FontOptions
-import Data.fileUtils as fileUtils
+from Data import DBErrors
 import Data.ASCIISettings as ASCIISettings
 
 from Notation import AsciiExport
@@ -40,20 +40,8 @@ import bisect
 import hashlib
 from StringIO import StringIO
 
-
-class InconsistentRepeats(StandardError):
-    "Bad repeat data"
-
 class Score(object):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self):
-        '''
-        Constructor
-        '''
         self._staffs = []
         self.drumKit = DrumKit.DrumKit()
         self._callBack = None
@@ -171,7 +159,7 @@ class Score(object):
                         or measures[index + 1].isRepeatStart()
                         or measure.isSectionEnd()):
                         if alternates != set(xrange(1, numRepeats + 1)):
-                            raise InconsistentRepeats(start, index)
+                            raise DBErrors.InconsistentRepeats(start, index)
                         return index + 1, numRepeats
                 else:
                     numRepeats = measure.repeatCount
@@ -397,7 +385,7 @@ class Score(object):
         np.measureIndex = staff.numMeasures() - 1
         measure = self.getItemAtPosition(np)
         while ((np.staffIndex > 0 or np.measureIndex > 0)
-               and measure.isEmpty()):  # pylint:disable-msg=E1103
+               and measure.isEmpty()):  # IGNORE:no-member
             emptyMeasures.append(np.makeMeasurePosition())
             if np.measureIndex == 0:
                 np.staffIndex -= 1
@@ -738,4 +726,4 @@ class Score(object):
         scoreString = StringIO()
         exporter.export(scoreString)
         scoreString = scoreString.getvalue()
-        return hashlib.md5(scoreString.encode('utf-8')).digest()  # pylint:disable-msg=E1121
+        return hashlib.md5(scoreString.encode('utf-8')).digest()

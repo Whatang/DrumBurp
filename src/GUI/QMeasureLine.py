@@ -121,7 +121,6 @@ class QMeasureLine(QtGui.QGraphicsItem):
         self._qScore.setStatusMessage()
         event.accept()
 
-#pylint:disable-msg=R0913
 class BarLinePainter(object):
     THICK_LINE_WIDTH = 3
     THICK_LINE_OFFSET = 1

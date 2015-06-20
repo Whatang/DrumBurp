@@ -24,15 +24,7 @@ Created on 23 Jan 2011
 '''
 
 class ScoreMetaData(object):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self):
-        '''
-        Constructor
-        '''
         self.title = ""
         self.artist = ""
         self.artistVisible = True

@@ -23,15 +23,7 @@ Created on Jan 30, 2011
 '''
 
 class ASCIISettings(object):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self):
-        '''
-        Constructor
-        '''
         self._checkNames = []
         self._registerCheckName("metadata")
         self._registerCheckName("kitKey")

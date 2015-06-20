@@ -46,7 +46,7 @@ import GUI.DBMidi as DBMidi
 from GUI.DBFSMEvents import StartPlaying, StopPlaying
 from GUI.LilypondExporter import LilypondExporter
 from DBVersion import APPNAME, DB_VERSION, doesNewerVersionExist
-from Data.Score import InconsistentRepeats
+from Data.DBErrors import InconsistentRepeats
 from Notation.lilypond import LilypondScore, LilypondProblem
 from Notation import AsciiExport
 # pylint:disable=too-many-instance-attributes,too-many-public-methods

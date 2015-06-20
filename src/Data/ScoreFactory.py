@@ -26,12 +26,10 @@ from Data import DrumKit
 from Data.Counter import CounterRegistry
 from Data.MeasureCount import makeSimpleCount
 from Data.DBErrors import DBVersionError
+from Data import DBConstants
 import Data.fileUtils as fileUtils
 
-DBFF_0 = 0
-CURRENT_FILE_FORMAT = DBFF_0
-
-FS_MAPS = {DBFF_0: dbfsv0.ScoreStructureV0}
+_FS_MAP = {DBConstants.DBFF_0: dbfsv0.ScoreStructureV0}
 
 class DataReader(object):
     def __init__(self, filename):
@@ -51,7 +49,7 @@ class DataReader(object):
             self._reader = codecs.getreader('utf-8')(open(self.filename))
         return self._reader
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, excType, excValue, traceback):
         self._reader.close()
         if self._gzHandle is not None:
             self._gzHandle.close()
@@ -72,7 +70,7 @@ class DataWriter(object):
             self._writer = codecs.getwriter('utf-8')(open(self.filename, 'w'))
         return self._writer
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, excType, excValue, traceback):
         self._writer.close()
         if self._gzHandle is not None:
             self._gzHandle.close()
@@ -124,26 +122,27 @@ class ScoreFactory(object):
                 if len(fileVersion) >= 2:
                     fileVersion = int(fileVersion[1])
             except (TypeError, ValueError):
-                fileVersion = DBFF_0
+                fileVersion = DBConstants.DBFF_0
             scoreIterator.next()
         else:
-            fileVersion = DBFF_0
-        if fileVersion > CURRENT_FILE_FORMAT:
+            fileVersion = DBConstants.DBFF_0
+        if fileVersion > DBConstants.CURRENT_FILE_FORMAT:
             raise DBVersionError(scoreIterator)
-        fileStructure = FS_MAPS[CURRENT_FILE_FORMAT]()
+        fileStructure = _FS_MAP[DBConstants.CURRENT_FILE_FORMAT]()
         return fileStructure.read(scoreIterator)
 
     @staticmethod
-    def write(score, handle, version = CURRENT_FILE_FORMAT):
+    def write(score, handle, version = DBConstants.CURRENT_FILE_FORMAT):
         scoreBuffer = StringIO()
         indenter = fileUtils.Indenter(scoreBuffer)
         indenter("DB_FILE_FORMAT", version)
-        fileStructure = FS_MAPS.get(version, CURRENT_FILE_FORMAT)()
+        fileStructure = _FS_MAP.get(version, DBConstants.CURRENT_FILE_FORMAT)()
         fileStructure.write(score, indenter)
         handle.write(scoreBuffer.getvalue())
 
     @classmethod
-    def saveScore(cls, score, filename, version = CURRENT_FILE_FORMAT,
+    def saveScore(cls, score, filename,
+                  version = DBConstants.CURRENT_FILE_FORMAT,
                   compressed = True):
         with DataWriter(filename, compressed) as writer:
             cls.write(score, writer, version)

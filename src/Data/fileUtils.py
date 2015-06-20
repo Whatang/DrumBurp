@@ -145,15 +145,14 @@ class _IDMaker(object):
         cls._next_id += 1
         return nextId
 
-class ObjectsOrderedByID(object):
+class AbstractFileStructureElement(object):
     def __init__(self):
-        self.ordered_id = _IDMaker.get()
+        self.structureId = _IDMaker.get()
 
-class WriteAllInterface(object):
     def write_all(self, src, indenter):
         raise NotImplementedError()
 
-class Field(ObjectsOrderedByID, WriteAllInterface):
+class Field(AbstractFileStructureElement):
     def __init__(self, title, attributeName = None, singleton = True,
                  getter = None):
         super(Field, self).__init__()
@@ -235,10 +234,10 @@ class SimpleWriteField(Field):
     def _toString(self, value):
         raise NotImplementedError()
 
-class SimpleValueField(SimpleReadField, SimpleWriteField):
+class SimpleValueField(SimpleReadField, SimpleWriteField):  # IGNORE:abstract-method
     pass
 
-class NoReadField(Field):
+class NoReadField(Field):  # IGNORE:abstract-method
     def __init__(self, title, attributeName = None, singleton = True,
                  getter = None):
         super(NoReadField, self).__init__(title, attributeName, singleton,
@@ -247,7 +246,7 @@ class NoReadField(Field):
     def read(self, target, data):
         pass
 
-class NoWriteField(Field):
+class NoWriteField(Field):  # IGNORE:abstract-method
     def __init__(self, title, attributeName = None, singleton = True):
         super(NoWriteField, self).__init__(title, attributeName, singleton,
                                            getter = lambda _:None)
@@ -319,19 +318,19 @@ class FileStructureMetaClass(type):
         super(FileStructureMetaClass, cls).__init__(name, bases, dct)
         cls._fields = []
         cls._structures = []
-        cls._ordered_data = []
+        cls._orderedData = []
         for attr, value in dct.iteritems():
             if isinstance(value, Field):
                 cls._fields.append(value)
-                cls._ordered_data.append((value.ordered_id, attr, value))
+                cls._orderedData.append((value.structureId, attr, value))
                 if value.attributeName is None:
                     value.attributeName = attr
             elif name != 'FileStructure' and isinstance(value, FileStructure):
                 if value.attributeName is None:
                     value.attributeName = attr
                 cls._structures.append(value)
-                cls._ordered_data.append((value.ordered_id, attr, value))
-        cls._ordered_data.sort()
+                cls._orderedData.append((value.structureId, attr, value))
+        cls._orderedData.sort()
         if cls.tag is not None:
             if cls.startTag is None:
                 cls.startTag = "START_" + cls.tag
@@ -339,7 +338,7 @@ class FileStructureMetaClass(type):
                 cls.endTag = "END_" + cls.tag
 
 
-class FileStructure(ObjectsOrderedByID, WriteAllInterface):
+class FileStructure(AbstractFileStructureElement):
     __metaclass__ = FileStructureMetaClass
     targetClass = dict
     tag = None
@@ -348,7 +347,7 @@ class FileStructure(ObjectsOrderedByID, WriteAllInterface):
     autoMake = False
     _fields = []
     _structures = []
-    _ordered_data = []
+    _orderedData = []
 
     def __init__(self, attributeName = None, singleton = True,
                  startTag = None, endTag = None, getter = None):
@@ -368,7 +367,7 @@ class FileStructure(ObjectsOrderedByID, WriteAllInterface):
             return self.getter(src)
 
 
-    def _recordStructure(self, instance, subInstance):
+    def recordStructure(self, instance, subInstance):
         if self.singleton:
             if isinstance(instance, dict):
                 instance[self.attributeName] = subInstance
@@ -404,7 +403,7 @@ class FileStructure(ObjectsOrderedByID, WriteAllInterface):
                     structure = structDict[lineType]
                     subInstance = structure.read(fileIterator,
                                                  (lineType, lineData))
-                    structure._recordStructure(instance, subInstance)
+                    structure.recordStructure(instance, subInstance)
                 elif lineType == self.startTag:
                     instance = self.makeObject(lineData)
                 elif lineType == self.endTag:
@@ -416,13 +415,13 @@ class FileStructure(ObjectsOrderedByID, WriteAllInterface):
             exc.setIterator(fileIterator)
             raise
 
-    def makeObject(self, objectData):
+    def makeObject(self, objectData):  # IGNORE:unused-argument
         return self.targetClass()
 
-    def startTagData(self, source):
+    def startTagData(self, source):  # IGNORE:unused-argument
         return None
 
-    def postProcessObject(self, instance):
+    def postProcessObject(self, instance):  # IGNORE:no-self-use
         return instance
 
     def write(self, src, indenter):
@@ -432,7 +431,7 @@ class FileStructure(ObjectsOrderedByID, WriteAllInterface):
             if extra is not None:
                 startTag += " " + extra
         with indenter.section(startTag, self.endTag):
-            for _, attr, structure in self._ordered_data:
+            for unusedId, unusedAttr, structure in self._orderedData:
                 structure.write_all(src, indenter)
 
     def write_all(self, src, indenter):

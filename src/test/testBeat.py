@@ -28,7 +28,7 @@ from Data import Beat, Counter
 # pylint: disable-msg=R0904
 
 class TestFullBeat(unittest.TestCase):
-    beat = Beat.Beat(Counter.Counter(Counter.BEAT_COUNT + "e+a"))
+    beat = Beat.Beat(Counter.Counter("e+a"))
 
     def testStr(self):
         self.assertEqual(str(self.beat), "^e+a")
@@ -55,7 +55,7 @@ class TestFullBeat(unittest.TestCase):
         self.assertEqual(count, ["2", "e", "+", "a"])
 
 class TestPartialBeat(unittest.TestCase):
-    beat = Beat.Beat(Counter.Counter(Counter.BEAT_COUNT + "e+a"), 2)
+    beat = Beat.Beat(Counter.Counter("e+a"), 2)
 
     def testStr(self):
         self.assertEqual(str(self.beat), "^e+a")

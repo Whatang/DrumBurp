@@ -28,9 +28,6 @@ from Data.DefaultKits import STEM_DOWN, STEM_UP, NAMED_DEFAULTS
 from Data.DBErrors import DuplicateDrumError, NoSuchDrumError
 
 class DrumKit(object):
-    '''
-    classdocs
-    '''
     UP = STEM_UP  # IGNORE:invalid-name
     DOWN = STEM_DOWN
 

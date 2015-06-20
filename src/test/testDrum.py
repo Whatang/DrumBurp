@@ -23,7 +23,6 @@ Created on 12 Dec 2010
 '''
 import unittest
 import inspect
-from cStringIO import StringIO
 
 # pylint: disable-msg=R0904
 from Data.Drum import Drum, HeadData

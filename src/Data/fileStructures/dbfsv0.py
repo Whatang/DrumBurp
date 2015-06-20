@@ -34,6 +34,7 @@ import Data.Drum
 import Data.DrumKit
 import Data.ScoreMetaData
 import Data.FontOptions
+import Data.DBConstants
 from Data.Counter import CounterRegistry
 import Data.Score
 
@@ -42,7 +43,7 @@ class CounterFieldV0(SimpleValueField):
     def _processData(self, data):
         if data[0] == "|" and data[-1] == "|":
             data = data[1:-1]
-        data = Data.Beat.BEAT_COUNT + data[1:]
+        data = Data.DBConstants.BEAT_COUNT + data[1:]
         try:
             return self.registry.findMaster(data)
         except KeyError:

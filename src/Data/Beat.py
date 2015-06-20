@@ -24,9 +24,7 @@ Created on 16 Apr 2011
 '''
 
 import itertools
-from Data.Counter import CounterRegistry
-from Data.DBConstants import BEAT_COUNT
-import Data.DBErrors as DBErrors
+from Data import DBConstants
 
 class Beat(object):
     '''A Beat is a measured instance of a Counter.
@@ -49,7 +47,7 @@ class Beat(object):
 
     def count(self, beatNum):
         for count in self:
-            if count == BEAT_COUNT:
+            if count == DBConstants.BEAT_COUNT:
                 yield str(beatNum)
             else:
                 yield count

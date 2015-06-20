@@ -23,8 +23,8 @@ Created on 16 Apr 2011
 
 '''
 
+from Data import DBConstants
 
-from Data.DBConstants import BEAT_COUNT
 class Counter(object):
     '''A Counter represents a way of subdividing a single beat.
 
@@ -47,16 +47,17 @@ class Counter(object):
         '''
         Constructor
         '''
-        if not counts.startswith(BEAT_COUNT):
-            raise ValueError("A Counter must begin with a BEAT_COUNT.")
-        for count in alternatives:
-            if not count.startswith(BEAT_COUNT):
-                raise ValueError("A Counter must begin with a BEAT_COUNT.")
+        if not counts.startswith(DBConstants.BEAT_COUNT):
+            counts = DBConstants.BEAT_COUNT + counts
+        self._counts = counts
+        self._alternatives = [DBConstants.BEAT_COUNT + alt
+                              if not alt.startswith(DBConstants.BEAT_COUNT)
+                              else alt
+                              for alt in alternatives]
+        for count in self._alternatives:
             if len(count) != len(counts):
                 raise ValueError("All counts for a Counter must be of the "
                                  "same length.")
-        self._counts = counts
-        self._alternatives = alternatives
 
     def __iter__(self):
         return iter(self._counts)
@@ -73,18 +74,18 @@ class Counter(object):
     def matchesAlternative(self, beatStr):
         return any(beatStr == alt for alt in self._alternatives)
 
-_COUNTER_BEAT = Counter(BEAT_COUNT)
-_EIGHTH_COUNT = Counter(BEAT_COUNT + "+", BEAT_COUNT + "&")
-_TRIPLET_COUNT = Counter(BEAT_COUNT + "+a", BEAT_COUNT + "ea")
-_OLD_TRIPLET_COUNT = Counter(BEAT_COUNT + "ea")
-_SIXTEENTH_COUNT = Counter(BEAT_COUNT + "e+a")
-_SIXTEENTH_COUNT_SPARSE = Counter(BEAT_COUNT + ' + ')
-_SIXTEENTH_TRIPLETS = Counter(BEAT_COUNT + 'ea+ea')
-_SIXTEENTH_TRIPLETS_SPARSE = Counter(BEAT_COUNT + '  +  ')
-_THIRTY_SECONDS_COUNT = Counter(BEAT_COUNT + '.e.+.a.')
-_THIRTY_SECONDS_COUNT_SPARSE = Counter(BEAT_COUNT + ' e + a ')
-_THIRTY_SECONDS_TRIPLET_COUNT = Counter(BEAT_COUNT + '.e.a.+.e.a.')
-_THIRTY_SECONDS_TRIPLET_COUNT_SPARSE = Counter(BEAT_COUNT + ' e a + e a ')
+_COUNTER_BEAT = Counter("")
+_EIGHTH_COUNT = Counter("+", "&")
+_TRIPLET_COUNT = Counter("+a", "ea")
+_OLD_TRIPLET_COUNT = Counter("ea")
+_SIXTEENTH_COUNT = Counter("e+a")
+_SIXTEENTH_COUNT_SPARSE = Counter(' + ')
+_SIXTEENTH_TRIPLETS = Counter('ea+ea')
+_SIXTEENTH_TRIPLETS_SPARSE = Counter('  +  ')
+_THIRTY_SECONDS_COUNT = Counter('.e.+.a.')
+_THIRTY_SECONDS_COUNT_SPARSE = Counter(' e + a ')
+_THIRTY_SECONDS_TRIPLET_COUNT = Counter('.e.a.+.e.a.')
+_THIRTY_SECONDS_TRIPLET_COUNT_SPARSE = Counter(' e a + e a ')
 
 class CounterRegistry(object):
     def __init__(self, defaults = True):

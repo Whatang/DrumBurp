@@ -78,3 +78,6 @@ class DBVersionError(DbReadError):
 
     def __str__(self):
         return self.__doc__
+
+class InconsistentRepeats(StandardError):
+    "Bad repeat data"

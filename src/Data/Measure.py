@@ -25,7 +25,7 @@ Created on 12 Dec 2010
 
 from collections import defaultdict
 from Data.DBConstants import EMPTY_NOTE, BAR_TYPES
-from Data.DBErrors import BadTimeError, TooManyBarLines
+from Data.DBErrors import BadTimeError
 from Data.NotePosition import NotePosition
 from Data import MeasureCount
 from Data import Counter
@@ -114,10 +114,6 @@ class MeasureInfo(object):
         self.repeatCount = 1
 
 class Measure(object):
-    '''
-    classdocs
-    '''
-
     def __init__(self, width = 0):
         self._width = width
         self._notes = _NoteDictionary()
@@ -138,17 +134,18 @@ class Measure(object):
     def counter(self, counter):
         self.setBeatCount(counter)
 
-    def _getrepeatCount(self):
+    @property
+    def repeatCount(self):
         return self._info.repeatCount
-    def _setrepeatCount(self, value):
+
+    @repeatCount.setter
+    def repeatCount(self, value):
         if value != self._info.repeatCount:
             if self.isRepeatEnd():
                 self._info.repeatCount = max(value, 2)
             else:
                 self._info.repeatCount = 1
             self._runCallBack(NotePosition())
-    repeatCount = property(fget = _getrepeatCount,
-                         fset = _setrepeatCount)
 
     def __len__(self):
         return self._width
@@ -278,7 +275,6 @@ class Measure(object):
         self._runCallBack(NotePosition())
 
     def setBeatCount(self, counter):
-        self.counter
         if counter == self._counter:
             return
         if self._counter is None:
