@@ -750,7 +750,7 @@ class TestMetaData(unittest.TestCase):
         meta.makeEmpty()
         handle = StringIO()
         indenter = fileUtils.Indenter(handle)
-        meta.save(indenter)
+        dbfsv0.MetadataStructureV0().write(meta, indenter)
         output = handle.getvalue().splitlines()
         self.assertEqual(output,
                          ["SCORE_METADATA",
