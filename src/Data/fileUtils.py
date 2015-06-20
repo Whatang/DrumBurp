@@ -197,12 +197,27 @@ class Indenter(object):
     def section(self, sectionStart, sectionEnd):
         return self.Section(self, sectionStart, sectionEnd)
 
-class Field(object):
+class _IDMaker(object):
+    _next_id = 0
+
+    @classmethod
+    def get(cls):
+        next_id = cls._next_id
+        cls._next_id += 1
+        return cls._next_id
+
+class ObjectsOrderedByID(object):
+    def __init__(self):
+        self.ordered_id = _IDMaker.get()
+
+class Field(ObjectsOrderedByID):
     def __init__(self, title, attributeName = None, singleton = True):
+        super(Field, self).__init__()
         self.title = title.upper()
         self.attributeName = attributeName
         self.singleton = singleton
         
+
     def read(self, target, data):
         raise NotImplementedError()
     
@@ -300,15 +315,21 @@ class FileStructureMetaClass(type):
         super(FileStructureMetaClass, cls).__init__(name, bases, dct)
         cls._fields = []
         cls._structures = []
+        cls._ordered_data = []
         for attr, value in dct.iteritems():
             if isinstance(value, Field):
                 cls._fields.append(value)
+                cls._ordered_data.append((value.ordered_id, attr, value))
                 if value.attributeName is None:
                     value.attributeName = attr
             elif name != 'FileStructure' and isinstance(value, FileStructure):
                 if value.attributeName is None:
                     value.attributeName = attr
                 cls._structures.append(value)
+                cls._ordered_data.append((value.ordered_id, attr, value))
+        cls._ordered_data.sort()
+        for _, attr, value in cls._ordered_data:
+            print name, attr
         if cls.tag is not None:
             if cls.startTag is None:
                 cls.startTag = "START_" + cls.tag
@@ -316,7 +337,7 @@ class FileStructureMetaClass(type):
                 cls.endTag = "END_" + cls.tag
 
 
-class FileStructure(object):
+class FileStructure(ObjectsOrderedByID):
     __metaclass__ = FileStructureMetaClass
     targetClass = dict
     tag = None
@@ -328,6 +349,7 @@ class FileStructure(object):
 
     def __init__(self, attributeName = None, singleton = True,
                  startTag = None, endTag = None):
+        super(FileStructure, self).__init__()
         self.attributeName = attributeName
         self.singleton = singleton
         if startTag is not None:
@@ -381,7 +403,7 @@ class FileStructure(object):
             exc.setIterator(fileIterator)
             raise
     
-    def makeObject(self, startData):
+    def makeObject(self, objectData):
         return self.targetClass()
 
     def postProcessObject(self, instance):
