@@ -367,6 +367,22 @@ class FileStructure(ObjectsOrderedByID, WriteAllInterface):
         else:
             return self.getter(src)
 
+
+    def _recordStructure(self, instance, subInstance):
+        if self.singleton:
+            if isinstance(instance, dict):
+                instance[self.attributeName] = subInstance
+            else:
+                setattr(instance, self.attributeName, subInstance)
+        elif isinstance(instance, dict):
+            if self.attributeName not in instance:
+                instance[self.attributeName] = []
+            instance[self.attributeName].append(subInstance)
+        else:
+            if not hasattr(instance, self.attributeName):
+                setattr(instance, self.attributeName, [])
+            getattr(instance, self.attributeName).append(subInstance)
+
     def read(self, fileIterator, startData = None):
         instance = None
         if self.autoMake:
@@ -388,20 +404,7 @@ class FileStructure(ObjectsOrderedByID, WriteAllInterface):
                     structure = structDict[lineType]
                     subInstance = structure.read(fileIterator,
                                                  (lineType, lineData))
-                    if structure.singleton:
-                        if isinstance(instance, dict):
-                            instance[structure.attributeName] = subInstance
-                        else:
-                            setattr(instance, structure.attributeName, subInstance)
-                    else:
-                        if isinstance(instance, dict):
-                            if structure.attributeName not in instance:
-                                instance[structure.attributeName] = []
-                            instance[structure.attributeName].append(subInstance)
-                        else:
-                            if not hasattr(instance, structure.attributeName):
-                                setattr(instance, structure.attributeName, [])
-                            getattr(instance, structure.attributeName).append(subInstance)
+                    structure._recordStructure(instance, subInstance)
                 elif lineType == self.startTag:
                     instance = self.makeObject(lineData)
                 elif lineType == self.endTag:
