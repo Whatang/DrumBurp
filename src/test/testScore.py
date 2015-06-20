@@ -23,7 +23,7 @@ Created on 12 Dec 2010
 '''
 import unittest
 from Data.Score import Score
-from Data import DrumKit, Drum
+from Data import DrumKit, Drum, DrumKitFactory
 from Data.DBErrors import BadTimeError, OverSizeMeasure, InconsistentRepeats
 from Data.DBConstants import EMPTY_NOTE
 from Data.NotePosition import NotePosition
@@ -221,7 +221,7 @@ class TestMeasureControl(unittest.TestCase):
 class TestNoteControl(unittest.TestCase):
     def setUp(self):
         self.score = Score()
-        self.score.drumKit = DrumKit.getNamedDefaultKit()
+        self.score.drumKit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit()
         for dummy in range(0, 12):
             self.score.insertMeasureByIndex(16)
         self.score.formatScore(80)
@@ -480,7 +480,7 @@ class TestFormatScore(unittest.TestCase):
                           self.score.getMeasureIndex, NotePosition(4, 4))
 
     def testTrailingMeasures(self):
-        self.score.drumKit = DrumKit.getNamedDefaultKit()
+        self.score.drumKit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit()
         for dummy in range(0, 8):
             self.score.insertMeasureByIndex(16)
         self.score.formatScore(40)
@@ -502,7 +502,7 @@ class TestFormatScore(unittest.TestCase):
 class TestCopyPaste(unittest.TestCase):
     def setUp(self):
         self.score = Score()
-        self.score.kit = DrumKit.getNamedDefaultKit()
+        self.score.kit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit()
         for width in range(0, 8):
             self.score.insertMeasureByIndex(width + 8)
         self.score.formatScore(40)
@@ -521,7 +521,7 @@ class TestCopyPaste(unittest.TestCase):
 class TestIteration(unittest.TestCase):
     def setUp(self):
         self.score = Score()
-        self.score.drumKit = DrumKit.getNamedDefaultKit()
+        self.score.drumKit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit()
         for index in range(0, 26):
             self.score.insertMeasureByIndex(16)
             measure = self.score.getMeasure(index)
@@ -630,7 +630,7 @@ class TestIteration(unittest.TestCase):
 class TestSections(unittest.TestCase):
     def setUp(self):
         self.score = Score()
-        self.score.drumKit = DrumKit.getNamedDefaultKit()
+        self.score.drumKit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit()
         for index in range(0, 26):
             self.score.insertMeasureByIndex(16)
             measure = self.score.getMeasure(index)
@@ -782,7 +782,7 @@ class TestSections(unittest.TestCase):
 class TestRelativePositions(unittest.TestCase):
     def setUp(self):
         self.score = Score()
-        self.score.drumKit = DrumKit.getNamedDefaultKit()
+        self.score.drumKit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit()
         for index in range(0, 26):
             self.score.insertMeasureByIndex(16)
             measure = self.score.getMeasure(index)
@@ -1020,7 +1020,7 @@ class TestVisibleLines(unittest.TestCase):
 class TestCallBack(unittest.TestCase):
     def setUp(self):
         self.score = Score()
-        self.score.drumKit = DrumKit.getNamedDefaultKit()
+        self.score.drumKit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit()
         for dummy in range(0, 16):
             self.score.insertMeasureByIndex(16)
         self.score.formatScore(80)
@@ -1093,7 +1093,7 @@ class TestCallBack(unittest.TestCase):
 class TestHash(unittest.TestCase):
     def setUp(self):
         self.score = Score()
-        self.score.drumKit = DrumKit.getNamedDefaultKit()
+        self.score.drumKit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit()
         for dummy in range(0, 16):
             self.score.insertMeasureByIndex(16)
 

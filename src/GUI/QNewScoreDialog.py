@@ -29,7 +29,7 @@ from cStringIO import StringIO
 from GUI.ui_newScoreDialog import Ui_newScoreDialog
 from GUI.QComplexCountDialog import QComplexCountDialog
 import Data.MeasureCount
-from Data import DefaultKits, DrumKit, fileUtils
+from Data import DefaultKits, DrumKitFactory, DrumKitSerializer
 
 class QNewScoreDialog(QDialog, Ui_newScoreDialog):
     def __init__(self, parent = None,
@@ -53,9 +53,7 @@ class QNewScoreDialog(QDialog, Ui_newScoreDialog):
         if isUserKit:
             kitString = unicode(self._settings.value(kitName).toString())
             handle = StringIO(kitString)
-            dbfile = fileUtils.dbFileIterator(handle)
-            kit = DrumKit.DrumKit()
-            kit.read(dbfile)
+            kit = DrumKitSerializer.DrumKitSerializer.read(handle)
         else:
-            kit = DrumKit.getNamedDefaultKit(kitName)
+            kit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit(kitName)
         return (self.numMeasuresSpinBox.value(), mc, kit)
