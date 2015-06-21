@@ -30,9 +30,6 @@ from Data.ScoreSerializer import ScoreSerializer
 from Data import DBConstants
 from Data import DBErrors
 from Data import fileUtils
-from Data import Drum
-from Data import DefaultKits
-from Data.fileStructures import dbfsv0
 
 class TestScoreSerializerGeneral(unittest.TestCase):
     def testReadTooHighVersionNumber(self):
