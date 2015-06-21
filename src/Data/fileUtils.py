@@ -192,8 +192,17 @@ class _IDMaker(object):
         return nextId
 
 class AbstractFileStructureElement(object):
-    def __init__(self):
+    def __init__(self, attributeName = None, singleton = True, getter = None):
+        self.attributeName = attributeName
+        self.singleton = singleton
+        self.getter = getter
         self.structureId = _IDMaker.get()
+
+    def getValue(self, src):
+        if self.getter is None:
+            return getattr(src, self.attributeName)
+        else:
+            return self.getter(src)
 
     def write_all(self, src, indenter):
         raise NotImplementedError()
@@ -201,17 +210,8 @@ class AbstractFileStructureElement(object):
 class Field(AbstractFileStructureElement):
     def __init__(self, title, attributeName = None, singleton = True,
                  getter = None):
-        super(Field, self).__init__()
+        super(Field, self).__init__(attributeName, singleton, getter)
         self.title = title.upper()
-        self.attributeName = attributeName
-        self.singleton = singleton
-        self.getter = getter
-
-    def getValue(self, src):
-        if self.getter is None:
-            return getattr(src, self.attributeName)
-        else:
-            return self.getter(src)
 
     def read(self, target, data):
         raise NotImplementedError()
@@ -293,7 +293,8 @@ class NoReadField(Field):  # IGNORE:abstract-method
         pass
 
 class NoWriteField(Field):  # IGNORE:abstract-method
-    def __init__(self, title, attributeName = None, singleton = True):
+    def __init__(self, title, attributeName = None, singleton = True,
+                 getter = None):
         super(NoWriteField, self).__init__(title, attributeName, singleton,
                                            getter = lambda _:None)
 
@@ -396,37 +397,32 @@ class FileStructure(AbstractFileStructureElement):
     _orderedData = []
 
     def __init__(self, attributeName = None, singleton = True,
-                 startTag = None, endTag = None, getter = None):
-        super(FileStructure, self).__init__()
-        self.attributeName = attributeName
-        self.singleton = singleton
-        self.getter = getter
+                 startTag = None, endTag = None, getter = None,
+                 setter = None):
+        super(FileStructure, self).__init__(attributeName, singleton, getter)
+        self.setter = setter
         if startTag is not None:
             self.startTag = startTag
         if endTag is not None:
             self.endTag = endTag
 
-    def getValue(self, src):
-        if self.getter is None:
-            return getattr(src, self.attributeName)
-        else:
-            return self.getter(src)
-
-
     def recordStructure(self, instance, subInstance):
-        if self.singleton:
-            if isinstance(instance, dict):
-                instance[self.attributeName] = subInstance
-            else:
-                setattr(instance, self.attributeName, subInstance)
-        elif isinstance(instance, dict):
-            if self.attributeName not in instance:
-                instance[self.attributeName] = []
-            instance[self.attributeName].append(subInstance)
+        if self.setter is not None:
+            self.setter(instance, subInstance)
         else:
-            if not hasattr(instance, self.attributeName):
-                setattr(instance, self.attributeName, [])
-            getattr(instance, self.attributeName).append(subInstance)
+            if self.singleton:
+                if isinstance(instance, dict):
+                    instance[self.attributeName] = subInstance
+                else:
+                    setattr(instance, self.attributeName, subInstance)
+            elif isinstance(instance, dict):
+                if self.attributeName not in instance:
+                    instance[self.attributeName] = []
+                instance[self.attributeName].append(subInstance)
+            else:
+                if not hasattr(instance, self.attributeName):
+                    setattr(instance, self.attributeName, [])
+                getattr(instance, self.attributeName).append(subInstance)
 
     def read(self, fileIterator, startData = None):
         instance = None
