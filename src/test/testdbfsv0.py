@@ -647,7 +647,8 @@ class TestDrum(unittest.TestCase):
         drum.addNoteHead("x", defaultHead)
         newHead = HeadData(100)
         drum.addNoteHead("y", newHead)
-        headData = HeadData(72, 100, "ghost", "cross", 1, "choke", 1, "c")
+        headData = HeadData(72, 100, "ghost", "cross", 1, "choke",
+                            DefaultKits.STEM_DOWN, "c")
         drum.addNoteHead("z", headData)
         return drum, defaultHead, newHead
 
@@ -666,6 +667,8 @@ class TestDrum(unittest.TestCase):
                          "  NOTEHEAD y 100,96,normal,default,0,none,0,a")
         self.assertEqual(outlines[3],
                          "  NOTEHEAD z 72,100,ghost,cross,1,choke,1,c")
+
+    # TODO: test reading a drum
 
 
 class TestDrumKit(unittest.TestCase):

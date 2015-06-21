@@ -741,6 +741,167 @@ class TestNoteHead(unittest.TestCase):
         self.assertEqual(head.stemDirection, DefaultKits.STEM_DOWN)
         self.assertEqual(head.shortcut, 'x')
 
+class TestDrum(unittest.TestCase):
+    def testWriteSimple(self):
+        drum = Drum("test", "td", "x", True)
+        defaultHead = HeadData(shortcut = "y")
+        drum.addNoteHead("x", defaultHead)
+        outstring = StringIO()
+        indenter = fileUtils.Indenter(outstring)
+        dbfsv1.DrumStructureV1().write(drum, indenter)
+        outlines = outstring.getvalue().splitlines()
+        self.assertEqual(outlines,
+                           ['START_DRUM',
+                            '  NAME test',
+                            '  ABBR td',
+                            '  DEFAULT_HEAD x',
+                            '  LOCKED True',
+                            '  HEADLIST x',
+                            '  START_NOTEHEAD',
+                            '    MIDINOTE 71',
+                            '    MIDIVOLUME 96',
+                            '    EFFECT normal',
+                            '    NOTATIONHEAD default',
+                            '    NOTATIONLINE 0',
+                            '    NOTATIONEFFECT none',
+                            '    STEM 0',
+                            '    SHORTCUT y',
+                            '  END_NOTEHEAD',
+                            'END_DRUM' ])
+
+    def testWriteExtraHeads(self):
+        drum = Drum("test", "td", "x")
+        defaultHead = HeadData(shortcut = "y")
+        drum.addNoteHead("x", defaultHead)
+        newHead = HeadData(100, shortcut = 'a')
+        drum.addNoteHead("y", newHead)
+        headData = HeadData(72, 100, "ghost", "cross", 1, "choke",
+                            DefaultKits.STEM_DOWN, "c")
+        drum.addNoteHead("z", headData)
+        outstring = StringIO()
+        indenter = fileUtils.Indenter(outstring)
+        dbfsv1.DrumStructureV1().write(drum, indenter)
+        outlines = outstring.getvalue().splitlines()
+        self.assertEqual(outlines,
+                           ['START_DRUM',
+                            '  NAME test',
+                            '  ABBR td',
+                            '  DEFAULT_HEAD x',
+                            '  LOCKED False',
+                            '  HEADLIST xyz',
+                            '  START_NOTEHEAD',
+                            '    MIDINOTE 71',
+                            '    MIDIVOLUME 96',
+                            '    EFFECT normal',
+                            '    NOTATIONHEAD default',
+                            '    NOTATIONLINE 0',
+                            '    NOTATIONEFFECT none',
+                            '    STEM 0',
+                            '    SHORTCUT y',
+                            '  END_NOTEHEAD',
+                            '  START_NOTEHEAD',
+                            '    MIDINOTE 100',
+                            '    MIDIVOLUME 96',
+                            '    EFFECT normal',
+                            '    NOTATIONHEAD default',
+                            '    NOTATIONLINE 0',
+                            '    NOTATIONEFFECT none',
+                            '    STEM 0',
+                            '    SHORTCUT a',
+                            '  END_NOTEHEAD',
+                            '  START_NOTEHEAD',
+                            '    MIDINOTE 72',
+                            '    MIDIVOLUME 100',
+                            '    EFFECT ghost',
+                            '    NOTATIONHEAD cross',
+                            '    NOTATIONLINE 1',
+                            '    NOTATIONEFFECT choke',
+                            '    STEM 1',
+                            '    SHORTCUT c',
+                            '  END_NOTEHEAD',
+                            'END_DRUM' ])
+
+    def testReadSimple(self):
+        data = """
+        START_DRUM
+          NAME test
+          ABBR td
+          DEFAULT_HEAD x
+          LOCKED True
+          HEADLIST x
+          START_NOTEHEAD
+            MIDINOTE 71
+            MIDIVOLUME 96
+            EFFECT normal
+            NOTATIONHEAD default
+            NOTATIONLINE 0
+            NOTATIONEFFECT none
+            STEM 0
+            SHORTCUT y
+          END_NOTEHEAD
+        END_DRUM
+        """
+        iterator = fileUtils.dbFileIterator(StringIO(data))
+        drum = dbfsv1.DrumStructureV1().read(iterator)
+        self.assertEqual(drum.name, 'test')
+        self.assertEqual(drum.abbr, 'td')
+        self.assert_(drum.locked)
+        self.assertEqual(drum.head, 'x')
+        self.assertEqual(len(drum), 1)
+        self.assertEqual(drum[0], 'x')
+
+    def testReadExtraHeads(self):
+        data = """
+        START_DRUM
+          NAME test
+          ABBR td
+          DEFAULT_HEAD x
+          LOCKED False
+          HEADLIST xyz
+          START_NOTEHEAD
+            MIDINOTE 71
+            MIDIVOLUME 96
+            EFFECT normal
+            NOTATIONHEAD default
+            NOTATIONLINE 0
+            NOTATIONEFFECT none
+            STEM 0
+            SHORTCUT y
+          END_NOTEHEAD
+          START_NOTEHEAD
+            MIDINOTE 100
+            MIDIVOLUME 96
+            EFFECT normal
+            NOTATIONHEAD default
+            NOTATIONLINE 0
+            NOTATIONEFFECT none
+            STEM 0
+            SHORTCUT a
+          END_NOTEHEAD
+          START_NOTEHEAD
+            MIDINOTE 72
+            MIDIVOLUME 100
+            EFFECT ghost
+            NOTATIONHEAD cross
+            NOTATIONLINE 1
+            NOTATIONEFFECT choke
+            STEM 1
+            SHORTCUT c
+          END_NOTEHEAD
+        END_DRUM
+        """
+        iterator = fileUtils.dbFileIterator(StringIO(data))
+        drum = dbfsv1.DrumStructureV1().read(iterator)
+        self.assertEqual(drum.name, 'test')
+        self.assertEqual(drum.abbr, 'td')
+        self.assertFalse(drum.locked)
+        self.assertEqual(drum.head, 'x')
+        self.assertEqual(len(drum), 3)
+        self.assertEqual(drum[0], 'x')
+        self.assertEqual(drum[1], 'y')
+        self.assertEqual(drum[2], 'z')
+
+    # TODO: test reading a drum
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
