@@ -183,7 +183,7 @@ class MetadataStructureV0(FileStructure):
     emptyLinesVisible = BooleanField("EMPTYLINESVISIBLE")
     measureCountsVisible = BooleanField("MEASURECOUNTSVISIBLE")
 
-class DrumField(Field):
+class DrumFieldV0(Field):
     def read(self, target, data):
         fields = data.split(",")
         if len(fields) > 3:
@@ -254,7 +254,7 @@ class DrumKitStructureV0(FileStructure):
     endTag = "KIT_END"
     targetClass = Data.DrumKit.DrumKit
 
-    drums = DrumField("DRUM", getter = list, singleton = False)
+    drums = DrumFieldV0("DRUM", getter = list, singleton = False)
     noteheads = conditionalWriteField(NoteHeadFieldV0("NOTEHEAD"),
                                       lambda _: False)
 
