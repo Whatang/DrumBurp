@@ -25,11 +25,11 @@ Created on Jun 21, 2015
 
 import unittest
 from cStringIO import StringIO
-from Data import Beat, Counter, fileUtils, DBErrors, DrumKit, FontOptions, DefaultKits
+from Data import Beat, Counter, fileUtils, DBErrors, DefaultKits
 from Data.Drum import Drum, HeadData
 from Data.Counter import CounterRegistry
 from Data.Measure import Measure
-from Data import MeasureCount, ScoreMetaData
+from Data import MeasureCount
 from Data.NotePosition import NotePosition
 
 from Data.fileStructures import dbfsv1
@@ -683,7 +683,8 @@ class TestWriteMeasure(unittest.TestCase):
                           'END_MEASURE'])
 
 class TestNoteHead(unittest.TestCase):
-    def get_output(self, head):
+    @staticmethod
+    def get_output(head):
         handle = StringIO()
         indenter = fileUtils.Indenter(handle)
         dbfsv1.NoteHeadStructureV1().write(head, indenter)

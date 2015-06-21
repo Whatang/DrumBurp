@@ -26,7 +26,7 @@ import inspect
 
 # pylint: disable-msg=R0904
 from Data.Drum import Drum, HeadData
-from Data import DefaultKits
+
 
 class TestDrum(unittest.TestCase):
 
