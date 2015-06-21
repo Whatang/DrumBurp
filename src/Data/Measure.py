@@ -117,8 +117,6 @@ class Measure(object):
     def __init__(self, width = 0):
         self._width = width
         self._notes = _NoteDictionary()
-        self.startBar = BAR_TYPES[NORMAL_BAR]
-        self.endBar = BAR_TYPES[NORMAL_BAR]
         self._callBack = None
         self._info = MeasureInfo()
         self._counter = None
@@ -174,35 +172,49 @@ class Measure(object):
                 and not (self.isRepeatEnd() or
                          self.isSectionEnd()))
 
+    @property
+    def startBar(self):
+        val = BAR_TYPES[NORMAL_BAR]
+        if self.isRepeatStart():
+            val |= BAR_TYPES[REPEAT_START]
+        return val
+
+    @startBar.setter
+    def startBar(self, value):
+        self.setRepeatStart(value & BAR_TYPES[REPEAT_START] != 0)
+
+    @property
+    def endBar(self):
+        val = BAR_TYPES[NORMAL_BAR]
+        if self.isRepeatEnd():
+            val |= BAR_TYPES[REPEAT_END_STR]
+        if self.isSectionEnd():
+            val |= BAR_TYPES[SECTION_END]
+        if self.isLineBreak():
+            val |= BAR_TYPES[LINE_BREAK]
+        return val
+
+    @endBar.setter
+    def endBar(self, value):
+        self.setRepeatEnd(value & BAR_TYPES[REPEAT_END_STR] != 0)
+        self.setLineBreak(value & BAR_TYPES[LINE_BREAK] != 0)
+        self.setSectionEnd(value & BAR_TYPES[SECTION_END] != 0)
+
     def setSectionEnd(self, boolean):
         self._info.isSectionEnd = boolean
-        if boolean:
-            self.endBar |= BAR_TYPES[SECTION_END]
-        else:
-            self.endBar &= ~BAR_TYPES[SECTION_END]
 
     def setRepeatStart(self, boolean):
         self._info.isRepeatStart = boolean
-        if boolean:
-            self.startBar |= BAR_TYPES[REPEAT_START]
-        else:
-            self.startBar &= ~BAR_TYPES[REPEAT_START]
 
     def setRepeatEnd(self, boolean):
         self._info.isRepeatEnd = boolean
         if boolean:
-            self.endBar |= BAR_TYPES[REPEAT_END_STR]
             self.repeatCount = max(self.repeatCount, 2)
         else:
             self.repeatCount = 1
-            self.endBar &= ~BAR_TYPES[REPEAT_END_STR]
 
     def setLineBreak(self, boolean):
         self._info.isLineBreak = boolean
-        if boolean:
-            self.endBar |= BAR_TYPES[LINE_BREAK]
-        else:
-            self.endBar &= ~BAR_TYPES[LINE_BREAK]
 
     def isSectionEnd(self):
         return self._info.isSectionEnd
@@ -266,7 +278,7 @@ class Measure(object):
             self._notes.deleteAllNotesAtTime(badTime)
         self._runCallBack(NotePosition())
 
-    def setBeatCount(self, counter):
+    def setBeatCount(self, counter):  # TODO: change this to setMeasureCount
         if counter == self._counter:
             return
         if self._counter is None:
