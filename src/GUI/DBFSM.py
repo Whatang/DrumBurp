@@ -34,6 +34,11 @@ from GUI.QAlternateDialog import QAlternateDialog
 import GUI.DBFSMEvents as Event
 from PyQt4 import QtCore
 
+# TODO: Make a state machine class which tracks the current state and handles
+# events and transitions
+
+# TODO: Cleaner separation between states and transitions
+
 class FsmState(object):
     def __init__(self, qscore):
         self.qscore = qscore
