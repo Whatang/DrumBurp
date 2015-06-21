@@ -27,10 +27,11 @@ import itertools
 from Data import fileUtils
 from Data import DBConstants
 from Data import DBErrors
-from Data.fileStructures import dbfsv0
+from Data.fileStructures import dbfsv0, dbfsv1
 
 class DrumKitSerializer(object):
-    _KIT_FF_MAP = {DBConstants.KIT_FF_0:dbfsv0.DrumKitStructureV0}
+    _KIT_FF_MAP = {DBConstants.KIT_FF_0:dbfsv0.DrumKitStructureV0,
+                   DBConstants.KIT_FF_1:dbfsv1.DrumKitStructureV1}
 
     @classmethod
     def read(cls, handle):

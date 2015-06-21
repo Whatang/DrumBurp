@@ -24,12 +24,13 @@ Created on Jun 20, 2015
 
 import itertools
 from cStringIO import StringIO
-from Data.fileStructures import dbfsv0
+from Data.fileStructures import dbfsv0, dbfsv1
 from Data.DBErrors import DBVersionError
 from Data import DBConstants
 import Data.fileUtils as fileUtils
 
-_FS_MAP = {DBConstants.DBFF_0: dbfsv0.ScoreStructureV0}
+_FS_MAP = {DBConstants.DBFF_0: dbfsv0.ScoreStructureV0,
+           DBConstants.DBFF_1: dbfsv1.ScoreStructureV1}
 
 class ScoreSerializer(object):
     @classmethod
