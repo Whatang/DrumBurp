@@ -96,7 +96,8 @@ class DrumStructureV1(FileStructure):
     locked = BooleanField("LOCKED")
     headlist = StringField("HEADLIST",
                            getter = lambda drum: "".join(list(drum)))
-    noteheads = NoteHeadStructureV1(singleton = False)
+    noteheads = NoteHeadStructureV1(singleton = False,
+                                    getter = lambda drum: [drum.headData(head) for head in drum])
 
     def postProcessObject(self, instance):
         drum = Data.Drum.Drum(instance["name"],
