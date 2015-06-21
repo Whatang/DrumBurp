@@ -512,7 +512,7 @@ class Score(object):
             sectionStem, sectionSuffix = self._getPrefixAndDigitSuffix(section)
             if sectionStem == stem:
                 suffix = max(suffix, sectionSuffix)
-        return "%s %d" % (stem, suffix + 1)
+        return "%s %d" % (stem.rstrip(), suffix + 1)
 
     def insertSectionCopy(self, position, sectionIndex):
         self.turnOffCallBacks()
