@@ -101,13 +101,24 @@ class BeatLengthFieldV0(NoWriteField):
         target.counter = Data.MeasureCount.counterMaker(int(data),
                                                         len(target))
 
+def startBarlineString(measure):
+    return ",".join([name for name, value in
+                     Data.DBConstants.BAR_TYPES.iteritems()
+                     if (measure.startBar & value) == value])
+
+def endBarlineString(measure):
+    return ",".join([name for name, value in
+                     Data.DBConstants.BAR_TYPES.iteritems()
+                     if (measure.endBar & value) == value])
+
+
 class BarlineReadFieldV0(NoWriteField):
-    mapping = {"NO_BAR" : lambda x, y: True,
-               "NORMAL_BAR" : lambda x, y: True,
-               "REPEAT_START": Data.Measure.Measure.setRepeatStart,
-               "REPEAT_END": Data.Measure.Measure.setRepeatEnd,
-               "SECTION_END": Data.Measure.Measure.setSectionEnd,
-               "LINE_BREAK": Data.Measure.Measure.setLineBreak}
+    mapping = {Data.DBConstants.NO_BAR: lambda x, y: True,
+               Data.DBConstants.NORMAL_BAR: lambda x, y: True,
+               Data.DBConstants.REPEAT_START: Data.Measure.Measure.setRepeatStart,
+               Data.DBConstants.REPEAT_END_STR: Data.Measure.Measure.setRepeatEnd,
+               Data.DBConstants.SECTION_END: Data.Measure.Measure.setSectionEnd,
+               Data.DBConstants.LINE_BREAK: Data.Measure.Measure.setLineBreak}
 
     def __init__(self, title, attributeName = None, singleton = True):
         super(BarlineReadFieldV0, self).__init__(title, attributeName, singleton)
@@ -143,11 +154,11 @@ class MeasureStructureV0(FileStructure):
 
     counter = MeasureCountStructureV0()
     startBarLine = BarlineFieldWriteV0(" STARTBARLINE",
-                                       getter = lambda measure: measure.startBarlineString())
+                                       getter = startBarlineString)
     barlines = BarlineReadFieldV0("BARLINE")
     notes = NoteFieldV0("NOTE", getter = list, singleton = False)
     endBarLine = BarlineFieldWriteV0(" ENDBARLINE",
-                                     getter = lambda measure: measure.endBarlineString())
+                                     getter = endBarlineString)
     beatLength = BeatLengthFieldV0("BEATLENGTH")
     repeatCount = conditionalWriteField(PositiveIntegerField("REPEAT_COUNT"),
                                         lambda measure: measure.repeatCount > 1)
@@ -183,7 +194,7 @@ class MetadataStructureV0(FileStructure):
     emptyLinesVisible = BooleanField("EMPTYLINESVISIBLE")
     measureCountsVisible = BooleanField("MEASURECOUNTSVISIBLE")
 
-class DrumField(Field):
+class DrumFieldV0(Field):
     def read(self, target, data):
         fields = data.split(",")
         if len(fields) > 3:
@@ -254,9 +265,8 @@ class DrumKitStructureV0(FileStructure):
     endTag = "KIT_END"
     targetClass = Data.DrumKit.DrumKit
 
-    drums = DrumField("DRUM", getter = list, singleton = False)
-    noteheads = conditionalWriteField(NoteHeadFieldV0("NOTEHEAD"),
-                                      lambda _: False)
+    drums = DrumFieldV0("DRUM", getter = list, singleton = False)
+    noteheads = NoteHeadFieldV0("NOTEHEAD")
 
     def postProcessObject(self, instance):
         for drum in instance:
@@ -331,7 +341,8 @@ class ScoreStructureV0(FileStructure):
     scoreData = MetadataStructureV0()
     drumKit = DrumKitStructureV0()
     measures = MeasureStructureV0(singleton = False,
-                                  getter = lambda score:list(score.iterMeasures()))
+                                  getter = lambda score:list(score.iterMeasures()),
+                                  setter = lambda score, msr: score.insertMeasureByIndex(0, measure = msr))
     _sections = StringField("SECTION_TITLE", singleton = False)
     paperSize = StringField("PAPER_SIZE")
     lilysize = PositiveIntegerField("LILYSIZE")
@@ -345,7 +356,5 @@ class ScoreStructureV0(FileStructure):
     fontOptions = FontOptionsStructureV0()
 
     def postProcessObject(self, instance):
-        for measure in instance.measures:
-            instance.insertMeasureByIndex(0, measure = measure)
         instance.postReadProcessing()
         return instance

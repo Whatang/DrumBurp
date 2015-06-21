@@ -205,7 +205,7 @@ class TestDrum(unittest.TestCase):
         second_.shortcut = "a"
         outstring = StringIO()
         indenter = fileUtils.Indenter(outstring)
-        dbfsv0.DrumField("DRUM", getter = lambda _:drum).write_all(self, indenter)
+        dbfsv0.DrumFieldV0("DRUM", getter = lambda _:drum).write_all(self, indenter)
         outlines = outstring.getvalue().splitlines()
         self.assertEqual(len(outlines), 4)
         self.assertEqual(outlines[0], "DRUM test,td,x,False")
