@@ -35,6 +35,7 @@ import Data.DrumKit
 import Data.ScoreMetaData
 import Data.FontOptions
 import Data.DBConstants
+import Data.DefaultKits
 from Data.Counter import CounterRegistry
 import Data.Score
 
@@ -207,12 +208,45 @@ class DrumField(Field):
                                                           data.shortcut)
             yield "  NOTEHEAD %s" % dataString
 
-class NoteHeadField(NoWriteField):
+class NoteHeadFieldV0(NoWriteField):
+    @staticmethod
+    def _guessNotation(abbr, head):
+        for drumInfo in Data.DefaultKits.DEFAULT_KIT:
+            if drumInfo[0][1] == abbr:
+                nHead, nLine, sDir = drumInfo[-3:]
+                nEffect = "none"
+                break
+        else:
+            return ["default", 0, "none", Data.DefaultKits.STEM_UP]
+        for headInfo in Data.DefaultKits.DEFAULT_EXTRA_HEADS[abbr]:
+            if headInfo[0] == head:
+                nHead, nEffect = headInfo[4:6]
+        return nHead, nLine, nEffect, sDir
+
+    @staticmethod
+    def readHeadData(abbr, dataString):
+        head, data = dataString.split(None, 1)
+        fields = data.split(",")
+        note, volume, effect = fields[:3]
+        note = int(note)
+        volume = int(volume)
+        shortcut = ""
+        if len(fields) > 3:
+            nHead, nLine, nEffect, sDir = fields[3:7]
+            nLine = int(nLine)
+            sDir = int(sDir)
+            if len(fields) > 7:
+                shortcut = fields[7]
+        else:
+            nHead, nLine, nEffect, sDir = NoteHeadFieldV0._guessNotation(abbr,
+                                                                         head)
+        return head, Data.Drum.HeadData(note, volume, effect, nHead,
+                                        nLine, nEffect, sDir, shortcut)
+
     def read(self, target, data):
         lastDrum = target[-1]
-        lastDrum.readHeadData(data)
-
-    # TODO: Pull the head reading code into this module
+        head, headData = self.readHeadData(lastDrum.abbr, data)
+        lastDrum.addNoteHead(head, headData)
 
 class DrumKitStructureV0(FileStructure):
     tag = "KIT"
@@ -221,15 +255,60 @@ class DrumKitStructureV0(FileStructure):
     targetClass = Data.DrumKit.DrumKit
 
     drums = DrumField("DRUM", getter = list, singleton = False)
-    noteheads = conditionalWriteField(NoteHeadField("NOTEHEAD"),
+    noteheads = conditionalWriteField(NoteHeadFieldV0("NOTEHEAD"),
                                       lambda _: False)
 
     def postProcessObject(self, instance):
         for drum in instance:
             if len(drum) == 0:
-                drum.guessHeadData()
+                self.guessHeadData(drum)
             drum.checkShortcuts()
         return instance
+
+    @staticmethod
+    def _guessMidiNote(abbr):
+        for drumData, midiNote, x_, y_, z_ in Data.DefaultKits.DEFAULT_KIT:
+            if abbr == drumData[1]:
+                return midiNote
+        return Data.DefaultKits.DEFAULT_NOTE
+
+    @staticmethod
+    def guessHeadData(drum):
+        midiNote = DrumKitStructureV0._guessMidiNote(drum.abbr)
+        for drumInfo in Data.DefaultKits.DEFAULT_KIT:
+            if drumInfo[0][1] == drum.abbr:
+                notationHead, notationLine, stemDir = drumInfo[-3:]
+                break
+        else:
+            notationHead = "default"
+            notationLine = 0
+            stemDir = Data.DefaultKits.STEM_UP
+        headData = Data.Drum.HeadData(midiNote, notationHead = notationHead,
+                                      notationLine = notationLine,
+                                      stemDirection = stemDir)
+        drum.addNoteHead(drum.head, headData)
+        Data.Drum.guessEffect(drum, drum.head)
+        for (extraHead,
+             newMidi,
+             newMidiVolume,
+             newEffect,
+             newNotationHead,
+             newNotationEffect,
+             shortcut) in Data.DefaultKits.DEFAULT_EXTRA_HEADS.get(drum.abbr,
+                                                                   []):
+            if newMidi is None:
+                newMidi = midiNote
+            if newMidiVolume is None:
+                newMidiVolume = headData.midiVolume
+            newData = Data.Drum.HeadData(newMidi, newMidiVolume, newEffect,
+                                         notationHead = newNotationHead,
+                                         notationLine = notationLine,
+                                         notationEffect = newNotationEffect,
+                                         stemDirection = stemDir,
+                                         shortcut = shortcut)
+            drum.addNoteHead(extraHead, newData)
+        drum.checkShortcuts()
+
 
 class FontOptionsStructureV0(FileStructure):
     tag = "FONT_OPTIONS"

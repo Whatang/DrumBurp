@@ -30,13 +30,18 @@ from Data.ScoreSerializer import ScoreSerializer
 from Data import DBConstants
 from Data import DBErrors
 from Data import fileUtils
+from Data import Drum
+from Data import DefaultKits
+from Data.fileStructures import dbfsv0
 
-class TestScoreSerializer(unittest.TestCase):
+class TestScoreSerializerGeneral(unittest.TestCase):
     def testReadTooHighVersionNumber(self):
         data = """DB_FILE_FORMAT 10000
         """
         handle = StringIO(data)
         self.assertRaises(DBErrors.DBVersionError, ScoreSerializer.read, handle)
+
+class TestScoreSerializerV0(unittest.TestCase):
 
     ff_zero_data = """
     SCORE_METADATA

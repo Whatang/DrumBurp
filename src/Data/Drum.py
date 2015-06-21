@@ -24,7 +24,7 @@ Created on 12 Dec 2010
 '''
 import copy
 
-from Data.DBConstants import DRUM_ABBR_WIDTH
+from Data import DBConstants
 import Data.DefaultKits as DefaultKits
 
 class HeadData(object):
@@ -46,54 +46,6 @@ class HeadData(object):
         self.stemDirection = stemDirection
         self.shortcut = shortcut
 
-    @classmethod
-    def read(cls, abbr, dataString):
-        head, data = dataString.split(None, 1)
-        fields = data.split(",")
-        note, volume, effect = fields[:3]
-        note = int(note)
-        volume = int(volume)
-        shortcut = ""
-        if len(fields) > 3:
-            nHead, nLine, nEffect, sDir = fields[3:7]
-            nLine = int(nLine)
-            sDir = int(sDir)
-            if len(fields) > 7:
-                shortcut = fields[7]
-        else:
-            nHead, nLine, nEffect, sDir = cls._guessNotation(abbr, head)
-        return head, cls(note, volume, effect, nHead,
-                         nLine, nEffect, sDir, shortcut)
-
-    @staticmethod
-    def _guessNotation(abbr, head):
-        for drumInfo in DefaultKits.DEFAULT_KIT:
-            if drumInfo[0][1] == abbr:
-                nHead, nLine, sDir = drumInfo[-3:]
-                nEffect = "none"
-                break
-        else:
-            return ["default", 0, "none", DefaultKits.STEM_UP]
-        for headInfo in DefaultKits.DEFAULT_EXTRA_HEADS[abbr]:
-            if headInfo[0] == head:
-                nHead, nEffect = headInfo[4:6]
-        return nHead, nLine, nEffect, sDir
-
-
-
-_DEFAULTEFFECT = {"x":"normal",
-                  "X":"accent",
-                  "o":"normal",
-                  "O":"accent",
-                  "g":"ghost",
-                  "f":"flam",
-                  "d":"drag",
-                  "+":"choke",
-                  "#":"choke",
-                  "b":"normal"}
-
-
-
 class Drum(object):
     def __init__(self, name, abbr, head, locked = False):
         self.name = name
@@ -103,7 +55,7 @@ class Drum(object):
         self._headData = {}
         self.locked = locked
         assert len(name) > 0
-        assert 1 <= len(abbr) <= DRUM_ABBR_WIDTH
+        assert 1 <= len(abbr) <= DBConstants.DRUM_ABBR_WIDTH
         assert len(head) == 1
 
     @property
@@ -151,61 +103,19 @@ class Drum(object):
             self._head = head
 
     def addNoteHead(self, head, headData = None):
-        self._noteHeads.append(head)
+        if head not in self._noteHeads:
+            self._noteHeads.append(head)
+        if head in self._headData:
+            return
         if headData is None:
-            newHead = copy.deepcopy(self._headData[self.head])
-            newHead.shortcut = None
-            self._headData[head] = newHead
-            self._guessEffect(head)
+            headData = copy.deepcopy(self._headData[self.head])
+            headData.shortcut = None
+            self._headData[head] = headData
+            guessEffect(self, head)
             self.checkShortcuts()
         else:
             assert isinstance(headData, HeadData)
             self._headData[head] = headData
-
-    def _guessEffect(self, head):
-        assert head in self._headData
-        self._headData[head].effect = _DEFAULTEFFECT.get(head, "normal")
-
-    def guessHeadData(self):
-        self._noteHeads = [self._head]
-        midiNote = _guessMidiNote(self.abbr)
-        for drumInfo in DefaultKits.DEFAULT_KIT:
-            if drumInfo[0][1] == self.abbr:
-                notationHead, notationLine, stemDir = drumInfo[-3:]
-                break
-        else:
-            notationHead = "default"
-            notationLine = 0
-            stemDir = DefaultKits.STEM_UP
-        headData = HeadData(midiNote, notationHead = notationHead,
-                            notationLine = notationLine,
-                            stemDirection = stemDir)
-        self._headData = {self._head: headData}
-        self._guessEffect(self._head)
-        for (extraHead,
-             newMidi,
-             newMidiVolume,
-             newEffect,
-             newNotationHead,
-             newNotationEffect,
-             shortcut) in DefaultKits.DEFAULT_EXTRA_HEADS.get(self.abbr, []):
-            if newMidi is None:
-                newMidi = midiNote
-            if newMidiVolume is None:
-                newMidiVolume = headData.midiVolume
-            newData = HeadData(newMidi, newMidiVolume, newEffect,
-                               notationHead = newNotationHead,
-                               notationLine = notationLine,
-                               notationEffect = newNotationEffect,
-                               stemDirection = stemDir,
-                               shortcut = shortcut)
-            self.addNoteHead(extraHead, newData)
-        self.checkShortcuts()
-
-    def readHeadData(self, dataString):
-        head, data = HeadData.read(self.abbr, dataString)
-        self._noteHeads.append(head)
-        self._headData[head] = data
 
     def removeNoteHead(self, head):
         try:
@@ -252,8 +162,17 @@ class Drum(object):
             shortcuts.append((unicode(shortcut), head))
         return shortcuts
 
-def _guessMidiNote(abbr):
-    for drumData, midiNote, x_, y_, z_ in DefaultKits.DEFAULT_KIT:
-        if abbr == drumData[1]:
-            return midiNote
-    return DefaultKits.DEFAULT_NOTE
+_DEFAULTEFFECT = {"x":"normal",
+                  "X":"accent",
+                  "o":"normal",
+                  "O":"accent",
+                  "g":"ghost",
+                  "f":"flam",
+                  "d":"drag",
+                  "+":"choke",
+                  "#":"choke",
+                  "b":"normal"}
+def guessEffect(drum, head):
+    assert drum.isAllowedHead(head)
+    drum.headData(head).effect = _DEFAULTEFFECT.get(head, "normal")
+
