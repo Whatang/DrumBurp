@@ -45,14 +45,21 @@ class BeatStructureV1(FileStructure):
     def postProcessObject(self, instance):
         return Data.Beat.Beat(instance["counter"], instance.get("numTicks"))
 
+def _beatStructure():
+    return BeatStructureV1(singleton = False,
+                            setter = lambda count, beat: count.addBeats(beat, 1))
+
 class MeasureCountStructureV1(FileStructure):
-    tag = "COUNT_INFO"
-    startTag = "COUNT_INFO_START"
-    endTag = "COUNT_INFO_END"
+    tag = "MEASURE_COUNT"
     targetClass = Data.MeasureCount.MeasureCount
 
-    beats = BeatStructureV1(singleton = False,
-                            setter = lambda count, beat: count.addBeats(beat, 1))
+    beats = _beatStructure()
+
+class DefaultMeasureCountStructureV1(FileStructure):
+    tag = "DEFAULT_MEASURE_COUNT"
+    targetClass = Data.MeasureCount.MeasureCount
+
+    beats = _beatStructure()
 
 class MeasureStructureV1(FileStructure):
     tag = "MEASURE"
@@ -121,8 +128,7 @@ class ScoreStructureV1(FileStructure):
     lilypages = NonNegativeIntegerField("LILYPAGES")
     lilyFill = BooleanField("LILYFILL")
     lilyFormat = NonNegativeIntegerField("LILYFORMAT")
-    defaultCount = MeasureCountStructureV1(singleton = True,
-                                           startTag = "DEFAULT_COUNT_INFO_START")
+    defaultCount = DefaultMeasureCountStructureV1()
     systemSpacing = NonNegativeIntegerField("SYSTEM_SPACE")
     fontOptions = dbfsv0.FontOptionsStructureV0()
 
