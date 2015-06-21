@@ -154,11 +154,11 @@ class MeasureStructureV0(FileStructure):
 
     counter = MeasureCountStructureV0()
     startBarLine = BarlineFieldWriteV0(" STARTBARLINE",
-                                       getter = lambda measure: measure.startBarlineString())
+                                       getter = startBarlineString)
     barlines = BarlineReadFieldV0("BARLINE")
     notes = NoteFieldV0("NOTE", getter = list, singleton = False)
     endBarLine = BarlineFieldWriteV0(" ENDBARLINE",
-                                     getter = lambda measure: measure.endBarlineString())
+                                     getter = endBarlineString)
     beatLength = BeatLengthFieldV0("BEATLENGTH")
     repeatCount = conditionalWriteField(PositiveIntegerField("REPEAT_COUNT"),
                                         lambda measure: measure.repeatCount > 1)
@@ -341,7 +341,8 @@ class ScoreStructureV0(FileStructure):
     scoreData = MetadataStructureV0()
     drumKit = DrumKitStructureV0()
     measures = MeasureStructureV0(singleton = False,
-                                  getter = lambda score:list(score.iterMeasures()))
+                                  getter = lambda score:list(score.iterMeasures()),
+                                  setter = lambda score, msr: score.insertMeasureByIndex(0, measure = msr))
     _sections = StringField("SECTION_TITLE", singleton = False)
     paperSize = StringField("PAPER_SIZE")
     lilysize = PositiveIntegerField("LILYSIZE")
@@ -355,7 +356,5 @@ class ScoreStructureV0(FileStructure):
     fontOptions = FontOptionsStructureV0()
 
     def postProcessObject(self, instance):
-        for measure in instance.measures:
-            instance.insertMeasureByIndex(0, measure = measure)
         instance.postReadProcessing()
         return instance
