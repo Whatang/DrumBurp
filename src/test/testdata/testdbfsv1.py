@@ -682,6 +682,65 @@ class TestWriteMeasure(unittest.TestCase):
                           '  SIMINDEX 1',
                           'END_MEASURE'])
 
+class TestNoteHead(unittest.TestCase):
+    def get_output(self, head):
+        handle = StringIO()
+        indenter = fileUtils.Indenter(handle)
+        dbfsv1.NoteHeadStructureV1().write(head, indenter)
+        return handle.getvalue().splitlines()
+
+    def testWriteDefault(self):
+        output = self.get_output(HeadData())
+        self.assertEqual(output,
+                         ['START_NOTEHEAD',
+                          '  MIDINOTE 71',
+                          '  MIDIVOLUME 96',
+                          '  EFFECT normal',
+                          '  NOTATIONHEAD default',
+                          '  NOTATIONLINE 0',
+                          '  NOTATIONEFFECT none',
+                          '  STEM 0',
+                          'END_NOTEHEAD'])
+
+    def testWriteWithData(self):
+        output = self.get_output(HeadData(69, 127, 'ghost', 'triangle', -1,
+                                          'ghost', DefaultKits.STEM_DOWN, 'x'))
+        self.assertEqual(output,
+                         ['START_NOTEHEAD',
+                          '  MIDINOTE 69',
+                          '  MIDIVOLUME 127',
+                          '  EFFECT ghost',
+                          '  NOTATIONHEAD triangle',
+                          '  NOTATIONLINE -1',
+                          '  NOTATIONEFFECT ghost',
+                          '  STEM 1',
+                          '  SHORTCUT x',
+                          'END_NOTEHEAD'])
+
+    def testRead(self):
+        data = """
+        START_NOTEHEAD
+          MIDINOTE 69
+          MIDIVOLUME 127
+          EFFECT ghost
+          NOTATIONHEAD triangle
+          NOTATIONLINE -1
+          NOTATIONEFFECT ghost
+          STEM 1
+          SHORTCUT x
+        END_NOTEHEAD
+        """
+        iterator = fileUtils.dbFileIterator(StringIO(data))
+        head = dbfsv1.NoteHeadStructureV1().read(iterator)
+        self.assertEqual(head.midiNote, 69)
+        self.assertEqual(head.midiVolume, 127)
+        self.assertEqual(head.effect, 'ghost')
+        self.assertEqual(head.notationHead, 'triangle')
+        self.assertEqual(head.notationLine, -1)
+        self.assertEqual(head.notationEffect, 'ghost')
+        self.assertEqual(head.stemDirection, DefaultKits.STEM_DOWN)
+        self.assertEqual(head.shortcut, 'x')
+
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
