@@ -24,7 +24,7 @@ Created on 12 Dec 2010
 '''
 
 from collections import defaultdict
-from Data.DBConstants import EMPTY_NOTE, BAR_TYPES
+from Data.DBConstants import EMPTY_NOTE, BAR_TYPES, NORMAL_BAR, REPEAT_END_STR, REPEAT_START, LINE_BREAK, SECTION_END
 from Data.DBErrors import BadTimeError
 from Data.NotePosition import NotePosition
 from Data import MeasureCount
@@ -117,8 +117,8 @@ class Measure(object):
     def __init__(self, width = 0):
         self._width = width
         self._notes = _NoteDictionary()
-        self.startBar = BAR_TYPES["NORMAL_BAR"]
-        self.endBar = BAR_TYPES["NORMAL_BAR"]
+        self.startBar = BAR_TYPES[NORMAL_BAR]
+        self.endBar = BAR_TYPES[NORMAL_BAR]
         self._callBack = None
         self._info = MeasureInfo()
         self._counter = None
@@ -177,32 +177,32 @@ class Measure(object):
     def setSectionEnd(self, boolean):
         self._info.isSectionEnd = boolean
         if boolean:
-            self.endBar |= BAR_TYPES["SECTION_END"]
+            self.endBar |= BAR_TYPES[SECTION_END]
         else:
-            self.endBar &= ~BAR_TYPES["SECTION_END"]
+            self.endBar &= ~BAR_TYPES[SECTION_END]
 
     def setRepeatStart(self, boolean):
         self._info.isRepeatStart = boolean
         if boolean:
-            self.startBar |= BAR_TYPES["REPEAT_START"]
+            self.startBar |= BAR_TYPES[REPEAT_START]
         else:
-            self.startBar &= ~BAR_TYPES["REPEAT_START"]
+            self.startBar &= ~BAR_TYPES[REPEAT_START]
 
     def setRepeatEnd(self, boolean):
         self._info.isRepeatEnd = boolean
         if boolean:
-            self.endBar |= BAR_TYPES["REPEAT_END"]
+            self.endBar |= BAR_TYPES[REPEAT_END_STR]
             self.repeatCount = max(self.repeatCount, 2)
         else:
             self.repeatCount = 1
-            self.endBar &= ~BAR_TYPES["REPEAT_END"]
+            self.endBar &= ~BAR_TYPES[REPEAT_END_STR]
 
     def setLineBreak(self, boolean):
         self._info.isLineBreak = boolean
         if boolean:
-            self.endBar |= BAR_TYPES["LINE_BREAK"]
+            self.endBar |= BAR_TYPES[LINE_BREAK]
         else:
-            self.endBar &= ~BAR_TYPES["LINE_BREAK"]
+            self.endBar &= ~BAR_TYPES[LINE_BREAK]
 
     def isSectionEnd(self):
         return self._info.isSectionEnd
@@ -263,12 +263,7 @@ class Measure(object):
         else:
             self.addNote(position, head)
 
-    @property
-    def width(self):
-        return self._width
-
-    @width.setter
-    def width(self, newWidth):
+    def _setWidth(self, newWidth):
         assert newWidth > 0
         if newWidth == len(self):
             return
@@ -284,11 +279,11 @@ class Measure(object):
             return
         if self._counter is None:
             self._counter = counter
-            self.width = len(counter)
+            self._setWidth(len(counter))
             return
         oldNotes = copy.deepcopy(self._notes)
         oldTimes = list(self._counter.iterTime())
-        self.width = len(counter)
+        self._setWidth(len(counter))
         self.clear()
         newTimes = list(counter.iterTime())
         oldIndex = 0
@@ -333,7 +328,7 @@ class Measure(object):
         oldMeasure = self.copyMeasure()
         self.clear()
         if other.counter is None:
-            self.width = len(other)
+            self._setWidth(len(other))
         self.setBeatCount(other.counter)
         for pos, head in other:
             self.addNote(pos, head)

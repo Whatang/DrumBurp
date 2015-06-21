@@ -25,12 +25,18 @@ Created on 12 Dec 2010
 # Storage & text constants
 
 EMPTY_NOTE = "-"
-BAR_TYPES = {"NO_BAR": 0,
-             "NORMAL_BAR": 1,
-             "REPEAT_START": 2,
-             "REPEAT_END":4,
-             "SECTION_END":8,
-             "LINE_BREAK":16}
+NO_BAR = "NO_BAR"
+NORMAL_BAR = "NORMAL_BAR"
+REPEAT_START = "REPEAT_START"
+REPEAT_END_STR = "REPEAT_END"
+SECTION_END = "SECTION_END"
+LINE_BREAK = "LINE_BREAK"
+BAR_TYPES = {NO_BAR: 0,
+             NORMAL_BAR: 1,
+             REPEAT_START: 2,
+             REPEAT_END_STR:4,
+             SECTION_END:8,
+             LINE_BREAK:16}
 BARLINE = "|"
 REPEAT_STARTER = "/"
 REPEAT_END = "\\"
