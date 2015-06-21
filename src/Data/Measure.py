@@ -263,7 +263,12 @@ class Measure(object):
         else:
             self.addNote(position, head)
 
-    def _setWidth(self, newWidth):
+    @property
+    def width(self):
+        return self._width
+
+    @width.setter
+    def width(self, newWidth):
         assert newWidth > 0
         if newWidth == len(self):
             return
@@ -279,11 +284,11 @@ class Measure(object):
             return
         if self._counter is None:
             self._counter = counter
-            self._setWidth(len(counter))
+            self.width = len(counter)
             return
         oldNotes = copy.deepcopy(self._notes)
         oldTimes = list(self._counter.iterTime())
-        self._setWidth(len(counter))
+        self.width = len(counter)
         self.clear()
         newTimes = list(counter.iterTime())
         oldIndex = 0
@@ -328,7 +333,7 @@ class Measure(object):
         oldMeasure = self.copyMeasure()
         self.clear()
         if other.counter is None:
-            self._setWidth(len(other))
+            self.width = len(other)
         self.setBeatCount(other.counter)
         for pos, head in other:
             self.addNote(pos, head)
