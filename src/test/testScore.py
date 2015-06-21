@@ -28,7 +28,7 @@ from Data.DBErrors import BadTimeError, OverSizeMeasure, InconsistentRepeats
 from Data.DBConstants import EMPTY_NOTE
 from Data.NotePosition import NotePosition
 
-# pylint: disable-msg=R0904
+# pylint:disable=too-many-lines
 
 class TestMeasureControl(unittest.TestCase):
     def setUp(self):

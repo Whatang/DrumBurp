@@ -260,7 +260,66 @@ class TestScoreSerializerV0(unittest.TestCase):
         self.assertEqual(score.numMeasures(), 7)
         self.assert_(score.drumKit[1].isAllowedHead('q'))
 
+    class NoFF(RuntimeError):
+        pass
+    class MCounts(RuntimeError):
+        pass
+    class Barline(RuntimeError):
+        pass
+    class NoLilyFormat(RuntimeError):
+        pass
+    class NoLilySize(RuntimeError):
+        pass
+    class NoLilyPages(RuntimeError):
+        pass
+    class ShortNoteHeads(RuntimeError):
+        pass
+    class OldTriplets(RuntimeError):
+        pass
+    class NoNoteheads(RuntimeError):
+        pass
+
+    def _compareData(self, data, written):
+        for line1, line2 in zip(data, written):
+            try:
+                self.assertEqual(line1, line2)
+            except AssertionError:
+                if line2.startswith('DB_FILE_FORMAT'):
+                    raise self.NoFF()
+                elif line2.lstrip().startswith('LILYFORMAT'):
+                    raise self.NoLilyFormat()
+                elif line2.lstrip().startswith('LILYSIZE'):
+                    raise self.NoLilySize()
+                elif line2.lstrip().startswith('LILYPAGES'):
+                    raise self.NoLilyPages()
+                elif line2.startswith("  MEASURECOUNTSVISIBLE"):
+                    raise self.MCounts()
+                elif "NORMAL_BAR," in line1:
+                    raise self.Barline()
+                elif line1.lstrip().startswith("NOTEHEAD"):
+                    raise self.ShortNoteHeads()
+                elif "|^ea|" in line1:
+                    raise self.OldTriplets()
+                elif line1.lstrip().startswith("DRUM") and "NOTEHEAD" in line2:
+                    raise self.NoNoteheads()
+                else:
+                    raise
+
+    @staticmethod
+    def _tidyShortNoteHeads(data, written):
+        for line1 in data:
+            numCommas = 0
+            if "NOTEHEAD" in line1:
+                numCommas = len([ch for ch in line1 if ch == ","])
+                break
+        written = [",".join(x.split(",", numCommas + 1)[:numCommas + 1])
+                   if "NOTEHEAD" in x else x
+                   for x in written]
+        data = [x.rstrip(",") for x in data]
+        return data, written
+
     def testVersion0Files(self):
+        print "Version 0"
         fileglob = os.path.join("testdata", "v0", "*.brp")
         for testfile in glob.glob(fileglob):
             print testfile
@@ -270,85 +329,46 @@ class TestScoreSerializerV0(unittest.TestCase):
             with fileUtils.DataReader(testfile) as reader:
                 data = reader.read().splitlines()
             written = written.getvalue().splitlines()
-            class NoFF(RuntimeError):
-                pass
-            class MCounts(RuntimeError):
-                pass
-            class Barline(RuntimeError):
-                pass
-            class NoLilyFormat(RuntimeError):
-                pass
-            class NoLilySize(RuntimeError):
-                pass
-            class NoLilyPages(RuntimeError):
-                pass
-            class ShortNoteHeads(RuntimeError):
-                pass
-            class OldTriplets(RuntimeError):
-                pass
-            class NoNoteheads(RuntimeError):
-                pass
             while True:
                 try:
-                    for line1, line2 in zip(data, written):
-                        try:
-                            self.assertEqual(line1, line2)
-                        except AssertionError:
-                            if line2.startswith('DB_FILE_FORMAT'):
-                                raise NoFF()
-                            elif line2.lstrip().startswith('LILYFORMAT'):
-                                raise NoLilyFormat()
-                            elif line2.lstrip().startswith('LILYSIZE'):
-                                raise NoLilySize()
-                            elif line2.lstrip().startswith('LILYPAGES'):
-                                raise NoLilyPages()
-                            elif line2.startswith("  MEASURECOUNTSVISIBLE"):
-                                raise MCounts()
-                            elif "NORMAL_BAR," in line1:
-                                raise Barline()
-                            elif line1.lstrip().startswith("NOTEHEAD"):
-                                raise ShortNoteHeads()
-                            elif "|^ea|" in line1:
-                                raise OldTriplets()
-                            elif line1.lstrip().startswith("DRUM") and "NOTEHEAD" in line2:
-                                raise NoNoteheads()
-                            else:
-                                raise
+                    self._compareData(data, written)
                     break
-                except NoFF:
+                except self.NoFF:
                     written = written[1:]
-                except MCounts:
+                except self.MCounts:
                     written = [x for x in written
-                               if not x.startswith("  MEASURECOUNTSVISIBLE")]
-                except Barline:
+                               if not x.lstrip().startswith("MEASURECOUNTSVISIBLE")]
+                except self.Barline:
                     data = [x.replace('NORMAL_BAR,', '') for x in data]
-                except NoLilyFormat:
+                except self.NoLilyFormat:
                     written = [x for x in written
                                if not x.lstrip().startswith("LILYFORMAT")]
-                except NoLilySize:
+                except self.NoLilySize:
                     written = [x for x in written
                                if not x.lstrip().startswith("LILYSIZE")]
-                except NoLilyPages:
+                except self.NoLilyPages:
                     written = [x for x in written
                                if not x.lstrip().startswith("LILYPAGES")]
-                except ShortNoteHeads:
-                    for line1 in data:
-                        numCommas = 0
-                        if "NOTEHEAD" in line1:
-                            numCommas = len([ch for ch in line1 if ch == ","])
-                            break
-                    written = [",".join(x.split(",", numCommas + 1)[:numCommas + 1])
-                               if "NOTEHEAD" in x else x
-                               for x in written]
-                    data = [x.rstrip(",") for x in data]
-                except OldTriplets:
+                except self.ShortNoteHeads:
+                    data, written = self._tidyShortNoteHeads(data, written)
+                except self.OldTriplets:
                     data = [x.replace("|^ea|", "|^+a|") for x in data]
-                except NoNoteheads:
-                    written = [x for x in written
-                             if "NOTEHEAD" not in x]
-                    data = [x for x in data
-                             if "NOTEHEAD" not in x]
+                except self.NoNoteheads:
+                    written = [x for x in written if "NOTEHEAD" not in x]
+                    data = [x for x in data if "NOTEHEAD" not in x]
 
+class TestScoreSerializerV1(unittest.TestCase):
+    def testReadV0WriteV1ReadV1(self):
+        print "Version 1"
+        fileglob = os.path.join("testdata", "v0", "*.brp")
+        for testfile in glob.glob(fileglob):
+            print testfile
+            score = ScoreSerializer.loadScore(testfile)
+            written = StringIO()
+            ScoreSerializer.write(score, written, DBConstants.DBFF_1)
+            written.seek(0)
+            score2 = ScoreSerializer.read(written)
+            self.assertEqual(score.hashScore(), score2.hashScore())
 
 if __name__ == "__main__":
     unittest.main()

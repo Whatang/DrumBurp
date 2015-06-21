@@ -424,7 +424,7 @@ class FileStructure(AbstractFileStructureElement):
                     setattr(instance, self.attributeName, [])
                 getattr(instance, self.attributeName).append(subInstance)
 
-    def read(self, fileIterator, startData = None):
+    def read(self, fileIterator, startData = None, debug = False):
         instance = None
         if self.autoMake:
             instance = self.makeObject(None)
@@ -437,14 +437,16 @@ class FileStructure(AbstractFileStructureElement):
             iterator = fileIterator
         try:
             for lineType, lineData in iterator:
-#                 print lineType, lineData
+                if debug:
+                    print lineType, lineData
                 if lineType in fieldDict:
                     field = fieldDict[lineType]
                     field.read(instance, lineData)
                 elif lineType in structDict:
                     structure = structDict[lineType]
                     subInstance = structure.read(fileIterator,
-                                                 (lineType, lineData))
+                                                 (lineType, lineData),
+                                                 debug)
                     structure.recordStructure(instance, subInstance)
                 elif lineType == self.startTag:
                     instance = self.makeObject(lineData)
