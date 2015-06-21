@@ -902,7 +902,8 @@ class TestDrum(unittest.TestCase):
         self.assertEqual(drum[1], 'y')
         self.assertEqual(drum[2], 'z')
 
-    # TODO: test reading a drum
+# TODO: test drumkits
+# TODO: test scores
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
