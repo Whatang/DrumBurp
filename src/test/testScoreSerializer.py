@@ -319,6 +319,7 @@ class TestScoreSerializerV0(unittest.TestCase):
         return data, written
 
     def testVersion0Files(self):
+        print "Version 0"
         fileglob = os.path.join("testdata", "v0", "*.brp")
         for testfile in glob.glob(fileglob):
             print testfile
@@ -356,6 +357,18 @@ class TestScoreSerializerV0(unittest.TestCase):
                     written = [x for x in written if "NOTEHEAD" not in x]
                     data = [x for x in data if "NOTEHEAD" not in x]
 
+class TestScoreSerializerV1(unittest.TestCase):
+    def testReadV0WriteV1ReadV1(self):
+        print "Version 1"
+        fileglob = os.path.join("testdata", "v0", "*.brp")
+        for testfile in glob.glob(fileglob):
+            print testfile
+            score = ScoreSerializer.loadScore(testfile)
+            written = StringIO()
+            ScoreSerializer.write(score, written, DBConstants.DBFF_1)
+            written.seek(0)
+            score2 = ScoreSerializer.read(written)
+            self.assertEqual(score.hashScore(), score2.hashScore())
 
 if __name__ == "__main__":
     unittest.main()
