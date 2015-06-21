@@ -101,13 +101,24 @@ class BeatLengthFieldV0(NoWriteField):
         target.counter = Data.MeasureCount.counterMaker(int(data),
                                                         len(target))
 
+def startBarlineString(measure):
+    return ",".join([name for name, value in
+                     Data.DBConstants.BAR_TYPES.iteritems()
+                     if (measure.startBar & value) == value])
+
+def endBarlineString(measure):
+    return ",".join([name for name, value in
+                     Data.DBConstants.BAR_TYPES.iteritems()
+                     if (measure.endBar & value) == value])
+
+
 class BarlineReadFieldV0(NoWriteField):
-    mapping = {"NO_BAR" : lambda x, y: True,
-               "NORMAL_BAR" : lambda x, y: True,
-               "REPEAT_START": Data.Measure.Measure.setRepeatStart,
-               "REPEAT_END": Data.Measure.Measure.setRepeatEnd,
-               "SECTION_END": Data.Measure.Measure.setSectionEnd,
-               "LINE_BREAK": Data.Measure.Measure.setLineBreak}
+    mapping = {Data.DBConstants.NO_BAR: lambda x, y: True,
+               Data.DBConstants.NORMAL_BAR: lambda x, y: True,
+               Data.DBConstants.REPEAT_START: Data.Measure.Measure.setRepeatStart,
+               Data.DBConstants.REPEAT_END_STR: Data.Measure.Measure.setRepeatEnd,
+               Data.DBConstants.SECTION_END: Data.Measure.Measure.setSectionEnd,
+               Data.DBConstants.LINE_BREAK: Data.Measure.Measure.setLineBreak}
 
     def __init__(self, title, attributeName = None, singleton = True):
         super(BarlineReadFieldV0, self).__init__(title, attributeName, singleton)

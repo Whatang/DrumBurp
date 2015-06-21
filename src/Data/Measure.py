@@ -219,14 +219,6 @@ class Measure(object):
     def isLineEnd(self):
         return self.isLineBreak() or self.isSectionEnd()
 
-    def startBarlineString(self):
-        return ",".join([name for name, value in BAR_TYPES.iteritems()
-                         if (self.startBar & value) == value])
-
-    def endBarlineString(self):
-        return ",".join([name for name, value in BAR_TYPES.iteritems()
-                         if (self.endBar & value) == value])
-
     def getNote(self, position):
         return self.noteAt(position.noteTime, position.drumIndex)
 
