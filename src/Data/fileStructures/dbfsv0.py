@@ -255,8 +255,7 @@ class DrumKitStructureV0(FileStructure):
     targetClass = Data.DrumKit.DrumKit
 
     drums = DrumFieldV0("DRUM", getter = list, singleton = False)
-    noteheads = conditionalWriteField(NoteHeadFieldV0("NOTEHEAD"),
-                                      lambda _: False)
+    noteheads = NoteHeadFieldV0("NOTEHEAD")
 
     def postProcessObject(self, instance):
         for drum in instance:
