@@ -51,8 +51,8 @@ class MeasureCountStructureV1(FileStructure):
     endTag = "COUNT_INFO_END"
     targetClass = Data.MeasureCount.MeasureCount
 
-    beats = dbfsv0.BeatStructureV0(singleton = False,
-                                   setter = lambda count, beat: count.addBeats(beat, 1))
+    beats = BeatStructureV1(singleton = False,
+                            setter = lambda count, beat: count.addBeats(beat, 1))
 
 class MeasureStructureV1(FileStructure):
     tag = "MEASURE"
