@@ -359,7 +359,7 @@ class TestScoreSerializerV0(unittest.TestCase):
 
 class TestScoreSerializerV1(unittest.TestCase):
     def testReadV0WriteV1ReadV1(self):
-        print "Version 1"
+        print "Read Version 0, Write Version 1"
         fileglob = os.path.join("testdata", "v0", "*.brp")
         for testfile in glob.glob(fileglob):
             print testfile
@@ -369,6 +369,19 @@ class TestScoreSerializerV1(unittest.TestCase):
             written.seek(0)
             score2 = ScoreSerializer.read(written)
             self.assertEqual(score.hashScore(), score2.hashScore())
+
+    def testReadV1WriteV1(self):
+        print "Read Version 1, Write Version 1"
+        fileglob = os.path.join("testdata", "v1", "*.brp")
+        for testfile in glob.glob(fileglob):
+            print testfile
+            score = ScoreSerializer.loadScore(testfile)
+            written = StringIO()
+            ScoreSerializer.write(score, written, DBConstants.DBFF_1)
+            with fileUtils.DataReader(testfile) as reader:
+                data = reader.read().splitlines()
+            written = written.getvalue().splitlines()
+            self.assertEqual(data, written)
 
 if __name__ == "__main__":
     unittest.main()
