@@ -429,9 +429,6 @@ def _initialize():
     HAS_MIDI = _HAS_PYGAME and _PLAYER.isGood()
 
 class MidiInit(QThread):
-    def __init__(self, parent = None):
-        super(MidiInit, self).__init__(parent)
-
     def run(self):  # IGNORE:no-self-use
         _initialize()
 

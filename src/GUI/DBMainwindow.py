@@ -125,10 +125,12 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.setSections()
         self._versionThread = VersionCheckThread()
         self._versionThread.finished.connect(self._finishedVersionCheck)
-        self._midiInitThread = DBMidi.MidiInit()
+        self._midiInitThread = DBMidi.MidiInit(self)
         self._midiInitThread.finished.connect(self._midiInitFinished)
         QTimer.singleShot(0, lambda : self._startUp(erroredFiles))
         self.actionCheckOnStartup.setChecked(settings.value("CheckOnStartup").toBool())
+        self.statusbar.showMessage("Initializing MIDI...")
+        self.setEnabled(False)
 
     def _connectSignals(self, props, scene):
         # Connect signals
@@ -238,6 +240,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
 
     def _startUp(self, erroredFiles):
+        self._midiInitThread.start()
         self._doUpdateSplashScreen()
         self.scoreView.startUp()
         self.updateStatus("Welcome to %s v%s" % (APPNAME, DB_VERSION))
@@ -245,7 +248,6 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if self.actionCheckOnStartup.isChecked():
 #             self.on_actionCheckForUpdates_triggered()
             self._versionThread.start()
-        self._midiInitThread.start()
         if erroredFiles:
             QMessageBox.warning(self, "Problem during startup",
                                 "Error opening files:\n %s" %
@@ -1053,6 +1055,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self._refreshMidiDevices()
         self.menu_MIDI.setEnabled(DBMidi.HAS_MIDI)
         self.MIDIToolBar.setEnabled(DBMidi.HAS_MIDI)
+        self.setEnabled(True)
 
     @pyqtSignature("")
     def on_actionEditColours_triggered(self):
