@@ -3,7 +3,7 @@ Created on Feb 28, 2015
 
 @author: mike_000
 '''
-from PyQt4.QtCore import pyqtSignal
+from PyQt4.QtCore import pyqtSignal, QTimeLine
 from PyQt4.QtGui import QMessageBox, QGraphicsScene, QPixmap
 import tempfile
 from StringIO import StringIO
@@ -20,13 +20,34 @@ class QLilypondPreview(QGraphicsScene):
     def __init__(self, parent):
         super(QLilypondPreview, self).__init__(parent = parent)
         self.mainWindow = parent
-        self._tempdir = tempfile.mkdtemp(prefix="DrumBurpLilypondPreviewTemp_")
+        self._tempdir = tempfile.mkdtemp(prefix = "DrumBurpLilypondPreviewTemp_")
         self._exporter = None
         self.buildCompleted.connect(self._built)
         self._pageIndex = None
         self._pages = []
         self._pixmap = None
+        self._waiting = self.addText("Building...")
+        font = self._waiting.font()
+        font.setPointSize(48)
+        self._waiting.setFont(font)
+        self._waiting.setOpacity(0.6)
+        self._waiting.setVisible(False)
+        self._waitingTimer = QTimeLine(2500, self)
+        self._waitingTimer.setUpdateInterval(100)
+        self._waitingTimer.setFrameRange(0, 5)
+        self._waitingTimer.setLoopCount(0)
+        self._waitingTimer.setCurveShape(self._waitingTimer.LinearCurve)
+        self._waitingTimer.frameChanged.connect(self._updateWaitingText)
+        self._noPreview = self.addText("No Preview")
+        self._noPreview.setOpacity(0.6)
+        self._noPreview.setVisible(False)
+        self._noPreview.setFont(font)
+        self._displayPage()
         self.mainWindow.refreshLilypond.setText("Preview")
+
+    def _updateWaitingText(self, frameVal):
+        if frameVal < 5:
+            self._waiting.setPlainText("Building" + ("." * frameVal))
 
     @property
     def qscore(self):
@@ -61,7 +82,15 @@ class QLilypondPreview(QGraphicsScene):
                 return
         # Disable controls
         self._setLilypondControlsEnabled(False)
-        # TODO: Show waiting animation/message
+        # Show waiting animation/message
+        self._noPreview.setVisible(False)
+        self._waiting.setVisible(True)
+        self._waitingTimer.start()
+        self._pageIndex = None
+        if self._pixmap is not None:
+            self.removeItem(self._pixmap)
+        self._pixmap = None
+        self.setSceneRect(self._waiting.boundingRect())
         # Send to exporter
         self._exporter = LilypondExporter(lilyBuffer.getvalue(), fname,
                                           self.mainWindow.lilyPath, 'png',
@@ -79,6 +108,8 @@ class QLilypondPreview(QGraphicsScene):
     def _built(self):
         try:
             # TODO: Remove waiting anim/message
+            self._waiting.setVisible(False)
+            self._waitingTimer.stop()
             # Check build results from exporter
             status = self._exporter.get_status()
             if status == self._exporter.SUCCESS:
@@ -112,15 +143,19 @@ class QLilypondPreview(QGraphicsScene):
 
     def _displayPage(self):
         if len(self._pages) > 0:
+            self._noPreview.setVisible(False)
             if self._pixmap is None:
                 self._pixmap = self.addPixmap(self._pages[self._pageIndex])
             else:
                 self._pixmap.setPixmap(self._pages[self._pageIndex])
+            self.setSceneRect(self._pixmap.boundingRect())
         else:
             self._pageIndex = None
             if self._pixmap is not None:
                 self.removeItem(self._pixmap)
             self._pixmap = None
+            self._noPreview.setVisible(True)
+            self.setSceneRect(self._noPreview.boundingRect())
         self._checkButtons()
 
     def setNoPreview(self):
