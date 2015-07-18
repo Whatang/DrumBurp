@@ -118,16 +118,30 @@ class QMeasure(QtGui.QGraphicsItem):
     def _paintNotes(self, painter, xValues):
         font = painter.font()
         fontMetric = QtGui.QFontMetrics(font)
-        baseline = (self.numLines() - 1) * self._qScore.ySpacing + self._base + self.parentItem().alternateHeight()
+        numLines = self.numLines()
+        baseline = (numLines - 1) * self._qScore.ySpacing + self._base + self.parentItem().alternateHeight()
         dot = self._qScore.scale
         potential = False
         isSimile = self._measure.simileDistance > 0
-        for drumIndex in xrange(self.numLines()):
+        if isSimile:
+            simText = "%%%d" % self._measure.simileDistance
+            left = " "
+            right = " "
+            if self._measure.simileIndex > 0:
+                left = "-"
+            if self._measure.simileIndex < self._measure.simileDistance - 1:
+                right = "-"
+            while len(simText) < len(xValues):
+                simText = left + simText + right
+        for drumIndex in xrange(numLines):
             lineHeight = baseline + (self._qScore.ySpacing / 2.0) - 1
             lineIndex = self.lineIndex(drumIndex)
             for noteTime, x in enumerate(xValues):
                 if isSimile:
-                    text = "%"
+                    if drumIndex == numLines / 2:
+                        text = simText[noteTime]
+                    else:
+                        text = " "
                 elif (lineIndex == self._potentialDrum
                     and noteTime in self._potentialSet):
                     text = self._potentialHead
