@@ -197,7 +197,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
             self._lineLabels[self._highlightedLine].setHighlight(True)
 
     def dataChanged(self, notePosition):
-        if notePosition.measureIndex is not None:
+        if notePosition.measureIndex is not None and notePosition.measureIndex < self.numMeasures():
             measure = self._measures[notePosition.measureIndex]
             measure.dataChanged(notePosition)
         else:
