@@ -74,7 +74,16 @@ class Exporter(object):
             if measure.simileDistance > 0:
                 referredMeasure = self.score.getReferredMeasure(self.score.getMeasureIndex(position))
                 displayCols = referredMeasure.counter.numBeats()
-                lineString += "%" * displayCols
+                simText = "%%%d" % measure.simileDistance
+                left = " "
+                right = " "
+                if measure.simileIndex > 0:
+                    left = "-"
+                if measure.simileIndex < measure.simileDistance - 1:
+                    right = "-"
+                while len(simText) < displayCols:
+                    simText = left + simText + right
+                lineString += simText[:displayCols]
             else:
                 for noteTime in xrange(len(measure)):
                     position.noteTime = noteTime
