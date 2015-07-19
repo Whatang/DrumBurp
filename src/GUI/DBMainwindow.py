@@ -32,7 +32,7 @@ from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QPrinter, QDesktopServices, QAction,
                          QFont)
 from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer, QThread, \
-    pyqtSignal
+    pyqtSignal, Qt
 from GUI.ui_drumburp import Ui_DrumBurpWindow
 from GUI.QScore import QScore
 from GUI.QDisplayProperties import QDisplayProperties
@@ -107,10 +107,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         # Fonts
         fonts = list(FontOptions.FontOptions.iterAllowedFonts())
         fonts.sort()
-        for fontName, font in fonts:
-            self.noteFontComboBox.addItem(fontName)
-            self.metadataFontCombo.addItem(fontName)
-            self.sectionFontCombo.addItem(fontName)
+        for index, (fontName, font) in enumerate(fonts):
+            for combo in (self.noteFontComboBox, self.sectionFontCombo,
+                          self.metadataFontCombo):
+                combo.addItem(fontName)
+                combo.setItemData(index, QVariant(font), Qt.FontRole)
         # Create scene
         erroredFiles = []
         oldFilename = self.filename
