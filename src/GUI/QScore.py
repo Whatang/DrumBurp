@@ -44,7 +44,7 @@ from GUI.DBCommands import (MetaDataCommand, ScoreWidthCommand,
                             SaveFormatStateCommand, CheckFormatStateCommand,
                             CheckUndo, SetLilypondFormatCommand)
 import GUI.DBMidi as DBMidi
-from GUI.DBFSM import Waiting
+from GUI.DBFSM import DBStateMachine, Waiting
 from GUI.DBFSMEvents import Escape
 from Data import DBErrors
 from Data.ScoreFactory import ScoreFactory
@@ -257,7 +257,7 @@ class QScore(QtGui.QGraphicsScene):
         self._properties.connectScore(self)
         self._potentials = []
         self._shortcutMemo = _HeadShortcutsMap(self._score.drumKit)
-        self._state = Waiting(self)
+        self._stateMachine = DBStateMachine(Waiting, self)
 
     canUndoChanged = QtCore.pyqtSignal(bool)
     canRedoChanged = QtCore.pyqtSignal(bool)
@@ -408,7 +408,7 @@ class QScore(QtGui.QGraphicsScene):
             self.widthChanged.emit(self.scoreWidth)
             self.reBuild()
             self.dirty = False
-            self._state = Waiting(self)
+            self._stateMachine = DBStateMachine(Waiting, self)
             self.scoreDisplayChanged.emit()
 
     @property
@@ -958,14 +958,11 @@ class QScore(QtGui.QGraphicsScene):
         return _metaChangeContext(self, self._metaData)
 
     def sendFsmEvent(self, event):
-        # TODO: use a better state machine
-#        print self._state, event
         try:
-            self._state = self._state.send(event)
+            self._stateMachine.send_event(event)
         except StandardError:
-            self._state = Waiting(self)
+            self._stateMachine.set_state(Waiting)
             raise
-#        print self._state
 
     def setStatusMessage(self, msg = None):
         if not msg:
