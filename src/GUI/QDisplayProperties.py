@@ -27,7 +27,7 @@ from Data.ASCIISettings import ASCIISettings
 from PyQt4.QtCore import QObject, pyqtSignal
 from PyQt4.QtGui import QFontMetrics, QFont
 
-#pylint: disable-msg=R0902
+# pylint: disable-msg=R0902
 
 class QDisplayProperties(QObject):
     _START_NOTE_WIDTH = 12
@@ -217,7 +217,7 @@ class QDisplayProperties(QObject):
     def _setsectionFont(self, value):
         if self._sectionFont != value:
             value.setBold(True)
-            value.setItalic(True)
+            # value.setItalic(True)
             value.setPointSize(self._sectionFontSize)
             self._sectionFont = value
             if self._score is not None:

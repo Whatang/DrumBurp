@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'C:\Users\mike_000\workspace\DrumBurp\src\GUI\drumburp.ui'
 #
-# Created: Tue Mar 03 22:54:38 2015
-#      by: PyQt4 UI code generator 4.10.2
+# Created: Sun Jul 19 14:35:09 2015
+#      by: PyQt4 UI code generator 4.11
 #
 # WARNING! All changes made in this file will be lost!
 
