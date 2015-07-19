@@ -162,7 +162,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         self.addSeparator()
 
     def _repeatNote(self):
-        self._qScore.sendFsmEvent(RepeatNotes())
+        self._qScore.sendFsmEvent(RepeatNotes(self._np))
 
     @QMenuIgnoreCancelClick.menuSelection
     def _insertDefaultMeasure(self, np, preserveSectionEnd = False):

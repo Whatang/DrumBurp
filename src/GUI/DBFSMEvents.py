@@ -57,7 +57,9 @@ class MenuCancel(FsmEvent):
     pass
 
 class RepeatNotes(FsmEvent):
-    pass
+    def __init__(self, note):
+        super(RepeatNotes, self).__init__()
+        self.note = note
 
 class MeasureLineContext(FsmEvent):
     def __init__(self, prevMeasure, nextMeasure, endNote, startNote, screenPos):
