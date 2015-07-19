@@ -23,12 +23,29 @@ Created on 5 Sep 2011
 
 '''
 
+
+
 class FontOptions(object):
+    DEFAULT_FONT = "Noto Sans"
+
+    _ALLOWED_FONTS = {}
 
     def __init__(self):
         self.noteFontSize = 10
-        self.noteFont = "MS Shell Dlg 2"
+        self.noteFont = self.DEFAULT_FONT
         self.sectionFontSize = 14
-        self.sectionFont = "MS Shell Dlg 2"
+        self.sectionFont = self.DEFAULT_FONT
         self.metadataFontSize = 16
-        self.metadataFont = "MS Shell Dlg 2"
+        self.metadataFont = self.DEFAULT_FONT
+
+    @classmethod
+    def addFont(cls, fontName, font):
+        cls._ALLOWED_FONTS[fontName] = font
+
+    @classmethod
+    def iterAllowedFonts(cls):
+        return cls._ALLOWED_FONTS.iteritems()
+
+    @classmethod
+    def isAllowedFont(cls, fontName):
+        return fontName in cls._ALLOWED_FONTS

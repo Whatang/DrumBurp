@@ -29,7 +29,8 @@ from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QFileDialog, QMessageBox,
                          QPrintPreviewDialog, QWhatsThis,
                          QPrinterInfo, QLabel, QFrame,
-                         QPrinter, QDesktopServices, QAction)
+                         QPrinter, QDesktopServices, QAction,
+                         QFont)
 from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer, QThread, \
     pyqtSignal
 from GUI.ui_drumburp import Ui_DrumBurpWindow
@@ -47,6 +48,7 @@ from GUI.DBFSMEvents import StartPlaying, StopPlaying
 from GUI.LilypondExporter import LilypondExporter
 from DBVersion import APPNAME, DB_VERSION, doesNewerVersionExist
 from Data.DBErrors import InconsistentRepeats
+from Data import FontOptions
 from Notation.lilypond import LilypondScore, LilypondProblem
 from Notation import AsciiExport
 # pylint:disable=too-many-instance-attributes,too-many-public-methods
@@ -102,6 +104,13 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.songProperties = QDisplayProperties()
         self._lilyScene = QLilypondPreview(self)
         self.lilyPreview.setScene(self._lilyScene)
+        # Fonts
+        fonts = list(FontOptions.FontOptions.iterAllowedFonts())
+        fonts.sort()
+        for fontName, font in fonts:
+            self.noteFontComboBox.addItem(fontName)
+            self.metadataFontCombo.addItem(fontName)
+            self.sectionFontCombo.addItem(fontName)
         # Create scene
         erroredFiles = []
         oldFilename = self.filename
@@ -171,34 +180,22 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.underlineCheck.clicked.connect(self._refreshTextExport)
         self.emptyLineBeforeSectionCheck.clicked.connect(self._refreshTextExport)
         self.emptyLineAfterSectionCheck.clicked.connect(self._refreshTextExport)
+        self.noteFontComboBox.currentIndexChanged.connect(self._noteFontChanged)
+        self.metadataFontCombo.currentIndexChanged.connect(self._metadataFontChanged)
+        self.sectionFontCombo.currentIndexChanged.connect(self._sectionFontChanged)
 
     def _initializeState(self):
         props = self.songProperties
         scene = self.scoreScene
         self.scoreView.setScene(scene)
         self._connectSignals(props, scene)
-        # Fonts
-        self.fontComboBox.setWritingSystem(QFontDatabase.Latin)
-        self.sectionFontCombo.setWritingSystem(QFontDatabase.Latin)
-        self.sectionFontCombo.setWritingSystem(QFontDatabase.Latin)
         self.lineSpaceSlider.setValue(scene.systemSpacing)
-        font = props.noteFont
-        if font is None:
-            font = scene.font()
-        font.setPointSize(props.noteFontSize)
-        self.fontComboBox.setCurrentFont(font)
+        # Fonts
+        self._setNoteFont()
         self.noteSizeSpinBox.setValue(props.noteFontSize)
-        font = props.sectionFont
-        if font is None:
-            font = scene.font()
-        font.setPointSize(props.sectionFontSize)
-        self.sectionFontCombo.setCurrentFont(font)
+        self._setSectionFont()
         self.sectionFontSizeSpinbox.setValue(props.sectionFontSize)
-        font = props.metadataFont
-        if font is None:
-            font = scene.font()
-        font.setPointSize(props.metadataFontSize)
-        self.metadataFontCombo.setCurrentFont(font)
+        self._setMetadataFont()
         self.metadataFontSizeSpinbox.setValue(props.metadataFontSize)
         # Visibility toggles
         self.actionShowDrumKey.setChecked(props.kitDataVisible)
@@ -287,21 +284,52 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def _setPaperSize(self, unusedIndex):
         self.scoreScene.setPaperSize(self.paperBox.currentText())
 
+    def _setFontCombo(self, font, fontCombo):
+        if font is None:
+            fontName = FontOptions.FontOptions.DEFAULT_FONT
+        else:
+            fontName = font.family()
+        index = fontCombo.findText(fontName)
+        if index == -1:
+            index = 0
+        fontCombo.setCurrentIndex(index)
+
     def _setNoteFont(self):
+        self._setFontCombo(self.songProperties.noteFont, self.noteFontComboBox)
+
+    def _noteFontChanged(self, index_):
+        fontName = self.noteFontComboBox.currentText()
+        font = QFont(fontName)
+        font.setPointSize(self.noteSizeSpinBox.value())
+        self.scoreView.scene().setScoreFont(font, "note")
+
+    def _setNoteFontSize(self):
         props = self.songProperties
-        self.fontComboBox.setCurrentFont(props.noteFont)
+        self.noteSizeSpinBox.setValue(props.noteFontSize)
 
     def _setSectionFont(self):
-        props = self.songProperties
-        self.sectionFontCombo.setCurrentFont(props.sectionFont)
+        self._setFontCombo(self.songProperties.sectionFont,
+                           self.sectionFontCombo)
+
+    def _sectionFontChanged(self, index_):
+        fontName = self.sectionFontCombo.currentText()
+        font = QFont(fontName)
+        font.setPointSize(self.sectionFontSizeSpinbox.value())
+        self.scoreView.scene().setScoreFont(font, "section")
 
     def _setSectionFontSize(self):
         props = self.songProperties
         self.sectionFontSizeSpinbox.setValue(props.sectionFontSize)
 
     def _setMetadataFont(self):
-        props = self.songProperties
-        self.metadataFontCombo.setCurrentFont(props.metadataFont)
+        self._setFontCombo(self.songProperties.metadataFont,
+                           self.metadataFontCombo)
+
+    def _metadataFontChanged(self, index_):
+        fontName = self.metadataFontCombo.currentText()
+        font = QFont(fontName)
+        font.setPointSize(self.metadataFontSizeSpinbox.value())
+        self.scoreView.scene().setScoreFont(font, "metadata")
 
     def _setMetadataSize(self):
         props = self.songProperties

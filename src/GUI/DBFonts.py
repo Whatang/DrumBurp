@@ -22,13 +22,25 @@ Created on Jul 19, 2015
 @author: Mike Thomas
 '''
 
-from PyQt4.Qt import QFontDatabase
-
+from PyQt4.Qt import QFontDatabase, QFont
+import Data.FontOptions
 
 def initialiseFonts():
-    fonts = ["ncs.otf", 'inconsolata.otf', 'bpmono.ttf', 'liberation.otf',
-             'oxygen.otf', 'opensans.ttf', 'montserrat.ttf', 'notosans.ttf',
-             'ptsans.ttf', 'roboto.ttf', 'raleway.ttf']
-    for font in fonts:
-        if QFontDatabase.addApplicationFont(":/fonts/" + font) == -1:
-            print font
+    fonts = [("NotCourierSans", "ncs.otf"),
+             ('Inconsolata', 'inconsolata.otf'),
+             ('BPmono', 'bpmono.ttf'),
+             ('Liberation Mono', 'liberation.otf'),
+             ('Oxygen Mono', 'oxygen.otf'),
+             ('Open Sans', 'opensans.ttf'),
+             ('Montserrat', 'montserrat.ttf'),
+             ('Noto Sans', 'notosans.ttf'),
+             ('PT Sans', 'ptsans.ttf'),
+             ('Raleway', 'roboto.ttf'),
+             ('Roboto', 'raleway.ttf')]
+    for fontName, fontFile in fonts:
+        if QFontDatabase.addApplicationFont(":/fonts/" + fontFile) == -1:
+            print fontName
+        else:
+            font = QFont(fontName)
+            Data.FontOptions.FontOptions.addFont(fontName, font)
+            Data.FontOptions.FontOptions.addFont(fontName, font)
