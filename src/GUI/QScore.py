@@ -958,14 +958,11 @@ class QScore(QtGui.QGraphicsScene):
         return _metaChangeContext(self, self._metaData)
 
     def sendFsmEvent(self, event):
-        # TODO: use a better state machine
-#        print self._state, event
         try:
             self._stateMachine.send_event(event)
         except StandardError:
             self._stateMachine.set_state(Waiting(qscore = self))
             raise
-#        print self._state
 
     def setStatusMessage(self, msg = None):
         if not msg:
