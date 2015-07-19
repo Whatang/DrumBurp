@@ -326,8 +326,8 @@ class DialogState_(DbState):
 class EditMeasurePropertiesState(DialogState_):
     def __init__(self, old_state, event):
         self.counter = event.counter
-        dialog = QEditMeasureDialog(self.counter, self.qscore.defaultCount,
-                                    event.counterRegistry, self.qscore.parent())
+        dialog = QEditMeasureDialog(self.counter, old_state.qscore.defaultCount,
+                                    event.counterRegistry, old_state.qscore.parent())
         self.measurePosition = event.measurePosition
         super(EditMeasurePropertiesState, self).__init__(old_state, event, dialog)
 
@@ -346,7 +346,7 @@ class RepeatCountState(DialogState_):
     def __init__(self, old_state, event):
         self.oldCount = event.repeatCount
         self.measurePosition = event.measurePosition
-        dialog = QRepeatCountDialog(self.oldCount, self.qscore.parent())
+        dialog = QRepeatCountDialog(self.oldCount, old_state.qscore.parent())
         super(RepeatCountState, self).__init__(old_state, event, dialog)
 
     def _accepted(self):
@@ -364,7 +364,7 @@ class SetAlternateState(DialogState_):
     def __init__(self, old_state, event):
         self.oldText = event.alternateText
         self.measurePosition = event.measurePosition
-        altDialog = QAlternateDialog(self.oldText, self.qscore.parent())
+        altDialog = QAlternateDialog(self.oldText, old_state.qscore.parent())
         super(SetAlternateState, self).__init__(old_state, event, altDialog)
 
     def _accepted(self):
