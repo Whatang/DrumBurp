@@ -28,13 +28,13 @@ def stateMachineClass():
         SIMPLE = 0
         FACTORY = 1
 
-        def __init__(self, initial_state):
-            assert type(initial_state) in self._states
-            self._state = initial_state
+        def __init__(self, initialStateType):
+            assert initialStateType in self._states
+            self._state = initialStateType(self, None)
 
-        def set_state(self, state):
-            assert type(state) in self._states
-            self._state = state
+        def set_state(self, stateType):
+            assert stateType in self._states
+            self._state = stateType(self, None)
 
         @classmethod
         def add_state(cls, state):
@@ -76,7 +76,7 @@ def stateMachineClass():
                 if guard is not None:
                     if not guard(self._state, event):
                         return
-                return newState(self._state, event)
+                return newState(self, event)
             elif transType == self.FACTORY:
                 return transition(self._state, event)
             else:
@@ -84,6 +84,10 @@ def stateMachineClass():
     return StateMachine
 
 class State(object):
-    def __init__(self, oldState, event):
-        self.oldState = oldState
+    def __init__(self, machine, event):
+        self.machine = machine
         self.event = event
+        self.initialize()
+
+    def initialize(self):
+        pass

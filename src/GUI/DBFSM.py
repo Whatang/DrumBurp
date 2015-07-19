@@ -35,44 +35,38 @@ import GUI.DBFSMEvents as Event
 from PyQt4 import QtCore
 
 class DbState(State):
-    def __init__(self, oldState = None, event = None, qscore = None):
-        super(DbState, self).__init__(oldState, event)
-        if qscore is not None:
-            self.qscore = qscore
-        elif oldState is not None:
-            self.qscore = oldState.qscore
-        else:
-            self.qscore = None
+    @property
+    def qscore(self):
+        return self.machine.qscore
 
-DBStateMachine = stateMachineClass()
+class DBStateMachine(stateMachineClass()):
+    def __init__(self, initial_state, qscore):
+        super(DBStateMachine, self).__init__(initial_state)
+        self.qscore = qscore
+
+    def setQscore(self, qscore):
+        self.qscore = qscore
 
 @DBStateMachine.add_state
 class Waiting(DbState):
     def clearDrag(self, event_):
         self.qscore.clearDragSelection()
 
-
 @DBStateMachine.add_state
 class ButtonDown(DbState):
-    def __init__(self, old_state, event):
-        super(ButtonDown, self).__init__(old_state, event)
-        self.measure = event.measure
-        self.note = event.note
-
     def isSameNote(self, event):
-        return event.note != self.note
+        return event.note != self.event.note
 
     def release(self, event_):
         head = self.qscore.getCurrentHead()
-        command = ToggleNote(self.qscore, self.note, head)
+        command = ToggleNote(self.qscore, self.event.note, head)
         self.qscore.addCommand(command)
 
 
 @DBStateMachine.add_state
 class Dragging(DbState):
-    def __init__(self, old_state, event):
-        super(Dragging, self).__init__(old_state, event)
-        self.dragging(event)
+    def initialize(self):
+        self.dragging(self.event)
 
     def dragging(self, event):
         self.qscore.dragging(event.measure)
@@ -82,20 +76,19 @@ class Dragging(DbState):
 
 @DBStateMachine.add_state
 class NotesMenu(DbState):
-    def __init__(self, old_state, event):
-        super(NotesMenu, self).__init__(old_state, event)
-        self.note = event.note
+    def initialize(self):
         self.qscore.clearDragSelection()
         self.menu = QMenuIgnoreCancelClick(self.qscore)
         kit = self.qscore.score.drumKit
-        for noteHead in kit.allowedNoteHeads(self.note.drumIndex):
+        for noteHead in kit.allowedNoteHeads(self.event.note.drumIndex):
             def noteAction(nh = noteHead):
                 self.qscore.sendFsmEvent(Event.MenuSelect(nh))
             self.menu.addAction(noteHead, noteAction)
-        QtCore.QTimer.singleShot(0, lambda: self.menu.exec_(event.screenPos))
+        QtCore.QTimer.singleShot(0,
+                                 lambda: self.menu.exec_(self.event.screenPos))
 
     def select(self, event):
-        command = ToggleNote(self.qscore, self.note, event.data)
+        command = ToggleNote(self.qscore, self.event.note, event.data)
         self.qscore.addCommand(command)
 
     def close(self, event_):
@@ -103,30 +96,27 @@ class NotesMenu(DbState):
 
 @DBStateMachine.add_state
 class ContextMenu(DbState):
-    def __init__(self, old_state, event):
-        super(ContextMenu, self).__init__(old_state, event)
-        self.measure = event.measure
-        self.note = event.note
+    def initialize(self):
         if self.qscore.hasDragSelection():
-            if not self.qscore.inDragSelection(self.note):
+            if not self.qscore.inDragSelection(self.event.note):
                 self.qscore.clearDragSelection()
-        self.menu = QMeasureContextMenu(self.qscore, self.measure, self.note,
-                                        self.measure.alternateText())
-        QtCore.QTimer.singleShot(0, lambda: self.menu.exec_(event.screenPos))
+        self.menu = QMeasureContextMenu(self.qscore, self.event.measure,
+                                        self.event.note,
+                                        self.event.measure.alternateText())
+        QtCore.QTimer.singleShot(0,
+                                 lambda: self.menu.exec_(self.event.screenPos))
 
     def close(self, event_):
         self.menu.close()
 
 @DBStateMachine.add_state
 class Repeating(DbState):
-    def __init__(self, old_state, event):
-        super(Repeating, self).__init__(old_state, event)
+    def initialize(self):
         self.qscore.clearDragSelection()
         self.statusBar = self.qscore.parent().statusBar()
         self.statusBar.showMessage("Drag from the first repeat "
                                    "of this note to the last "
                                    "(or press ESCAPE to cancel)", 0)
-        self.note = event.note
 
     def clear(self, event_):
         self.statusBar.clearMessage()
@@ -134,19 +124,19 @@ class Repeating(DbState):
     def startRepeatDrag(self, event):
         if event.note is None:
             return self
-        interval = self.qscore.score.tickDifference(event.note, self.note)
+        interval = self.qscore.score.tickDifference(event.note, self.event.note)
         if interval <= 0:
             self.statusBar.showMessage("Cannot repeat notes backwards!",
                                        5000)
-            return Waiting(self, None)
-        head = self.qscore.score.getItemAtPosition(self.note)
-        return RepeatingDragging(self, event, self.note,
+            return Waiting(self.machine, None)
+        head = self.qscore.score.getItemAtPosition(self.event.note)
+        return RepeatingDragging(self.machine, event, self.event.note,
                                   interval, head)
 
 @DBStateMachine.add_state
 class RepeatingDragging(DbState):
-    def __init__(self, old_state, event, firstNote, interval, head):
-        super(RepeatingDragging, self).__init__(old_state, event)
+    def __init__(self, machine, event, firstNote, interval, head):
+        super(RepeatingDragging, self).__init__(machine, event)
         self.statusBar = self.qscore.parent().statusBar()
         self.statusBar.showMessage("Drag to the last repeat of this note "
                                    "(or press ESCAPE to cancel)", 0)
@@ -207,44 +197,49 @@ class RepeatingDragging(DbState):
 
 @DBStateMachine.add_state
 class MeasureLineContextMenuState(DbState):
-    def __init__(self, old_state, event):
-        super(MeasureLineContextMenuState, self).__init__(old_state, event)
-        self.menu = QMeasureLineContextMenu(self.qscore, event.prevMeasure,
-                                            event.nextMeasure,
-                                            event.endNote, event.startNote)
+    def initialize(self):
+        self.menu = QMeasureLineContextMenu(self.qscore,
+                                            self.event.prevMeasure,
+                                            self.event.nextMeasure,
+                                            self.event.endNote,
+                                            self.event.startNote)
         self.qscore.clearDragSelection()
-        QtCore.QTimer.singleShot(0, lambda: self.menu.exec_(event.screenPos))
+        QtCore.QTimer.singleShot(0,
+                                 lambda: self.menu.exec_(self.event.screenPos))
 
     def close(self, event_):
         self.menu.close()
 
 @DBStateMachine.add_state
 class MeasureCountContextMenuState(DbState):
-    def __init__(self, old_state, event):
-        super(MeasureCountContextMenuState, self).__init__(old_state, event)
-        self.menu = QCountContextMenu(self.qscore, event.note, event.measure)
+    def initialize(self):
+        self.menu = QCountContextMenu(self.qscore, self.event.note,
+                                      self.event.measure)
         self.qscore.clearDragSelection()
-        QtCore.QTimer.singleShot(0, lambda: self.menu.exec_(event.screenPos))
+        QtCore.QTimer.singleShot(0,
+                                 lambda: self.menu.exec_(self.event.screenPos))
 
     def close(self, event_):
         self.menu.close()
 
 @DBStateMachine.add_state
 class Playing(DbState):
-    def __init__(self, old_state, event):
-        super(Playing, self).__init__(old_state, event)
+    def initialize(self):
         self.qscore.playing.emit(True)
 
     def stop(self, event_):
         self.qscore.playing.emit(False)
 
 class DialogState_(DbState):
-    def __init__(self, old_state, event, dialog):
-        super(DialogState_, self).__init__(old_state, event)
-        self.dialog = dialog
+    def __init__(self, machine, event):
+        super(DialogState_, self).__init__(machine, event)
+        self.dialog = self.makeDialog()
         self.dialog.accepted.connect(self._accepted)
         self.dialog.rejected.connect(self._rejected)
         QtCore.QTimer.singleShot(0, self.dialog.exec_)
+
+    def makeDialog(self):
+        raise NotImplementedError()
 
     def _accepted(self):
         self.qscore.sendFsmEvent(Event.MenuSelect())
@@ -257,18 +252,18 @@ class DialogState_(DbState):
 
 @DBStateMachine.add_state
 class EditMeasurePropertiesState(DialogState_):
-    def __init__(self, old_state, event):
-        self.counter = event.counter
-        dialog = QEditMeasureDialog(self.counter, old_state.qscore.defaultCount,
-                                    event.counterRegistry, old_state.qscore.parent())
-        self.measurePosition = event.measurePosition
-        super(EditMeasurePropertiesState, self).__init__(old_state, event, dialog)
+    def makeDialog(self):
+        return QEditMeasureDialog(self.event.counter,
+                                  self.qscore.defaultCount,
+                                  self.event.counterRegistry,
+                                  self.qscore.parent())
+
 
     def _accepted(self):
         newCounter = self.dialog.getValues()
-        if newCounter.countString() != self.counter.countString():
+        if newCounter.countString() != self.event.counter.countString():
             command = ChangeMeasureCountCommand(self.qscore,
-                                                self.measurePosition,
+                                                self.event.measurePosition,
                                                 newCounter)
             self.qscore.clearDragSelection()
             self.qscore.addCommand(command)
@@ -276,34 +271,30 @@ class EditMeasurePropertiesState(DialogState_):
 
 @DBStateMachine.add_state
 class RepeatCountState(DialogState_):
-    def __init__(self, old_state, event):
-        self.oldCount = event.repeatCount
-        self.measurePosition = event.measurePosition
-        dialog = QRepeatCountDialog(self.oldCount, old_state.qscore.parent())
-        super(RepeatCountState, self).__init__(old_state, event, dialog)
+    def makeDialog(self):
+        return QRepeatCountDialog(self.event.repeatCount,
+                                  self.qscore.parent())
 
     def _accepted(self):
         newCount = self.dialog.getValue()
-        if self.oldCount != newCount:
+        if self.event.repeatCount != newCount:
             command = SetRepeatCountCommand(self.qscore,
-                                            self.measurePosition,
-                                            self.oldCount,
+                                            self.event.measurePosition,
+                                            self.event.repeatCount,
                                             newCount)
             self.qscore.addCommand(command)
         super(RepeatCountState, self)._accepted()  # IGNORE:W0212
 
 @DBStateMachine.add_state
 class SetAlternateState(DialogState_):
-    def __init__(self, old_state, event):
-        self.oldText = event.alternateText
-        self.measurePosition = event.measurePosition
-        altDialog = QAlternateDialog(self.oldText, old_state.qscore.parent())
-        super(SetAlternateState, self).__init__(old_state, event, altDialog)
+    def makeDialog(self):
+        return QAlternateDialog(self.event.alternateText, self.qscore.parent())
 
     def _accepted(self):
         newText = self.dialog.getValue()
-        if self.oldText != newText:
-            command = SetAlternateCommand(self.qscore, self.measurePosition,
+        if self.event.alternateText != newText:
+            command = SetAlternateCommand(self.qscore,
+                                          self.event.measurePosition,
                                           newText)
             self.qscore.addCommand(command)
         super(SetAlternateState, self)._accepted()  # IGNORE:W0212

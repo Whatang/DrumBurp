@@ -257,7 +257,7 @@ class QScore(QtGui.QGraphicsScene):
         self._properties.connectScore(self)
         self._potentials = []
         self._shortcutMemo = _HeadShortcutsMap(self._score.drumKit)
-        self._stateMachine = DBStateMachine(Waiting(qscore = self))
+        self._stateMachine = DBStateMachine(Waiting, self)
 
     canUndoChanged = QtCore.pyqtSignal(bool)
     canRedoChanged = QtCore.pyqtSignal(bool)
@@ -408,7 +408,7 @@ class QScore(QtGui.QGraphicsScene):
             self.widthChanged.emit(self.scoreWidth)
             self.reBuild()
             self.dirty = False
-            self._stateMachine = DBStateMachine(Waiting(qscore = self))
+            self._stateMachine = DBStateMachine(Waiting, self)
             self.scoreDisplayChanged.emit()
 
     @property
@@ -961,7 +961,7 @@ class QScore(QtGui.QGraphicsScene):
         try:
             self._stateMachine.send_event(event)
         except StandardError:
-            self._stateMachine.set_state(Waiting(qscore = self))
+            self._stateMachine.set_state(Waiting)
             raise
 
     def setStatusMessage(self, msg = None):
