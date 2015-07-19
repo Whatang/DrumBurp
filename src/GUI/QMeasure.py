@@ -69,6 +69,7 @@ class QMeasure(QtGui.QGraphicsItem):
         self._measure = measure
         self._displayCols = 0
         self._setDimensions()
+        self._isFirst = False
         self.update()
 
     def numLines(self):
@@ -103,6 +104,9 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def height(self):
         return self._height
+
+    def setFirst(self, trueFalse):
+        self._isFirst = trueFalse
 
     def _colourScheme(self):
         return self._qScore.parent().colourScheme
@@ -282,7 +286,7 @@ class QMeasure(QtGui.QGraphicsItem):
         self._paintNotes(painter, xValues)
         if self._props.beatCountVisible:
             self._paintBeatCount(painter, xValues)
-        if self._props.measureCountsVisible:
+        if self._props.measureCountsVisible and self._isFirst:
             self._paintMeasureCount(painter)
         if self._measure.isRepeatEnd() and self._measure.repeatCount > 2:
             self._paintRepeatCount(painter)

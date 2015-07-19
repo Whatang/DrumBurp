@@ -132,6 +132,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
                                   self._lineLabels):
             label.setPos(xOffset, yOffset + base)
         xOffset += self._lineLabels[0].cellWidth()
+        isFirst = True
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
             qMeasureLine.setPos(xOffset, base)
@@ -141,6 +142,8 @@ class QStaff(QtGui.QGraphicsItemGroup):
             qMeasure.setPos(xOffset, 0)
             qMeasure.setZValue(1)
             xOffset += qMeasure.width()
+            qMeasure.setFirst(isFirst)
+            isFirst = False
         self._measureLines[-1].setPos(xOffset, base)
         self._measureLines[-1].setDimensions()
         self._width = xOffset + self._measureLines[-1].width()
