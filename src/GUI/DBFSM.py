@@ -20,7 +20,7 @@
 
 @author: Mike
 '''
-from GUI.StateMachine import stateMachineClass, State
+from GUI.StateMachine import StateMachine, State
 from GUI.DBCommands import (ToggleNote, RepeatNoteCommand,
                             ChangeMeasureCountCommand, SetRepeatCountCommand,
                             SetAlternateCommand)
@@ -39,7 +39,7 @@ class DbState(State):
     def qscore(self):
         return self.machine.qscore
 
-class DBStateMachine(stateMachineClass()):
+class DBStateMachine(StateMachine):
     def __init__(self, initial_state, qscore):
         super(DBStateMachine, self).__init__(initial_state)
         self.qscore = qscore
