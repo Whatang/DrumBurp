@@ -40,8 +40,8 @@ class DbState(State):
         return self.machine.qscore
 
 class DBStateMachine(StateMachine):
-    def __init__(self, initial_state, qscore):
-        super(DBStateMachine, self).__init__(initial_state)
+    def __init__(self, initialStateType, qscore):
+        super(DBStateMachine, self).__init__(initialStateType)
         self.qscore = qscore
 
     def setQscore(self, qscore):
