@@ -94,25 +94,13 @@ class ScoreView(QtGui.QGraphicsView):
     def setLilyFill(self, lilyFill):
         self.scene().setLilyFill(lilyFill)
 
-    @QtCore.pyqtSlot(QtGui.QFont)
-    def setFont(self, font):
-        self.scene().setScoreFont(font, "note")
-
     @QtCore.pyqtSlot(int)
     def setNoteFontSize(self, size):
         self.scene().setScoreFontSize(size, "note")
 
-    @QtCore.pyqtSlot(QtGui.QFont)
-    def setSectionFont(self, font):
-        self.scene().setScoreFont(font, "section")
-
     @QtCore.pyqtSlot(int)
     def setSectionFontSize(self, size):
         self.scene().setScoreFontSize(size, "section")
-
-    @QtCore.pyqtSlot(QtGui.QFont)
-    def setMetadataFont(self, font):
-        self.scene().setScoreFont(font, "metadata")
 
     @QtCore.pyqtSlot(int)
     def setMetadataFontSize(self, size):
