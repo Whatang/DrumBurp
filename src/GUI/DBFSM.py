@@ -74,6 +74,10 @@ class Dragging(DbState):
     def release(self, event_):
         self.qscore.endDragging()
 
+    def cancel(self, event):
+        self.release(event)
+        self.qscore.clearDragSelection()
+
 @DBStateMachine.add_state
 class NotesMenu(DbState):
     def initialize(self):
@@ -323,6 +327,7 @@ DBStateMachine.add_transition(ButtonDown, Event.MouseMove, Dragging,
 DBStateMachine.add_transition(ButtonDown, Event.MouseRelease, Waiting,
                               ButtonDown.release)
 DBStateMachine.add_transition(ButtonDown, Event.StartPlaying, Playing)
+DBStateMachine.add_transition(ButtonDown, Event.Escape, Waiting)
 
 
 DBStateMachine.add_transition(Dragging, Event.MouseMove, Dragging,
@@ -330,6 +335,8 @@ DBStateMachine.add_transition(Dragging, Event.MouseMove, Dragging,
 DBStateMachine.add_transition(Dragging, Event.MouseRelease, Waiting,
                               Dragging.release)
 DBStateMachine.add_transition(Dragging, Event.StartPlaying, Playing)
+DBStateMachine.add_transition(Dragging, Event.Escape, Waiting,
+                              Dragging.cancel)
 
 
 DBStateMachine.add_transition(NotesMenu, Event.MenuSelect, Waiting,
