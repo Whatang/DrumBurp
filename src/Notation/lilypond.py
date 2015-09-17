@@ -654,8 +654,12 @@ class LilypondScore(object):
             if measure.simileDistance:
                 if measure.simileIndex == 0:
                     self.indenter(r"\once \omit Score.TimeSignature \time 2/4")
-                    self.indenter(r"\makePercent s2*%d"
-                                  % measure.simileDistance)
+                    with VOICE_CONTEXT(self.indenter, ""):
+                        with LILY_CONTEXT(self.indenter, r"\repeat unfold 1"):
+                            self.indenter(r" \noBreak ".join([r"s2"] * measure.simileDistance))
+                        with LILY_CONTEXT(self.indenter, ""):
+                            self.indenter(r"\makePercent s2*%d"
+                                          % measure.simileDistance)
                     percentRepeated = True
             else:
                 percentRepeated = False
