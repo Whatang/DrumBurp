@@ -125,12 +125,6 @@ class BarLinePainter(object):
         raise NotImplementedError()
 
     @classmethod
-    def _clearBase(cls, painter, palette, boundingRect):
-        painter.setPen(QtCore.Qt.NoPen)
-        painter.setBrush(palette.base())
-        painter.drawRect(boundingRect)
-
-    @classmethod
     def _drawThickLine(cls, painter, xCenter, height, palette, scale):
         painter.setPen(QtCore.Qt.NoPen)
         painter.setBrush(palette.text())
@@ -179,8 +173,6 @@ class BarLinePainter(object):
 class NormalBarLinePainter(BarLinePainter):
     def __call__(self, qMeasureLine, painter,
                  dummyOption, dummyScale, dummyWidget = None):
-        palette = qMeasureLine.scene().palette()
-        self._clearBase(painter, palette, qMeasureLine.boundingRect())
         painter.setPen(QtCore.Qt.SolidLine)
         x = qMeasureLine.width() / 2
         painter.drawLine(x, 0, x, qMeasureLine.height())
@@ -189,7 +181,6 @@ class RepeatStartLinePainter(BarLinePainter):
     def __call__(self, qMeasureLine, painter,
                  dummyOption, scale, dummyWidget = None):
         palette = qMeasureLine.scene().palette()
-        self._clearBase(painter, palette, qMeasureLine.boundingRect())
         x = qMeasureLine.width() / 2
         self._drawThickLine(painter, x, qMeasureLine.height(), palette, scale)
         self._drawRepeatAfter(painter, x, qMeasureLine.height(), palette, scale)
@@ -199,7 +190,6 @@ class RepeatEndLinePainter(BarLinePainter):
     def __call__(self, qMeasureLine, painter,
                  dummyOption, scale, dummyWidget = None):
         palette = qMeasureLine.scene().palette()
-        self._clearBase(painter, palette, qMeasureLine.boundingRect())
         x = qMeasureLine.width() / 2
         self._drawThickLine(painter, x, qMeasureLine.height(), palette, scale)
         self._drawRepeatBefore(painter, x,
@@ -209,7 +199,6 @@ class RepeatStartEndLinePainter(BarLinePainter):
     def __call__(self, qMeasureLine, painter,
                  dummyOption, scale, dummyWidget = None):
         palette = qMeasureLine.scene().palette()
-        self._clearBase(painter, palette, qMeasureLine.boundingRect())
         x = qMeasureLine.width() / 2
         self._drawThickLine(painter, x, qMeasureLine.height(), palette, scale)
         self._drawRepeatBefore(painter, x,
@@ -221,7 +210,6 @@ class SectionEndLinePainter(BarLinePainter):
     def __call__(self, qMeasureLine, painter,
                  dummyOption, scale, dummyWidget = None):
         palette = qMeasureLine.scene().palette()
-        self._clearBase(painter, palette, qMeasureLine.boundingRect())
         x = qMeasureLine.width() / 2
         self._drawThickLine(painter, x, qMeasureLine.height(), palette, scale)
         self._drawExtraLineBefore(painter, x,

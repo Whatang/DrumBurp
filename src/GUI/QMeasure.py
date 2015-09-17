@@ -270,8 +270,8 @@ class QMeasure(QtGui.QGraphicsItem):
         self._setPainterColour(painter, scheme.selectedMeasure)
         painter.drawRect(self._rect)
 
+    @_painterSaver
     def paint(self, painter, dummyOption, dummyWidget = None):
-        painter.save()
         if self._dragHighlight:
             self._paintDragHighlight(painter)
         painter.setPen(QtCore.Qt.SolidLine)
@@ -298,7 +298,6 @@ class QMeasure(QtGui.QGraphicsItem):
             self._paintAlternate(painter)
         else:
             self._alternate = None
-        painter.restore()
 
     def dataChanged(self, notePosition_):
         self._setDimensions()
