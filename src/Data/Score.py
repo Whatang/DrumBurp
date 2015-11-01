@@ -507,7 +507,7 @@ class Score(object):
     def _makeNewSectionTitle(self, startTitle):
         stem, suffix = self._getPrefixAndDigitSuffix(startTitle)
         if suffix is None:
-            return
+            return "Copy of " + startTitle
         for section in self.iterSections():
             sectionStem, sectionSuffix = self._getPrefixAndDigitSuffix(section)
             if sectionStem == stem:
