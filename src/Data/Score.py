@@ -56,7 +56,7 @@ class Score(object):
         self.fontOptions = FontOptions()
         self.lilysize = 20
         self.lilypages = 0
-        self.lilyFill = False
+        self.lilyFill = True
         self.lilyFormat = 0
 
     def __len__(self):
