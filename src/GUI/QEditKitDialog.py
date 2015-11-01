@@ -139,9 +139,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
 
 
     def _addDrum(self):
-        drum = Drum("New drum", "XX", "o")
-        drum.guessHeadData()
-        drum.checkShortcuts()
+        drum = Drum.makeSimple("New drum", "XX", "o")
         self._currentKit.append(drum)
         self._oldLines[drum] = -1
         self.kitTable.addItem(drum.name)

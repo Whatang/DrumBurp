@@ -58,6 +58,21 @@ class Drum(object):
         assert 1 <= len(abbr) <= DBConstants.DRUM_ABBR_WIDTH
         assert len(head) == 1
 
+    @classmethod
+    def makeSimple(cls, name, abbr, head):
+        drum = cls(name, abbr, head)
+        midiNote = DefaultKits.DEFAULT_NOTE
+        notationHead = "default"
+        notationLine = 0
+        stemDir = DefaultKits.STEM_UP
+        headData = HeadData(midiNote, notationHead = notationHead,
+                            notationLine = notationLine,
+                            stemDirection = stemDir)
+        drum.addNoteHead(drum.head, headData)
+        guessEffect(drum, drum.head)
+        drum.checkShortcuts()
+        return drum
+
     @property
     def head(self):
         return self._head
