@@ -418,9 +418,11 @@ class Measure(object):
 
     def setAbove(self, noteTime, value):
         self._above = self._replace(self._above, noteTime, value)
+        self._runCallBack(NotePosition())
 
     def setBelow(self, noteTime, value):
         self._below = self._replace(self._below, noteTime, value)
+        self._runCallBack(NotePosition())
 
     @property
     def aboveText(self):

@@ -128,6 +128,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
         base = self.alternateHeight()
         if self._props.measureCountsVisible:
             base += self._props.measureCountHeight()
+        base += self._qScore.ySpacing  # TODO: Sticking above
         for yOffset, label in zip(lineOffsets[-len(self._lineLabels):],
                                   self._lineLabels):
             label.setPos(xOffset, yOffset + base)
