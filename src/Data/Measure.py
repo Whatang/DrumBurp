@@ -418,10 +418,12 @@ class Measure(object):
 
     def setAbove(self, noteTime, value):
         self._above = self._replace(self._above, noteTime, value)
+        self.showAbove = self.showAbove or any(ch != " " for ch in self._above)
         self._runCallBack(NotePosition())
 
     def setBelow(self, noteTime, value):
         self._below = self._replace(self._below, noteTime, value)
+        self.showBelow = self.showBelow or any(ch != " " for ch in self._below)
         self._runCallBack(NotePosition())
 
     @property
@@ -447,3 +449,15 @@ class Measure(object):
         elif len(value) < len(self):
             value += " " * (len(self) - len(value))
         self._below = value
+
+    def stickingVisible(self, above):
+        if above:
+            return self.showAbove
+        else:
+            return self.showBelow
+
+    def setStickingVisible(self, above, value):
+        if above:
+            self.showAbove = value
+        else:
+            self.showBelow = value
