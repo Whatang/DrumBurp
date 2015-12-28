@@ -67,6 +67,12 @@ class InvalidNonNegativeInteger(DbReadError):
 class InvalidPositiveInteger(DbReadError):
     "The value must be a positive integer."
 
+class BadBase64(DbReadError):
+    "Bad Base64 string"
+
+class BadUnicode(DbReadError):
+    "Bad Unicode encoding"
+
 class TooManyBarLines(DbReadError):
     "There are too many bar lines specifed for this measure."
 

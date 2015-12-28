@@ -113,6 +113,7 @@ class MeasureInfo(object):
         self.isLineBreak = False
         self.repeatCount = 1
 
+
 class Measure(object):
     def __init__(self, width = 0):
         self._width = width
@@ -123,6 +124,10 @@ class Measure(object):
         self.alternateText = None
         self.simileDistance = 0
         self.simileIndex = 0
+        self._above = " " * width
+        self._below = " " * width
+        self.showAbove = False
+        self.showBelow = False
 
     @property
     def counter(self):
@@ -247,6 +252,8 @@ class Measure(object):
 
     def clear(self):
         self._notes.clear()
+        self._above = " " * len(self)
+        self._below = " " * len(self)
         self._runCallBack(NotePosition())
 
     def addNote(self, position, head):
@@ -271,6 +278,12 @@ class Measure(object):
         assert newWidth > 0
         if newWidth == len(self):
             return
+        elif newWidth > self._width:
+            self._above += " " * (newWidth - self._width)
+            self._below += " " * (newWidth - self._width)
+        else:
+            self._above = self._above[:newWidth]
+            self._below = self._below[:newWidth]
         self._width = newWidth
         badTimes = [noteTime for noteTime in self._notes.iterTimes()
                     if noteTime >= self._width]
@@ -281,6 +294,8 @@ class Measure(object):
     def setBeatCount(self, counter):  # TODO: change this to setMeasureCount
         if counter == self._counter:
             return
+        oldAbove = self._above
+        oldBelow = self._below
         if self._counter is None:
             self._counter = counter
             self._setWidth(len(counter))
@@ -312,6 +327,8 @@ class Measure(object):
             if oldIndex in oldNotes:
                 for position, head in oldNotes.iterNotesAtTime(oldIndex):
                     self._notes.setNote(newIndex, position.drumIndex, head)
+                self.setAbove(newIndex, oldAbove[oldIndex])
+                self.setBelow(newIndex, oldBelow[oldIndex])
             oldIndex += 1
             newIndex += 1
         self._counter = counter
@@ -344,6 +361,11 @@ class Measure(object):
             self.repeatCount = other.repeatCount
             self.alternateText = other.alternateText
             self.simileDistance = other.simileDistance
+            self.simileIndex = other.simileIndex
+            self.aboveText = other.aboveText
+            self.belowText = other.belowText
+            self.showAbove = other.showAbove
+            self.showBelow = other.showBelow
         return oldMeasure
 
 
@@ -381,3 +403,45 @@ class Measure(object):
             if self.numNotes() == newMeasure.numNotes():
                 newCount = mcount
         return newCount
+
+    def _replace(self, text, noteTime, value):
+        self._checkValidNoteTime(noteTime)
+        value = " " if not value else value
+        if len(text) == 1:
+            return value
+        elif noteTime == 0:
+            return value + text[1:]
+        elif noteTime == len(text) - 1:
+            return text[:-1] + value
+        else:
+            return text[:noteTime] + value + text[noteTime + 1:]
+
+    def setAbove(self, noteTime, value):
+        self._above = self._replace(self._above, noteTime, value)
+
+    def setBelow(self, noteTime, value):
+        self._below = self._replace(self._below, noteTime, value)
+
+    @property
+    def aboveText(self):
+        return self._above
+
+    @aboveText.setter
+    def aboveText(self, value):
+        if len(value) > len(self):
+            value = value[:len(self)]
+        elif len(value) < len(self):
+            value += " " * (len(self) - len(value))
+        self._above = value
+
+    @property
+    def belowText(self):
+        return self._below
+
+    @belowText.setter
+    def belowText(self, value):
+        if len(value) > len(self):
+            value = value[:len(self)]
+        elif len(value) < len(self):
+            value += " " * (len(self) - len(value))
+        self._below = value
