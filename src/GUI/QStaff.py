@@ -128,7 +128,8 @@ class QStaff(QtGui.QGraphicsItemGroup):
         base = self.alternateHeight()
         if self._props.measureCountsVisible:
             base += self._props.measureCountHeight()
-        base += self._qScore.ySpacing  # TODO: Sticking above
+        if self.showStickingAbove():
+            base += self._qScore.ySpacing
         for yOffset, label in zip(lineOffsets[-len(self._lineLabels):],
                                   self._lineLabels):
             label.setPos(xOffset, yOffset + base)
@@ -229,6 +230,12 @@ class QStaff(QtGui.QGraphicsItemGroup):
             return self._props.alternateHeight()
         else:
             return 0
+
+    def showStickingAbove(self):
+        return any(measure.showAbove for measure in self._staff)
+
+    def showStickingBelow(self):
+        return any(measure.showBelow for measure in self._staff)
 
     def checkAlternate(self):
         newAlternate = False

@@ -99,14 +99,16 @@ class QMeasure(QtGui.QGraphicsItem):
             self._base = self._props.measureCountHeight()
         self._repeatBottom = self._base + self.parentItem().alternateHeight()
         self._notesTop = self._repeatBottom
-        self._notesTop += self._qScore.ySpacing  # TODO:Sticking above
+        if self.parentItem().showStickingAbove():
+            self._notesTop += self._qScore.ySpacing
         self._height = self._notesTop
         self._height += self.numLines() * self._qScore.ySpacing
         self._notesBottom = self._height
         if self._props.beatCountVisible:
             self._height += self._qScore.ySpacing
         self._stickingBelowTop = self._height
-        self._height += self._qScore.ySpacing  # TODO: Sticking below
+        if self.parentItem().showStickingBelow():
+            self._height += self._qScore.ySpacing
         self._rect.setBottomRight(QtCore.QPointF(self._width, self._height))
 
     def boundingRect(self):
@@ -246,7 +248,7 @@ class QMeasure(QtGui.QGraphicsItem):
         spacing = self._qScore.scale
         painter.setPen(self._qScore.palette().text().color())
         painter.drawLine(0, self._base, self.width() - spacing * 2, self._base)
-        painter.drawLine(0, self._base, 0, self._repeatBottom - spacing * 2)
+        painter.drawLine(0, self._base, 0, self._notesTop - spacing * 2)
         font = painter.font()
         font.setItalic(True)
         painter.setFont(font)
@@ -302,7 +304,9 @@ class QMeasure(QtGui.QGraphicsItem):
 
     @_painterSaver
     def _paintStickingAbove(self, painter, xValues):
-        # TODO: Sticking above
+        if not self.parentItem().showStickingAbove():
+            self._stickingAbove = None
+            return
         self._stickingAbove = QtCore.QRectF(0, 0, 0, 0)
         self._stickingAbove.setSize(QtCore.QSizeF(self.width(),
                                                   self._qScore.ySpacing))
@@ -315,7 +319,9 @@ class QMeasure(QtGui.QGraphicsItem):
 
     @_painterSaver
     def _paintStickingBelow(self, painter, xValues):
-        # TODO: Sticking below
+        if not self.parentItem().showStickingBelow():
+            self._stickingBelow = None
+            return
         self._stickingBelow = QtCore.QRectF(0, 0, 0, 0)
         self._stickingBelow.setSize(QtCore.QSizeF(self.width(),
                                                   self._qScore.ySpacing))
