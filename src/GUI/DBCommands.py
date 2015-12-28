@@ -771,3 +771,53 @@ class ToggleSimileCommand(ScoreCommand):
 
     def _undo(self):
         self._setSimile(self._oldDistance)
+
+class SetStickingCommand(ScoreCommand):
+    canReformat = False
+
+    def __init__(self, qscore, note, above, value):
+        super(SetStickingCommand, self).__init__(qscore, note, "set sticking")
+        self._newValue = value
+        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        if above:
+            self._function = Measure.setAbove
+            self._oldValue = measure.aboveText[self._np.noteTime]
+        else:
+            self._function = Measure.setBelow
+            self._oldValue = measure.belowText[self._np.noteTime]
+
+    def _redo(self):
+        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        self._function(measure, self._np.noteTime, self._newValue)
+
+    def _undo(self):
+        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        self._function(measure, self._np.noteTime, self._oldValue)
+
+class SetStickingVisibility(ScoreCommand):
+    canReformat = False
+
+    def __init__(self, qscore, note, above, onOff):
+        super(SetStickingVisibility, self).__init__(qscore, note,
+                                                    "set sticking visibility")
+        self._newValue = onOff
+        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        if above:
+            self._oldValue = measure.showAbove
+        else:
+            self._oldValue = measure.showBelow
+        self._above = above
+
+    def _redo(self):
+        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        if self._above:
+            measure.showAbove = self._newValue
+        else:
+            measure.showBelow = self._newValue
+
+    def _undo(self):
+        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        if self._above:
+            measure.showAbove = self._oldValue
+        else:
+            measure.showBelow = self._oldValue
