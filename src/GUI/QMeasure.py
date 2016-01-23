@@ -65,6 +65,7 @@ class QMeasure(QtGui.QGraphicsItem):
         self._alternate = None
         self._stickingAbove = None
         self._stickingBelow = None
+        self._showStickingHighlight = False
         self._playing = False
         self._nextToPlay = False
         self._dragHighlight = False
@@ -303,6 +304,12 @@ class QMeasure(QtGui.QGraphicsItem):
                                  text)
 
     @_painterSaver
+    def _paintStickingHighlight(self, painter, stickingRect):
+        scheme = self._colourScheme()
+        self._setPainterColour(painter, scheme.sticking)
+        painter.drawRect(stickingRect)
+
+    @_painterSaver
     def _paintStickingAbove(self, painter, xValues):
         if not self.parentItem().showStickingAbove():
             self._stickingAbove = None
@@ -315,7 +322,10 @@ class QMeasure(QtGui.QGraphicsItem):
         bottomLeft = QtCore.QPointF(0, baseline)
         self._stickingAbove.moveBottomLeft(bottomLeft)
         sticking = self._measure.aboveText
-        self._paintSticking(painter, sticking, baseline - self._qScore.ySpacing, xValues)
+        if self._showStickingHighlight:
+            self._paintStickingHighlight(painter, self._stickingAbove)
+        self._paintSticking(painter, sticking,
+                            baseline - self._qScore.ySpacing, xValues)
 
     @_painterSaver
     def _paintStickingBelow(self, painter, xValues):
@@ -328,6 +338,8 @@ class QMeasure(QtGui.QGraphicsItem):
         bottomLeft = QtCore.QPointF(0, self._height)
         self._stickingBelow.moveBottomLeft(bottomLeft)
         sticking = self._measure.belowText
+        if self._showStickingHighlight:
+            self._paintStickingHighlight(painter, self._stickingBelow)
         self._paintSticking(painter, sticking,
                             self._height - self._qScore.ySpacing, xValues)
 
@@ -453,6 +465,7 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def hoverEnterEvent(self, event):
         self._hovering(event)
+        self._showStickingHighlight = True
         event.accept()
 
     def hoverMoveEvent(self, event):
@@ -461,6 +474,7 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def hoverLeaveEvent(self, event):
         self._highlight = None
+        self._showStickingHighlight = False
         self.update()
         self.parentItem().clearHighlight()
         self._qScore.setCurrentHeads(None)
