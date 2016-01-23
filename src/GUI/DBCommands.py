@@ -771,3 +771,59 @@ class ToggleSimileCommand(ScoreCommand):
 
     def _undo(self):
         self._setSimile(self._oldDistance)
+
+class SetStickingCommand(ScoreCommand):
+    canReformat = False
+
+    def __init__(self, qscore, note, above, value):
+        super(SetStickingCommand, self).__init__(qscore, note, "set sticking")
+        self._newValue = value
+        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        self._above = above
+        if above:
+            self._function = Measure.setAbove
+            self._oldValue = measure.aboveText[self._np.noteTime]
+        else:
+            self._function = Measure.setBelow
+            self._oldValue = measure.belowText[self._np.noteTime]
+        self._oldShow = measure.stickingVisible(above)
+
+    def _redo(self):
+        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        self._function(measure, self._np.noteTime, self._newValue)
+        if measure.stickingVisible(self._above) != self._oldShow:
+            self._qScore.reBuild()
+
+    def _undo(self):
+        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        newShow = measure.stickingVisible(self._above)
+        self._function(measure, self._np.noteTime, self._oldValue)
+        if newShow != self._oldShow:
+            measure.setStickingVisible(self._above, self._oldShow)
+            self._qScore.reBuild()
+
+
+class SetStickingVisibility(ScoreCommand):
+    canReformat = False
+
+    def __init__(self, qscore, note, above, onOff):
+        super(SetStickingVisibility, self).__init__(qscore, note,
+                                                    "set sticking visibility")
+        self._newValue = onOff
+        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        self._oldValue = measure.stickingVisible(above)
+        self._above = above
+
+    def _redo(self):
+        if self._newValue == self._oldValue:
+            return
+        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        measure.setStickingVisible(self._above, self._newValue)
+        self._qScore.reBuild()
+
+    def _undo(self):
+        if self._newValue == self._oldValue:
+            return
+        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        measure.setStickingVisible(self._above, self._oldValue)
+        self._qScore.reBuild()

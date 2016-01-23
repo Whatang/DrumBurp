@@ -345,6 +345,10 @@ class TestReadMeasure(unittest.TestCase):
                   ALTERNATE
                   SIMILE 0
                   SIMINDEX 0
+                  SHOWABOVE False',
+                  ABOVETEXT ICAgICAgICA=',
+                  SHOWBELOW False',
+                  BELOWTEXT ICAgICAgICA=',
                 END_MEASURE"""
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
@@ -370,6 +374,10 @@ class TestReadMeasure(unittest.TestCase):
         self.assertFalse(measure.isLineBreak())
         self.assertEqual(measure.alternateText, None)
         self.assertEqual(measure.repeatCount, 1)
+        self.assertFalse(measure.showAbove)
+        self.assertEqual(measure.aboveText, "        ")
+        self.assertFalse(measure.showBelow)
+        self.assertEqual(measure.belowText, "        ")
 
     def testReadRepeatBar(self):
         data = """START_MEASURE
@@ -538,6 +546,43 @@ class TestReadMeasure(unittest.TestCase):
         self.assertEqual(measure.simileDistance, 2)
         self.assertEqual(measure.simileIndex, 1)
 
+    def testReadAboveBelowText(self):
+        data = """START_MEASURE
+                    START_MEASURE_COUNT
+                        BEAT_START
+                          NUM_TICKS 2
+                          COUNT |^+|
+                        BEAT_END
+                        BEAT_START
+                          NUM_TICKS 2
+                          COUNT |^+|
+                        BEAT_END
+                        BEAT_START
+                          NUM_TICKS 2
+                          COUNT |^+|
+                        BEAT_END
+                        BEAT_START
+                          NUM_TICKS 2
+                          COUNT |^+|
+                        BEAT_END
+                    END_MEASURE_COUNT
+                    STARTBARLINE 1
+                    ENDBARLINE 1
+                    REPEAT_COUNT 6
+                    ALTERNATE
+                    SHOWABOVE True
+                    ABOVETEXT IFIgICAgICA=
+                    SHOWBELOW True
+                    BELOWTEXT ICAgRiAgICA=
+                  END_MEASURE"""
+        handle = StringIO(data)
+        iterator = fileUtils.dbFileIterator(handle)
+        measure = dbfsv1.MeasureStructureV1().read(iterator)
+        self.assert_(measure.showAbove)
+        self.assertEqual(measure.aboveText, " R      ")
+        self.assert_(measure.showBelow)
+        self.assertEqual(measure.belowText, "   F    ")
+
 class TestWriteMeasure(unittest.TestCase):
     reg = CounterRegistry()
 
@@ -581,6 +626,10 @@ class TestWriteMeasure(unittest.TestCase):
                           '  REPEAT_COUNT 1',
                           '  SIMILE 0',
                           '  SIMINDEX 0',
+                          '  SHOWABOVE False',
+                          '  ABOVETEXT ICAgICAgICAgICAgICAgIA==',
+                          '  SHOWBELOW False',
+                          '  BELOWTEXT ICAgICAgICAgICAgICAgIA==',
                           'END_MEASURE'])
 
     def testWriteSimple(self):
@@ -642,6 +691,10 @@ class TestWriteMeasure(unittest.TestCase):
                           '  REPEAT_COUNT 1',
                           '  SIMILE 0',
                           '  SIMINDEX 0',
+                          '  SHOWABOVE False',
+                          '  ABOVETEXT ICAgICAgICAgICAgICAgIA==',
+                          '  SHOWBELOW False',
+                          '  BELOWTEXT ICAgICAgICAgICAgICAgIA==',
                           'END_MEASURE'])
 
     def testWriteDecorations(self):
@@ -653,6 +706,8 @@ class TestWriteMeasure(unittest.TestCase):
         self.measure.repeatCount = 10
         self.measure.simileDistance = 2
         self.measure.simileIndex = 1
+        self.measure.showAbove = True
+        self.measure.setAbove(1, "R")
         output = self.get_output()
         self.assertEqual(output,
                          ['START_MEASURE',
@@ -680,6 +735,10 @@ class TestWriteMeasure(unittest.TestCase):
                           '  ALTERNATE xxx',
                           '  SIMILE 2',
                           '  SIMINDEX 1',
+                          '  SHOWABOVE True',
+                          '  ABOVETEXT IFIgICAgICAgICAgICAgIA==',
+                          '  SHOWBELOW False',
+                          '  BELOWTEXT ICAgICAgICAgICAgICAgIA==',
                           'END_MEASURE'])
 
 class TestNoteHead(unittest.TestCase):

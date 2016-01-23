@@ -99,3 +99,9 @@ class ChangeRepeatCount(_MeasureEvents):
     def __init__(self, repeatCount, measurePosition):
         super(ChangeRepeatCount, self).__init__(measurePosition)
         self.repeatCount = repeatCount
+
+class SetSticking(FsmEvent):
+    def __init__(self, note, above):
+        super(SetSticking, self).__init__()
+        self.note = note
+        self.above = above

@@ -28,7 +28,8 @@ from GUI.QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 import GUI.DBIcons as DBIcons
 from GUI.DBCommands import (InsertMeasuresCommand,
                             InsertSectionCommand, DeleteMeasureCommand,
-                            SetAlternateCommand, ToggleSimileCommand)
+                            SetAlternateCommand, ToggleSimileCommand,
+                            SetStickingVisibility)
 from GUI.QInsertMeasuresDialog import QInsertMeasuresDialog
 from GUI.DBFSMEvents import RepeatNotes
 from Data import DBConstants
@@ -87,6 +88,8 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                 self.addAction("Add %d bar simile mark"
                                % len(self._draggedMeasures),
                                self._toggleSimile)
+        if not self._hasSimile:
+            self._setupStickingSection()
 
     def _setupEditSection(self):
         if self._measure.simileDistance > 0:
@@ -160,6 +163,19 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         deleteEmptyAction.setEnabled(self._score.numMeasures() > 1
                                      and len(emptyPositions) > 0)
         self.addSeparator()
+
+    def _setupStickingSection(self):
+        self.addSeparator()
+        action = QtGui.QAction("Show Sticking Above", self,
+                               checkable = True)
+        action.setChecked(self._measure.showAbove)
+        action.triggered.connect(lambda : self._showSticking(True, not self._measure.showAbove))
+        self.addAction(action)
+        action = QtGui.QAction("Show Sticking Below", self,
+                               checkable = True)
+        action.setChecked(self._measure.showBelow)
+        action.triggered.connect(lambda : self._showSticking(False, not self._measure.showBelow))
+        self.addAction(action)
 
     def _repeatNote(self):
         self._qScore.sendFsmEvent(RepeatNotes(self._np))
@@ -348,3 +364,10 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                                           simileIndex, simileDistance)
             self._qScore.addCommand(command)
         self._qScore.endMacro()
+
+    @QMenuIgnoreCancelClick.menuSelection
+    def _showSticking(self, above, onOff):
+        command = SetStickingVisibility(self._qScore,
+                                        self._np.makeMeasurePosition(),
+                                        above, onOff)
+        self._qScore.addCommand(command)

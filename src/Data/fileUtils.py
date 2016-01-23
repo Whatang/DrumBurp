@@ -24,6 +24,7 @@ Created on 7 Oct 2012
 import itertools
 import gzip
 import codecs
+import binascii
 import Data.DBErrors as DBErrors
 
 class dbFileIterator(object):
@@ -307,6 +308,19 @@ class StringField(SimpleValueField):
 
     def _toString(self, value):
         return unicode(value)
+
+class Base64StringField(SimpleValueField):
+    def _processData(self, data):
+        try:
+            data = data.decode("base64").decode("utf8")
+        except binascii.Error:
+            raise DBErrors.BadBase64()
+        except UnicodeError:
+            raise DBErrors.BadUnicode()
+        return data
+
+    def _toString(self, value):
+        return value.encode('utf8').encode('base64').strip()
 
 class IntegerField(SimpleValueField):
     def _processData(self, data):

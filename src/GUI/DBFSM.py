@@ -23,7 +23,7 @@
 from GUI.StateMachine import StateMachine, State
 from GUI.DBCommands import (ToggleNote, RepeatNoteCommand,
                             ChangeMeasureCountCommand, SetRepeatCountCommand,
-                            SetAlternateCommand)
+                            SetAlternateCommand, SetStickingCommand)
 from GUI.QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 from GUI.QMeasureContextMenu import QMeasureContextMenu
 from GUI.QMeasureLineContextMenu import QMeasureLineContextMenu
@@ -51,6 +51,18 @@ class DBStateMachine(StateMachine):
 class Waiting(DbState):
     def clearDrag(self, event_):
         self.qscore.clearDragSelection()
+
+    def setSticking(self, event):
+        rotate = {" " : "R", "R":"L", "L":"F", "F":" "}
+        measure = self.qscore.score.getItemAtPosition(event.note.makeMeasurePosition())
+        if event.above:
+            sticking = measure.aboveText[event.note.noteTime]
+        else:
+            sticking = measure.belowText[event.note.noteTime]
+        sticking = rotate.get(sticking, " ")
+        command = SetStickingCommand(self.qscore, event.note, event.above,
+                                     sticking)
+        self.qscore.addCommand(command)
 
 @DBStateMachine.add_state
 class ButtonDown(DbState):
@@ -321,6 +333,8 @@ DBStateMachine.add_transition(Waiting, Event.ChangeRepeatCount,
                               RepeatCountState)
 DBStateMachine.add_transition(Waiting, Event.SetAlternateEvent,
                               SetAlternateState)
+DBStateMachine.add_transition(Waiting, Event.SetSticking,
+                              Waiting, Waiting.setSticking)
 
 DBStateMachine.add_transition(ButtonDown, Event.MouseMove, Dragging,
                               guard = ButtonDown.isSameNote)

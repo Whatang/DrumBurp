@@ -83,6 +83,9 @@ DEFAULT_PLAYING_HIGHLIGHT = ColouredItem(QColor(QtCore.Qt.transparent),
 DEFAULT_NEXTPLAY_HIGHLIGHT = ColouredItem(QColor(QtCore.Qt.transparent),
                                           "Dashed",
                                           QColor(QtCore.Qt.blue).lighter())
+DEFAULT_STICKING_DISPLAY = ColouredItem(QColor(QtCore.Qt.white),
+                                        "Dashed",
+                                        QColor(QtCore.Qt.gray))
 
 class ColAttrs(object):
     def __init__(self, background = True, border = True):
@@ -95,17 +98,20 @@ class ColourScheme(object):
     selectedMeasureAttrs = ColAttrs(True, True)
     playingHighlightAttrs = ColAttrs(False, True)
     nextPlayingHighlightAttrs = ColAttrs(False, True)
+    stickingAttrs = ColAttrs(True, True)
 
     def __init__(self, noteHighlight = DEFAULT_NOTE_HIGHLIGHT,
                  timeHighlight = DEFAULT_TIME_HIGHLIGHT,
                  selectedMeasure = DEFAULT_SELECTED_MEASURE,
                  playingHighlight = DEFAULT_PLAYING_HIGHLIGHT,
-                 nextHighlight = DEFAULT_NEXTPLAY_HIGHLIGHT):
+                 nextHighlight = DEFAULT_NEXTPLAY_HIGHLIGHT,
+                 sticking = DEFAULT_STICKING_DISPLAY):
         self.noteHighlight = copy.deepcopy(noteHighlight)
         self.timeHighlight = copy.deepcopy(timeHighlight)
         self.selectedMeasure = copy.deepcopy(selectedMeasure)
         self.playingHighlight = copy.deepcopy(playingHighlight)
         self.nextPlayingHighlight = copy.deepcopy(nextHighlight)
+        self.sticking = copy.deepcopy(sticking)
 
     @staticmethod
     def iterColourNames():
@@ -114,6 +120,7 @@ class ColourScheme(object):
         yield "Selected Measure", "selectedMeasure"
         yield "Playing Highlight", "playingHighlight"
         yield "Next Playing Highlight", "nextPlayingHighlight"
+        yield "Sticking Display", "sticking"
 
 class DBColourPicker(QDialog, Ui_ColourPicker):
 

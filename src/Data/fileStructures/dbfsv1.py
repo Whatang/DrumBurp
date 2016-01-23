@@ -19,7 +19,7 @@
 
 from Data.fileUtils import (FileStructure, PositiveIntegerField,
                             StringField, NonNegativeIntegerField, BooleanField,
-                            IntegerField)
+                            IntegerField, Base64StringField)
 
 import Data.Beat
 import Data.MeasureCount
@@ -73,6 +73,11 @@ class MeasureStructureV1(FileStructure):
     alternateText = StringField("ALTERNATE")
     simileDistance = NonNegativeIntegerField("SIMILE")
     simileIndex = NonNegativeIntegerField("SIMINDEX")
+    showAbove = BooleanField("SHOWABOVE")
+    aboveText = Base64StringField("ABOVETEXT")
+    showBelow = BooleanField("SHOWBELOW")
+    belowText = Base64StringField("BELOWTEXT")
+
 
 class NoteHeadStructureV1(FileStructure):
     tag = "NOTEHEAD"
