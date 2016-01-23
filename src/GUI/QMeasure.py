@@ -612,5 +612,7 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def setSticking(self, point, above):
         noteTime = self._getNoteTime(point)
+        if not self._measure.hasAnyNoteAt(noteTime):
+            return
         notePos = self.makeNotePosition(noteTime, 0)
         self._qScore.sendFsmEvent(SetSticking(notePos, above))
