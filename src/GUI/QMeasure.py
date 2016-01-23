@@ -88,7 +88,7 @@ class QMeasure(QtGui.QGraphicsItem):
 
     def _setDimensions(self):
         self.prepareGeometryChange()
-        if self._measure.simileDistance > 0:
+        if self._isSimile():
             referredMeasure = self._qScore.score.getReferredMeasure(self._measureIndex)
             self._displayCols = referredMeasure.counter.numBeats()
         else:
@@ -127,6 +127,9 @@ class QMeasure(QtGui.QGraphicsItem):
     def _colourScheme(self):
         return self._qScore.parent().colourScheme
 
+    def _isSimile(self):
+        return self._measure.simileDistance > 0
+
     @staticmethod
     def _setPainterColour(painter, colourItem):
         pen = QtGui.QPen(colourItem.borderStyle)
@@ -143,8 +146,7 @@ class QMeasure(QtGui.QGraphicsItem):
         lineHeight = baseline + (self._qScore.ySpacing / 2.0) - 1
         dot = self._qScore.scale
         potential = False
-        isSimile = self._measure.simileDistance > 0
-        if isSimile:
+        if self._isSimile():
             simText = "%%%d" % self._measure.simileDistance
             left = " "
             right = " "
@@ -157,7 +159,7 @@ class QMeasure(QtGui.QGraphicsItem):
         for drumIndex in xrange(numLines):
             lineIndex = self.lineIndex(drumIndex)
             for noteTime, x in enumerate(xValues):
-                if isSimile:
+                if self._isSimile():
                     if drumIndex == numLines / 2:
                         text = simText[noteTime]
                     else:
@@ -215,7 +217,7 @@ class QMeasure(QtGui.QGraphicsItem):
         font = painter.font()
         fontMetric = QtGui.QFontMetrics(font)
         baseline = self._notesBottom
-        if self._measure.simileDistance > 0:
+        if self._isSimile():
             counter = ["%d" % (beat + 1) for beat in
                        xrange(self._displayCols)]
         else:
@@ -355,7 +357,7 @@ class QMeasure(QtGui.QGraphicsItem):
         painter.setFont(font)
         xValues = [noteTime * self._qScore.xSpacing
                    for noteTime in xrange(self._displayCols)]
-        if not self._measure.simileDistance > 0 and self._highlight:
+        if not self._isSimile() and self._highlight:
             self._paintHighlight(painter, xValues)
         self._paintNotes(painter, xValues)
         if self._props.beatCountVisible:
@@ -373,8 +375,9 @@ class QMeasure(QtGui.QGraphicsItem):
         else:
             self._alternate = None
         # Sticking
-        self._paintStickingAbove(painter, xValues)
-        self._paintStickingBelow(painter, xValues)
+        if not self._isSimile():
+            self._paintStickingAbove(painter, xValues)
+            self._paintStickingBelow(painter, xValues)
 
     def dataChanged(self, notePosition_):
         self._setDimensions()
@@ -433,6 +436,7 @@ class QMeasure(QtGui.QGraphicsItem):
     def _hovering(self, event):
         point = self.mapFromScene(event.scenePos())
         noteTime, lineIndex = self._getMouseCoords(point)
+        # Set line & time highlights
         if self._isOverNotes(lineIndex):
             if (noteTime, lineIndex) != self._highlight:
                 self._highlight = noteTime, lineIndex
@@ -441,16 +445,30 @@ class QMeasure(QtGui.QGraphicsItem):
                 realIndex = self.parentItem().lineIndex(lineIndex)
                 self._qScore.setCurrentHeads(realIndex)
         elif self._isOverStickingAbove(point) or self._isOverStickingBelow(point):
-            self._qScore.setStatusMessage("Click to rotate sticking.")
-            self.setCursor(QtCore.Qt.PointingHandCursor)
             self._highlight = noteTime, None
             self.update()
         elif self._highlight != None:
             self._highlight = None
             self.parentItem().clearHighlight()
             self.update()
+        # Set status message and cursor
+        if self._isOverStickingAbove(point) or self._isOverStickingBelow(point):
+            self._qScore.setStatusMessage("Click to rotate sticking.")
+            self.setCursor(QtCore.Qt.PointingHandCursor)
+        elif self._isOverNotes(lineIndex):
+            if self._isSimile():
+                self._qScore.setStatusMessage("Right click for options.")
+            else:
+                self._qScore.setStatusMessage("Click to toggle notes; "
+                                              "middle click to toggle special noteheads; "
+                                              "right click for options.")
+            self.setCursor(QtCore.Qt.ArrowCursor)
         elif self._isOverCount(lineIndex):
-            self._qScore.setStatusMessage("Double click to edit measure count; right click for count options.")
+            if self._isSimile():
+                self._qScore.setStatusMessage("Right click for count options.")
+            else:
+                self._qScore.setStatusMessage("Double click to edit measure count; "
+                                              "right click for count options.")
             self.setCursor(QtCore.Qt.PointingHandCursor)
         elif self._isOverRepeatCount(point):
             self._qScore.setStatusMessage("Double click to edit repeat count.")
@@ -479,6 +497,7 @@ class QMeasure(QtGui.QGraphicsItem):
         self.parentItem().clearHighlight()
         self._qScore.setCurrentHeads(None)
         self.setCursor(QtCore.Qt.ArrowCursor)
+        self._qScore.setStatusMessage()
         event.accept()
 
     def mousePressEvent(self, event):
@@ -517,16 +536,16 @@ class QMeasure(QtGui.QGraphicsItem):
         if self._isOverNotes(self._getMouseLine(point)):
             noteTime, drumIndex = self._getNotePosition(point)
             np = self.makeNotePosition(noteTime, drumIndex)
-        elif self._isOverStickingAbove(point):
+        elif self._isOverStickingAbove(point) and not self._isSimile():
             self.setSticking(point, True)
-        elif self._isOverStickingBelow(point):
+        elif self._isOverStickingBelow(point) and not self._isSimile():
             self.setSticking(point, False)
         self._qScore.sendFsmEvent(MouseRelease(self, np))
 
     def mouseDoubleClickEvent(self, event):
         point = self.mapFromScene(event.scenePos())
         lineIndex = self._getMouseLine(point)
-        if self._isOverCount(lineIndex) and not self._measure.simileDistance > 0:
+        if self._isOverCount(lineIndex) and not self._isSimile():
             counter = self._measure.counter
             fsmEvent = EditMeasureProperties(counter,
                                              self._props.counterRegistry,

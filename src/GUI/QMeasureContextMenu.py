@@ -88,7 +88,8 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                 self.addAction("Add %d bar simile mark"
                                % len(self._draggedMeasures),
                                self._toggleSimile)
-        self._setupStickingSection()
+        if not self._hasSimile:
+            self._setupStickingSection()
 
     def _setupEditSection(self):
         if self._measure.simileDistance > 0:
