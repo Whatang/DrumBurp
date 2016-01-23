@@ -259,6 +259,7 @@ class LilyMeasure(object):
 
     def _buildVoices(self, noteTimes, durations, lilyNotes, effects):
         wholeRests = collections.defaultdict(dict)
+        noteTimesToVoiceIndexes = collections.defaultdict(dict)
         for direction, timeList in noteTimes.iteritems():
             lNotes = lilyNotes[direction]
             lEffects = effects[direction]
@@ -286,26 +287,45 @@ class LilyMeasure(object):
                     lNotes[noteTime] = ["r"]
                 if lNotes[noteTime] == ["r"] and dur == "4":
                     wholeRests[direction][noteTime] = len(voice)
+                noteTimesToVoiceIndexes[direction][noteTime] = len(voice)
                 voice.append(self._makeNoteString(lNotes[noteTime])
                              + dur + accent)
                 if restTime:
                     voice.append("r" + restTime)
             if isTriplet:
                 voice.append("}")
-        return wholeRests
+        return wholeRests, noteTimesToVoiceIndexes
+
+    def _addSticking(self, noteTimesToVoiceIndexes, primaryDirection, secondaryDirection, stickingText):
+        annotate = { STEM_UP:"^", STEM_DOWN:"_"}
+        for noteTime, sticking in enumerate(stickingText):
+            if sticking == " ":
+                continue
+            direction = None
+            if noteTime in noteTimesToVoiceIndexes[primaryDirection]:
+                direction = primaryDirection
+            elif noteTime in noteTimesToVoiceIndexes[secondaryDirection]:
+                direction = secondaryDirection
+            else:
+                continue
+            voiceIndex = noteTimesToVoiceIndexes[direction][noteTime]
+            toAppend = annotate[primaryDirection] + r"\markup{" + sticking + "}"
+            self._voices[direction][voiceIndex] = self._voices[direction][voiceIndex] + toAppend
 
     def _build(self):
         notes = self._separateNotesByDirection()
         noteTimes = self._calculateNoteTimes(notes)
         durations = self._calculateDurations(noteTimes)
         lilyNotes, effects = self._getLilyNotesAndEffects(notes)
-        wholeRests = self._buildVoices(noteTimes, durations, lilyNotes, effects)
+        wholeRests, noteTimesToVoiceIndexes = self._buildVoices(noteTimes, durations, lilyNotes, effects)
         for direction, restTimes in wholeRests.iteritems():
             otherDirection = 1 - direction
             for (rest, index) in restTimes.iteritems():
                 if (otherDirection not in wholeRests
                     or rest not in wholeRests[otherDirection]):
                     self._voices[direction][index] = "s4"
+        self._addSticking(noteTimesToVoiceIndexes, STEM_UP, STEM_DOWN, self.measure.aboveText)
+        self._addSticking(noteTimesToVoiceIndexes, STEM_DOWN, STEM_UP, self.measure.belowText)
         self._mergeWholeRests(STEM_UP)
         self._mergeWholeRests(STEM_DOWN)
 
@@ -683,9 +703,11 @@ class LilypondScore(object):
         parsed = LilyMeasure(measure, self._lilyKit)
         with LILY_CONTEXT(self.indenter, r'\new DrumVoice'):
             self.indenter(r'\voiceOne')
+            self.indenter(r'\override TextScript.staff-padding = #5')
             parsed.voiceOne(self.indenter)
         with LILY_CONTEXT(self.indenter, r'\new DrumVoice'):
             self.indenter(r'\voiceTwo')
+            self.indenter(r'\override TextScript.staff-padding = #5')
             parsed.voiceTwo(self.indenter)
 
     @staticmethod
