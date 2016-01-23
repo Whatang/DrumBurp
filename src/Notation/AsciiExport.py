@@ -184,18 +184,23 @@ class Exporter(object):
             lastMeasure = measure
         return [repeatString]
 
-    @staticmethod
-    def _getSticking(staff, above):
+    def _getSticking(self, staff, above, position):
         hasSticking = any(measure.stickingVisible(above)
                           for measure in staff)
         if not hasSticking:
             return None
         stickingString = ["  "]
-        for measure in staff:
-            if above:
-                stickingString.append(measure.aboveText)
+        for measureIndex, measure in enumerate(staff):
+            position.measureIndex = measureIndex
+            if measure.simileDistance > 0:
+                referredMeasure = self.score.getReferredMeasure(self.score.getMeasureIndex(position))
+                displayCols = referredMeasure.counter.numBeats()
+                stickingString.append(" " * displayCols)
             else:
-                stickingString.append(measure.belowText)
+                if above:
+                    stickingString.append(measure.aboveText)
+                else:
+                    stickingString.append(measure.belowText)
         stickingString = " ".join(stickingString)
         if all(ch == " " for ch in stickingString):
             return None
@@ -209,7 +214,7 @@ class Exporter(object):
         indices.reverse()
         position = NotePosition(staffIndex = staffIndex)
         staffString = self._getRepeatString(staff, position)
-        stickAbove = self._getSticking(staff, True)
+        stickAbove = self._getSticking(staff, True, position)
         if stickAbove:
             staffString.append(stickAbove)
         for drumIndex in indices:
@@ -223,7 +228,7 @@ class Exporter(object):
         if self.settings.printCounts:
             countString = self._getCountLine(staff, position)
             staffString.append(countString)
-        stickBelow = self._getSticking(staff, False)
+        stickBelow = self._getSticking(staff, False, position)
         if stickBelow:
             staffString.append(stickBelow)
         return staffString
