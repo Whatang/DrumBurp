@@ -416,6 +416,9 @@ class Measure(object):
         else:
             return text[:noteTime] + value + text[noteTime + 1:]
 
+    def hasAnyNoteAt(self, noteTime):
+        return noteTime in self._notes
+
     def setAbove(self, noteTime, value):
         self._above = self._replace(self._above, noteTime, value)
         self.showAbove = self.showAbove or any(ch != " " for ch in self._above)

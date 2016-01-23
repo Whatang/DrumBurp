@@ -124,6 +124,9 @@ class NoteCommand(ScoreCommand):  # IGNORE:abstract-method
             head = self._score.drumKit.getDefaultHead(notePosition.drumIndex)
         self._oldHead = self._score.getItemAtPosition(notePosition)
         self._head = head
+        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        self._oldAbove = measure.aboveText
+        self._oldBelow = measure.belowText
 
     def _undo(self):
         if self._oldHead == DBConstants.EMPTY_NOTE:
@@ -131,6 +134,9 @@ class NoteCommand(ScoreCommand):  # IGNORE:abstract-method
         else:
             self._score.addNote(self._np, self._oldHead)
             DBMidi.playNote(self._np.drumIndex, self._oldHead)
+        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        measure.belowText = self._oldBelow
+        measure.aboveText = self._oldAbove
 
 class SetNote(NoteCommand):
     def _redo(self):
@@ -144,6 +150,13 @@ class ToggleNote(NoteCommand):
         newHead = self._score.getItemAtPosition(self._np)
         if newHead != DBConstants.EMPTY_NOTE:
             DBMidi.playNote(self._np.drumIndex, self._head)
+        elif (self._oldAbove[self._np.noteTime] != " " or
+              self._oldBelow[self._np.noteTime] != " "):
+            measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+            if not measure.hasAnyNoteAt(self._np.noteTime):
+                measure.setAbove(self._np.noteTime, " ")
+                measure.setBelow(self._np.noteTime, " ")
+
 
 class MetaDataCommand(ScoreCommand):
     canReformat = False
