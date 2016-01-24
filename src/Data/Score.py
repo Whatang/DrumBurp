@@ -227,19 +227,19 @@ class Score(object):
             else:
                 index += 1
 
-    def getMeasure(self, index):
+    def getMeasureByIndex(self, index):
         self._checkMeasureIndex(index)
         staff, index = self._staffContainingMeasure(index)
         return staff[index]
 
     def getReferredMeasure(self, index):
         self._checkMeasureIndex(index)
-        measure = self.getMeasure(index)
+        measure = self.getMeasureByIndex(index)
         while index > 0 and measure.simileDistance > 0:
             index -= measure.simileDistance
             if index <= 0:
                 index = 0
-            measure = self.getMeasure(index)
+            measure = self.getMeasureByIndex(index)
         return measure
 
     def getItemAtPosition(self, position):

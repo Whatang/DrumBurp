@@ -625,7 +625,7 @@ class LilypondScore(object):
 
 
     def _firstMeasureRepeat(self):
-        measure = self.score.getMeasure(0)
+        measure = self.score.getMeasureByIndex(0)
         if not measure.isRepeatStart():
             return
         firstRepeatCode = r"""\once \override Score.BreakAlignment.break-align-orders =

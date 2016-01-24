@@ -59,7 +59,7 @@ class QCountContextMenu(QMenuIgnoreCancelClick):
             contractAction = self.addAction("Contract Count",
                                             self._contractCount)
             index = self._qScore.score.getMeasureIndex(self._np)
-            measure = self._qScore.score.getMeasure(index)
+            measure = self._qScore.score.getMeasureByIndex(index)
             contractAction.setEnabled(measure.getSmallestSimpleCount() != None)
         self.addAction("Contract All Counts", self._contractAllCounts)
 

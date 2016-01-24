@@ -345,7 +345,7 @@ class InsertMeasuresCommand(ScoreCommand):
     def _redo(self):
         moveEnd = False
         if self._preserveSections and self._index > 0:
-            measure = self._score.getMeasure(self._index - 1)
+            measure = self._score.getMeasureByIndex(self._index - 1)
             moveEnd = measure.isSectionEnd()
             if moveEnd:
                 measure.setSectionEnd(False)
@@ -353,17 +353,17 @@ class InsertMeasuresCommand(ScoreCommand):
             self._score.insertMeasureByIndex(self._width, self._index,
                                              counter = self._counter)
         if moveEnd:
-            measure = self._score.getMeasure(self._index +
+            measure = self._score.getMeasureByIndex(self._index +
                                              self._numMeasures - 1)
             measure.setSectionEnd(True)
 
     def _undo(self):
         if self._preserveSections and self._index > 0:
-            measure = self._score.getMeasure(self._index +
+            measure = self._score.getMeasureByIndex(self._index +
                                              self._numMeasures - 1)
             if measure.isSectionEnd():
                 measure.setSectionEnd(False)
-                measure = self._score.getMeasure(self._index - 1)
+                measure = self._score.getMeasureByIndex(self._index - 1)
                 measure.setSectionEnd(True)
         for dummyMeasureIndex in xrange(self._numMeasures):
             self._score.deleteMeasureByIndex(self._index)
@@ -437,7 +437,7 @@ class ContractMeasureCountCommand(ScoreCommand):
 
     @ScoreCommand.suspendCallbacks
     def _redo(self):
-        measure = self._score.getMeasure(self._measureIndex)
+        measure = self._score.getMeasureByIndex(self._measureIndex)
         self._oldCount = measure.counter
         newCount = measure.getSmallestSimpleCount()
         if newCount is not None:
@@ -447,7 +447,7 @@ class ContractMeasureCountCommand(ScoreCommand):
 
     @ScoreCommand.suspendCallbacks
     def _undo(self):
-        measure = self._score.getMeasure(self._measureIndex)
+        measure = self._score.getMeasureByIndex(self._measureIndex)
         measure.setBeatCount(self._oldCount)
         self._qScore.reBuild()
 
@@ -770,7 +770,7 @@ class ToggleSimileCommand(ScoreCommand):
             self._oldDistance = 0
 
     def _setSimile(self, distance):
-        measure = self._score.getMeasure(self._measureIndex)
+        measure = self._score.getMeasureByIndex(self._measureIndex)
         measure.simileDistance = distance
         if distance == 0:
             measure.simileIndex = 0

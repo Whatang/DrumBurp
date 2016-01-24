@@ -218,8 +218,8 @@ class TestExport(unittest.TestCase):
         score.addNote(NotePosition(0, 0, 0, 0), "x")
         score.addNote(NotePosition(0, 1, 0, 0), "y")
         score.addNote(NotePosition(0, 2, 0, 0), "z")
-        score.getMeasure(0).setRepeatStart(True)
-        score.getMeasure(0).setRepeatEnd(True)
+        score.getMeasureByIndex(0).setRepeatStart(True)
+        score.getMeasureByIndex(0).setRepeatEnd(True)
         score.formatScore(40)
         output = self.getOutput(score, settings)
         self.assertEqual(output,
@@ -259,11 +259,11 @@ class TestExport(unittest.TestCase):
         score.addNote(NotePosition(0, 0, 0, 0), "x")
         score.addNote(NotePosition(0, 1, 0, 0), "y")
         score.addNote(NotePosition(0, 2, 0, 0), "z")
-        score.getMeasure(0).setRepeatStart(True)
-        score.getMeasure(0).setRepeatEnd(True)
-        score.getMeasure(1).setRepeatStart(True)
-        score.getMeasure(1).setRepeatEnd(True)
-        score.getMeasure(1).repeatCount = 3
+        score.getMeasureByIndex(0).setRepeatStart(True)
+        score.getMeasureByIndex(0).setRepeatEnd(True)
+        score.getMeasureByIndex(1).setRepeatStart(True)
+        score.getMeasureByIndex(1).setRepeatEnd(True)
+        score.getMeasureByIndex(1).repeatCount = 3
         score.formatScore(40)
         output = self.getOutput(score, settings)
         self.assertEqual(output,
@@ -303,11 +303,11 @@ class TestExport(unittest.TestCase):
         score.addNote(NotePosition(0, 0, 0, 0), "x")
         score.addNote(NotePosition(0, 1, 0, 0), "y")
         score.addNote(NotePosition(0, 2, 0, 0), "z")
-        score.getMeasure(0).setRepeatStart(True)
-        score.getMeasure(0).setRepeatEnd(True)
-        score.getMeasure(0).alternateText = "1."
-        score.getMeasure(1).setRepeatEnd(True)
-        score.getMeasure(1).alternateText = "2."
+        score.getMeasureByIndex(0).setRepeatStart(True)
+        score.getMeasureByIndex(0).setRepeatEnd(True)
+        score.getMeasureByIndex(0).alternateText = "1."
+        score.getMeasureByIndex(1).setRepeatEnd(True)
+        score.getMeasureByIndex(1).alternateText = "2."
         score.formatScore(40)
         output = self.getOutput(score, settings)
         self.assertEqual(output,
@@ -347,8 +347,8 @@ class TestExport(unittest.TestCase):
         score.addNote(NotePosition(0, 0, 0, 0), "x")
         score.addNote(NotePosition(0, 1, 0, 0), "y")
         score.addNote(NotePosition(0, 2, 0, 0), "z")
-        score.getMeasure(0).setRepeatStart(True)
-        score.getMeasure(2).setRepeatEnd(True)
+        score.getMeasureByIndex(0).setRepeatStart(True)
+        score.getMeasureByIndex(2).setRepeatEnd(True)
         score.formatScore(40)
         output = self.getOutput(score, settings)
         self.assertEqual(output,

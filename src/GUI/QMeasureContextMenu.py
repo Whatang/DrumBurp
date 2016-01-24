@@ -337,15 +337,15 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
             startIndex = self._draggedMeasures[0][1]
             endIndex = self._draggedMeasures[-1][1]
         if self._hasSimile:
-            startMeasure = self._score.getMeasure(startIndex)
+            startMeasure = self._score.getMeasureByIndex(startIndex)
             while startIndex > 0 and startMeasure.simileIndex > 0:
                 startIndex -= 1
-                startMeasure = self._score.getMeasure(startIndex)
-            endMeasure = self._score.getMeasure(endIndex)
+                startMeasure = self._score.getMeasureByIndex(startIndex)
+            endMeasure = self._score.getMeasureByIndex(endIndex)
             while (endIndex < self._score.numMeasures() - 1 and
                    endMeasure.simileIndex < endMeasure.simileDistance - 1):
                 endIndex += 1
-                endMeasure = self._score.getMeasure(endIndex)
+                endMeasure = self._score.getMeasureByIndex(endIndex)
             simileDistance = 0
             macroName = "Remove simile mark"
         else:

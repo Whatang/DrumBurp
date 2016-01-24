@@ -50,15 +50,15 @@ class TestMeasureControl(unittest.TestCase):
         for i in range(1, 17):
             self.score.insertMeasureByIndex(i)
         for i in range(1, 17):
-            self.assertEqual(len(self.score.getMeasure(i - 1)), i)
+            self.assertEqual(len(self.score.getMeasureByIndex(i - 1)), i)
 
     def testGetMeasure_BadIndex(self):
-        self.assertRaises(BadTimeError, self.score.getMeasure, 0)
+        self.assertRaises(BadTimeError, self.score.getMeasureByIndex, 0)
         self.score.insertMeasureByIndex(16)
         self.score.insertMeasureByIndex(16)
         self.score.insertMeasureByIndex(16)
-        self.assertRaises(BadTimeError, self.score.getMeasure, -1)
-        self.assertRaises(BadTimeError, self.score.getMeasure, 3)
+        self.assertRaises(BadTimeError, self.score.getMeasureByIndex, -1)
+        self.assertRaises(BadTimeError, self.score.getMeasureByIndex, 3)
 
     def testDeleteMeasureByIndex(self):
         self.score.insertMeasureByIndex(16)
@@ -168,17 +168,17 @@ class TestMeasureControl(unittest.TestCase):
         self.score.insertMeasureByIndex(8, 2)
         self.assertEqual(self.score.numMeasures(), 4)
         self.assertEqual(len(self.score), 56)
-        self.assertEqual(len(self.score.getMeasure(2)), 8)
+        self.assertEqual(len(self.score.getMeasureByIndex(2)), 8)
         self.score.insertMeasureByIndex(24, 4)
         self.assertEqual(self.score.numMeasures(), 5)
         self.assertEqual(len(self.score), 80)
-        self.assertEqual(len(self.score.getMeasure(4)), 24)
+        self.assertEqual(len(self.score.getMeasureByIndex(4)), 24)
 
     def testInsertMeasure_IntoEmptyScore(self):
         self.score.insertMeasureByIndex(16, 0)
         self.assertEqual(self.score.numMeasures(), 1)
         self.assertEqual(len(self.score), 16)
-        self.assertEqual(len(self.score.getMeasure(0)), 16)
+        self.assertEqual(len(self.score.getMeasureByIndex(0)), 16)
 
     def testInsertMeasure_BadIndex(self):
         self.assertRaises(BadTimeError, self.score.insertMeasureByIndex, 16, -1)
@@ -195,17 +195,17 @@ class TestMeasureControl(unittest.TestCase):
         self.score.insertMeasureByPosition(8, NotePosition(0, 2))
         self.assertEqual(self.score.numMeasures(), 4)
         self.assertEqual(len(self.score), 56)
-        self.assertEqual(len(self.score.getMeasure(2)), 8)
+        self.assertEqual(len(self.score.getMeasureByIndex(2)), 8)
         self.score.insertMeasureByPosition(24, NotePosition(0, 4))
         self.assertEqual(self.score.numMeasures(), 5)
         self.assertEqual(len(self.score), 80)
-        self.assertEqual(len(self.score.getMeasure(4)), 24)
+        self.assertEqual(len(self.score.getMeasureByIndex(4)), 24)
 
     def testInsertMeasureByPosition_IntoEmptyScore(self):
         self.score.insertMeasureByPosition(16)
         self.assertEqual(self.score.numMeasures(), 1)
         self.assertEqual(len(self.score), 16)
-        self.assertEqual(len(self.score.getMeasure(0)), 16)
+        self.assertEqual(len(self.score.getMeasureByIndex(0)), 16)
 
     def testInsertMeasureByPosition_BadIndex(self):
         self.assertRaises(BadTimeError, self.score.insertMeasureByPosition, 16,
@@ -230,7 +230,7 @@ class TestNoteControl(unittest.TestCase):
         self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
                          EMPTY_NOTE)
         self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0)),
-                         self.score.getMeasure(0))
+                         self.score.getMeasureByIndex(0))
         self.assertEqual(self.score.getItemAtPosition(NotePosition(0)),
                          self.score.getStaff(0))
         self.assertEqual(self.score.getItemAtPosition(NotePosition()),
@@ -378,23 +378,23 @@ class TestFormatScore(unittest.TestCase):
     def testFormatScoreWithSections(self):
         for dummy in range(0, 20):
             self.score.insertMeasureByIndex(16)
-        self.score.getMeasure(5).setSectionEnd(True)
+        self.score.getMeasureByIndex(5).setSectionEnd(True)
         self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 6)
 
     def testFormatScore_SectionEndAtScoreEnd(self):
         for dummy in range(0, 20):
             self.score.insertMeasureByIndex(16)
-        self.score.getMeasure(19).setSectionEnd(True)
+        self.score.getMeasureByIndex(19).setSectionEnd(True)
         self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 5)
 
     def testFormatScoreWithSectionsAndRepeat(self):
         for dummy in range(0, 20):
             self.score.insertMeasureByIndex(16)
-        self.score.getMeasure(0).setRepeatStart(True)
-        self.score.getMeasure(5).setSectionEnd(True)
-        self.score.getMeasure(5).setRepeatEnd(True)
+        self.score.getMeasureByIndex(0).setRepeatStart(True)
+        self.score.getMeasureByIndex(5).setSectionEnd(True)
+        self.score.getMeasureByIndex(5).setRepeatEnd(True)
         self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 6)
 
@@ -524,7 +524,7 @@ class TestIteration(unittest.TestCase):
         self.score.drumKit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit()
         for index in range(0, 26):
             self.score.insertMeasureByIndex(16)
-            measure = self.score.getMeasure(index)
+            measure = self.score.getMeasureByIndex(index)
             measure.addNote(NotePosition(noteTime = 0, drumIndex = 0),
                             chr(ord("a") + index))
         self.score.formatScore(80)
@@ -557,72 +557,72 @@ class TestIteration(unittest.TestCase):
         self.assertEqual(mcount, 12)
 
     def testIterSimpleRepeat(self):
-        self.score.getMeasure(0).setRepeatStart(True)
-        self.score.getMeasure(3).setRepeatEnd(True)
-        self.score.getMeasure(3).repeatCount = 3
+        self.score.getMeasureByIndex(0).setRepeatStart(True)
+        self.score.getMeasureByIndex(3).setRepeatEnd(True)
+        self.score.getMeasureByIndex(3).repeatCount = 3
         measures = list(self.score.iterMeasuresWithRepeats())
         self.assertEqual([m[1] for m in measures[0:12]],
                          [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3])
         self.assertEqual([m[1] for m in measures[12:]],
                          range(4, 26))
         for measure, index in measures:
-            self.assertEqual(measure, self.score.getMeasure(index))
+            self.assertEqual(measure, self.score.getMeasureByIndex(index))
 
     def testAlternates(self):
-        self.score.getMeasure(0).setRepeatStart(True)
-        self.score.getMeasure(1).setRepeatEnd(True)
-        self.score.getMeasure(1).alternateText = "1,3-5."
-        self.score.getMeasure(2).setRepeatEnd(True)
-        self.score.getMeasure(2).alternateText = "2,6."
-        self.score.getMeasure(3).setRepeatEnd(True)
-        self.score.getMeasure(3).alternateText = "7."
+        self.score.getMeasureByIndex(0).setRepeatStart(True)
+        self.score.getMeasureByIndex(1).setRepeatEnd(True)
+        self.score.getMeasureByIndex(1).alternateText = "1,3-5."
+        self.score.getMeasureByIndex(2).setRepeatEnd(True)
+        self.score.getMeasureByIndex(2).alternateText = "2,6."
+        self.score.getMeasureByIndex(3).setRepeatEnd(True)
+        self.score.getMeasureByIndex(3).alternateText = "7."
         measures = list(self.score.iterMeasuresWithRepeats())
         self.assertEqual([m[1] for m in measures[0:14]],
                          [0, 1, 0, 2, 0, 1, 0, 1, 0, 1, 0, 2, 0, 3])
         self.assertEqual([m[1] for m in measures[14:]],
                          range(4, 26))
         for measure, index in measures:
-            self.assertEqual(measure, self.score.getMeasure(index))
+            self.assertEqual(measure, self.score.getMeasureByIndex(index))
 
     def testAlternatesSectionEnd(self):
-        self.score.getMeasure(0).setRepeatStart(True)
-        self.score.getMeasure(1).setRepeatEnd(True)
-        self.score.getMeasure(1).alternateText = "1,3-5."
-        self.score.getMeasure(2).setRepeatEnd(True)
-        self.score.getMeasure(2).alternateText = "2,6."
-        self.score.getMeasure(3).setSectionEnd(True)
-        self.score.getMeasure(3).alternateText = "7."
+        self.score.getMeasureByIndex(0).setRepeatStart(True)
+        self.score.getMeasureByIndex(1).setRepeatEnd(True)
+        self.score.getMeasureByIndex(1).alternateText = "1,3-5."
+        self.score.getMeasureByIndex(2).setRepeatEnd(True)
+        self.score.getMeasureByIndex(2).alternateText = "2,6."
+        self.score.getMeasureByIndex(3).setSectionEnd(True)
+        self.score.getMeasureByIndex(3).alternateText = "7."
         measures = list(self.score.iterMeasuresWithRepeats())
         self.assertEqual([m[1] for m in measures[0:14]],
                          [0, 1, 0, 2, 0, 1, 0, 1, 0, 1, 0, 2, 0, 3])
         self.assertEqual([m[1] for m in measures[14:]],
                          range(4, 26))
         for measure, index in measures:
-            self.assertEqual(measure, self.score.getMeasure(index))
+            self.assertEqual(measure, self.score.getMeasureByIndex(index))
 
     def testAlternatesNoEnd(self):
-        self.score.getMeasure(0).setRepeatStart(True)
-        self.score.getMeasure(1).setRepeatEnd(True)
-        self.score.getMeasure(1).alternateText = "1,3-5."
-        self.score.getMeasure(2).setRepeatEnd(True)
-        self.score.getMeasure(2).alternateText = "2,6."
-        self.score.getMeasure(3).alternateText = "7."
+        self.score.getMeasureByIndex(0).setRepeatStart(True)
+        self.score.getMeasureByIndex(1).setRepeatEnd(True)
+        self.score.getMeasureByIndex(1).alternateText = "1,3-5."
+        self.score.getMeasureByIndex(2).setRepeatEnd(True)
+        self.score.getMeasureByIndex(2).alternateText = "2,6."
+        self.score.getMeasureByIndex(3).alternateText = "7."
         measures = list(self.score.iterMeasuresWithRepeats())
         self.assertEqual([m[1] for m in measures[0:14]],
                          [0, 1, 0, 2, 0, 1, 0, 1, 0, 1, 0, 2, 0, 3])
         self.assertEqual([m[1] for m in measures[14:]],
                          range(4, 26))
         for measure, index in measures:
-            self.assertEqual(measure, self.score.getMeasure(index))
+            self.assertEqual(measure, self.score.getMeasureByIndex(index))
 
     def testInconsistentAlternates(self):
-        self.score.getMeasure(0).setRepeatStart(True)
-        self.score.getMeasure(1).setRepeatEnd(True)
-        self.score.getMeasure(1).alternateText = "1,3-5."
-        self.score.getMeasure(2).setRepeatEnd(True)
-        self.score.getMeasure(2).alternateText = "2,6."
-        self.score.getMeasure(3).setRepeatEnd(True)
-        self.score.getMeasure(3).alternateText = "12."
+        self.score.getMeasureByIndex(0).setRepeatStart(True)
+        self.score.getMeasureByIndex(1).setRepeatEnd(True)
+        self.score.getMeasureByIndex(1).alternateText = "1,3-5."
+        self.score.getMeasureByIndex(2).setRepeatEnd(True)
+        self.score.getMeasureByIndex(2).alternateText = "2,6."
+        self.score.getMeasureByIndex(3).setRepeatEnd(True)
+        self.score.getMeasureByIndex(3).alternateText = "12."
         self.assertRaises(InconsistentRepeats, list,
                           self.score.iterMeasuresWithRepeats())
 
@@ -633,7 +633,7 @@ class TestSections(unittest.TestCase):
         self.score.drumKit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit()
         for index in range(0, 26):
             self.score.insertMeasureByIndex(16)
-            measure = self.score.getMeasure(index)
+            measure = self.score.getMeasureByIndex(index)
             measure.addNote(NotePosition(noteTime = 0, drumIndex = 0),
                             chr(ord("a") + index))
         self.score.formatScore(80)
@@ -785,7 +785,7 @@ class TestRelativePositions(unittest.TestCase):
         self.score.drumKit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit()
         for index in range(0, 26):
             self.score.insertMeasureByIndex(16)
-            measure = self.score.getMeasure(index)
+            measure = self.score.getMeasureByIndex(index)
             measure.addNote(NotePosition(noteTime = 0, drumIndex = 0),
                             chr(ord("a") + index))
         self.score.formatScore(80)
