@@ -145,7 +145,8 @@ class Repeating(DbState):
             self.statusBar.showMessage("Cannot repeat notes backwards!",
                                        5000)
             return Waiting(self.machine, None)
-        head = self.qscore.score.getItemAtPosition(self.event.note)
+        measure = self.qscore.score.getMeasureByPosition(self.event.note)
+        head = measure.getNote(self.event.note)
         return RepeatingDragging(self.machine, event, self.event.note,
                                   interval, head)
 

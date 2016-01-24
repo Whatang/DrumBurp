@@ -122,11 +122,11 @@ class NoteCommand(ScoreCommand):  # IGNORE:abstract-method
                                           "set note")
         if head is None:
             head = self._score.drumKit.getDefaultHead(notePosition.drumIndex)
-        self._oldHead = self._score.getItemAtPosition(notePosition)
+        self._measure = self._score.getMeasureByPosition(self._np)
+        self._oldHead = self._measure.getNote(self._np)
         self._head = head
-        measure = self._score.getMeasureByPosition(self._np)
-        self._oldAbove = measure.aboveText
-        self._oldBelow = measure.belowText
+        self._oldAbove = self._measure.aboveText
+        self._oldBelow = self._measure.belowText
 
     def _undo(self):
         if self._oldHead == DBConstants.EMPTY_NOTE:
@@ -147,7 +147,7 @@ class SetNote(NoteCommand):
 class ToggleNote(NoteCommand):
     def _redo(self):
         self._score.toggleNote(self._np, self._head)
-        newHead = self._score.getItemAtPosition(self._np)
+        newHead = self._measure.getNote(self._np)
         if newHead != DBConstants.EMPTY_NOTE:
             DBMidi.playNote(self._np.drumIndex, self._head)
         elif (self._oldAbove[self._np.noteTime] != " " or
@@ -312,13 +312,14 @@ class RepeatNoteCommand(ScoreCommand):
     def __init__(self, qScore, firstNote, nRepeats, repInterval):
         super(RepeatNoteCommand, self).__init__(qScore, firstNote,
                                                 "repeat note")
-        self._head = self._score.getItemAtPosition(firstNote)
+        measure = self._score.getMeasureByPosition(firstNote)
+        self._head = measure.getNote(firstNote)
         note = firstNote.makeCopy()
-        self._oldNotes = [(note, self._score.getItemAtPosition(note))]
+        self._oldNotes = [(note.makeCopy(), self._head)]
         for dummyIndex in xrange(nRepeats):
-            note = note.makeCopy()
             note = self._score.notePlus(note, repInterval)
-            self._oldNotes.append((note, self._score.getItemAtPosition(note)))
+            measure = self._score.getMeasureByPosition(note)
+            self._oldNotes.append((note.makeCopy(), measure.getNote(note)))
 
     def _redo(self):
         for np, dummyHead in self._oldNotes:
