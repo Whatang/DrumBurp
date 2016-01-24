@@ -988,6 +988,10 @@ class QScore(QtGui.QGraphicsScene):
             qmeasure.setPotentials(notes, head)
         self._potentials = newMeasures
 
+    def recolor(self):
+        for qsection in self._qSections:
+            qsection.recolor()
+
 
 class _metaChangeContext(object):
     def __init__(self, qScore, metaData):

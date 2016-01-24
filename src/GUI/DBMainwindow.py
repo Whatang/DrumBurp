@@ -1092,6 +1092,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if not dialog.exec_():
             return
         self.colourScheme = dialog.getColourScheme()
+        self.scoreView.update()
+        self.scoreScene.recolor()
 
 
     def checkLilypondPath(self, existing = None):

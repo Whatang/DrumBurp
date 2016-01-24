@@ -42,6 +42,7 @@ class QSection(QGraphicsTextItem):
         self.setTitle(title)
         self._index = None
         self.setCursor(Qt.PointingHandCursor)
+        self._qscore = qScore
 
     def setIndex(self, index):
         self._index = index
@@ -80,3 +81,9 @@ class QSection(QGraphicsTextItem):
     def setTitle(self, text):
         self._title = text
         self.setPlainText(text)
+
+    def recolor(self):
+        color = self._qscore.parent().colourScheme.text.borderColour
+        self.setDefaultTextColor(color)
+        self.setPlainText(self._title)
+        self.update()
