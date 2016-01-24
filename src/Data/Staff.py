@@ -122,13 +122,6 @@ class Staff(object):
         self._measures = []
         self._visibleLines = {}
 
-    def getItemAtPosition(self, position):
-        self._isValidPosition(position)
-        measure = self[position.measureIndex]
-        if position.noteTime is None:
-            return measure
-        return measure.getNote(position)
-
     def addNote(self, position, head):
         self._isValidPosition(position)
         self[position.measureIndex].addNote(position, head)

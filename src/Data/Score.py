@@ -235,6 +235,8 @@ class Score(object):
     def getMeasureByPosition(self, position):
         if position.staffIndex is None or position.measureIndex is None:
             raise BadTimeError()
+        if not (0 <= position.staffIndex < len(self._staffs)):
+            raise BadTimeError()
         staff = self.getStaffByIndex(position.staffIndex)
         if not (0 <= position.measureIndex < staff.numMeasures()):
             raise BadTimeError()
@@ -249,17 +251,6 @@ class Score(object):
                 index = 0
             measure = self.getMeasureByIndex(index)
         return measure
-
-    def getItemAtPosition(self, position):
-        if position.staffIndex is None:
-            return self
-        self._checkStaffIndex(position.staffIndex)
-        staff = self.getStaffByIndex(position.staffIndex)
-        if position.measureIndex is None:
-            return staff
-        if position.drumIndex is not None:
-            self._checkDrumIndex(position.drumIndex)
-        return staff.getItemAtPosition(position)
 
     def getStaffByIndex(self, index):
         return self._staffs[index]

@@ -248,6 +248,8 @@ class Measure(object):
 
     def noteAt(self, noteTime, drumIndex):
         self._checkValidNoteTime(noteTime)
+        if drumIndex < 0:
+            raise BadTimeError()
         return self._notes.getNote(noteTime, drumIndex)
 
     def clear(self):

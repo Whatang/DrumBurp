@@ -46,13 +46,13 @@ class TestMeasureControl(unittest.TestCase):
         self.assertEqual(self.score.numStaffs(), 1)
         self.assertEqual(self.score.numMeasures(), 1)
 
-    def testGetMeasure(self):
+    def testGetMeasureByIndex(self):
         for i in range(1, 17):
             self.score.insertMeasureByIndex(i)
         for i in range(1, 17):
             self.assertEqual(len(self.score.getMeasureByIndex(i - 1)), i)
 
-    def testGetMeasure_BadIndex(self):
+    def testGetMeasureByIndex_BadIndex(self):
         self.assertRaises(BadTimeError, self.score.getMeasureByIndex, 0)
         self.score.insertMeasureByIndex(16)
         self.score.insertMeasureByIndex(16)
@@ -226,41 +226,46 @@ class TestNoteControl(unittest.TestCase):
             self.score.insertMeasureByIndex(16)
         self.score.formatScore(80)
 
-    def testgetItemAtPosition(self):
-        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
-                         EMPTY_NOTE)
-        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0)),
-                         self.score.getMeasureByIndex(0))
-        self.assertEqual(self.score.getItemAtPosition(NotePosition(0)),
-                         self.score.getStaffByIndex(0))
-        self.assertEqual(self.score.getItemAtPosition(NotePosition()),
-                         self.score)
 
-    def testgetItemAtPosition_BadTime(self):
-        self.assertRaises(BadTimeError, self.score.getItemAtPosition,
+    def testGetMeasureByPosition(self):
+        self.assertEqual(self.score.getMeasureByPosition(NotePosition(0, 0)),
+                         self.score.getMeasureByIndex(0))
+        self.assertEqual(self.score.getMeasureByPosition(NotePosition(0, 1)),
+                         self.score.getMeasureByIndex(1))
+        self.assertEqual(self.score.getMeasureByPosition(NotePosition(0, 2)),
+                         self.score.getMeasureByIndex(2))
+        self.assertEqual(self.score.getMeasureByPosition(NotePosition(0, 3)),
+                         self.score.getMeasureByIndex(3))
+        self.assertEqual(self.score.getMeasureByPosition(NotePosition(1, 0)),
+                         self.score.getMeasureByIndex(4))
+
+    def testGetMeasureByPosition_BadTime(self):
+        self.assertRaises(BadTimeError, self.score.getMeasureByPosition,
                           NotePosition(-1, 0, 0, 0))
-        self.assertRaises(BadTimeError, self.score.getItemAtPosition,
+        self.assertRaises(BadTimeError, self.score.getMeasureByPosition,
                           NotePosition(20, 0, 0, 0))
-        self.assertRaises(BadTimeError, self.score.getItemAtPosition,
+        self.assertRaises(BadTimeError, self.score.getMeasureByPosition,
                           NotePosition(0, -1, 0, 0))
-        self.assertRaises(BadTimeError, self.score.getItemAtPosition,
+        self.assertRaises(BadTimeError, self.score.getMeasureByPosition,
                           NotePosition(0, 20, 0, 0))
-        self.assertRaises(BadTimeError, self.score.getItemAtPosition,
+
+    def testgetNote_BadTime(self):
+        measure = self.score.getMeasureByPosition(NotePosition(0, 0))
+        self.assertRaises(BadTimeError, measure.getNote,
                           NotePosition(0, 0, -1, 0))
-        self.assertRaises(BadTimeError, self.score.getItemAtPosition,
+        self.assertRaises(BadTimeError, measure.getNote,
                           NotePosition(0, 0, 20, 0))
 
-    def testgetItemAtPosition_BadNote(self):
-        self.assertRaises(BadTimeError, self.score.getItemAtPosition,
+    def testgetNote_BadNote(self):
+        measure = self.score.getMeasureByPosition(NotePosition(0, 0))
+        self.assertRaises(BadTimeError, measure.getNote,
                           NotePosition(0, 0, 0, -1))
-        self.assertRaises(BadTimeError, self.score.getItemAtPosition,
-                          NotePosition(0, 0, 0,
-                                       len(self.score.drumKit)))
 
     def testAddNote(self):
-        self.score.addNote(NotePosition(0, 0, 0, 0), "o")
-        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
-                         "o")
+        np = NotePosition(0, 0, 0, 0)
+        self.score.addNote(np, "o")
+        measure = self.score.getMeasureByPosition(np)
+        self.assertEqual(measure.getNote(np), "o")
 
     def testAddNote_BadTime(self):
         self.assertRaises(BadTimeError,
@@ -284,16 +289,18 @@ class TestNoteControl(unittest.TestCase):
                                        len(self.score.drumKit)), "x")
 
     def testAddNote_DefaultHead(self):
-        self.score.addNote(NotePosition(0, 0, 0, 0))
+        np = NotePosition(0, 0, 0, 0)
+        self.score.addNote(np)
         defaultHead = self.score.drumKit[0].head
-        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
-                         defaultHead)
+        measure = self.score.getMeasureByPosition(np)
+        self.assertEqual(measure.getNote(np), defaultHead)
 
     def testDeleteNote(self):
-        self.score.addNote(NotePosition(0, 0, 0, 0), "o")
-        self.score.deleteNote(NotePosition(0, 0, 0, 0))
-        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
-                         EMPTY_NOTE)
+        np = NotePosition(0, 0, 0, 0)
+        self.score.addNote(np, "o")
+        self.score.deleteNote(np)
+        measure = self.score.getMeasureByPosition(np)
+        self.assertEqual(measure.getNote(np), EMPTY_NOTE)
 
     def testDeleteNote_BadTime(self):
         self.assertRaises(BadTimeError, self.score.deleteNote,
@@ -317,12 +324,12 @@ class TestNoteControl(unittest.TestCase):
                                        len(self.score.drumKit)))
 
     def testToggleNote(self):
-        self.score.toggleNote(NotePosition(0, 0, 0, 0), "o")
-        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
-                         "o")
-        self.score.toggleNote(NotePosition(0, 0, 0, 0), "o")
-        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
-                         EMPTY_NOTE)
+        np = NotePosition(0, 0, 0, 0)
+        measure = self.score.getMeasureByPosition(np)
+        self.score.toggleNote(np, "o")
+        self.assertEqual(measure.getNote(np), "o")
+        self.score.toggleNote(np, "o")
+        self.assertEqual(measure.getNote(np), EMPTY_NOTE)
 
     def testToggleNote_BadTime(self):
         self.assertRaises(BadTimeError, self.score.toggleNote,
@@ -345,13 +352,13 @@ class TestNoteControl(unittest.TestCase):
                           NotePosition(0, 0, 0, len(self.score.drumKit)), "x")
 
     def testToggleNote_DefaultHead(self):
-        self.score.toggleNote(NotePosition(0, 0, 0, 0))
+        np = NotePosition(0, 0, 0, 0)
+        measure = self.score.getMeasureByPosition(np)
+        self.score.toggleNote(np)
         defaultHead = self.score.drumKit[0].head
-        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
-                         defaultHead)
+        self.assertEqual(measure.getNote(np), defaultHead)
         self.score.toggleNote(NotePosition(0, 0, 0, 0))
-        self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0, 0, 0)),
-                         EMPTY_NOTE)
+        self.assertEqual(measure.getNote(np), EMPTY_NOTE)
 
 class TestFormatScore(unittest.TestCase):
     def setUp(self):
@@ -510,12 +517,12 @@ class TestCopyPaste(unittest.TestCase):
     def testCopyPasteByPosition(self):
         copied = self.score.copyMeasure(NotePosition(0, 0))
         self.score.pasteMeasure(NotePosition(0, 2), copied)
-        self.assertEqual(len(self.score.getItemAtPosition(NotePosition(0, 2))), 8)
+        self.assertEqual(len(self.score.getMeasureByPosition(NotePosition(0, 2))), 8)
 
     def testCopyPasteByIndex(self):
         copied = self.score.copyMeasure(NotePosition(0, 0))
         self.score.pasteMeasureByIndex(2, copied)
-        self.assertEqual(len(self.score.getItemAtPosition(NotePosition(0, 2))), 8)
+        self.assertEqual(len(self.score.getMeasureByPosition(NotePosition(0, 2))), 8)
 
 
 class TestIteration(unittest.TestCase):
@@ -542,7 +549,7 @@ class TestIteration(unittest.TestCase):
         mcount = 0
         for measure, index, np in self.score.iterMeasuresBetween(start, end):
             self.assertEqual(measure.noteAt(0, 0), chr(ord("a") + index))
-            self.assertEqual(measure, self.score.getItemAtPosition(np))
+            self.assertEqual(measure, self.score.getMeasureByPosition(np))
             mcount += 1
         self.assertEqual(mcount, 12)
 
@@ -552,7 +559,7 @@ class TestIteration(unittest.TestCase):
         mcount = 0
         for measure, index, np in self.score.iterMeasuresBetween(end, start):
             self.assertEqual(measure.noteAt(0, 0), chr(ord("a") + index))
-            self.assertEqual(measure, self.score.getItemAtPosition(np))
+            self.assertEqual(measure, self.score.getMeasureByPosition(np))
             mcount += 1
         self.assertEqual(mcount, 12)
 
