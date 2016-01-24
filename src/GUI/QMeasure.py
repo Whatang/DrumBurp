@@ -130,15 +130,10 @@ class QMeasure(QtGui.QGraphicsItem):
     def _isSimile(self):
         return self._measure.simileDistance > 0
 
-    @staticmethod
-    def _setPainterColour(painter, colourItem):
-        pen = QtGui.QPen(colourItem.borderStyle)
-        pen.setColor(colourItem.borderColour)
-        painter.setPen(pen)
-        painter.setBrush(colourItem.backgroundColour)
-
     @_painterSaver
     def _paintNotes(self, painter, xValues):
+        scheme = self._colourScheme()
+        scheme.text.setPainter(painter)
         font = painter.font()
         fontMetric = QtGui.QFontMetrics(font)
         numLines = self.numLines()
@@ -168,7 +163,19 @@ class QMeasure(QtGui.QGraphicsItem):
                     and noteTime in self._potentialSet):
                     text = self._potentialHead
                     potential = True
-                    painter.setPen(QtGui.QColor(QtCore.Qt.blue))
+                    scheme.potential.setPainter(painter)
+                elif (noteTime, drumIndex) == self._highlight:
+                    potential = True
+                    current = self._measure.noteAt(noteTime, lineIndex)
+                    potentialHead = self._qScore.getCurrentHead()
+                    if potentialHead is None:
+                        potentialHead = self._qScore.score.drumKit.getDefaultHead(lineIndex)
+                    if current == potentialHead:
+                        text = current
+                        scheme.delete.setPainter(painter)
+                    else:
+                        text = potentialHead
+                        scheme.potential.setPainter(painter)
                 else:
                     text = self._measure.noteAt(noteTime, lineIndex)
                 if text == DBConstants.EMPTY_NOTE:
@@ -182,7 +189,7 @@ class QMeasure(QtGui.QGraphicsItem):
                     painter.drawText(QtCore.QPointF(left, baseline - offset),
                                      text)
                 if potential:
-                    painter.setPen(QtGui.QColor(QtCore.Qt.black))
+                    scheme.text.setPainter(painter)
                     potential = False
             baseline -= self._qScore.ySpacing
             lineHeight -= self._qScore.ySpacing
@@ -197,7 +204,7 @@ class QMeasure(QtGui.QGraphicsItem):
         countLine = self._notesBottom
         x = xValues[noteTime]
         scheme = self._colourScheme()
-        self._setPainterColour(painter, scheme.noteHighlight)
+        scheme.noteHighlight.setPainter(painter)
         painter.drawRect(x, countLine,
                          self._qScore.xSpacing - 1,
                          self._qScore.ySpacing - 1)
@@ -206,11 +213,10 @@ class QMeasure(QtGui.QGraphicsItem):
             painter.drawRect(x, noteLine,
                              self._qScore.xSpacing - 1,
                              self._qScore.ySpacing - 1)
-        self._setPainterColour(painter, scheme.timeHighlight)
+        scheme.timeHighlight.setPainter(painter)
         painter.drawRect(x, baseline,
                          self._qScore.xSpacing - 1,
                          self._notesBottom - self._notesTop - 1)
-        painter.setPen(self._qScore.palette().text().color())
 
     @_painterSaver
     def _paintBeatCount(self, painter, xValues):
@@ -232,7 +238,7 @@ class QMeasure(QtGui.QGraphicsItem):
     @_painterSaver
     def _paintRepeatCount(self, painter):
         spacing = self._qScore.scale
-        painter.setPen(self._qScore.palette().text().color())
+        self._colourScheme().text.setPainter(painter)
         repeatText = '%dx' % self._measure.repeatCount
         textWidth = QtGui.QFontMetrics(painter.font()).width(repeatText)
         textLocation = QtCore.QPointF(self.width() - textWidth - 2 * spacing,
@@ -249,7 +255,7 @@ class QMeasure(QtGui.QGraphicsItem):
     def _paintAlternate(self, painter):
         altHeight = self.parentItem().alternateHeight()
         spacing = self._qScore.scale
-        painter.setPen(self._qScore.palette().text().color())
+        self._colourScheme().text.setPainter(painter)
         painter.drawLine(0, self._base, self.width() - spacing * 2, self._base)
         painter.drawLine(0, self._base, 0, self._notesTop - spacing * 2)
         font = painter.font()
@@ -268,9 +274,9 @@ class QMeasure(QtGui.QGraphicsItem):
     def _paintPlayingHighlight(self, painter):
         scheme = self._colourScheme()
         if self._playing:
-            self._setPainterColour(painter, scheme.playingHighlight)
+            scheme.playingHighlight.setPainter(painter)
         elif self._nextToPlay:
-            self._setPainterColour(painter, scheme.nextPlayingHighlight)
+            scheme.nextPlayingHighlight.setPainter(painter)
         else:
             return
         painter.drawRect(-1, -1, self.width() + 1, self.height() + 1)
@@ -278,7 +284,7 @@ class QMeasure(QtGui.QGraphicsItem):
 
     @_painterSaver
     def _paintMeasureCount(self, painter):
-        painter.setPen(QtCore.Qt.black)
+        self._colourScheme().text.setPainter(painter)
         font = painter.font()
         font.setItalic(True)
         painter.setFont(font)
@@ -288,7 +294,7 @@ class QMeasure(QtGui.QGraphicsItem):
     @_painterSaver
     def _paintDragHighlight(self, painter):
         scheme = self._colourScheme()
-        self._setPainterColour(painter, scheme.selectedMeasure)
+        scheme.selectedMeasure.setPainter(painter)
         painter.drawRect(self._rect)
 
 
@@ -308,7 +314,7 @@ class QMeasure(QtGui.QGraphicsItem):
     @_painterSaver
     def _paintStickingHighlight(self, painter, stickingRect):
         scheme = self._colourScheme()
-        self._setPainterColour(painter, scheme.sticking)
+        scheme.sticking.setPainter(painter)
         painter.drawRect(stickingRect)
 
     @_painterSaver
@@ -350,7 +356,7 @@ class QMeasure(QtGui.QGraphicsItem):
     def paint(self, painter, dummyOption, dummyWidget = None):
         if self._dragHighlight:
             self._paintDragHighlight(painter)
-        painter.setPen(QtCore.Qt.SolidLine)
+        self._colourScheme().text.setPainter(painter)
         font = self._props.noteFont
         if font is None:
             font = painter.font()

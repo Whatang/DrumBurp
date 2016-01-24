@@ -611,6 +611,7 @@ class QScore(QtGui.QGraphicsScene):
                 if self._currentKey == None and event.text():
                     self._currentKey = unicode(event.text())
                     self._highlightCurrentKeyHead()
+                    self.update()
         return super(QScore, self).keyPressEvent(event)
 
     def keyReleaseEvent(self, event):
@@ -619,6 +620,7 @@ class QScore(QtGui.QGraphicsScene):
                 if unicode(event.text()) == self._currentKey:
                     self._currentKey = None
                     self._highlightCurrentKeyHead()
+                    self.update()
         return super(QScore, self).keyReleaseEvent(event)
 
     def getCurrentHead(self):

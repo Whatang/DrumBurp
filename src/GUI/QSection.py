@@ -30,11 +30,11 @@ from GUI.DBCommands import SetSectionTitleCommand
 class QSection(QGraphicsTextItem):
     def __init__(self, title, qScore = None, parent = None):
         super(QSection, self).__init__(parent = parent, scene = qScore)
+        self.setDefaultTextColor(qScore.parent().colourScheme.text.borderColour)
         font = qScore.displayProperties.sectionFont
         if font is None:
             font = self.font()
         font.setBold(True)
-        # font.setItalic(True)
         font.setPointSize(qScore.displayProperties.sectionFontSize)
         self.setFont(font)
         self.setTextInteractionFlags(Qt.TextEditorInteraction)

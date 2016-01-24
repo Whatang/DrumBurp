@@ -428,18 +428,18 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             event.ignore()
 
     def _writeColours(self, settings):
-        for unusedName, colourRef in self.colourScheme.iterColourNames():
-            colourItem = getattr(self.colourScheme, colourRef)
+        for colour in self.colourScheme.iterColours():
+            colourRef = colour.colourAttrs.attrName
             settings.setValue("Colours/" + colourRef,
-                              QVariant(colourItem.toString()))
+                              QVariant(colour.toString()))
 
     def _readColours(self, settings):
-        for unusedName, colourRef in self.colourScheme.iterColourNames():
-            colourItem = getattr(self.colourScheme, colourRef)
+        for colour in self.colourScheme.iterColours():
+            colourRef = colour.colourAttrs.attrName
             if not settings.contains("Colours/" + colourRef):
                 continue
             col = settings.value("Colours/" + colourRef).toString()
-            colourItem.fromString(col)
+            colour.fromString(col)
 
     @pyqtSignature("")
     def on_actionFitInWindow_triggered(self):
