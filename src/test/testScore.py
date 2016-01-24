@@ -464,20 +464,20 @@ class TestFormatScore(unittest.TestCase):
                          NotePosition(3, 1))
         self.assertRaises(BadTimeError, self.score.getMeasurePosition, 8)
 
-    def testGetMeasureIndex(self):
+    def testMeasurePositionToIndex(self):
         for dummy in range(0, 8):
             self.score.insertMeasureByIndex(16)
         self.score.formatScore(40)
-        self.assertEqual(self.score.getMeasureIndex(NotePosition(0, 0)), 0)
-        self.assertEqual(self.score.getMeasureIndex(NotePosition(0, 1)), 1)
-        self.assertEqual(self.score.getMeasureIndex(NotePosition(1, 0)), 2)
-        self.assertEqual(self.score.getMeasureIndex(NotePosition(1, 1)), 3)
-        self.assertEqual(self.score.getMeasureIndex(NotePosition(2, 0)), 4)
-        self.assertEqual(self.score.getMeasureIndex(NotePosition(2, 1)), 5)
-        self.assertEqual(self.score.getMeasureIndex(NotePosition(3, 0)), 6)
-        self.assertEqual(self.score.getMeasureIndex(NotePosition(3, 1)), 7)
+        self.assertEqual(self.score.measurePositionToIndex(NotePosition(0, 0)), 0)
+        self.assertEqual(self.score.measurePositionToIndex(NotePosition(0, 1)), 1)
+        self.assertEqual(self.score.measurePositionToIndex(NotePosition(1, 0)), 2)
+        self.assertEqual(self.score.measurePositionToIndex(NotePosition(1, 1)), 3)
+        self.assertEqual(self.score.measurePositionToIndex(NotePosition(2, 0)), 4)
+        self.assertEqual(self.score.measurePositionToIndex(NotePosition(2, 1)), 5)
+        self.assertEqual(self.score.measurePositionToIndex(NotePosition(3, 0)), 6)
+        self.assertEqual(self.score.measurePositionToIndex(NotePosition(3, 1)), 7)
         self.assertRaises(BadTimeError,
-                          self.score.getMeasureIndex, NotePosition(4, 4))
+                          self.score.measurePositionToIndex, NotePosition(4, 4))
 
     def testTrailingMeasures(self):
         self.score.drumKit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit()

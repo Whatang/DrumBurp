@@ -72,7 +72,7 @@ class Exporter(object):
             lineString += barString
             lastBar = measure
             if measure.simileDistance > 0:
-                referredMeasure = self.score.getReferredMeasure(self.score.getMeasureIndex(position))
+                referredMeasure = self.score.getReferredMeasure(self.score.measurePositionToIndex(position))
                 displayCols = referredMeasure.counter.numBeats()
                 simText = "%%%d" % measure.simileDistance
                 left = " "
@@ -101,7 +101,7 @@ class Exporter(object):
             barString = self._barString(lastBar, measure)
             lastBar = measure
             if measure.simileDistance > 0:
-                referredMeasure = self.score.getReferredMeasure(self.score.getMeasureIndex(position))
+                referredMeasure = self.score.getReferredMeasure(self.score.measurePositionToIndex(position))
                 displayCols = referredMeasure.counter.numBeats()
                 measureCountString = "".join("%d" % (beat + 1)
                                              for beat in xrange(displayCols))
@@ -137,7 +137,7 @@ class Exporter(object):
     def _measureMiddle(self, repeatString, measure, delta, position):
         if measure is not None:
             if measure.simileDistance > 0:
-                referredMeasure = self.score.getReferredMeasure(self.score.getMeasureIndex(position))
+                referredMeasure = self.score.getReferredMeasure(self.score.measurePositionToIndex(position))
                 displayCols = referredMeasure.counter.numBeats()
             else:
                 displayCols = len(measure)
@@ -193,7 +193,7 @@ class Exporter(object):
         for measureIndex, measure in enumerate(staff):
             position.measureIndex = measureIndex
             if measure.simileDistance > 0:
-                referredMeasure = self.score.getReferredMeasure(self.score.getMeasureIndex(position))
+                referredMeasure = self.score.getReferredMeasure(self.score.measurePositionToIndex(position))
                 displayCols = referredMeasure.counter.numBeats()
                 stickingString.append(" " * displayCols)
             else:

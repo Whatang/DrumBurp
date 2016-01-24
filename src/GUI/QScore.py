@@ -662,7 +662,7 @@ class QScore(QtGui.QGraphicsScene):
             if not self.hasDragSelection():
                 return
             start = self._dragSelection.start
-            measureIndex = self._score.getMeasureIndex(start)
+            measureIndex = self._score.measurePositionToIndex(start)
             measures = list(self.iterDragSelection())
             self.clearDragSelection()
             self.beginMacro("delete measures")
@@ -683,7 +683,7 @@ class QScore(QtGui.QGraphicsScene):
         if len(self.measureClipboard) == 0 or not self.hasDragSelection():
             return
         start = self._dragSelection.start
-        measureIndex = self._score.getMeasureIndex(start)
+        measureIndex = self._score.measurePositionToIndex(start)
         sourceLength = len(self.measureClipboard)
         targetLength = len(list(self.iterDragSelection()))
         self.clearDragSelection()

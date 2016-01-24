@@ -331,7 +331,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
     def _toggleSimile(self):
         self._qScore.clearDragSelection()
         if self._draggedMeasures is None:
-            startIndex = self._score.getMeasureIndex(self._np)
+            startIndex = self._score.measurePositionToIndex(self._np)
             endIndex = startIndex
         else:
             startIndex = self._draggedMeasures[0][1]

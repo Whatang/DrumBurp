@@ -336,7 +336,7 @@ class InsertMeasuresCommand(ScoreCommand):
                  counter, preserveSections = False):
         super(InsertMeasuresCommand, self).__init__(qScore, notePosition,
                                                     "insert measures")
-        self._index = self._score.getMeasureIndex(self._np)
+        self._index = self._score.measurePositionToIndex(self._np)
         self._numMeasures = numMeasures
         self._width = len(counter)
         self._counter = counter
@@ -414,7 +414,7 @@ class ChangeMeasureCountCommand(ScoreCommand):
         super(ChangeMeasureCountCommand, self).__init__(qScore,
                                                            note,
                                                            name)
-        self._measureIndex = self._score.getMeasureIndex(note)
+        self._measureIndex = self._score.measurePositionToIndex(note)
         self._newCounter = newCounter
         self._oldMeasure = self._score.copyMeasure(note)
 
@@ -432,7 +432,7 @@ class ContractMeasureCountCommand(ScoreCommand):
     def __init__(self, qScore, note):
         name = "contract measure count"
         super(ContractMeasureCountCommand, self).__init__(qScore, note, name)
-        self._measureIndex = self._score.getMeasureIndex(note)
+        self._measureIndex = self._score.measurePositionToIndex(note)
         self._oldCount = None
 
     @ScoreCommand.suspendCallbacks
@@ -572,7 +572,7 @@ class ClearMeasureCommand(ScoreCommand):
 class DeleteMeasureCommand(ScoreCommand):
     def __init__(self, qScore, note, measureIndex = None):
         if measureIndex is None:
-            measureIndex = qScore.score.getMeasureIndex(note)
+            measureIndex = qScore.score.measurePositionToIndex(note)
             note = note.makeMeasurePosition()
         else:
             note = qScore.score.getMeasurePosition(measureIndex)
@@ -759,7 +759,7 @@ class ToggleSimileCommand(ScoreCommand):
     def __init__(self, qScore, np, index = 0, distance = 1):
         super(ToggleSimileCommand, self).__init__(qScore, np,
                                                   "toggle simile mark")
-        self._measureIndex = self._score.getMeasureIndex(self._np)
+        self._measureIndex = self._score.measurePositionToIndex(self._np)
         measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
         self._index = index
         if measure.simileDistance > 0:

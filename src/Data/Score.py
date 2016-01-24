@@ -106,11 +106,11 @@ class Score(object):
                 yield measure
 
     def iterMeasuresBetween(self, start, end):
-        if self.getMeasureIndex(end) < self.getMeasureIndex(start):
+        if self.measurePositionToIndex(end) < self.measurePositionToIndex(start):
             start, end = end, start
         staffIndex = start.staffIndex
         measureIndex = start.measureIndex
-        absIndex = self.getMeasureIndex(start)
+        absIndex = self.measurePositionToIndex(start)
         while staffIndex < end.staffIndex:
             staff = self.getStaff(staffIndex)
             while measureIndex < staff.numMeasures():
@@ -294,7 +294,7 @@ class Score(object):
             measuresSoFar += staff.numMeasures()
         raise BadTimeError()
 
-    def getMeasureIndex(self, position):
+    def measurePositionToIndex(self, position):
         self._checkStaffIndex(position.staffIndex)
         index = 0
         for staffIndex in xrange(0, position.staffIndex):
