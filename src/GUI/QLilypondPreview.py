@@ -107,7 +107,7 @@ class QLilypondPreview(QGraphicsScene):
 
     def _built(self):
         try:
-            # TODO: Remove waiting anim/message
+            # Remove waiting anim/message
             self._waiting.setVisible(False)
             self._waitingTimer.stop()
             # Check build results from exporter
