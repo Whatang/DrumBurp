@@ -232,6 +232,14 @@ class Score(object):
         staff, index = self._staffContainingMeasure(index)
         return staff[index]
 
+    def getMeasureByPosition(self, position):
+        if position.staffIndex is None or position.measureIndex is None:
+            raise BadTimeError()
+        staff = self.getStaffByIndex(position.staffIndex)
+        if not (0 <= position.measureIndex < staff.numMeasures()):
+            raise BadTimeError()
+        return staff[position.measureIndex]
+
     def getReferredMeasure(self, index):
         self._checkMeasureIndex(index)
         measure = self.getMeasureByIndex(index)
@@ -381,9 +389,9 @@ class Score(object):
     def trailingEmptyMeasures(self):
         emptyMeasures = []
         np = NotePosition(staffIndex = self.numStaffs() - 1)
-        staff = self.getItemAtPosition(np)
+        staff = self.getStaffByIndex(np.staffIndex)
         np.measureIndex = staff.numMeasures() - 1
-        measure = self.getItemAtPosition(np)
+        measure = staff[np.measureIndex]
         while ((np.staffIndex > 0 or np.measureIndex > 0)
                and measure.isEmpty()):  # IGNORE:no-member
             emptyMeasures.append(np.makeMeasurePosition())
@@ -392,7 +400,7 @@ class Score(object):
                 staff = self.getStaffByIndex(np.staffIndex)
                 np.measureIndex = staff.numMeasures()
             np.measureIndex -= 1
-            measure = self.getItemAtPosition(np)
+            measure = staff[np.measureIndex]
         return emptyMeasures
 
     def copyMeasure(self, position):
@@ -412,7 +420,7 @@ class Score(object):
     def numSections(self):
         return len(self._sections)
 
-    def sectionIndexToPosition(self, position):
+    def sectionIndexToPosition(self, position):  # TODO: rename to positionToSectionIndex
         ends = []
         for staffIndex, staff in enumerate(self.iterStaffs()):
             assert(staff.isConsistent())
@@ -585,7 +593,7 @@ class Score(object):
             direction = -1
             offset = second.noteTime
         while current < end:
-            ticks += len(self.getItemAtPosition(current)) - offset
+            ticks += len(self.getMeasureByPosition(current)) - offset
             current = self.nextMeasure(current)
             offset = 0
         if direction == 1:

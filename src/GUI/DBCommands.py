@@ -124,7 +124,7 @@ class NoteCommand(ScoreCommand):  # IGNORE:abstract-method
             head = self._score.drumKit.getDefaultHead(notePosition.drumIndex)
         self._oldHead = self._score.getItemAtPosition(notePosition)
         self._head = head
-        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        measure = self._score.getMeasureByPosition(self._np)
         self._oldAbove = measure.aboveText
         self._oldBelow = measure.belowText
 
@@ -134,7 +134,7 @@ class NoteCommand(ScoreCommand):  # IGNORE:abstract-method
         else:
             self._score.addNote(self._np, self._oldHead)
             DBMidi.playNote(self._np.drumIndex, self._oldHead)
-        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        measure = self._score.getMeasureByPosition(self._np)
         measure.belowText = self._oldBelow
         measure.aboveText = self._oldAbove
 
@@ -152,7 +152,7 @@ class ToggleNote(NoteCommand):
             DBMidi.playNote(self._np.drumIndex, self._head)
         elif (self._oldAbove[self._np.noteTime] != " " or
               self._oldBelow[self._np.noteTime] != " "):
-            measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+            measure = self._score.getMeasureByPosition(self._np)
             if not measure.hasAnyNoteAt(self._np.noteTime):
                 measure.setAbove(self._np.noteTime, " ")
                 measure.setBelow(self._np.noteTime, " ")
@@ -396,13 +396,13 @@ class SetRepeatCountCommand(ScoreCommand):
         self._newCount = newCount
 
     def _redo(self):
-        measure = self._score.getItemAtPosition(self._np)
+        measure = self._score.getMeasureByPosition(self._np)
         measure.repeatCount = self._newCount
         if self._qScore.getQStaff(self._np).checkAlternate():
             self._qScore.reBuild()
 
     def _undo(self):
-        measure = self._score.getItemAtPosition(self._np)
+        measure = self._score.getMeasureByPosition(self._np)
         measure.repeatCount = self._oldCount
         if self._qScore.getQStaff(self._np).checkAlternate():
             self._qScore.reBuild()
@@ -419,7 +419,7 @@ class ChangeMeasureCountCommand(ScoreCommand):
         self._oldMeasure = self._score.copyMeasure(note)
 
     def _redo(self):
-        measure = self._score.getItemAtPosition(self._np)
+        measure = self._score.getMeasureByIndex(self._measureIndex)
         measure.setBeatCount(self._newCounter)
         self._qScore.reBuild()
 
@@ -481,10 +481,10 @@ class SetMeasureLineCommand(ScoreCommand):
                                                     descr)
         self._onOff = onOff
         self._method = method
-        self._np = self._np.makeMeasurePosition()
+        self._measureIndex = self._score.measurePositionToIndex(self._np)
 
     def _getMeasure(self):
-        return self._score.getItemAtPosition(self._np)
+        return self._score.getMeasureByIndex(self._measureIndex)
 
     def _redo(self):
         self._method(self._getMeasure(), self._onOff)
@@ -557,16 +557,18 @@ class ClearMeasureCommand(ScoreCommand):
     def __init__(self, qScore, positions):
         super(ClearMeasureCommand, self).__init__(qScore, NotePosition(),
                                                   "clear measures")
-        self._positions = [np.makeMeasurePosition() for np in positions]
+        self._indexes = [self._score.measurePositionToIndex(np)
+                         for np in positions]
         self._oldMeasures = [self._score.copyMeasure(note)
                              for note in positions]
 
     def _redo(self):
-        for np in self._positions:
-            self._score.getItemAtPosition(np).clear()
+        for measureIndex in self._indexes:
+            self._score.getMeasureByIndex(measureIndex).clear()
 
     def _undo(self):
-        for np, data in zip(self._positions, self._oldMeasures):
+        for measureIndex, data in zip(self._indexes, self._oldMeasures):
+            np = self._score.measureIndexToPosition(measureIndex)
             self._score.pasteMeasure(np, data)
 
 class DeleteMeasureCommand(ScoreCommand):
@@ -634,23 +636,24 @@ class SetAlternateCommand(ScoreCommand):
                                                   note,
                                                   "set alternate text")
         self._alternate = alternate
-        self._np.noteTime = None
-        self._np.drumIndex = None
-        measure = self._score.getItemAtPosition(self._np)
+        self._index = self._score.measurePositionToIndex(self._np)
+        measure = self._score.getMeasureByPosition(self._np)
         self._oldAlternate = measure.alternateText
 
     def _redo(self):
-        measure = self._score.getItemAtPosition(self._np)
+        measure = self._score.getMeasureByIndex()(self._index)
         measure.alternateText = self._alternate
-        self._qScore.dataChanged(self._np)
-        if self._qScore.getQStaff(self._np).checkAlternate():
+        np = self._score.measureIndexToPosition(self._index)
+        self._qScore.dataChanged(np)
+        if self._qScore.getQStaff(np).checkAlternate():
             self._qScore.reBuild()
 
     def _undo(self):
-        measure = self._score.getItemAtPosition(self._np)
+        measure = self._score.getMeasureByIndex()(self._index)
         measure.alternateText = self._oldAlternate
-        self._qScore.dataChanged(self._np)
-        if self._qScore.getQStaff(self._np).checkAlternate():
+        np = self._score.measureIndexToPosition(self._index)
+        self._qScore.dataChanged(np)
+        if self._qScore.getQStaff(np).checkAlternate():
             self._qScore.reBuild()
 
 class SetPaperSizeCommand(ScoreCommand):
@@ -760,7 +763,7 @@ class ToggleSimileCommand(ScoreCommand):
         super(ToggleSimileCommand, self).__init__(qScore, np,
                                                   "toggle simile mark")
         self._measureIndex = self._score.measurePositionToIndex(self._np)
-        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        measure = self._score.getMeasureByIndex(self._measureIndex)
         self._index = index
         if measure.simileDistance > 0:
             self._oldDistance = measure.simileDistance
@@ -791,7 +794,7 @@ class SetStickingCommand(ScoreCommand):
     def __init__(self, qscore, note, above, value):
         super(SetStickingCommand, self).__init__(qscore, note, "set sticking")
         self._newValue = value
-        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        measure = self._score.getMeasureByPosition(self._np)
         self._above = above
         if above:
             self._function = Measure.setAbove
@@ -802,13 +805,13 @@ class SetStickingCommand(ScoreCommand):
         self._oldShow = measure.stickingVisible(above)
 
     def _redo(self):
-        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        measure = self._score.getMeasureByPosition(self._np)
         self._function(measure, self._np.noteTime, self._newValue)
         if measure.stickingVisible(self._above) != self._oldShow:
             self._qScore.reBuild()
 
     def _undo(self):
-        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        measure = self._score.getMeasureByPosition(self._np)
         newShow = measure.stickingVisible(self._above)
         self._function(measure, self._np.noteTime, self._oldValue)
         if newShow != self._oldShow:
@@ -823,20 +826,20 @@ class SetStickingVisibility(ScoreCommand):
         super(SetStickingVisibility, self).__init__(qscore, note,
                                                     "set sticking visibility")
         self._newValue = onOff
-        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        measure = self._score.getMeasureByPosition(self._np)
         self._oldValue = measure.stickingVisible(above)
         self._above = above
 
     def _redo(self):
         if self._newValue == self._oldValue:
             return
-        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        measure = self._score.getMeasureByPosition(self._np)
         measure.setStickingVisible(self._above, self._newValue)
         self._qScore.reBuild()
 
     def _undo(self):
         if self._newValue == self._oldValue:
             return
-        measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        measure = self._score.getMeasureByPosition(self._np)
         measure.setStickingVisible(self._above, self._oldValue)
         self._qScore.reBuild()

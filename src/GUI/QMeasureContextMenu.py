@@ -40,7 +40,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         self._qmeasure = qmeasure
         self._np = firstNote
         self._score = self._qScore.score
-        self._measure = self._score.getItemAtPosition(self._np.makeMeasurePosition())
+        self._measure = self._score.getMeasureByPosition(self._np)
         self._noteText = qmeasure.noteAt(firstNote)
         self._draggedMeasures = None
         if self._qScore.hasDragSelection():
@@ -231,8 +231,8 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                                            QtGui.QMessageBox.Ok,
                                            QtGui.QMessageBox.Cancel)
         if yesNo == QtGui.QMessageBox.Ok:
-            np = self._np.makeStaffPosition()
-            staff = self._score.getItemAtPosition(np)
+            np = self._np.makeCopy()
+            staff = self._score.getStaffByIndex(np.staffIndex)
             arguments = []
             np.measureIndex = staff.numMeasures() - 1
             while np.measureIndex >= 0:
@@ -264,7 +264,6 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                 staff = self._score.getStaffByIndex(np.staffIndex)
                 for np.measureIndex in xrange(staff.numMeasures() - 1, -1, -1):
                     arguments.append((np.makeCopy(),))
-                np.staffIndex -= 1
             self._qScore.clearDragSelection()
             self._qScore.addRepeatedCommand("delete section: " + sectionName,
                                             DeleteMeasureCommand, arguments)
@@ -286,8 +285,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
 
     @QMenuIgnoreCancelClick.menuSelection
     def _deleteAlternate(self):
-        np = self._np.makeMeasurePosition()
-        command = SetAlternateCommand(self._qScore, np,
+        command = SetAlternateCommand(self._qScore, self._np,
                                       None)
         self._qScore.addCommand(command)
 
@@ -368,6 +366,6 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
     @QMenuIgnoreCancelClick.menuSelection
     def _showSticking(self, above, onOff):
         command = SetStickingVisibility(self._qScore,
-                                        self._np.makeMeasurePosition(),
+                                        self._np,
                                         above, onOff)
         self._qScore.addCommand(command)

@@ -54,7 +54,7 @@ class Waiting(DbState):
 
     def setSticking(self, event):
         rotate = {" " : "R", "R":"L", "L":"F", "F":" "}
-        measure = self.qscore.score.getItemAtPosition(event.note.makeMeasurePosition())
+        measure = self.qscore.score.getMeasureByPosition(event.note)
         if event.above:
             sticking = measure.aboveText[event.note.noteTime]
         else:
