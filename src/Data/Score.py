@@ -271,7 +271,7 @@ class Score(object):
         if staff.isSectionEnd():
             if index == 0 or self.getStaff(index - 1).isSectionEnd():
                 position = NotePosition(staffIndex = index)
-                sectionIndex = self.getSectionIndex(position)
+                sectionIndex = self.sectionIndexToPosition(position)
                 self._deleteSectionTitle(sectionIndex)
             else:
                 prevStaff = self.getStaff(index - 1)
@@ -361,7 +361,7 @@ class Score(object):
         staff = self.getStaff(position.staffIndex)
         if (staff.isSectionEnd()
             and position.measureIndex == staff.numMeasures() - 1):
-            sectionIndex = self.getSectionIndex(position)
+            sectionIndex = self.sectionIndexToPosition(position)
             self._deleteSectionTitle(sectionIndex)
         staff.deleteMeasure(position)
 
@@ -412,7 +412,7 @@ class Score(object):
     def numSections(self):
         return len(self._sections)
 
-    def getSectionIndex(self, position):
+    def sectionIndexToPosition(self, position):
         ends = []
         for staffIndex, staff in enumerate(self.iterStaffs()):
             assert(staff.isConsistent())
@@ -438,7 +438,7 @@ class Score(object):
         return startIndex
 
     def deleteSection(self, position):
-        sectionIndex = self.getSectionIndex(position)
+        sectionIndex = self.sectionIndexToPosition(position)
         if sectionIndex == self.numSections():
             return
         startIndex = position.staffIndex
@@ -455,7 +455,7 @@ class Score(object):
     def setSectionEnd(self, position, onOff, title = None):
         self._checkStaffIndex(position.staffIndex)
         staff = self.getStaff(position.staffIndex)
-        sectionIndex = self.getSectionIndex(position)
+        sectionIndex = self.sectionIndexToPosition(position)
         if onOff:
             if title is None:
                 title = "New Section"
@@ -521,7 +521,7 @@ class Score(object):
             self._checkStaffIndex(position.staffIndex)
             sectionMeasures = list(self.iterMeasuresInSection(sectionIndex))
             sectionTitle = self._makeNewSectionTitle(self.getSectionTitle(sectionIndex))
-            newIndex = self.getSectionIndex(position)
+            newIndex = self.sectionIndexToPosition(position)
             self._sections.insert(newIndex, sectionTitle)
             for measure in sectionMeasures:
                 newMeasure = self.insertMeasureByPosition(len(measure),

@@ -674,16 +674,16 @@ class TestSections(unittest.TestCase):
         self.assertEqual(self.score.numSections(), 1)
         self.assertEqual(self.score.getSectionTitle(0), "Section 2")
 
-    def testGetSectionIndex(self):
+    def testSectionIndexToPosition(self):
         np = self.score.measureIndexToPosition(3)
         self.score.setSectionEnd(np, True)
         np = self.score.measureIndexToPosition(19)
         self.score.setSectionEnd(np, True)
         self.assertEqual(self.score.numSections(), 2)
         np = self.score.measureIndexToPosition(2)
-        self.assertEqual(self.score.getSectionIndex(np), 0)
+        self.assertEqual(self.score.sectionIndexToPosition(np), 0)
         np = self.score.measureIndexToPosition(10)
-        self.assertEqual(self.score.getSectionIndex(np), 1)
+        self.assertEqual(self.score.sectionIndexToPosition(np), 1)
 
     def testGetSectionStartStaffIndex(self):
         np = self.score.measureIndexToPosition(3)

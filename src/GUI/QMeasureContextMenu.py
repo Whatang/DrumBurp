@@ -253,7 +253,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         if yesNo == QtGui.QMessageBox.Ok:
             np = self._np.makeMeasurePosition()
             startIndex = self._score.getSectionStartStaffIndex(np)
-            sectionIndex = self._score.getSectionIndex(np)
+            sectionIndex = self._score.sectionIndexToPosition(np)
             sectionName = self._score.getSectionTitle(sectionIndex)
             np.staffIndex = startIndex
             while (np.staffIndex < self._score.numStaffs()
