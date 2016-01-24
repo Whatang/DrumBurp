@@ -662,7 +662,7 @@ class QScore(QtGui.QGraphicsScene):
             if not self.hasDragSelection():
                 return
             start = self._dragSelection.start
-            measureIndex = self._score.getMeasureIndex(start)
+            measureIndex = self._score.measurePositionToIndex(start)
             measures = list(self.iterDragSelection())
             self.clearDragSelection()
             self.beginMacro("delete measures")
@@ -683,7 +683,7 @@ class QScore(QtGui.QGraphicsScene):
         if len(self.measureClipboard) == 0 or not self.hasDragSelection():
             return
         start = self._dragSelection.start
-        measureIndex = self._score.getMeasureIndex(start)
+        measureIndex = self._score.measurePositionToIndex(start)
         sourceLength = len(self.measureClipboard)
         targetLength = len(list(self.iterDragSelection()))
         self.clearDragSelection()
@@ -693,7 +693,7 @@ class QScore(QtGui.QGraphicsScene):
         if repeating:
             resultLength = targetLength
             while measureCount < resultLength:
-                position = self.score.getMeasurePosition(measureIndex
+                position = self.score.measureIndexToPosition(measureIndex
                                                          + measureCount)
                 clearPositions.append(position)
                 measureCount += 1
@@ -706,21 +706,21 @@ class QScore(QtGui.QGraphicsScene):
         else:
             resultLength = min([sourceLength, targetLength])
             while measureCount < resultLength:
-                position = self.score.getMeasurePosition(measureIndex
+                position = self.score.measureIndexToPosition(measureIndex
                                                          + measureCount)
                 clearPositions.append(position)
                 measureCount += 1
             command = ClearMeasureCommand(self, clearPositions)
             self.addCommand(command)
             while measureCount < targetLength:
-                deletePosition = self.score.getMeasurePosition(measureIndex
+                deletePosition = self.score.measureIndexToPosition(measureIndex
                                                                + sourceLength)
                 command = DeleteMeasureCommand(self, deletePosition,
                                                measureIndex + sourceLength)
                 self.addCommand(command)
                 measureCount += 1
             if measureCount < sourceLength:
-                position = self.score.getMeasurePosition(measureIndex
+                position = self.score.measureIndexToPosition(measureIndex
                                                          + measureCount)
                 command = InsertMeasuresCommand(self,
                                                 position,

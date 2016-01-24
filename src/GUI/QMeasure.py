@@ -58,7 +58,7 @@ class QMeasure(QtGui.QGraphicsItem):
         self._notesTop = 0
         self._notesBottom = 0
         self._stickingBelowTop = 0
-        self._measureIndex = qScore.score.getMeasureIndex(self.measurePosition())
+        self._measureIndex = qScore.score.measurePositionToIndex(self.measurePosition())
         self._highlight = None
         self._rect = QtCore.QRectF(0, 0, 0, 0)
         self._repeatCountRect = None

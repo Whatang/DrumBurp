@@ -30,37 +30,25 @@ from GUI.DBCommands import (ChangeMeasureCountCommand,
 from Data.MeasureCount import makeSimpleCount
 from GUI.DBFSMEvents import EditMeasureProperties
 
-# from Data.Beat import Beat
-
 class QCountContextMenu(QMenuIgnoreCancelClick):
     def __init__(self, qScore, np, qmeasure):
         super(QCountContextMenu, self).__init__(qScore)
         self._np = np
         self._qmeasure = qmeasure
-        self._measurePos = self._qmeasure.measurePosition()
-        self._measure = self._qScore.score.getItemAtPosition(self._measurePos)
+        self._measure = self._qScore.score.getMeasureByPosition(self._np)
         self._counter = self._measure.counter
         self._setup()
 
     def _setup(self):
         if not self._measure.simileDistance > 0:
             self.addAction("Edit Measure Count", self._editMeasureCount)
-            # beatMenu = self.addMenu("Beat Count")
             measureMenu = self.addMenu("Measure Count")
-            # self._addCountActions(beatMenu, self._setBeatCount)
             self._addCountActions(measureMenu, self._setMeasureCount)
             self.addSeparator()
-            # self.addAction("Insert Before", self._insertBeatBefore)
-            # after = self.addAction("Insert After", self._insertBeatAfter)
-            # if self._counter.endsWithPartialBeat():
-            #    after.setDisabled(True)
             self.addSeparator()
-            # self.addAction("Delete", self._deleteBeat)
             contractAction = self.addAction("Contract Count",
                                             self._contractCount)
-            index = self._qScore.score.getMeasureIndex(self._np)
-            measure = self._qScore.score.getMeasure(index)
-            contractAction.setEnabled(measure.getSmallestSimpleCount() != None)
+            contractAction.setEnabled(self._measure.getSmallestSimpleCount() != None)
         self.addAction("Contract All Counts", self._contractAllCounts)
 
 
@@ -68,44 +56,13 @@ class QCountContextMenu(QMenuIgnoreCancelClick):
         for name, counter in self._qScore.displayProperties.counterRegistry:
             menu.addAction(name, lambda beat = counter: countFunction(beat))
 
-#     @QMenuIgnoreCancelClick.menuSelection
-#     def _setBeatCount(self, newCount):
-#         print "Beat", repr(newCount)
-
     @QMenuIgnoreCancelClick.menuSelection
     def _setMeasureCount(self, newCounter):
         newMeasureCount = makeSimpleCount(newCounter,
                                           self._counter.numBeats())
-        command = ChangeMeasureCountCommand(self._qScore, self._measurePos,
+        command = ChangeMeasureCountCommand(self._qScore, self._np,
                                             newMeasureCount)
         self._qScore.addCommand(command)
-
-#     @QMenuIgnoreCancelClick.menuSelection
-#     def _insertBeatBefore(self):
-#         tickIndex = self._np.noteTime
-#         beatIndex = self._counter.beatIndexContainingTickIndex(tickIndex)
-#         newMeasureCount = copy.copy(self._counter)
-#         newMeasureCount.insertBeat(Beat(self._counter[beatIndex].counter),
-#                                    beatIndex)
-#         command = ChangeMeasureCountCommand(self._qScore, self._measurePos,
-#                                             newMeasureCount)
-#         self._qScore.addCommand(command)
-
-#     @QMenuIgnoreCancelClick.menuSelection
-#     def _insertBeatAfter(self):
-#         tickIndex = self._np.noteTime
-#         beatIndex = self._counter.beatIndexContainingTickIndex(tickIndex)
-#         newMeasureCount = copy.copy(self._counter)
-#         newMeasureCount.insertBeat(Beat(self._counter[beatIndex].counter),
-#                                    beatIndex + 1)
-#         command = ChangeMeasureCountCommand(self._qScore, self._measurePos,
-#                                             newMeasureCount)
-#         self._qScore.addCommand(command)
-
-
-#     @QMenuIgnoreCancelClick.menuSelection
-#     def _deleteBeat(self):
-#         pass
 
     @QMenuIgnoreCancelClick.menuSelection
     def _contractCount(self):
@@ -120,11 +77,8 @@ class QCountContextMenu(QMenuIgnoreCancelClick):
         self._qScore.addCommand(command)
 
     def _editMeasureCount(self):
-        measurePosition = self._qmeasure.measurePosition()
-        measure = self._qScore.score.getItemAtPosition(measurePosition)
-        counter = measure.counter
-        fsmEvent = EditMeasureProperties(counter,
+        fsmEvent = EditMeasureProperties(self._counter,
                                          self._props.counterRegistry,
-                                         measurePosition)
+                                         self._np)
         self._qScore.sendFsmEvent(fsmEvent)
 
