@@ -45,10 +45,6 @@ class QLilypondPreview(QGraphicsScene):
         self._displayPage()
         self.mainWindow.refreshLilypond.setText("Preview")
 
-    def __del__(self):
-        if os.path.exists(self._tempdir):
-            os.rmdir(self._tempdir)
-
     def _updateWaitingText(self, frameVal):
         if frameVal < 5:
             self._waiting.setPlainText("Building" + ("." * frameVal))
