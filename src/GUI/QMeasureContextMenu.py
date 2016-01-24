@@ -257,11 +257,11 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
             sectionName = self._score.getSectionTitle(sectionIndex)
             np.staffIndex = startIndex
             while (np.staffIndex < self._score.numStaffs()
-                   and not self._score.getStaff(np.staffIndex).isSectionEnd()):
+                   and not self._score.getStaffByIndex(np.staffIndex).isSectionEnd()):
                 np.staffIndex += 1
             arguments = []
             for np.staffIndex in xrange(np.staffIndex, startIndex - 1, -1):
-                staff = self._score.getStaff(np.staffIndex)
+                staff = self._score.getStaffByIndex(np.staffIndex)
                 for np.measureIndex in xrange(staff.numMeasures() - 1, -1, -1):
                     arguments.append((np.makeCopy(),))
                 np.staffIndex -= 1

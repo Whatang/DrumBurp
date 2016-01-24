@@ -232,7 +232,7 @@ class TestNoteControl(unittest.TestCase):
         self.assertEqual(self.score.getItemAtPosition(NotePosition(0, 0)),
                          self.score.getMeasureByIndex(0))
         self.assertEqual(self.score.getItemAtPosition(NotePosition(0)),
-                         self.score.getStaff(0))
+                         self.score.getStaffByIndex(0))
         self.assertEqual(self.score.getItemAtPosition(NotePosition()),
                          self.score)
 
