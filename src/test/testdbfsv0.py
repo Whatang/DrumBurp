@@ -799,11 +799,11 @@ class TestFontOptions(unittest.TestCase):
         output = handle.getvalue().splitlines()
         self.assertEqual(output,
                          ["FONT_OPTIONS_START",
-                          "  NOTEFONT MS Shell Dlg 2",
+                          "  NOTEFONT Noto Sans",
                           "  NOTEFONTSIZE 10",
-                          "  SECTIONFONT MS Shell Dlg 2",
+                          "  SECTIONFONT Noto Sans",
                           "  SECTIONFONTSIZE 14",
-                          "  METADATAFONT MS Shell Dlg 2",
+                          "  METADATAFONT Noto Sans",
                           "  METADATAFONTSIZE 16",
                           "FONT_OPTIONS_END"])
 
