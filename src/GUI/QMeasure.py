@@ -204,15 +204,12 @@ class QMeasure(QtGui.QGraphicsItem):
         countLine = self._notesBottom
         x = xValues[noteTime]
         scheme = self._colourScheme()
+        # Highlight count
         scheme.noteHighlight.setPainter(painter)
         painter.drawRect(x, countLine,
                          self._qScore.xSpacing - 1,
                          self._qScore.ySpacing - 1)
-        if drumIndex is not None:
-            noteLine = self._notesBottom - (drumIndex + 1) * self._qScore.ySpacing
-            painter.drawRect(x, noteLine,
-                             self._qScore.xSpacing - 1,
-                             self._qScore.ySpacing - 1)
+        # Highlight notes column
         scheme.timeHighlight.setPainter(painter)
         painter.drawRect(x, baseline,
                          self._qScore.xSpacing - 1,
