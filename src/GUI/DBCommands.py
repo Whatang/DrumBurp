@@ -501,7 +501,7 @@ class SetSectionEndCommand(SetMeasureLineCommand):
                                                    "set section end",
                                                    note, onOff,
                                                    None)
-        self._index = self._score.sectionIndexToPosition(note)
+        self._index = self._score.positionToSectionIndex(note)
         if not onOff:
             self._title = self._score.getSectionTitle(self._index)
 
@@ -519,7 +519,7 @@ class SetSectionEndCommand(SetMeasureLineCommand):
             self._qScore.sectionsChanged.emit()
             self._qScore.invalidate()
             if self._onOff:
-                index = self._score.sectionIndexToPosition(self._np)
+                index = self._score.positionToSectionIndex(self._np)
                 section = self._qScore.getQSection(index)
                 self._qScore.showItem.emit(section)
         self._qScore.reBuild(after)
@@ -586,7 +586,7 @@ class DeleteMeasureCommand(ScoreCommand):
         self._sectionIndex = None
         self._sectionTitle = None
         if self._oldMeasure.isSectionEnd():
-            self._sectionIndex = self._score.sectionIndexToPosition(note)
+            self._sectionIndex = self._score.positionToSectionIndex(note)
             self._sectionTitle = self._score.getSectionTitle(self._sectionIndex)
 
     def _redo(self):

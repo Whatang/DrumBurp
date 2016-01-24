@@ -270,7 +270,7 @@ class Score(object):
         if staff.isSectionEnd():
             if index == 0 or self.getStaffByIndex(index - 1).isSectionEnd():
                 position = NotePosition(staffIndex = index)
-                sectionIndex = self.sectionIndexToPosition(position)
+                sectionIndex = self.positionToSectionIndex(position)
                 self._deleteSectionTitle(sectionIndex)
             else:
                 prevStaff = self.getStaffByIndex(index - 1)
@@ -360,7 +360,7 @@ class Score(object):
         staff = self.getStaffByIndex(position.staffIndex)
         if (staff.isSectionEnd()
             and position.measureIndex == staff.numMeasures() - 1):
-            sectionIndex = self.sectionIndexToPosition(position)
+            sectionIndex = self.positionToSectionIndex(position)
             self._deleteSectionTitle(sectionIndex)
         staff.deleteMeasure(position)
 
@@ -411,7 +411,7 @@ class Score(object):
     def numSections(self):
         return len(self._sections)
 
-    def sectionIndexToPosition(self, position):  # TODO: rename to positionToSectionIndex
+    def positionToSectionIndex(self, position):
         ends = []
         for staffIndex, staff in enumerate(self.iterStaffs()):
             assert(staff.isConsistent())
@@ -437,7 +437,7 @@ class Score(object):
         return startIndex
 
     def deleteSection(self, position):
-        sectionIndex = self.sectionIndexToPosition(position)
+        sectionIndex = self.positionToSectionIndex(position)
         if sectionIndex == self.numSections():
             return
         startIndex = position.staffIndex
@@ -454,7 +454,7 @@ class Score(object):
     def setSectionEnd(self, position, onOff, title = None):
         self._checkStaffIndex(position.staffIndex)
         staff = self.getStaffByIndex(position.staffIndex)
-        sectionIndex = self.sectionIndexToPosition(position)
+        sectionIndex = self.positionToSectionIndex(position)
         if onOff:
             if title is None:
                 title = "New Section"
@@ -520,7 +520,7 @@ class Score(object):
             self._checkStaffIndex(position.staffIndex)
             sectionMeasures = list(self.iterMeasuresInSection(sectionIndex))
             sectionTitle = self._makeNewSectionTitle(self.getSectionTitle(sectionIndex))
-            newIndex = self.sectionIndexToPosition(position)
+            newIndex = self.positionToSectionIndex(position)
             self._sections.insert(newIndex, sectionTitle)
             for measure in sectionMeasures:
                 newMeasure = self.insertMeasureByPosition(len(measure),
