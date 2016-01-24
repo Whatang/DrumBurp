@@ -442,27 +442,27 @@ class TestFormatScore(unittest.TestCase):
         self.score.formatScore(80)
         self.assertEqual(self.score.numStaffs(), 2)
 
-    def testGetMeasurePosition(self):
+    def testMeasureIndexToPosition(self):
         for dummy in range(0, 8):
             self.score.insertMeasureByIndex(16)
         self.score.formatScore(40)
-        self.assertEqual(self.score.getMeasurePosition(0),
+        self.assertEqual(self.score.measureIndexToPosition(0),
                          NotePosition(0, 0))
-        self.assertEqual(self.score.getMeasurePosition(1),
+        self.assertEqual(self.score.measureIndexToPosition(1),
                          NotePosition(0, 1))
-        self.assertEqual(self.score.getMeasurePosition(2),
+        self.assertEqual(self.score.measureIndexToPosition(2),
                          NotePosition(1, 0))
-        self.assertEqual(self.score.getMeasurePosition(3),
+        self.assertEqual(self.score.measureIndexToPosition(3),
                          NotePosition(1, 1))
-        self.assertEqual(self.score.getMeasurePosition(4),
+        self.assertEqual(self.score.measureIndexToPosition(4),
                          NotePosition(2, 0))
-        self.assertEqual(self.score.getMeasurePosition(5),
+        self.assertEqual(self.score.measureIndexToPosition(5),
                          NotePosition(2, 1))
-        self.assertEqual(self.score.getMeasurePosition(6),
+        self.assertEqual(self.score.measureIndexToPosition(6),
                          NotePosition(3, 0))
-        self.assertEqual(self.score.getMeasurePosition(7),
+        self.assertEqual(self.score.measureIndexToPosition(7),
                          NotePosition(3, 1))
-        self.assertRaises(BadTimeError, self.score.getMeasurePosition, 8)
+        self.assertRaises(BadTimeError, self.score.measureIndexToPosition, 8)
 
     def testMeasurePositionToIndex(self):
         for dummy in range(0, 8):
@@ -487,7 +487,7 @@ class TestFormatScore(unittest.TestCase):
         self.score.addNote(NotePosition(0, 1, 0, 0), "x")
         trailing = self.score.trailingEmptyMeasures()
         self.assertEqual(trailing,
-                         [self.score.getMeasurePosition(i)
+                         [self.score.measureIndexToPosition(i)
                           for i in xrange(7, 1, -1)])
 
     def testTrailingMeasuresEmptyScore(self):
@@ -496,7 +496,7 @@ class TestFormatScore(unittest.TestCase):
         self.score.formatScore(40)
         trailing = self.score.trailingEmptyMeasures()
         self.assertEqual(trailing,
-                         [self.score.getMeasurePosition(i)
+                         [self.score.measureIndexToPosition(i)
                           for i in xrange(7, 0, -1)])
 
 class TestCopyPaste(unittest.TestCase):
@@ -642,16 +642,16 @@ class TestSections(unittest.TestCase):
         self.assertEqual(self.score.numSections(), 0)
 
     def testAddSection(self):
-        np = self.score.getMeasurePosition(3)
+        np = self.score.measureIndexToPosition(3)
         self.score.setSectionEnd(np, True)
         self.assertEqual(self.score.numSections(), 1)
         self.assertEqual(self.score.getSectionTitle(0), "New Section")
 
     def testSetSectionTitle(self):
-        np = self.score.getMeasurePosition(3)
+        np = self.score.measureIndexToPosition(3)
         self.score.setSectionEnd(np, True)
         self.score.setSectionTitle(0, "Section 1")
-        np = self.score.getMeasurePosition(15)
+        np = self.score.measureIndexToPosition(15)
         self.score.setSectionEnd(np, True)
         self.assertEqual(self.score.numSections(), 2)
         self.score.setSectionTitle(1, "Section 2")
@@ -661,45 +661,45 @@ class TestSections(unittest.TestCase):
                          ["Section 1", "Section 2"])
 
     def testRemoveSection(self):
-        np = self.score.getMeasurePosition(3)
+        np = self.score.measureIndexToPosition(3)
         self.score.setSectionEnd(np, True)
         self.assertEqual(self.score.numSections(), 1)
         self.score.setSectionTitle(0, "Section 1")
-        np = self.score.getMeasurePosition(15)
+        np = self.score.measureIndexToPosition(15)
         self.score.setSectionEnd(np, True)
         self.assertEqual(self.score.numSections(), 2)
         self.score.setSectionTitle(1, "Section 2")
-        np = self.score.getMeasurePosition(3)
+        np = self.score.measureIndexToPosition(3)
         self.score.setSectionEnd(np, False)
         self.assertEqual(self.score.numSections(), 1)
         self.assertEqual(self.score.getSectionTitle(0), "Section 2")
 
     def testGetSectionIndex(self):
-        np = self.score.getMeasurePosition(3)
+        np = self.score.measureIndexToPosition(3)
         self.score.setSectionEnd(np, True)
-        np = self.score.getMeasurePosition(19)
+        np = self.score.measureIndexToPosition(19)
         self.score.setSectionEnd(np, True)
         self.assertEqual(self.score.numSections(), 2)
-        np = self.score.getMeasurePosition(2)
+        np = self.score.measureIndexToPosition(2)
         self.assertEqual(self.score.getSectionIndex(np), 0)
-        np = self.score.getMeasurePosition(10)
+        np = self.score.measureIndexToPosition(10)
         self.assertEqual(self.score.getSectionIndex(np), 1)
 
     def testGetSectionStartStaffIndex(self):
-        np = self.score.getMeasurePosition(3)
+        np = self.score.measureIndexToPosition(3)
         self.score.setSectionEnd(np, True)
-        np = self.score.getMeasurePosition(19)
+        np = self.score.measureIndexToPosition(19)
         self.score.setSectionEnd(np, True)
         self.assertEqual(self.score.numSections(), 2)
-        np = self.score.getMeasurePosition(2)
+        np = self.score.measureIndexToPosition(2)
         self.assertEqual(self.score.getSectionStartStaffIndex(np), 0)
-        np = self.score.getMeasurePosition(10)
+        np = self.score.measureIndexToPosition(10)
         self.assertEqual(self.score.getSectionStartStaffIndex(np), 1)
 
     def testIterMeasuresInSection(self):
-        np = self.score.getMeasurePosition(3)
+        np = self.score.measureIndexToPosition(3)
         self.score.setSectionEnd(np, True)
-        np = self.score.getMeasurePosition(19)
+        np = self.score.measureIndexToPosition(19)
         self.score.setSectionEnd(np, True)
         self.assertEqual(self.score.numSections(), 2)
         measureIndexes = [ord(measure.noteAt(0, 0)) - ord('a') for measure
@@ -712,11 +712,11 @@ class TestSections(unittest.TestCase):
                           self.score.iterMeasuresInSection(3))
 
     def testDeleteSection_FirstSection(self):
-        np = self.score.getMeasurePosition(3)
+        np = self.score.measureIndexToPosition(3)
         self.score.setSectionEnd(np, True)
         self.assertEqual(self.score.numSections(), 1)
         self.score.setSectionTitle(0, "Section 1")
-        np = self.score.getMeasurePosition(15)
+        np = self.score.measureIndexToPosition(15)
         self.score.setSectionEnd(np, True)
         self.score.setSectionTitle(1, "Section 2")
         self.assertEqual(self.score.numSections(), 2)
@@ -727,14 +727,14 @@ class TestSections(unittest.TestCase):
         self.assertEqual(self.score.getSectionTitle(0), "Section 2")
 
     def testDeleteSection_MiddleSection(self):
-        np = self.score.getMeasurePosition(3)
+        np = self.score.measureIndexToPosition(3)
         self.score.setSectionEnd(np, True)
         self.assertEqual(self.score.numSections(), 1)
         self.score.setSectionTitle(0, "Section 1")
-        np = self.score.getMeasurePosition(15)
+        np = self.score.measureIndexToPosition(15)
         self.score.setSectionEnd(np, True)
         self.score.setSectionTitle(1, "Section 2")
-        np = self.score.getMeasurePosition(23)
+        np = self.score.measureIndexToPosition(23)
         self.score.setSectionEnd(np, True)
         self.score.setSectionTitle(2, "Section 3")
         self.assertEqual(self.score.numSections(), 3)
@@ -746,14 +746,14 @@ class TestSections(unittest.TestCase):
         self.assertEqual(self.score.getSectionTitle(1), "Section 3")
 
     def testDeleteSection_EndSection(self):
-        np = self.score.getMeasurePosition(3)
+        np = self.score.measureIndexToPosition(3)
         self.score.setSectionEnd(np, True)
         self.assertEqual(self.score.numSections(), 1)
         self.score.setSectionTitle(0, "Section 1")
-        np = self.score.getMeasurePosition(15)
+        np = self.score.measureIndexToPosition(15)
         self.score.setSectionEnd(np, True)
         self.score.setSectionTitle(1, "Section 2")
-        np = self.score.getMeasurePosition(23)
+        np = self.score.measureIndexToPosition(23)
         self.score.setSectionEnd(np, True)
         self.score.setSectionTitle(2, "Section 3")
         self.assertEqual(self.score.numSections(), 3)
@@ -765,14 +765,14 @@ class TestSections(unittest.TestCase):
         self.assertEqual(self.score.getSectionTitle(1), "Section 2")
 
     def testDeleteSection_BadPosition(self):
-        np = self.score.getMeasurePosition(3)
+        np = self.score.measureIndexToPosition(3)
         self.score.setSectionEnd(np, True)
         self.assertEqual(self.score.numSections(), 1)
         self.score.setSectionTitle(0, "Section 1")
-        np = self.score.getMeasurePosition(15)
+        np = self.score.measureIndexToPosition(15)
         self.score.setSectionEnd(np, True)
         self.score.setSectionTitle(1, "Section 2")
-        np = self.score.getMeasurePosition(23)
+        np = self.score.measureIndexToPosition(23)
         self.score.setSectionEnd(np, True)
         self.score.setSectionTitle(2, "Section 3")
         self.assertEqual(self.score.numSections(), 3)

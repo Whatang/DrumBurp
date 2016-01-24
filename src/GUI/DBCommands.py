@@ -575,7 +575,7 @@ class DeleteMeasureCommand(ScoreCommand):
             measureIndex = qScore.score.measurePositionToIndex(note)
             note = note.makeMeasurePosition()
         else:
-            note = qScore.score.getMeasurePosition(measureIndex)
+            note = qScore.score.measureIndexToPosition(measureIndex)
         super(DeleteMeasureCommand, self).__init__(qScore, note,
                                                    "delete measure")
         self._index = measureIndex

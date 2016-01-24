@@ -359,7 +359,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         self._qScore.beginMacro(macroName)
         for simileIndex, measureIndex in enumerate(xrange(startIndex,
                                                           endIndex + 1)):
-            np = self._score.getMeasurePosition(measureIndex)
+            np = self._score.measureIndexToPosition(measureIndex)
             command = ToggleSimileCommand(self._qScore, np,
                                           simileIndex, simileDistance)
             self._qScore.addCommand(command)

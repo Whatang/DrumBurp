@@ -849,7 +849,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         except InconsistentRepeats, exc:
             QMessageBox.warning(self, "Playback error",
                                 "There are inconsistent repeat markings.")
-            position = self.scoreScene.score.getMeasurePosition(exc[0])
+            position = self.scoreScene.score.measureIndexToPosition(exc[0])
             measure = self.scoreScene.getQMeasure(position)
             self.scoreView.showItemAtTop(measure)
             return False
@@ -875,13 +875,13 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if index == -1:
             self.scoreScene.highlightPlayingMeasure(None)
         else:
-            position = self.scoreScene.score.getMeasurePosition(index)
+            position = self.scoreScene.score.measureIndexToPosition(index)
             self.scoreScene.highlightPlayingMeasure(position)
             measure = self.scoreScene.getQMeasure(position)
         if nextIndex == -1:
             self.scoreScene.highlightNextMeasure(None)
         else:
-            position = self.scoreScene.score.getMeasurePosition(nextIndex)
+            position = self.scoreScene.score.measureIndexToPosition(nextIndex)
             self.scoreScene.highlightNextMeasure(position)
             nextMeasure = self.scoreScene.getQMeasure(position)
         if measure:

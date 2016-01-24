@@ -302,7 +302,7 @@ class Score(object):
         index += position.measureIndex
         return index
 
-    def getMeasurePosition(self, index):
+    def measureIndexToPosition(self, index):
         staffIndex = 0
         staff = self.getStaff(0)
         while index >= staff.numMeasures():
@@ -353,7 +353,7 @@ class Score(object):
 
     def deleteMeasureByIndex(self, index):
         self._checkMeasureIndex(index)
-        np = self.getMeasurePosition(index)
+        np = self.measureIndexToPosition(index)
         self.deleteMeasureByPosition(np)
 
     def deleteMeasureByPosition(self, position):
@@ -406,7 +406,7 @@ class Score(object):
         return staff.pasteMeasure(position, notes, copyMeasureDecorations)
 
     def pasteMeasureByIndex(self, index, notes, copyMeasureDecorations = False):
-        position = self.getMeasurePosition(index)
+        position = self.measureIndexToPosition(index)
         self.pasteMeasure(position, notes, copyMeasureDecorations)
 
     def numSections(self):
