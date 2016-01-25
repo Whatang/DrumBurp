@@ -166,6 +166,7 @@ class LilyMeasure(object):
         self.kit = kit
         self._beats = list(self.measure.counter.iterBeatTicks())
         self._voices = {STEM_UP:[], STEM_DOWN:[]}
+        self._sticking = []
         self._build()
 
 
@@ -176,32 +177,40 @@ class LilyMeasure(object):
             notes[direction].append((notePos, head))
         return notes
 
+    def _calculateEventTimes(self, eventTimes):
+        eventTimes = set(eventTimes)
+        for tick in self.measure.counter.iterBeatTickPositions():
+            eventTimes.add(tick)
+        eventTimes.add(len(self._beats))
+        noteTimes = list(eventTimes)
+        noteTimes.sort()
+        return noteTimes
 
     def _calculateNoteTimes(self, notes):
         noteTimes = {}
         for direction in notes:
-            timeSet = set(notePos.noteTime for (notePos, head) in
-                notes[direction])
-            for tick in self.measure.counter.iterBeatTickPositions():
-                timeSet.add(tick)
-            timeSet.add(len(self._beats))
-            noteTimes[direction] = list(timeSet)
-            noteTimes[direction].sort()
+            eventTimes = [notePos.noteTime for (notePos, head_) in
+                         notes[direction]]
+            noteTimes[direction] = self._calculateEventTimes(eventTimes)
         return noteTimes
 
-    def _calculateDurations(self, noteTimes):
+
+    def _calculateEventDurations(self, timeList):
+        durationDict = {}
+        for thisTime, nextTime in zip(timeList[:-1], timeList[1:]):
+            beatNum, beat, tick_ = self._beats[thisTime]
+            numTicks = nextTime - thisTime
+            try:
+                durationDict[thisTime] = lilyDuration(beat, numTicks)
+            except BadNoteDuration:
+                print(beatNum, beat, tick_, numTicks)
+                raise
+        return durationDict
+
+    def _calculateNoteDurations(self, noteTimes):
         durations = {}
         for direction, timeList in noteTimes.iteritems():
-            durationDict = {}
-            for thisTime, nextTime in zip(timeList[:-1],
-                timeList[1:]):
-                beatNum, beat, tick_ = self._beats[thisTime]
-                numTicks = nextTime - thisTime
-                try:
-                    durationDict[thisTime] = lilyDuration(beat, numTicks)
-                except BadNoteDuration:
-                    print(beatNum, beat, tick_, numTicks)
-                    raise
+            durationDict = self._calculateEventDurations(timeList)
             durations[direction] = durationDict
         return durations
 
@@ -259,7 +268,6 @@ class LilyMeasure(object):
 
     def _buildVoices(self, noteTimes, durations, lilyNotes, effects):
         wholeRests = collections.defaultdict(dict)
-        noteTimesToVoiceIndexes = collections.defaultdict(dict)
         for direction, timeList in noteTimes.iteritems():
             lNotes = lilyNotes[direction]
             lEffects = effects[direction]
@@ -287,45 +295,67 @@ class LilyMeasure(object):
                     lNotes[noteTime] = ["r"]
                 if lNotes[noteTime] == ["r"] and dur == "4":
                     wholeRests[direction][noteTime] = len(voice)
-                noteTimesToVoiceIndexes[direction][noteTime] = len(voice)
                 voice.append(self._makeNoteString(lNotes[noteTime])
                              + dur + accent)
                 if restTime:
                     voice.append("r" + restTime)
             if isTriplet:
                 voice.append("}")
-        return wholeRests, noteTimesToVoiceIndexes
+        return wholeRests
 
-    def _addSticking(self, noteTimesToVoiceIndexes, primaryDirection, secondaryDirection, stickingText):
-        annotate = { STEM_UP:"^", STEM_DOWN:"_"}
-        for noteTime, sticking in enumerate(stickingText):
-            if sticking == " ":
-                continue
-            direction = None
-            if noteTime in noteTimesToVoiceIndexes[primaryDirection]:
-                direction = primaryDirection
-            elif noteTime in noteTimesToVoiceIndexes[secondaryDirection]:
-                direction = secondaryDirection
-            else:
-                continue
-            voiceIndex = noteTimesToVoiceIndexes[direction][noteTime]
-            toAppend = annotate[primaryDirection] + r"\markup{" + sticking + "}"
-            self._voices[direction][voiceIndex] = self._voices[direction][voiceIndex] + toAppend
+    def _makeSticking(self, stickingText, where):
+        stickTimes = self._calculateEventTimes(index for index, stick in
+                                               enumerate(stickingText)
+                                               if stick != " ")
+        stickDurations = self._calculateEventDurations(stickTimes)
+        lilyStick = []
+        isTriplet = False
+        for time in stickTimes[:-1]:
+            stick = stickingText[time]
+            if stick == " ":
+                stick = '" "'
+            dur = stickDurations[time]
+            restTime = None
+            if "," in dur:
+                dur, restTime = dur.split(",", 1)
+            if dur.startswith("@"):
+                dur = dur[1:]
+                if not isTriplet:
+                    if dur == "8.":
+                        dur = "8"
+                    else:
+                        isTriplet = True
+                        lilyStick.append(r"\times 2/3 {")
+            elif isTriplet:
+                lilyStick.append("}")
+                isTriplet = False
+            lilyStick.append(stick + dur)
+            if restTime:
+                lilyStick.append('" "' + restTime)
+        lilyStick = " ".join(lilyStick)
+        lilyStick = r" \lyricmode { " + lilyStick + " }"
+        lilyStick = r'\new Lyrics \with { align%sContext = #"main" }' + lilyStick
+        return lilyStick % where
 
     def _build(self):
         notes = self._separateNotesByDirection()
         noteTimes = self._calculateNoteTimes(notes)
-        durations = self._calculateDurations(noteTimes)
+        durations = self._calculateNoteDurations(noteTimes)
         lilyNotes, effects = self._getLilyNotesAndEffects(notes)
-        wholeRests, noteTimesToVoiceIndexes = self._buildVoices(noteTimes, durations, lilyNotes, effects)
+        wholeRests = self._buildVoices(noteTimes, durations,
+                                       lilyNotes, effects)
         for direction, restTimes in wholeRests.iteritems():
             otherDirection = 1 - direction
             for (rest, index) in restTimes.iteritems():
                 if (otherDirection not in wholeRests
                     or rest not in wholeRests[otherDirection]):
                     self._voices[direction][index] = "s4"
-        self._addSticking(noteTimesToVoiceIndexes, STEM_UP, STEM_DOWN, self.measure.aboveText)
-        self._addSticking(noteTimesToVoiceIndexes, STEM_DOWN, STEM_UP, self.measure.belowText)
+        if any(ch != " " for ch in self.measure.aboveText):
+            self._sticking.append(self._makeSticking(self.measure.aboveText,
+                                                     "Above"))
+        if any(ch != " " for ch in self.measure.belowText):
+            self._sticking.append(self._makeSticking(self.measure.belowText,
+                                                     "Below"))
         self._mergeWholeRests(STEM_UP)
         self._mergeWholeRests(STEM_DOWN)
 
@@ -365,6 +395,10 @@ class LilyMeasure(object):
     def voiceTwo(self, indenter):
         voice = self._voices[STEM_DOWN]
         indenter(" ".join(voice))
+
+    def sticking(self, indenter):
+        for sticking in self._sticking:
+            indenter(sticking)
 
 class LilyKit(object):
     _HEADS = {"default": "()",
@@ -534,7 +568,7 @@ class LilypondScore(object):
         self.indenter(r'#(layout-set-staff-size %d)' % self._lilysize)
 
     def _writeScore(self):
-        with VOICE_CONTEXT(self.indenter, r'\new DrumStaff'):
+        with VOICE_CONTEXT(self.indenter, r'\new DrumStaff = "main"'):
             self._writeDrumStaffInfo()
             with LILY_CONTEXT(self.indenter, r'\drummode'):
                 self._writeMusic()
@@ -703,12 +737,11 @@ class LilypondScore(object):
         parsed = LilyMeasure(measure, self._lilyKit)
         with LILY_CONTEXT(self.indenter, r'\new DrumVoice'):
             self.indenter(r'\voiceOne')
-            self.indenter(r'\override TextScript.staff-padding = #5')
             parsed.voiceOne(self.indenter)
         with LILY_CONTEXT(self.indenter, r'\new DrumVoice'):
             self.indenter(r'\voiceTwo')
-            self.indenter(r'\override TextScript.staff-padding = #5')
             parsed.voiceTwo(self.indenter)
+        parsed.sticking(self.indenter)
 
     @staticmethod
     def _writeMacros(handle):
