@@ -135,6 +135,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.setSections()
         self._versionThread = VersionCheckThread()
         self._versionThread.finished.connect(self._finishedVersionCheck)
+        self.menuSelectMidiOut.setEnabled(False)
+        self.menuSelectMidiOut.menuAction().setVisible(False)
         self._midiInitThread = DBMidi.MidiInit(self)
         self._midiInitThread.finished.connect(self._midiInitFinished)
         QTimer.singleShot(0, lambda : self._startUp(erroredFiles))
