@@ -309,12 +309,29 @@ class LilyMeasure(object):
                                                if stick != " ")
         stickDurations = self._calculateEventDurations(stickTimes)
         lilyStick = []
+        isTriplet = False
         for time in stickTimes[:-1]:
             stick = stickingText[time]
             if stick == " ":
                 stick = '" "'
-            stick += stickDurations[time]
-            lilyStick.append(stick)
+            dur = stickDurations[time]
+            restTime = None
+            if "," in dur:
+                dur, restTime = dur.split(",", 1)
+            if dur.startswith("@"):
+                dur = dur[1:]
+                if not isTriplet:
+                    if dur == "8.":
+                        dur = "8"
+                    else:
+                        isTriplet = True
+                        lilyStick.append(r"\times 2/3 {")
+            elif isTriplet:
+                lilyStick.append("}")
+                isTriplet = False
+            lilyStick.append(stick + dur)
+            if restTime:
+                lilyStick.append('" "' + restTime)
         lilyStick = " ".join(lilyStick)
         lilyStick = r" \lyricmode { " + lilyStick + " }"
         lilyStick = r'\new Lyrics \with { align%sContext = #"main" }' + lilyStick
