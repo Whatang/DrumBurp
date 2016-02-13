@@ -224,7 +224,7 @@ class Exporter(object):
                 if len(thisBpmString) > displayCols:
                     thisBpmString = thisBpmString[:displayCols]
                 elif len(thisBpmString) < displayCols:
-                    thisBpmString += " " * (displayCols - len(bpmString))
+                    thisBpmString += " " * (displayCols - len(thisBpmString))
                 bpmString.append(thisBpmString)
             else:
                 bpmString.append(" " * displayCols)
