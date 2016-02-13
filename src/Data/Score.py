@@ -513,6 +513,16 @@ class Score(object):
                 suffix = max(suffix, sectionSuffix)
         return "%s %d" % (stem.rstrip(), suffix + 1)
 
+    def bpmAtMeasureByPosition(self, measurePosition):
+        index = self.measurePositionToIndex(measurePosition)
+        bpm = self.scoreData.bpm
+        for measureIndex, measure in enumerate(self.iterMeasures()):
+            if measure.newBpm != 0:
+                bpm = measure.newBpm
+            if measureIndex == index:
+                break
+        return bpm
+
     def insertSectionCopy(self, position, sectionIndex):
         self.turnOffCallBacks()
         position = position.makeMeasurePosition()
