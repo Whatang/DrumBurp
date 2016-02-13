@@ -389,7 +389,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         if not dialog.exec_():
             return
         newBpm = dialog.getValue()
-        if newBpm == currentBpm:
+        if newBpm == currentBpm or newBpm == 0:
             return
         command = SetNewBpmCommand(self._qScore, self._np, newBpm)
         self._qScore.addCommand(command)
