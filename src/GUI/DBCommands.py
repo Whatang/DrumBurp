@@ -844,3 +844,28 @@ class SetStickingVisibility(ScoreCommand):
         measure = self._score.getMeasureByPosition(self._np)
         measure.setStickingVisible(self._above, self._oldValue)
         self._qScore.reBuild()
+
+class SetNewBpmCommand(ScoreCommand):
+    canReformat = False
+    def __init__(self, qscore, note, newBpm):
+        commandText = "change BPM at measure"
+        if newBpm == 0:
+            commandText = "remove BPM change"
+        super(SetNewBpmCommand, self).__init__(qscore, note, commandText)
+        self._newBpm = newBpm
+        measure = self._score.getMeasureByPosition(self._np)
+        self._oldBpm = measure.newBpm
+
+    def _redo(self):
+        if self._newBpm == self._oldBpm:
+            return
+        measure = self._score.getMeasureByPosition(self._np)
+        measure.newBpm = self._newBpm
+        self._qScore.reBuild()
+
+    def _undo(self):
+        if self._newBpm == self._oldBpm:
+            return
+        measure = self._score.getMeasureByPosition(self._np)
+        measure.newBpm = self._oldBpm
+        self._qScore.reBuild()
