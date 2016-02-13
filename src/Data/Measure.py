@@ -128,6 +128,7 @@ class Measure(object):
         self._below = " " * width
         self.showAbove = False
         self.showBelow = False
+        self.newBpm = 0
 
     @property
     def counter(self):

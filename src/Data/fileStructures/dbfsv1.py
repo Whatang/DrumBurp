@@ -19,7 +19,8 @@
 
 from Data.fileUtils import (FileStructure, PositiveIntegerField,
                             StringField, NonNegativeIntegerField, BooleanField,
-                            IntegerField, Base64StringField)
+                            IntegerField, Base64StringField,
+                            conditionalWriteField)
 
 import Data.Beat
 import Data.MeasureCount
@@ -77,6 +78,8 @@ class MeasureStructureV1(FileStructure):
     aboveText = Base64StringField("ABOVETEXT")
     showBelow = BooleanField("SHOWBELOW")
     belowText = Base64StringField("BELOWTEXT")
+    newBpm = conditionalWriteField(NonNegativeIntegerField("NEWBPM"),
+                                   lambda measure: measure.newBpm > 0)
 
 
 class NoteHeadStructureV1(FileStructure):

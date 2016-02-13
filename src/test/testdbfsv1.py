@@ -414,6 +414,7 @@ class TestReadMeasure(unittest.TestCase):
         self.assert_(measure.isRepeatEnd())
         self.assertFalse(measure.isSectionEnd())
         self.assertFalse(measure.isLineBreak())
+        self.assertEqual(measure.newBpm, 0)
 
     def testReadAlternate(self):
         data = """
@@ -582,6 +583,48 @@ class TestReadMeasure(unittest.TestCase):
         self.assertEqual(measure.aboveText, " R      ")
         self.assert_(measure.showBelow)
         self.assertEqual(measure.belowText, "   F    ")
+
+    def testReadNewBpm(self):
+        data = """START_MEASURE
+                  START_MEASURE_COUNT
+                    BEAT_START
+                      NUM_TICKS 2
+                      COUNT |^+|
+                    BEAT_END
+                    BEAT_START
+                      NUM_TICKS 2
+                      COUNT |^+|
+                    BEAT_END
+                    BEAT_START
+                      NUM_TICKS 2
+                      COUNT |^+|
+                    BEAT_END
+                    BEAT_START
+                      NUM_TICKS 2
+                      COUNT |^+|
+                    BEAT_END
+                  END_MEASURE_COUNT
+                  STARTBARLINE 1
+                  NOTE 0,1,o
+                  NOTE 0,2,o
+                  NOTE 1,2,o
+                  NOTE 2,2,o
+                  NOTE 2,3,o
+                  NOTE 3,2,o
+                  NOTE 3,3,o
+                  NOTE 4,1,o
+                  NOTE 4,2,o
+                  NOTE 5,2,o
+                  NOTE 6,2,o
+                  NOTE 6,3,o
+                  NOTE 7,2,x
+                  ENDBARLINE 1
+                  NEWBPM 120
+                END_MEASURE"""
+        handle = StringIO(data)
+        iterator = fileUtils.dbFileIterator(handle)
+        measure = dbfsv1.MeasureStructureV1().read(iterator)
+        self.assertEqual(measure.newBpm, 120)
 
 class TestWriteMeasure(unittest.TestCase):
     reg = CounterRegistry()
