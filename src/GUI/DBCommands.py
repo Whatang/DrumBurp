@@ -642,7 +642,7 @@ class SetAlternateCommand(ScoreCommand):
         self._oldAlternate = measure.alternateText
 
     def _redo(self):
-        measure = self._score.getMeasureByIndex()(self._index)
+        measure = self._score.getMeasureByIndex(self._index)
         measure.alternateText = self._alternate
         np = self._score.measureIndexToPosition(self._index)
         self._qScore.dataChanged(np)
@@ -650,7 +650,7 @@ class SetAlternateCommand(ScoreCommand):
             self._qScore.reBuild()
 
     def _undo(self):
-        measure = self._score.getMeasureByIndex()(self._index)
+        measure = self._score.getMeasureByIndex(self._index)
         measure.alternateText = self._oldAlternate
         np = self._score.measureIndexToPosition(self._index)
         self._qScore.dataChanged(np)
