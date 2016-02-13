@@ -54,6 +54,7 @@ class QMeasure(QtGui.QGraphicsItem):
         self._width = 0
         self._height = 0
         self._base = 0
+        self._bpmBase = 0
         self._repeatBottom = 0
         self._notesTop = 0
         self._notesBottom = 0
@@ -96,8 +97,11 @@ class QMeasure(QtGui.QGraphicsItem):
         self._width = self._qScore.xSpacing * self._displayCols
         self._height = 0
         self._base = 0
+        self._bpmBase = 0
+        if self.parentItem().anyMeasureHasBpm():
+            self._base += self._props.bpmHeight()
         if self._props.measureCountsVisible:
-            self._base = self._props.measureCountHeight()
+            self._base += self._props.measureCountHeight()
         self._repeatBottom = self._base + self.parentItem().alternateHeight()
         self._notesTop = self._repeatBottom
         if self.parentItem().showStickingAbove():
@@ -348,6 +352,11 @@ class QMeasure(QtGui.QGraphicsItem):
         self._paintSticking(painter, sticking,
                             self._height - self._qScore.ySpacing, xValues)
 
+    @_painterSaver
+    def _paintNewBpm(self, painter):
+        text = "BPM = %d" % self._measure.newBpm
+        painter.drawText(1, self._bpmBase + self._props.bpmHeight() - 1, text)
+
 
     @_painterSaver
     def paint(self, painter, dummyOption, dummyWidget = None):
@@ -363,6 +372,8 @@ class QMeasure(QtGui.QGraphicsItem):
         if not self._isSimile() and self._highlight:
             self._paintHighlight(painter, xValues)
         self._paintNotes(painter, xValues)
+        if self._measure.newBpm != 0:
+            self._paintNewBpm(painter)
         if self._props.beatCountVisible:
             self._paintBeatCount(painter, xValues)
         if self._props.measureCountsVisible and self._isFirst:

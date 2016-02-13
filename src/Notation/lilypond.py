@@ -582,7 +582,7 @@ class LilypondScore(object):
         self.indenter(r'\set DrumStaff.drumStyleTable ' +
                       r'= #(alist->hash-table dbdrums)')
         self.indenter(r'\set Staff.instrumentName = #"Drums"')
-        if self.scoreData.bpmVisible:
+        if self.scoreData.bpmVisible and self.scoreData.bpm:
             self.indenter(r'\tempo 4 = %d' % self.scoreData.bpm)
         self.indenter(r"\override Score.RehearsalMark " +
                       r"#'self-alignment-X = #LEFT")
@@ -705,6 +705,8 @@ class LilypondScore(object):
                 self._lastTimeSig = self._timeSig
             elif percentRepeated:
                 self.indenter(r"\once \omit Score.TimeSignature \time %s" % self._timeSig)
+            if measure.newBpm > 0:
+                self.indenter(r'\tempo 4 = %d' % measure.newBpm)
             if measure.simileDistance:
                 if measure.simileIndex == 0:
                     self.indenter(r"\once \omit Score.TimeSignature \time 2/4")

@@ -217,10 +217,13 @@ class _midi(QObject):
         if self.kit is None or self._midiOut is None:
             return
         baseTime = 0
-        msPerBeat = 60000.0 / score.scoreData.bpm
+        bpm = score.scoreData.bpm
+        msPerBeat = 60000.0 / bpm
         self._measureDetails = []
         try:
             for measure, measureIndex in measureList:
+                bpm = score.bpmAtMeasureByIndex(measureIndex)
+                msPerBeat = 60000.0 / bpm
                 times = list(measure.counter.iterTimesMs(msPerBeat))
                 baseTime += times[-1]
                 self._measureDetails.append((measureIndex, baseTime))
@@ -332,25 +335,20 @@ def encodeSevenBitDelta(delta, midiData):
     midiData.extend(values)
 
 def _makeMidiStart(score):
-    msPerBeat = int(60000000 / score.scoreData.bpm)
-    midiData = [0, 0xff, 0x51, 03, (msPerBeat >> 16) & 0xff,
-                (msPerBeat >> 8) & 0xff, msPerBeat & 0xff]
     signature = "Created with DrumBurp"
+    midiData = []
     midiData.extend([0, 0xff, 0x1, len(signature)])
     midiData.extend([ord(ch) for ch in signature])
     return midiData
 
-def _writeMidiNotes(notes, baseTime):
+def _writeMidiNotes(midiObjects, baseTime):
     lastNoteTime = 0
     midiData = []
-    for noteTime, headData in notes:
-        deltaTime = noteTime - lastNoteTime
-        lastNoteTime = noteTime
+    for midiEvent in midiObjects:
+        deltaTime = midiEvent.time - lastNoteTime
+        lastNoteTime = midiEvent.time
         encodeSevenBitDelta(deltaTime, midiData)
-        if headData == "choke":
-            midiData.extend([_PERCUSSION_CHOKE, _CHOKE_MSG, _CHOKE_VELOCITY])
-        else:
-            midiData.extend([_PERCUSSION_NOTE_ON, headData.midiNote, headData.midiVolume])
+        midiData.extend(midiEvent.write())
     # Turn off drum notes
     deltaTime = baseTime - lastNoteTime
     # Insert a delay before the end of the track.
@@ -365,12 +363,50 @@ def _finishMidiData(midiData):
     lenBytes = [((numBytes >> i) & 0xff) for i in xrange(24, -8, -8)]
     return lenBytes + midiData
 
+class MidiObject(object):
+    def __init__(self, eventTime):
+        self.time = eventTime
+
+    def __cmp__(self, other):
+        return cmp(self.time, other.time)
+
+    def write(self):
+        raise NotImplementedError()
+
+class MidiTempoChange(MidiObject):
+    def __init__(self, eventTime, bpm):
+        super(MidiTempoChange, self).__init__(eventTime)
+        self.bpm = bpm
+
+    def write(self):
+        msPerBeat = int(60000000 / self.bpm)
+        return [0xff, 0x51, 03, (msPerBeat >> 16) & 0xff,
+                (msPerBeat >> 8) & 0xff, msPerBeat & 0xff]
+
+class MidiNote(MidiObject):
+    def __init__(self, noteTime, headData):
+        super(MidiNote, self).__init__(noteTime)
+        self.headData = headData
+
+    def write(self):
+        return [_PERCUSSION_NOTE_ON, self.headData.midiNote,
+                self.headData.midiVolume]
+
+class MidiChoke(MidiObject):
+    def write(self):
+        return [_PERCUSSION_CHOKE, _CHOKE_MSG, _CHOKE_VELOCITY]
+
 def _calculateMidiTimes(measureIterator, score):
     notes = []
     baseTime = 1
-    for measure, unusedIndex in measureIterator:
+    lastBpm = None
+    for measure, measureIndex in measureIterator:
         measureNotes = []
         times = list(measure.counter.iterMidiTicks())
+        bpm = score.bpmAtMeasureByIndex(measureIndex)
+        if bpm != lastBpm:
+            notes.append(MidiTempoChange(baseTime + times[0], bpm))
+            lastBpm = bpm
         for notePos, head in measure:
             drumData = score.drumKit[notePos.drumIndex]
             headData = drumData.headData(head)
@@ -380,12 +416,12 @@ def _calculateMidiTimes(measureIterator, score):
                 if headData.effect == "flam":
                     headCopy = copy.copy(headData)
                     headCopy.midiVolume = headData.midiVolume / FLAM_VOLUME_CONSTANT
-                    measureNotes.append((noteTime - (MIDITICKSPERBEAT / FLAM_TIME_CONSTANT), headCopy))
+                    measureNotes.append(MidiNote(noteTime - (MIDITICKSPERBEAT / FLAM_TIME_CONSTANT), headCopy))
                 elif headData.effect == "drag":
-                    measureNotes.append((noteTime + divisionTicks / 2, headData))
+                    measureNotes.append(MidiNote(noteTime + divisionTicks / 2, headData))
                 elif headData.effect == "choke":
-                    measureNotes.append((noteTime + divisionTicks / 2, "choke"))
-                measureNotes.append((noteTime, headData))
+                    measureNotes.append(MidiChoke(noteTime + divisionTicks / 2))
+                measureNotes.append(MidiNote(noteTime, headData))
         baseTime += times[-1]
         measureNotes.sort()
         notes.extend(measureNotes)

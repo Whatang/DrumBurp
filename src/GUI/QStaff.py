@@ -128,6 +128,8 @@ class QStaff(QtGui.QGraphicsItemGroup):
         base = self.alternateHeight()
         if self._props.measureCountsVisible:
             base += self._props.measureCountHeight()
+        if self.anyMeasureHasBpm():
+            base += self._props.bpmHeight()
         if self.showStickingAbove():
             base += self._qScore.ySpacing
         for yOffset, label in zip(lineOffsets[-len(self._lineLabels):],
@@ -172,6 +174,8 @@ class QStaff(QtGui.QGraphicsItemGroup):
     def ySpacingChanged(self):
         lineOffsets = self._qScore.lineOffsets
         base = self.alternateHeight()
+        if self.anyMeasureHasBpm():
+            base += self._props.bpmHeight()
         if self._props.measureCountsVisible:
             base += self._props.measureCountHeight()
         for yOffset, label in zip(lineOffsets[-len(self._lineLabels):],
@@ -230,6 +234,9 @@ class QStaff(QtGui.QGraphicsItemGroup):
             return self._props.alternateHeight()
         else:
             return 0
+
+    def anyMeasureHasBpm(self):
+        return any(measure.newBpm > 0 for measure in self._staff)
 
     def showStickingAbove(self):
         return any(measure.showAbove for measure in self._staff)

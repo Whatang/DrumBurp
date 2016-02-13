@@ -338,6 +338,9 @@ class QDisplayProperties(QObject):
     def alternateHeight(self):
         return self._ySpacing + 2
 
+    def bpmHeight(self):
+        return self._ySpacing + 2
+
     def measureCountHeight(self):
         return self._ySpacing + 4
 
