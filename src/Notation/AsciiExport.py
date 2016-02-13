@@ -169,7 +169,7 @@ class Exporter(object):
                      any(measure.isRepeatStart() for measure in staff) or
                      any(measure.alternateText for measure in staff))
         if not hasRepeat:
-            return []
+            return None
         repeatString = "  "
         lastMeasure = None
         delta = 0
@@ -182,7 +182,7 @@ class Exporter(object):
                                                       measure, delta, position)
             repeatString = self._measureEnd(measure, repeatString)
             lastMeasure = measure
-        return [repeatString]
+        return repeatString
 
     def _getSticking(self, staff, above, position):
         hasSticking = any(measure.stickingVisible(above)
@@ -206,6 +206,32 @@ class Exporter(object):
             return None
         return stickingString
 
+    def _getBpmChanges(self, staff, position):
+        hasBpmChanges = any(measure.newBpm > 0 for measure in staff)
+        if not hasBpmChanges:
+            return None
+        bpmString = ["  "]
+        for measureIndex, measure in enumerate(staff):
+            position.measureIndex = measureIndex
+            if measure.simileDistance > 0:
+                referredMeasure = self.score.getReferredMeasure(self.score.measurePositionToIndex(position))
+                displayCols = referredMeasure.counter.numBeats()
+            else:
+                referredMeasure = measure
+                displayCols = len(measure)
+            if referredMeasure.newBpm > 0:
+                thisBpmString = "BPM=%d" % referredMeasure.newBpm
+                if len(thisBpmString) > displayCols:
+                    thisBpmString = thisBpmString[:displayCols]
+                elif len(thisBpmString) < displayCols:
+                    thisBpmString += " " * (displayCols - len(bpmString))
+                bpmString.append(thisBpmString)
+            else:
+                bpmString.append(" " * displayCols)
+        bpmString = " ".join(bpmString)
+        if all(ch == " " for ch in bpmString):
+            return None
+        return bpmString
 
     def _exportStaff(self, staff, staffIndex):
         kit = self.score.drumKit
@@ -213,7 +239,13 @@ class Exporter(object):
         indices = range(0, kitSize)
         indices.reverse()
         position = NotePosition(staffIndex = staffIndex)
-        staffString = self._getRepeatString(staff, position)
+        staffString = []
+        bpmString = self._getBpmChanges(staff, position)
+        if bpmString:
+            staffString.append(bpmString)
+        repeatString = self._getRepeatString(staff, position)
+        if repeatString:
+            staffString.append(repeatString)
         stickAbove = self._getSticking(staff, True, position)
         if stickAbove:
             staffString.append(stickAbove)
