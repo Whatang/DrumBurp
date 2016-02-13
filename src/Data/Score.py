@@ -517,6 +517,8 @@ class Score(object):
         index = self.measurePositionToIndex(measurePosition)
         bpm = self.scoreData.bpm
         for measureIndex, measure in enumerate(self.iterMeasures()):
+            if measure.simileDistance > 0:
+                measure = self.getReferredMeasure(measureIndex)
             if measure.newBpm != 0:
                 bpm = measure.newBpm
             if measureIndex == index:
