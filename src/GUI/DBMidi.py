@@ -220,9 +220,14 @@ class _midi(QObject):
         bpm = score.scoreData.bpm
         msPerBeat = 60000.0 / bpm
         self._measureDetails = []
+        lastMeasureIndex = None
         try:
             for measure, measureIndex in measureList:
-                bpm = score.bpmAtMeasureByIndex(measureIndex)
+                if lastMeasureIndex is None or measureIndex != lastMeasureIndex + 1:
+                    bpm = score.bpmAtMeasureByIndex(measureIndex)
+                elif measure.newBpm > 0 and bpm != measure.newBpm:
+                    bpm = measure.newBpm
+                lastMeasureIndex = measureIndex
                 msPerBeat = 60000.0 / bpm
                 times = list(measure.counter.iterTimesMs(msPerBeat))
                 baseTime += times[-1]
@@ -400,10 +405,15 @@ def _calculateMidiTimes(measureIterator, score):
     notes = []
     baseTime = 1
     lastBpm = None
+    lastMeasureIndex = None
     for measure, measureIndex in measureIterator:
         measureNotes = []
         times = list(measure.counter.iterMidiTicks())
-        bpm = score.bpmAtMeasureByIndex(measureIndex)
+        if lastMeasureIndex is None or measureIndex != lastMeasureIndex + 1:
+            bpm = score.bpmAtMeasureByIndex(measureIndex)
+        elif measure.newBpm > 0 and bpm != measure.newBpm:
+            bpm = measure.newBpm
+        lastMeasureIndex = measureIndex
         if bpm != lastBpm:
             notes.append(MidiTempoChange(baseTime + times[0], bpm))
             lastBpm = bpm
