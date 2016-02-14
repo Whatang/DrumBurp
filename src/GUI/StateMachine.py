@@ -21,6 +21,7 @@ Created on Jul 19, 2015
 
 @author: Mike Thomas
 '''
+from functools import wraps
 
 class _StateMachineMetaClass(type):
     def __new__(mcs, name, bases, attrs):
@@ -29,6 +30,21 @@ class _StateMachineMetaClass(type):
         attrs["_states"] = set()
         attrs["_transitions"] = {}
         return super(_StateMachineMetaClass, mcs).__new__(mcs, name, bases, attrs)
+
+# Set this to True to see all events sent to the state machine, and the
+# resulting state.
+_DEBUG = False
+
+def _debugStateMachine(method):
+    if not _DEBUG:
+        return method
+    @wraps(method)
+    def wrapper(self, event):
+        print type(event).__name__
+        retval = method(self, event)
+        print type(self._state).__name__  # IGNORE:protected-access
+        return retval
+    return wrapper
 
 class StateMachine(object):
     __metaclass__ = _StateMachineMetaClass
@@ -64,6 +80,7 @@ class StateMachine(object):
         assert oldState in cls._states
         cls._transitions[oldState][eventType] = (cls.FACTORY, factory)
 
+    @_debugStateMachine
     def send_event(self, event):
         newState = self._getNewState(event)
         if newState is not None:
