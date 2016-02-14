@@ -153,8 +153,6 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                 self.addAction("Clear Measure",
                                self._clearOneMeasure)
         deleteMenu = self.addMenu("Delete...")
-#         deleteStaffAction = deleteMenu.addAction("Staff", self._deleteStaff)
-#         deleteStaffAction.setEnabled(self._score.numStaffs() > 1)
         deleteSectionAction = deleteMenu.addAction("Section",
                                                    self._deleteSection)
         deleteSectionAction.setEnabled(self._score.numSections() > 1)
