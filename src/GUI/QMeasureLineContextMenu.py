@@ -22,10 +22,10 @@ Created on Feb 26, 2012
 @author: Mike
 '''
 
-from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
-from DBCommands import (SetSectionEndCommand, SetLineBreakCommand,
-                        SetRepeatEndCommand, SetRepeatStartCommand)
-from DBFSMEvents import MenuSelect, ChangeRepeatCount
+from GUI.QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
+from GUI.DBCommands import (SetSectionEndCommand, SetLineBreakCommand,
+                            SetRepeatEndCommand, SetRepeatStartCommand)
+from GUI.DBFSMEvents import MenuSelect, ChangeRepeatCount
 
 class QMeasureLineContextMenu(QMenuIgnoreCancelClick):
     def __init__(self, qScore, lastMeasure, nextMeasure,
@@ -42,6 +42,8 @@ class QMeasureLineContextMenu(QMenuIgnoreCancelClick):
                                                setIt)
             repeatStartAction.setCheckable(True)
             repeatStartAction.setChecked(onOff)
+            if nextMeasure.simileIndex > 0:
+                repeatStartAction.setEnabled(False)
         if lastMeasure is not None:
             # Repeat End
             onOff = lastMeasure.isRepeatEnd()
@@ -64,6 +66,11 @@ class QMeasureLineContextMenu(QMenuIgnoreCancelClick):
                                              setIt)
             lineBreakAction.setCheckable(True)
             lineBreakAction.setChecked(onOff)
+            # Disable actions if in multi-bar simile
+            if (lastMeasure.simileIndex < lastMeasure.simileDistance - 1):
+                repeatEndAction.setEnabled(False)
+                sectionEndAction.setEnabled(False)
+                lineBreakAction.setEnabled(False)
             self.addSeparator()
             # Repeat count
             repeatCountAction = self.addAction("Set repeat count",

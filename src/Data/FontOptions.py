@@ -23,33 +23,29 @@ Created on 5 Sep 2011
 
 '''
 
+
+
 class FontOptions(object):
+    DEFAULT_FONT = "Noto Sans"
+
+    _ALLOWED_FONTS = {}
 
     def __init__(self):
         self.noteFontSize = 10
-        self.noteFont = "MS Shell Dlg 2"
+        self.noteFont = self.DEFAULT_FONT
         self.sectionFontSize = 14
-        self.sectionFont = "MS Shell Dlg 2"
+        self.sectionFont = self.DEFAULT_FONT
         self.metadataFontSize = 16
-        self.metadataFont = "MS Shell Dlg 2"
+        self.metadataFont = self.DEFAULT_FONT
 
-    def write(self, indenter):
-        with indenter.section("FONT_OPTIONS_START", "FONT_OPTIONS_END"):
-            indenter("NOTEFONT", self.noteFont)
-            indenter("NOTEFONTSIZE %d" % self.noteFontSize)
-            indenter("SECTIONFONT", self.sectionFont)
-            indenter("SECTIONFONTSIZE %d" % self.sectionFontSize)
-            indenter("METADATAFONT", self.metadataFont)
-            indenter("METADATAFONTSIZE %d" % self.metadataFontSize)
+    @classmethod
+    def addFont(cls, fontName, font):
+        cls._ALLOWED_FONTS[unicode(fontName)] = font
 
-    def read(self, scoreIterator):
-        with scoreIterator.section("FONT_OPTIONS_START",
-                                   "FONT_OPTIONS_END") as section:
-            section.readString("NOTEFONT", self, "noteFont")
-            section.readPositiveInteger("NOTEFONTSIZE", self, "noteFontSize")
-            section.readString("SECTIONFONT", self, "sectionFont")
-            section.readPositiveInteger("SECTIONFONTSIZE", self,
-                                        "sectionFontSize")
-            section.readString("METADATAFONT", self, "metadataFont")
-            section.readPositiveInteger("METADATAFONTSIZE", self,
-                                        "metadataFontSize")
+    @classmethod
+    def iterAllowedFonts(cls):
+        return cls._ALLOWED_FONTS.iteritems()
+
+    @classmethod
+    def isAllowedFont(cls, fontName):
+        return unicode(fontName) in cls._ALLOWED_FONTS

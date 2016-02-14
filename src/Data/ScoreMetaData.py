@@ -24,15 +24,7 @@ Created on 23 Jan 2011
 '''
 
 class ScoreMetaData(object):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self):
-        '''
-        Constructor
-        '''
         self.title = ""
         self.artist = ""
         self.artistVisible = True
@@ -51,40 +43,3 @@ class ScoreMetaData(object):
         self.title = "Untitled"
         self.artist = "Unknown"
         self.creator = "Nobody"
-
-    def load(self, scoreIterator):
-        with scoreIterator.section("SCORE_METADATA",
-                                   "END_SCORE_METADATA") as section:
-            section.readString("TITLE", self, "title")
-            section.readString("ARTIST", self, "artist")
-            section.readBoolean("ARTISTVISIBLE", self, "artistVisible")
-            section.readString("CREATOR", self, "creator")
-            section.readBoolean("CREATORVISIBLE", self, "creatorVisible")
-            section.readPositiveInteger("BPM", self, "bpm")
-            section.readBoolean("BPMVISIBLE", self, "bpmVisible")
-            section.readPositiveInteger("WIDTH", self, "width")
-            section.readBoolean("KITDATAVISIBLE", self, "kitDataVisible")
-            section.readBoolean("METADATAVISIBLE", self, "metadataVisible")
-            section.readBoolean("BEATCOUNTVISIBLE", self, "beatCountVisible")
-            section.readBoolean("EMPTYLINESVISIBLE", self, "emptyLinesVisible")
-            section.readBoolean("MEASURECOUNTSVISIBLE", self,
-                                "measureCountsVisible")
-
-    def save(self, indenter):
-        with indenter.section("SCORE_METADATA", "END_SCORE_METADATA"):
-            indenter("TITLE", self.title)
-            indenter("ARTIST", self.artist)
-            indenter("ARTISTVISIBLE", str(self.artistVisible))
-            indenter("CREATOR", self.creator)
-            indenter("CREATORVISIBLE", str(self.creatorVisible))
-            indenter("BPM", self.bpm)
-            indenter("BPMVISIBLE", str(self.bpmVisible))
-            indenter("WIDTH", self.width)
-            indenter("KITDATAVISIBLE", str(self.kitDataVisible))
-            indenter("METADATAVISIBLE", str(self.metadataVisible))
-            indenter("BEATCOUNTVISIBLE",
-                                      str(self.beatCountVisible))
-            indenter("EMPTYLINESVISIBLE",
-                                      str(self.emptyLinesVisible))
-            indenter("MEASURECOUNTSVISIBLE",
-                                      str(self.measureCountsVisible))

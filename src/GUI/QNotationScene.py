@@ -36,9 +36,6 @@ EFFECTS_Z = -15
 HEAD_Z = -10
 
 class QNotationScene(QGraphicsScene):
-    '''
-    classdocs
-    '''
     _heads = {}
     _effects = {}
     _flams = {}

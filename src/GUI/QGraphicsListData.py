@@ -24,20 +24,13 @@ Created on 13 Mar 2011
 '''
 
 
-from PyQt4.QtGui import QGraphicsItem, QFontMetrics
+from PyQt4.QtGui import QGraphicsItem, QFontMetrics, QPen
 from PyQt4.QtCore import QPoint, QRectF, QPointF, Qt
 
-class QGraphicsListData(QGraphicsItem):
-    '''
-    classdocs
-    '''
-
+class QGraphicsListData(QGraphicsItem):  # IGNORE:abstract-class-not-used
     _editName = ""
 
     def __init__(self, qScore, parent = None):
-        '''
-        Constructor
-        '''
         super(QGraphicsListData, self).__init__(parent = parent, scene = qScore)
         self._qScore = qScore
         self._props = qScore.displayProperties
@@ -74,6 +67,8 @@ class QGraphicsListData(QGraphicsItem):
     def paint(self, painter, dummyOption, dummyWidget = None):
         painter.save()
         try:
+            scheme = self._qScore.parent().colourScheme
+            painter.setPen(QPen(scheme.text.borderColour))
             font = self.font()
             if font is None:
                 font = painter.font()

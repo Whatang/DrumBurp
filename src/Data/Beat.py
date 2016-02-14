@@ -24,14 +24,12 @@ Created on 16 Apr 2011
 '''
 
 import itertools
-from Counter import CounterRegistry
-from DBConstants import BEAT_COUNT
-import DBErrors
+from Data import DBConstants
 
 class Beat(object):
-    '''A Beat is a measured instance of a Counter. 
-    
-    A Beat may be less than the full length of the corresponding Counter to 
+    '''A Beat is a measured instance of a Counter.
+
+    A Beat may be less than the full length of the corresponding Counter to
     reflect partial beats at the end of a Measure. A sequence of Beats makes
     up a MeasureCount.
     '''
@@ -49,7 +47,7 @@ class Beat(object):
 
     def count(self, beatNum):
         for count in self:
-            if count == BEAT_COUNT:
+            if count == DBConstants.BEAT_COUNT:
                 yield str(beatNum)
             else:
                 yield count
@@ -71,26 +69,5 @@ class Beat(object):
     def numTicks(self):
         return self._numTicks
 
-    def write(self, indenter):
-        with indenter.section("BEAT_START", "BEAT_END"):
-            if self.numTicks != self.ticksPerBeat:
-                indenter("NUM_TICKS", self.numTicks)
-            self.counter.write(indenter)
-
-    @staticmethod
-    def read(scoreIterator):
-        targetValues = {"numTicks" : None, "counter" : None }
-        registry = CounterRegistry()
-        def readCount(lineData):
-            if lineData[0] == "|" and lineData[-1] == "|":
-                lineData = lineData[1:-1]
-            lineData = BEAT_COUNT + lineData[1:]
-            try:
-                targetValues["counter"] = registry.findMaster(lineData)
-            except KeyError:
-                raise DBErrors.BadCount(scoreIterator)
-        with scoreIterator.section("BEAT_START", "BEAT_END") as section:
-            section.readPositiveInteger("NUM_TICKS", targetValues, "numTicks")
-            section.readCallback("COUNT", readCount)
-        return Beat(targetValues["counter"], targetValues["numTicks"])
-
+    def isPartial(self):
+        return self._numTicks < len(self.counter)

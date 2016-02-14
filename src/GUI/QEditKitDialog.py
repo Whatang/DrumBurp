@@ -22,20 +22,19 @@ Created on 26 Jan 2011
 @author: Mike Thomas
 
 '''
-from PyQt4.QtGui import (QDialog, QRadioButton, QFileDialog, QDesktopServices,
-                         QMessageBox, QInputDialog, QColor, QDialogButtonBox)
-from ui_editKit import Ui_editKitDialog
-from PyQt4.QtCore import QVariant
-from Data import DrumKit
-from Data.Drum import Drum
-from Data.DefaultKits import GHOST_VOLUME, ACCENT_VOLUME
-from Data import fileUtils
-from QDefaultKitManager import QDefaultKitManager
 import copy
 import os
-import string #IGNORE:W0402
-import DBMidi
-from QNotationScene import QNotationScene
+import string  # IGNORE:deprecated-module
+from PyQt4.QtGui import (QDialog, QRadioButton, QFileDialog, QDesktopServices,
+                         QMessageBox, QInputDialog, QColor, QDialogButtonBox)
+from PyQt4.QtCore import QVariant
+from GUI.ui_editKit import Ui_editKitDialog
+from GUI.QDefaultKitManager import QDefaultKitManager
+import GUI.DBMidi as DBMidi
+from GUI.QNotationScene import QNotationScene
+from Data import DrumKitFactory, DrumKitSerializer
+from Data.Drum import Drum
+from Data.DefaultKits import GHOST_VOLUME, ACCENT_VOLUME, STEM_DOWN, STEM_UP
 
 _KIT_FILE_EXT = ".dbk"
 _KIT_FILTER = "DrumBurp kits (*%s)" % _KIT_FILE_EXT
@@ -44,14 +43,7 @@ _BAD_ABBR_COLOR = QColor("red")
 _GOOD_ABBR_COLOR = QColor("black")
 
 class QEditKitDialog(QDialog, Ui_editKitDialog):
-    '''
-    classdocs
-    '''
-
     def __init__(self, kit, emptyDrums = None, parent = None, directory = None):
-        '''
-        Constructor
-        '''
         super(QEditKitDialog, self).__init__(parent)
         self.setupUi(self)
         self.muteButton.setChecked(DBMidi.isMuted())
@@ -147,9 +139,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
 
 
     def _addDrum(self):
-        drum = Drum("New drum", "XX", "o")
-        drum.guessHeadData()
-        drum.checkShortcuts()
+        drum = Drum.makeSimple("New drum", "XX", "o")
         self._currentKit.append(drum)
         self._oldLines[drum] = -1
         self.kitTable.addItem(drum.name)
@@ -236,10 +226,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
                                             filter = _KIT_FILTER)
         if len(fname) == 0:
             return
-        with open(fname, 'rU') as handle:
-            fileIterator = fileUtils.dbFileIterator(handle)
-            newKit = DrumKit.DrumKit()
-            newKit.read(fileIterator)
+        newKit = DrumKitSerializer.DrumKitSerializer.loadKit(fname)
         self._currentKit = list(reversed(newKit))
         self._oldLines.clear()
         for drum in self._currentKit:
@@ -270,11 +257,8 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             return
         fname = unicode(fname)
         newKit, unused = self.getNewKit()
-        with open(fname, 'w') as handle:
-            indenter = fileUtils.Indenter(handle)
-            newKit.write(indenter)
+        DrumKitSerializer.DrumKitSerializer.saveKit(newKit, fname)
         QMessageBox.information(self, "Kit saved", "Successfully saved drumkit")
-
 
     def _drumNameEdited(self):
         self._currentDrum.name = unicode(self.drumName.text())
@@ -287,7 +271,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
 
     def _checkAbbrs(self):
         # Check that there is not more than one drum with the same
-        # abbreviation. If there is, highlight them and disable the OK button 
+        # abbreviation. If there is, highlight them and disable the OK button
         # and accept action.
         drumIndicesByAbbr = {}
         for index, drum in enumerate(self._currentKit):
@@ -505,7 +489,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
     def _setNotation(self):
         headData = self._currentHeadData
         self.stemUpDownBox.setChecked(headData.stemDirection
-                                      == DrumKit.STEM_UP)
+                                      == STEM_UP)
         effectIndex = self.effectBox.findText(headData.notationEffect)
         self.effectBox.setCurrentIndex(effectIndex)
         headIndex = self.noteHeadBox.findText(headData.notationHead)
@@ -523,9 +507,9 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
 
     def _stemDirectionChanged(self):
         if self.stemUpDownBox.isChecked():
-            self._currentHeadData.stemDirection = DrumKit.STEM_UP
+            self._currentHeadData.stemDirection = STEM_UP
         else:
-            self._currentHeadData.stemDirection = DrumKit.STEM_DOWN
+            self._currentHeadData.stemDirection = STEM_DOWN
         self._notationScene.setHeadData(self._currentHeadData)
 
     def _moveNotationUp(self):
@@ -554,7 +538,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         super(QEditKitDialog, self).accept()
 
     def getNewKit(self):
-        newKit = DrumKit.DrumKit()
+        newKit = DrumKitFactory.DrumKitFactory.emptyKit()
         oldLines = []
         for drum in reversed(self._currentKit):
             newKit.addDrum(drum)
@@ -619,7 +603,7 @@ def main():
     from PyQt4.QtGui import QApplication
     import sys
     app = QApplication(sys.argv)
-    kit = DrumKit.getNamedDefaultKit()
+    kit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit()
     dialog = QEditKitDialog(kit, [kit[0]])
     dialog.show()
     app.exec_()
@@ -641,7 +625,7 @@ def main():
             values = (drum.name, drum.abbr, drum.head, str(drum.locked),
                       headData.midiNote, headData.notationHead,
                       headData.notationLine,
-                      "UP" if headData.stemDirection == DrumKit.STEM_UP
+                      "UP" if headData.stemDirection == STEM_UP
                       else "DOWN")
             line += '(("%s", "%s", "%s", %s), %d, "%s", %d, STEM_%s)' % values
             lines.append(line)

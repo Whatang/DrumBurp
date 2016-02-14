@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="Icons">
+    <file>Icons/preferences-desktop-locale.png</file>
+    <file>Icons/preferences-desktop-font.png</file>
     <file>Icons/accessories-calculator.png</file>
     <file>Icons/go-home.png</file>
     <file>Icons/lilypond-icon.png</file>
@@ -37,5 +39,18 @@
     <file>Icons/format-text-bold.png</file>
     <file>Icons/process-stop.png</file>
     <file>Icons/system-log-out.png</file>
+  </qresource>
+  <qresource prefix="fonts">
+    <file alias="montserrat.ttf">fonts/Montserrat-Regular.ttf</file>
+    <file alias="notosans.ttf">fonts/NotoSans-Regular.ttf</file>
+    <file alias="ptsans.ttf">fonts/PT_Sans-Web-Regular.ttf</file>
+    <file alias="raleway.ttf">fonts/Raleway-Regular.ttf</file>
+    <file alias="roboto.ttf">fonts/Roboto-Regular.ttf</file>
+    <file alias="opensans.ttf">fonts/OpenSans-Regular.ttf</file>
+    <file alias="bpmono.ttf">fonts/BPmono.ttf</file>
+    <file alias="inconsolata.otf">fonts/Inconsolata.otf</file>
+    <file alias="liberation.otf">fonts/LiberationMono-Regular.ttf</file>
+    <file alias="oxygen.otf">fonts/OxygenMono-Regular.otf</file>
+    <file alias="ncs.otf">fonts/NotCourierSans.otf</file>
   </qresource>
 </RCC>

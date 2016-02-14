@@ -25,18 +25,10 @@ Created on 17 Apr 2011
 import copy
 from PyQt4.QtGui import QWidget
 from PyQt4.QtCore import pyqtSignal
-from ui_measureTabs import Ui_measureTabs
+from .ui_measureTabs import Ui_measureTabs
 
 class measureTabs(QWidget, Ui_measureTabs):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self, parent = None):
-        '''
-        Constructor
-        '''
         super(measureTabs, self).__init__(parent)
         self.setupUi(self)
         self._measureCount = None

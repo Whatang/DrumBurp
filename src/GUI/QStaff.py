@@ -24,22 +24,14 @@ Created on 4 Jan 2011
 '''
 
 from PyQt4 import QtGui
-from QMeasure import QMeasure
-from QMeasureLine import QMeasureLine
-from QLineLabel import QLineLabel
-from Data.NotePosition import NotePosition
 import itertools
+from GUI.QMeasure import QMeasure
+from GUI.QMeasureLine import QMeasureLine
+from GUI.QLineLabel import QLineLabel
+from Data.NotePosition import NotePosition
 
 class QStaff(QtGui.QGraphicsItemGroup):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self, staff, index, scene, qScore = None):
-        '''
-        Constructor
-        '''
         super(QStaff, self).__init__(scene = scene)
         self._qScore = qScore if qScore is not None else scene
         self._props = self._qScore.displayProperties
@@ -136,17 +128,26 @@ class QStaff(QtGui.QGraphicsItemGroup):
         base = self.alternateHeight()
         if self._props.measureCountsVisible:
             base += self._props.measureCountHeight()
+        if self.anyMeasureHasBpm():
+            base += self._props.bpmHeight()
+        if self.showStickingAbove():
+            base += self._qScore.ySpacing
         for yOffset, label in zip(lineOffsets[-len(self._lineLabels):],
                                   self._lineLabels):
             label.setPos(xOffset, yOffset + base)
         xOffset += self._lineLabels[0].cellWidth()
+        isFirst = True
         for qMeasureLine, qMeasure in zip(self._measureLines[:-1],
                                           self._measures):
             qMeasureLine.setPos(xOffset, base)
             qMeasureLine.setDimensions()
+            qMeasureLine.setZValue(0)
             xOffset += qMeasureLine.width()
             qMeasure.setPos(xOffset, 0)
+            qMeasure.setZValue(1)
             xOffset += qMeasure.width()
+            qMeasure.setFirst(isFirst)
+            isFirst = False
         self._measureLines[-1].setPos(xOffset, base)
         self._measureLines[-1].setDimensions()
         self._width = xOffset + self._measureLines[-1].width()
@@ -173,6 +174,8 @@ class QStaff(QtGui.QGraphicsItemGroup):
     def ySpacingChanged(self):
         lineOffsets = self._qScore.lineOffsets
         base = self.alternateHeight()
+        if self.anyMeasureHasBpm():
+            base += self._props.bpmHeight()
         if self._props.measureCountsVisible:
             base += self._props.measureCountHeight()
         for yOffset, label in zip(lineOffsets[-len(self._lineLabels):],
@@ -203,7 +206,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
             self._lineLabels[self._highlightedLine].setHighlight(True)
 
     def dataChanged(self, notePosition):
-        if notePosition.measureIndex is not None:
+        if notePosition.measureIndex is not None and notePosition.measureIndex < self.numMeasures():
             measure = self._measures[notePosition.measureIndex]
             measure.dataChanged(notePosition)
         else:
@@ -231,6 +234,15 @@ class QStaff(QtGui.QGraphicsItemGroup):
             return self._props.alternateHeight()
         else:
             return 0
+
+    def anyMeasureHasBpm(self):
+        return any(measure.newBpm > 0 for measure in self._staff)
+
+    def showStickingAbove(self):
+        return any(measure.showAbove for measure in self._staff)
+
+    def showStickingBelow(self):
+        return any(measure.showBelow for measure in self._staff)
 
     def checkAlternate(self):
         newAlternate = False

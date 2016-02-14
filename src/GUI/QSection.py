@@ -25,31 +25,24 @@ Created on 26 Jan 2011
 
 from PyQt4.QtGui import QGraphicsTextItem, QTextCursor
 from PyQt4.QtCore import Qt
-from DBCommands import SetSectionTitleCommand
+from GUI.DBCommands import SetSectionTitleCommand
 
 class QSection(QGraphicsTextItem):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self, title, qScore = None, parent = None):
-        '''
-        Constructor
-        '''
         super(QSection, self).__init__(parent = parent, scene = qScore)
+        self.setDefaultTextColor(qScore.parent().colourScheme.text.borderColour)
         font = qScore.displayProperties.sectionFont
         if font is None:
             font = self.font()
         font.setBold(True)
-        font.setItalic(True)
         font.setPointSize(qScore.displayProperties.sectionFontSize)
         self.setFont(font)
-        self.setTextInteractionFlags(Qt.TextEditable | Qt.TextSelectableByMouse)
+        self.setTextInteractionFlags(Qt.TextEditorInteraction)
         self._title = None
         self.setTitle(title)
         self._index = None
         self.setCursor(Qt.PointingHandCursor)
+        self._qscore = qScore
 
     def setIndex(self, index):
         self._index = index
@@ -88,3 +81,9 @@ class QSection(QGraphicsTextItem):
     def setTitle(self, text):
         self._title = text
         self.setPlainText(text)
+
+    def recolor(self):
+        color = self._qscore.parent().colourScheme.text.borderColour
+        self.setDefaultTextColor(color)
+        self.setPlainText(self._title)
+        self.update()

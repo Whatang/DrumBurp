@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1012</width>
+    <width>1268</width>
     <height>769</height>
    </rect>
   </property>
@@ -38,6 +38,842 @@
      <number>3</number>
     </property>
     <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="tabShape">
+       <enum>QTabWidget::Triangular</enum>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>18</width>
+        <height>18</height>
+       </size>
+      </property>
+      <widget class="QWidget" name="textTab">
+       <attribute name="icon">
+        <iconset resource="DrumBurp.qrc">
+         <normaloff>:/Icons/Icons/drumburp.png</normaloff>:/Icons/Icons/drumburp.png</iconset>
+       </attribute>
+       <attribute name="title">
+        <string>Score Editor</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QFrame" name="frame_3">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <property name="spacing">
+            <number>4</number>
+           </property>
+           <property name="margin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QGroupBox" name="scoreActionsBox">
+             <property name="title">
+              <string>Actions</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <property name="margin">
+               <number>5</number>
+              </property>
+              <item>
+               <widget class="QPushButton" name="FitWindowButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>Fit score in window.</string>
+                </property>
+                <property name="statusTip">
+                 <string>Attempt to make the score as wide as possible within the current window.</string>
+                </property>
+                <property name="whatsThis">
+                 <string>Try to make the score fit in the editing window.
+
+The score width defines how many columns are displayed in the editing window. Selecting this operation tries to set the score width to as many columns as possible so that they will all be visible in the editing window.
+
+Note: if you subsequently change the window size, you'll need to select this operation again to fit the score in the window.</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="DrumBurp.qrc">
+                  <normaloff>:/Icons/Icons/video-display.png</normaloff>:/Icons/Icons/video-display.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="FitPageButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>Fit score to page.</string>
+                </property>
+                <property name="statusTip">
+                 <string>Attempt to make the score as wide as possible within the current page size.</string>
+                </property>
+                <property name="whatsThis">
+                 <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Try to make the score fit in the currently selected page size.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;The score width defines how many columns are displayed in the editing window. Selecting this operation tries to set the score width to as many columns as possible so that they will fit in the page size currently selected. The number of columns that fits in a given page depends on the note font size.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Note: if you subsequently change the page size, you'll need to select this operation again to fit the score in the page.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="DrumBurp.qrc">
+                  <normaloff>:/Icons/Icons/fit-page</normaloff>:/Icons/Icons/fit-page</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="PrintScoreButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>Print this score.</string>
+                </property>
+                <property name="statusTip">
+                 <string>Print this score.</string>
+                </property>
+                <property name="whatsThis">
+                 <string>Print the score.
+
+Selecting this option will try to print the score to whatever printer you choose. You'll see a print preview dialog before printing occurs; you can use this to check that you're going to get what you expect.</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="DrumBurp.qrc">
+                  <normaloff>:/Icons/Icons/document-print.png</normaloff>:/Icons/Icons/document-print.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="PrintPdfButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>Export to PDF</string>
+                </property>
+                <property name="statusTip">
+                 <string>Export this score to a PDF file</string>
+                </property>
+                <property name="whatsThis">
+                 <string>Export this score to a PDF file.
+
+If you want to share the score you've written, it may be easier to do it as a PDF file. Select this option to write the score to a PDF: you'll see a print preview dialog before it exports, so you can check what you'll be getting.</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="DrumBurp.qrc">
+                  <normaloff>:/Icons/Icons/pdf.png</normaloff>:/Icons/Icons/pdf.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="sectionNavigator">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>Section navigator</string>
+                </property>
+                <property name="statusTip">
+                 <string>Quickly jump to a section of the score</string>
+                </property>
+                <property name="whatsThis">
+                 <string>Section navigator
+
+Sections in the score are defined by a section end barline, and the title that appears before it. You can quickly jump to the beginning of any section defined in the current score by selecting it from this drop down box.</string>
+                </property>
+                <property name="sizeAdjustPolicy">
+                 <enum>QComboBox::AdjustToContents</enum>
+                </property>
+                <property name="minimumContentsLength">
+                 <number>6</number>
+                </property>
+                <property name="duplicatesEnabled">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="scorePropertiesGroup">
+             <property name="title">
+              <string>Score Properties</string>
+             </property>
+             <property name="flat">
+              <bool>false</bool>
+             </property>
+             <property name="checkable">
+              <bool>false</bool>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_8">
+              <property name="spacing">
+               <number>8</number>
+              </property>
+              <property name="margin">
+               <number>5</number>
+              </property>
+              <item>
+               <widget class="QComboBox" name="paperBox">
+                <property name="toolTip">
+                 <string>Page size</string>
+                </property>
+                <property name="statusTip">
+                 <string>Select the page size</string>
+                </property>
+                <property name="whatsThis">
+                 <string>Set the page size.
+
+The page size determines the number of pages used by the current font size and score width settings, as well as affecting printing and PDF export.</string>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>A4</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Letter</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="widthSpinBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>Score width</string>
+                </property>
+                <property name="statusTip">
+                 <string>The number of columns to display the score with</string>
+                </property>
+                <property name="whatsThis">
+                 <string>The score width
+
+The score width is the number of columns used to display the current score. DrumBurp will try to add each measure to a staff until the score width is reached, then following measure will be added to the next staff. 
+
+The score width can be whatever you want it to be. When you're creating a score, you might want to use as much screen real estate as possible, so you could use the 'Fit to Window' option. 
+
+However, when you print, or export to PDF/ASCII, you might want the width to be something which fits on a page: use the 'Fit to Page' option then.</string>
+                </property>
+                <property name="frame">
+                 <bool>true</bool>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+                <property name="buttonSymbols">
+                 <enum>QAbstractSpinBox::UpDownArrows</enum>
+                </property>
+                <property name="minimum">
+                 <number>10</number>
+                </property>
+                <property name="maximum">
+                 <number>1000</number>
+                </property>
+                <property name="value">
+                 <number>80</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSlider" name="lineSpaceSlider">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>Inter-staff distance</string>
+                </property>
+                <property name="statusTip">
+                 <string>The distance between each staff in the score</string>
+                </property>
+                <property name="whatsThis">
+                 <string>Change the distance between each staff in the score.
+
+Each staff in the score is placed by DrumBurp with a certain amount of space separating them. You can adjust how much space is used with this slider.</string>
+                </property>
+                <property name="maximum">
+                 <number>100</number>
+                </property>
+                <property name="tracking">
+                 <bool>false</bool>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="invertedAppearance">
+                 <bool>false</bool>
+                </property>
+                <property name="invertedControls">
+                 <bool>false</bool>
+                </property>
+                <property name="tickPosition">
+                 <enum>QSlider::TicksBelow</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="defaultMeasureButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>Default count</string>
+                </property>
+                <property name="statusTip">
+                 <string>The default count to use for new measures</string>
+                </property>
+                <property name="whatsThis">
+                 <string>Display and edit the default measure count.
+
+A score has a default measure count: this is the count that is given to new measures by default. This count is displayed here. You can change the default count with the dialog that comes up when you click here.</string>
+                </property>
+                <property name="text">
+                 <string>MeasureCount</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="fontsButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>Fonts</string>
+                </property>
+                <property name="statusTip">
+                 <string>Adjust the fonts used by this score</string>
+                </property>
+                <property name="whatsThis">
+                 <string>Show/hide the font selection window.
+
+The font window is a floating dialog that you can use to adjust the fonts used to display the score. This button shows/hides it when you toggle it.</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="DrumBurp.qrc">
+                  <normaloff>:/Icons/Icons/preferences-desktop-font.png</normaloff>:/Icons/Icons/preferences-desktop-font.png</iconset>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="ScoreView" name="scoreView">
+          <property name="focusPolicy">
+           <enum>Qt::ClickFocus</enum>
+          </property>
+          <property name="contextMenuPolicy">
+           <enum>Qt::NoContextMenu</enum>
+          </property>
+          <property name="acceptDrops">
+           <bool>false</bool>
+          </property>
+          <property name="whatsThis">
+           <string>The score editing window.
+
+This window displays the current score, and allows you to edit.
+
+To add a note, just click where you want it to appear. To add a note with a different symbol, middle-click and select from the menu. For other operations, right-click on notes, measures and measure lines: a context menu will tell you what you can do.
+
+To edit nearly anything else, double click on it: the count of a measure, repeat markers, score information, the drumkit.
+
+To select a measure/measures, click and drag: selected measures can be copy/pasted, deleted, cleared, and more.</string>
+          </property>
+          <property name="lineWidth">
+           <number>1</number>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+          </property>
+          <property name="renderHints">
+           <set>QPainter::HighQualityAntialiasing|QPainter::TextAntialiasing</set>
+          </property>
+          <property name="dragMode">
+           <enum>QGraphicsView::NoDrag</enum>
+          </property>
+          <property name="transformationAnchor">
+           <enum>QGraphicsView::NoAnchor</enum>
+          </property>
+          <property name="rubberBandSelectionMode">
+           <enum>Qt::IntersectsItemBoundingRect</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="lilypondTab">
+       <attribute name="icon">
+        <iconset resource="DrumBurp.qrc">
+         <normaloff>:/Icons/Icons/lilypond-icon.png</normaloff>:/Icons/Icons/lilypond-icon.png</iconset>
+       </attribute>
+       <attribute name="title">
+        <string>Lilypond Output</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QGroupBox" name="lilypondGroupBox">
+          <property name="title">
+           <string>Lilypond Options</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout">
+           <item row="0" column="5">
+            <widget class="QRadioButton" name="lilyPngButton">
+             <property name="toolTip">
+              <string>PNG format</string>
+             </property>
+             <property name="statusTip">
+              <string>Generate PNG output with Lilypond.</string>
+             </property>
+             <property name="whatsThis">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Lilypond can generate output in 3 formats: PDF, PostScript or PNG.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Selecting this option will generate PNG output.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>PNG</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="4">
+            <widget class="QRadioButton" name="lilyPsButton">
+             <property name="toolTip">
+              <string>PS format</string>
+             </property>
+             <property name="statusTip">
+              <string>Generate PS output with Lilypond.</string>
+             </property>
+             <property name="whatsThis">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Lilypond can generate output in 3 formats: PDF, PostScript or PNG.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Selecting this option will generate PostScript output.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>PS</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QCheckBox" name="lilyFillButton">
+             <property name="toolTip">
+              <string>Fill the last page of Lilypond export</string>
+             </property>
+             <property name="statusTip">
+              <string>Fill the last page of Lilypond export</string>
+             </property>
+             <property name="whatsThis">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Lilypond export can be set to fill the last page of the score with music, or to just stop halfway down the page when it runs out of staffs.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Check this box to fill the last page of the score.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Fill last page</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="8">
+            <widget class="QPushButton" name="exportLilypondButton">
+             <property name="toolTip">
+              <string>Export to Lilypond</string>
+             </property>
+             <property name="statusTip">
+              <string>Export &amp; run Lilypond on this score.</string>
+             </property>
+             <property name="whatsThis">
+              <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Export this score to a Lilypond file, and run Lilypond on it.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Lilypond is a TeX based music typesetting system available from &lt;a href=&quot;http://www.lilypond.org&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;lilypond.org&lt;/span&gt;&lt;/a&gt;. DrumBurp can export its scores to the Lilypond input format, and run Lilypond on them to generate beautiful notation as output.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Export</string>
+             </property>
+             <property name="icon">
+              <iconset resource="DrumBurp.qrc">
+               <normaloff>:/Icons/Icons/lilypond-icon.png</normaloff>:/Icons/Icons/lilypond-icon.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QSpinBox" name="lilyPagesBox">
+             <property name="toolTip">
+              <string>Number of Lilypond pages</string>
+             </property>
+             <property name="statusTip">
+              <string>Force Lilypond to write this score to a given number of pages. (0 lets Lilypond decide)</string>
+             </property>
+             <property name="whatsThis">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set this value to force Lilypond export to fit on the given number of pages.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;If the value is zero then Lilypond will set the score on as many pages as it wants.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+             <property name="suffix">
+              <string> pages</string>
+             </property>
+             <property name="maximum">
+              <number>1000</number>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="7">
+            <widget class="QPushButton" name="lilypondPathButton">
+             <property name="toolTip">
+              <string>Set the path to Lilypond</string>
+             </property>
+             <property name="statusTip">
+              <string>Set the path to Lilypond</string>
+             </property>
+             <property name="whatsThis">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DrumBurp uses &lt;a href=&quot;https://www.lilypond.org&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Lilypond&lt;/span&gt;&lt;/a&gt; to generate beautiful notation.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;To use this feature, you must install Lilypond and tell DrumBurp where to find it. Use this button to set the path to the Lilypond executable. This will be in the usr/bin directory of the Lilypond installation, and it will be called lilypond.exe on Windows, or lilypond on Linux.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Path</string>
+             </property>
+             <property name="icon">
+              <iconset resource="DrumBurp.qrc">
+               <normaloff>:/Icons/Icons/lilypond-icon.png</normaloff>:/Icons/Icons/lilypond-icon.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSpinBox" name="lilypondSize">
+             <property name="toolTip">
+              <string>Lilypond export size</string>
+             </property>
+             <property name="statusTip">
+              <string>Change the size of Lilypond export.</string>
+             </property>
+             <property name="whatsThis">
+              <string>Lilypond allows one to set a global size which affects how big the staves, notes, and text in a score are. It defaults to 20. By altering this parameter, one can make the output of a Lilypond exported DrumBurp score bigger or smaller.</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+             <property name="minimum">
+              <number>8</number>
+             </property>
+             <property name="maximum">
+              <number>32</number>
+             </property>
+             <property name="value">
+              <number>20</number>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="6">
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="0" column="3">
+            <widget class="QRadioButton" name="lilyPdfButton">
+             <property name="toolTip">
+              <string>PDF format</string>
+             </property>
+             <property name="statusTip">
+              <string>Generate PDF output with Lilypond.</string>
+             </property>
+             <property name="whatsThis">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Lilypond can generate output in 3 formats: PDF, PostScript or PNG.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Selecting this option will generate PDF output.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>PDF</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGraphicsView" name="lilyPreview"/>
+        </item>
+        <item>
+         <widget class="QFrame" name="lilyPreviewControls">
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <property name="margin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QPushButton" name="firstLilyPage">
+             <property name="toolTip">
+              <string>First page</string>
+             </property>
+             <property name="statusTip">
+              <string>First pagePrevious page of the Lilypond preview</string>
+             </property>
+             <property name="whatsThis">
+              <string>First pagePrevious page of the Lilypond preview</string>
+             </property>
+             <property name="text">
+              <string>First</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="prevLilyPage">
+             <property name="toolTip">
+              <string>Previous page</string>
+             </property>
+             <property name="statusTip">
+              <string>Previous page of the Lilypond preview</string>
+             </property>
+             <property name="whatsThis">
+              <string>Previous page of the Lilypond preview</string>
+             </property>
+             <property name="text">
+              <string>Previous</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="refreshLilypond">
+             <property name="toolTip">
+              <string>Preview the Lilypond output.</string>
+             </property>
+             <property name="statusTip">
+              <string>Preview the Lilypond output.</string>
+             </property>
+             <property name="whatsThis">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Press this button to preview the output that Lilypond will generate from the current score, or to refresh the preview.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Refresh</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="nextLilyPage">
+             <property name="toolTip">
+              <string>Next page</string>
+             </property>
+             <property name="statusTip">
+              <string>Next page of the Lilypond preview</string>
+             </property>
+             <property name="whatsThis">
+              <string>Next page of the Lilypond preview</string>
+             </property>
+             <property name="text">
+              <string>Next</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="lastLilyPage">
+             <property name="toolTip">
+              <string>Last page</string>
+             </property>
+             <property name="statusTip">
+              <string>Last page of the Lilypond preview</string>
+             </property>
+             <property name="whatsThis">
+              <string>Last page of the Lilypond preview</string>
+             </property>
+             <property name="text">
+              <string>Last</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="textExportTab">
+       <attribute name="icon">
+        <iconset resource="DrumBurp.qrc">
+         <normaloff>:/Icons/Icons/format-text-bold.png</normaloff>:/Icons/Icons/format-text-bold.png</iconset>
+       </attribute>
+       <attribute name="title">
+        <string>Text Export</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="QGroupBox" name="textExportOptions">
+          <property name="title">
+           <string>Text Options</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <item>
+            <layout class="QGridLayout" name="gridLayout_2">
+             <item row="0" column="3">
+              <widget class="QPushButton" name="textExportButton">
+               <property name="toolTip">
+                <string>Export to file</string>
+               </property>
+               <property name="statusTip">
+                <string>Export the score to a text file.</string>
+               </property>
+               <property name="whatsThis">
+                <string>Export the score to a text file.</string>
+               </property>
+               <property name="text">
+                <string>Export</string>
+               </property>
+               <property name="icon">
+                <iconset resource="DrumBurp.qrc">
+                 <normaloff>:/Icons/Icons/format-text-bold.png</normaloff>:/Icons/Icons/format-text-bold.png</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QCheckBox" name="emptyLineBeforeSectionCheck">
+               <property name="toolTip">
+                <string>Include a blank line before each section title</string>
+               </property>
+               <property name="statusTip">
+                <string>Include a blank line before each section title</string>
+               </property>
+               <property name="whatsThis">
+                <string>Include a blank line before each section title</string>
+               </property>
+               <property name="text">
+                <string>Empty line before section title</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QCheckBox" name="underlineCheck">
+               <property name="toolTip">
+                <string>Underline each section title</string>
+               </property>
+               <property name="statusTip">
+                <string>Underline each section title</string>
+               </property>
+               <property name="whatsThis">
+                <string>Underline each section title</string>
+               </property>
+               <property name="text">
+                <string>Underline section titles with ~ characters</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QCheckBox" name="emptyLineAfterSectionCheck">
+               <property name="toolTip">
+                <string>Include a blank line after each section title</string>
+               </property>
+               <property name="statusTip">
+                <string>Include a blank line after each section title</string>
+               </property>
+               <property name="whatsThis">
+                <string>Include a blank line after each section title</string>
+               </property>
+               <property name="text">
+                <string>Empty line after section title</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPlainTextEdit" name="textExportPreview">
+          <property name="font">
+           <font>
+            <family>Courier</family>
+           </font>
+          </property>
+          <property name="lineWrapMode">
+           <enum>QPlainTextEdit::NoWrap</enum>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
      <widget class="QFrame" name="frame_2">
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
@@ -49,396 +885,7 @@
        <property name="margin">
         <number>0</number>
        </property>
-       <item>
-        <widget class="QGroupBox" name="scorePropertiesGroup">
-         <property name="title">
-          <string>Score Properties</string>
-         </property>
-         <property name="flat">
-          <bool>false</bool>
-         </property>
-         <property name="checkable">
-          <bool>false</bool>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_8">
-          <property name="spacing">
-           <number>6</number>
-          </property>
-          <property name="leftMargin">
-           <number>5</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>1</number>
-          </property>
-          <property name="bottomMargin">
-           <number>3</number>
-          </property>
-          <item>
-           <widget class="QComboBox" name="paperBox">
-            <property name="toolTip">
-             <string>Page size</string>
-            </property>
-            <property name="statusTip">
-             <string>Select the page size</string>
-            </property>
-            <property name="whatsThis">
-             <string>Set the page size.
-
-The page size determines the number of pages used by the current font size and score width settings, as well as affecting printing and PDF export.</string>
-            </property>
-            <item>
-             <property name="text">
-              <string>A4</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Letter</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item>
-           <widget class="QFrame" name="frame">
-            <property name="frameShape">
-             <enum>QFrame::VLine</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSpinBox" name="widthSpinBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="toolTip">
-             <string>Score width</string>
-            </property>
-            <property name="statusTip">
-             <string>The number of columns to display the score with</string>
-            </property>
-            <property name="whatsThis">
-             <string>The score width
-
-The score width is the number of columns used to display the current score. DrumBurp will try to add each measure to a staff until the score width is reached, then following measure will be added to the next staff. 
-
-The score width can be whatever you want it to be. When you're creating a score, you might want to use as much screen real estate as possible, so you could use the 'Fit to Window' option. 
-
-However, when you print, or export to PDF/ASCII, you might want the width to be something which fits on a page: use the 'Fit to Page' option then.</string>
-            </property>
-            <property name="frame">
-             <bool>true</bool>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-            <property name="buttonSymbols">
-             <enum>QAbstractSpinBox::UpDownArrows</enum>
-            </property>
-            <property name="minimum">
-             <number>10</number>
-            </property>
-            <property name="maximum">
-             <number>1000</number>
-            </property>
-            <property name="value">
-             <number>80</number>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QFrame" name="frame_5">
-            <property name="frameShape">
-             <enum>QFrame::VLine</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QFrame" name="frame_4">
-            <property name="frameShape">
-             <enum>QFrame::Box</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_9">
-             <property name="spacing">
-              <number>0</number>
-             </property>
-             <property name="margin">
-              <number>2</number>
-             </property>
-             <item>
-              <widget class="QSlider" name="lineSpaceSlider">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="toolTip">
-                <string>Inter-staff distance</string>
-               </property>
-               <property name="statusTip">
-                <string>The distance between each staff in the score</string>
-               </property>
-               <property name="whatsThis">
-                <string>Change the distance between each staff in the score.
-
-Each staff in the score is placed by DrumBurp with a certain amount of space separating them. You can adjust how much space is used with this slider.</string>
-               </property>
-               <property name="maximum">
-                <number>100</number>
-               </property>
-               <property name="tracking">
-                <bool>false</bool>
-               </property>
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="invertedAppearance">
-                <bool>false</bool>
-               </property>
-               <property name="invertedControls">
-                <bool>false</bool>
-               </property>
-               <property name="tickPosition">
-                <enum>QSlider::TicksBelow</enum>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <widget class="QFrame" name="frame_6">
-            <property name="frameShape">
-             <enum>QFrame::VLine</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="defaultMeasureButton">
-            <property name="toolTip">
-             <string>Default count</string>
-            </property>
-            <property name="statusTip">
-             <string>The default count to use for new measures</string>
-            </property>
-            <property name="whatsThis">
-             <string>Display and edit the default measure count.
-
-A score has a default measure count: this is the count that is given to new measures by default. This count is displayed here. You can change the default count with the dialog that comes up when you click here.</string>
-            </property>
-            <property name="text">
-             <string>MeasureCount</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QFrame" name="frame_8">
-            <property name="frameShape">
-             <enum>QFrame::VLine</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="fontsButton">
-            <property name="toolTip">
-             <string>Fonts</string>
-            </property>
-            <property name="statusTip">
-             <string>Adjust the fonts used by this score</string>
-            </property>
-            <property name="whatsThis">
-             <string>Show/hide the font selection window.
-
-The font window is a floating dialog that you can use to adjust the fonts used to display the score. This button shows/hides it when you toggle it.</string>
-            </property>
-            <property name="text">
-             <string>Fonts...</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QFrame" name="frame_9">
-            <property name="frameShape">
-             <enum>QFrame::VLine</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="sectionNavigator">
-            <property name="toolTip">
-             <string>Section navigator</string>
-            </property>
-            <property name="statusTip">
-             <string>Quickly jump to a section of the score</string>
-            </property>
-            <property name="whatsThis">
-             <string>Section navigator
-
-Sections in the score are defined by a section end barline, and the title that appears before it. You can quickly jump to the beginning of any section defined in the current score by selecting it from this drop down box.</string>
-            </property>
-            <property name="sizeAdjustPolicy">
-             <enum>QComboBox::AdjustToContents</enum>
-            </property>
-            <property name="minimumContentsLength">
-             <number>6</number>
-            </property>
-            <property name="duplicatesEnabled">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="lilypondGroupBox">
-         <property name="title">
-          <string>Lilypond Export</string>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QSpinBox" name="lilyPagesBox">
-            <property name="toolTip">
-             <string>Number of Lilypond pages</string>
-            </property>
-            <property name="statusTip">
-             <string>Force Lilypond to write this score to a given number of pages.</string>
-            </property>
-            <property name="whatsThis">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set this value to force Lilypond export to fit on the given number of pages.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;If the value is zero then Lilypond will set the score on as many pages as it wants.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-            <property name="maximum">
-             <number>1000</number>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSpinBox" name="lilypondSize">
-            <property name="toolTip">
-             <string>Lilypond export size</string>
-            </property>
-            <property name="statusTip">
-             <string>Change the size of Lilypond export.</string>
-            </property>
-            <property name="whatsThis">
-             <string>Lilypond allows one to set a global size which affects how big the staves, notes, and text in a score are. It defaults to 20. By altering this parameter, one can make the output of a Lilypond exported DrumBurp score bigger or smaller.</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-            <property name="minimum">
-             <number>8</number>
-            </property>
-            <property name="maximum">
-             <number>32</number>
-            </property>
-            <property name="value">
-             <number>20</number>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="lilyFillButton">
-            <property name="toolTip">
-             <string>Fill the last page of Lilypond export</string>
-            </property>
-            <property name="statusTip">
-             <string>Fill the last page of Lilypond export</string>
-            </property>
-            <property name="whatsThis">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Lilypond export can be set to fill the last page of the score with music, or to just stop halfway down the page when it runs out of staffs.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Check this box to fill the last page of the score.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>Fill last page</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_5">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
       </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="ScoreView" name="scoreView">
-      <property name="focusPolicy">
-       <enum>Qt::ClickFocus</enum>
-      </property>
-      <property name="contextMenuPolicy">
-       <enum>Qt::NoContextMenu</enum>
-      </property>
-      <property name="acceptDrops">
-       <bool>false</bool>
-      </property>
-      <property name="whatsThis">
-       <string>The score editing window.
-
-This window displays the current score, and allows you to edit.
-
-To add a note, just click where you want it to appear. To add a note with a different symbol, middle-click and select from the menu. For other operations, right-click on notes, measures and measure lines: a context menu will tell you what you can do.
-
-To edit nearly anything else, double click on it: the count of a measure, repeat markers, score information, the drumkit.
-
-To select a measure/measures, click and drag: selected measures can be copy/pasted, deleted, cleared, and more.</string>
-      </property>
-      <property name="lineWidth">
-       <number>1</number>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-      </property>
-      <property name="renderHints">
-       <set>QPainter::HighQualityAntialiasing|QPainter::TextAntialiasing</set>
-      </property>
-      <property name="dragMode">
-       <enum>QGraphicsView::NoDrag</enum>
-      </property>
-      <property name="transformationAnchor">
-       <enum>QGraphicsView::NoAnchor</enum>
-      </property>
-      <property name="rubberBandSelectionMode">
-       <enum>Qt::IntersectsItemBoundingRect</enum>
-      </property>
      </widget>
     </item>
    </layout>
@@ -448,8 +895,8 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1012</width>
-     <height>26</height>
+     <width>1268</width>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -481,10 +928,7 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <addaction name="actionSaveAs"/>
     <addaction name="separator"/>
     <addaction name="actionPrint"/>
-    <addaction name="actionExportASCII"/>
     <addaction name="actionExportPDF"/>
-    <addaction name="actionExportLilypond"/>
-    <addaction name="actionExportMIDI"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -493,18 +937,8 @@ To select a measure/measures, click and drag: selected measures can be copy/past
      <string>Options affecting the view</string>
     </property>
     <property name="title">
-     <string>&amp;View</string>
+     <string>&amp;Score</string>
     </property>
-    <widget class="QMenu" name="menuShowToolBars">
-     <property name="title">
-      <string>&amp;Tool Bars...</string>
-     </property>
-     <addaction name="actionFileToolbarIsVisible"/>
-     <addaction name="actionDisplayToolBarIsVisible"/>
-     <addaction name="actionExportToolBarIsVisible"/>
-     <addaction name="actionMIDIToolBarIsVisible"/>
-     <addaction name="actionHelpToolBarIsVisible"/>
-    </widget>
     <addaction name="actionFitInWindow"/>
     <addaction name="actionFitPage"/>
     <addaction name="separator"/>
@@ -515,7 +949,6 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <addaction name="actionShowMeasureCounts"/>
     <addaction name="separator"/>
     <addaction name="actionDisplayOptionsIsVisible"/>
-    <addaction name="menuShowToolBars"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -543,9 +976,48 @@ To select a measure/measures, click and drag: selected measures can be copy/past
     <addaction name="separator"/>
     <addaction name="actionAboutDrumBurp"/>
    </widget>
+   <widget class="QMenu" name="menuView_2">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <widget class="QMenu" name="menuTool_Bars">
+     <property name="title">
+      <string>Tool Bars...</string>
+     </property>
+     <addaction name="actionFileToolbarIsVisible"/>
+     <addaction name="actionDisplayToolBarIsVisible"/>
+     <addaction name="actionMIDIToolBarIsVisible"/>
+     <addaction name="actionHelpToolBarIsVisible"/>
+    </widget>
+    <addaction name="actionEditColours"/>
+    <addaction name="menuTool_Bars"/>
+   </widget>
+   <widget class="QMenu" name="menu_MIDI">
+    <property name="title">
+     <string>&amp;MIDI</string>
+    </property>
+    <widget class="QMenu" name="menuSelectMidiOut">
+     <property name="title">
+      <string>Select MIDI out</string>
+     </property>
+     <addaction name="actionRefreshMidiDevices"/>
+     <addaction name="separator"/>
+    </widget>
+    <addaction name="actionPlayScore"/>
+    <addaction name="actionPlayOnce"/>
+    <addaction name="actionLoopBars"/>
+    <addaction name="separator"/>
+    <addaction name="actionMuteNotes"/>
+    <addaction name="separator"/>
+    <addaction name="actionExportMIDI"/>
+    <addaction name="separator"/>
+    <addaction name="menuSelectMidiOut"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
+   <addaction name="menuView_2"/>
+   <addaction name="menu_MIDI"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -601,36 +1073,11 @@ To select a measure/measures, click and drag: selected measures can be copy/past
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionFitInWindow"/>
-   <addaction name="actionFitPage"/>
-   <addaction name="separator"/>
    <addaction name="actionShowScoreInfo"/>
    <addaction name="actionShowDrumKey"/>
    <addaction name="actionShowEmptyLines"/>
    <addaction name="actionShowBeatCount"/>
    <addaction name="actionShowMeasureCounts"/>
-  </widget>
-  <widget class="QToolBar" name="exportToolBar">
-   <property name="windowTitle">
-    <string>Print &amp;&amp; Export</string>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>24</width>
-     <height>24</height>
-    </size>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionPrint"/>
-   <addaction name="actionExportASCII"/>
-   <addaction name="actionExportPDF"/>
-   <addaction name="actionExportLilypond"/>
-   <addaction name="actionExportMIDI"/>
   </widget>
   <widget class="QToolBar" name="helpToolBar">
    <property name="windowTitle">
@@ -658,6 +1105,12 @@ To select a measure/measures, click and drag: selected measures can be copy/past
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>400</width>
+     <height>287</height>
+    </size>
    </property>
    <property name="toolTip">
     <string>Score Fonts</string>
@@ -720,54 +1173,25 @@ p, li { white-space: pre-wrap; }
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <widget class="QFontComboBox" name="fontComboBox">
-          <property name="enabled">
-           <bool>true</bool>
+         <spacer name="horizontalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
           </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QComboBox" name="noteFontComboBox">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>60</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>187</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="baseSize">
-           <size>
-            <width>100</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="focusPolicy">
-           <enum>Qt::NoFocus</enum>
-          </property>
-          <property name="statusTip">
-           <string>The font used to display notes in the Score</string>
-          </property>
-          <property name="editable">
-           <bool>false</bool>
-          </property>
-          <property name="maxVisibleItems">
-           <number>20</number>
-          </property>
-          <property name="fontFilters">
-           <set>QFontComboBox::ScalableFonts</set>
-          </property>
-          <property name="currentFont">
-           <font>
-            <family>BatangChe</family>
-            <pointsize>10</pointsize>
-           </font>
           </property>
          </widget>
         </item>
@@ -824,54 +1248,25 @@ The score editing window uses the font selected here to display the section titl
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_5">
         <item>
-         <widget class="QFontComboBox" name="sectionFontCombo">
-          <property name="enabled">
-           <bool>true</bool>
+         <spacer name="horizontalSpacer_6">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
           </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QComboBox" name="sectionFontCombo">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>60</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>187</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="baseSize">
-           <size>
-            <width>100</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="focusPolicy">
-           <enum>Qt::NoFocus</enum>
-          </property>
-          <property name="statusTip">
-           <string>The font used to display section titles in the Score</string>
-          </property>
-          <property name="editable">
-           <bool>false</bool>
-          </property>
-          <property name="maxVisibleItems">
-           <number>20</number>
-          </property>
-          <property name="fontFilters">
-           <set>QFontComboBox::ScalableFonts</set>
-          </property>
-          <property name="currentFont">
-           <font>
-            <family>BatangChe</family>
-            <pointsize>10</pointsize>
-           </font>
           </property>
          </widget>
         </item>
@@ -928,54 +1323,25 @@ The score editing window uses the font selected here to display the score inform
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
-         <widget class="QFontComboBox" name="metadataFontCombo">
-          <property name="enabled">
-           <bool>true</bool>
+         <spacer name="horizontalSpacer_7">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
           </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QComboBox" name="metadataFontCombo">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>60</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>187</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="baseSize">
-           <size>
-            <width>100</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="focusPolicy">
-           <enum>Qt::NoFocus</enum>
-          </property>
-          <property name="statusTip">
-           <string>The font used to display section titles in the Score</string>
-          </property>
-          <property name="editable">
-           <bool>false</bool>
-          </property>
-          <property name="maxVisibleItems">
-           <number>20</number>
-          </property>
-          <property name="fontFilters">
-           <set>QFontComboBox::ScalableFonts</set>
-          </property>
-          <property name="currentFont">
-           <font>
-            <family>BatangChe</family>
-            <pointsize>10</pointsize>
-           </font>
           </property>
          </widget>
         </item>
@@ -1031,6 +1397,7 @@ The score editing window uses the font selected here to display the score inform
    <addaction name="actionPlayOnce"/>
    <addaction name="actionLoopBars"/>
    <addaction name="actionMuteNotes"/>
+   <addaction name="actionExportMIDI"/>
   </widget>
   <action name="actionQuit">
    <property name="icon">
@@ -1164,6 +1531,10 @@ p, li { white-space: pre-wrap; }
   <action name="actionDisplayOptionsIsVisible">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/preferences-desktop-font.png</normaloff>:/Icons/Icons/preferences-desktop-font.png</iconset>
    </property>
    <property name="text">
     <string>Choose &amp;Fonts...</string>
@@ -1515,7 +1886,7 @@ p, li { white-space: pre-wrap; }
      <normalon>:/Icons/Icons/media-playback-stop.png</normalon>:/Icons/Icons/media-playback-start.png</iconset>
    </property>
    <property name="text">
-    <string>Play Score</string>
+    <string>Play &amp;Score</string>
    </property>
    <property name="toolTip">
     <string>Play this score through MIDI</string>
@@ -1545,7 +1916,7 @@ p, li { white-space: pre-wrap; }
      <normalon>:/Icons/Icons/audio-volume-muted.png</normalon>:/Icons/Icons/audio-volume-medium.png</iconset>
    </property>
    <property name="text">
-    <string>Mute Notes</string>
+    <string>&amp;Mute MIDI</string>
    </property>
    <property name="toolTip">
     <string>Enable/disable note audio</string>
@@ -1565,7 +1936,7 @@ When a note is added to the score, a sound is played to indicate the note that w
      <normaloff>:/Icons/Icons/midi</normaloff>:/Icons/Icons/midi</iconset>
    </property>
    <property name="text">
-    <string>Export &amp;MIDI</string>
+    <string>E&amp;xport MIDI</string>
    </property>
    <property name="toolTip">
     <string>Export this score to a MIDI file</string>
@@ -1603,7 +1974,7 @@ The score you've created can be written out to a MIDI file. You can then use thi
      <normalon>:/Icons/Icons/media-playback-stop.png</normalon>:/Icons/Icons/arrow-repeat.png</iconset>
    </property>
    <property name="text">
-    <string>Loop</string>
+    <string>&amp;Loop Selected Measures</string>
    </property>
    <property name="toolTip">
     <string>Play the selected bars in a constant loop</string>
@@ -1627,7 +1998,7 @@ Plays back the currently selected measures in a constant loop: once the measures
      <normalon>:/Icons/Icons/media-playback-stop.png</normalon>:/Icons/Icons/arrow-repeat-once.png</iconset>
    </property>
    <property name="text">
-    <string>Play Once</string>
+    <string>Play Selected Measures &amp;Once</string>
    </property>
    <property name="toolTip">
     <string>Play the selected measures once</string>
@@ -1765,7 +2136,7 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionCheckForUpdates">
    <property name="text">
-    <string>Check for updates</string>
+    <string>Check for updates now</string>
    </property>
   </action>
   <action name="actionCheckOnStartup">
@@ -1773,7 +2144,7 @@ p, li { white-space: pre-wrap; }
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Check on startup</string>
+    <string>Check for updates on startup</string>
    </property>
   </action>
   <action name="actionShowMeasureCounts">
@@ -1800,6 +2171,32 @@ p, li { white-space: pre-wrap; }
     <string>Show/Hide Measure Indexes</string>
    </property>
   </action>
+  <action name="actionEditColours">
+   <property name="icon">
+    <iconset resource="DrumBurp.qrc">
+     <normaloff>:/Icons/Icons/preferences-desktop-locale.png</normaloff>:/Icons/Icons/preferences-desktop-locale.png</iconset>
+   </property>
+   <property name="text">
+    <string>Edit &amp;Colours</string>
+   </property>
+   <property name="toolTip">
+    <string>Edit the colours DrumBurp uses</string>
+   </property>
+  </action>
+  <action name="actionRefreshMidiDevices">
+   <property name="text">
+    <string>Refresh Device List</string>
+   </property>
+   <property name="toolTip">
+    <string>Refresh MIDI device list</string>
+   </property>
+   <property name="statusTip">
+    <string>Refresh MIDI device list</string>
+   </property>
+   <property name="whatsThis">
+    <string>Refresh MIDI device list</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -1809,15 +2206,9 @@ p, li { white-space: pre-wrap; }
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>lineSpaceSlider</tabstop>
   <tabstop>fontsButton</tabstop>
-  <tabstop>sectionNavigator</tabstop>
-  <tabstop>scoreView</tabstop>
   <tabstop>noteSizeSpinBox</tabstop>
-  <tabstop>fontComboBox</tabstop>
-  <tabstop>sectionFontCombo</tabstop>
   <tabstop>sectionFontSizeSpinbox</tabstop>
-  <tabstop>metadataFontCombo</tabstop>
   <tabstop>metadataFontSizeSpinbox</tabstop>
  </tabstops>
  <resources>
@@ -1905,38 +2296,6 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>actionExportToolBarIsVisible</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>exportToolBar</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>506</x>
-     <y>54</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>exportToolBar</sender>
-   <signal>visibilityChanged(bool)</signal>
-   <receiver>actionExportToolBarIsVisible</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>506</x>
-     <y>54</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionHelpToolBarIsVisible</sender>
    <signal>toggled(bool)</signal>
    <receiver>helpToolBar</receiver>
@@ -1947,8 +2306,8 @@ p, li { white-space: pre-wrap; }
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>611</x>
-     <y>54</y>
+     <x>416</x>
+     <y>75</y>
     </hint>
    </hints>
   </connection>
@@ -1959,8 +2318,8 @@ p, li { white-space: pre-wrap; }
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>611</x>
-     <y>54</y>
+     <x>416</x>
+     <y>75</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -2001,82 +2360,18 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>fontComboBox</sender>
-   <signal>currentFontChanged(QFont)</signal>
-   <receiver>scoreView</receiver>
-   <slot>setFont(QFont)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>88</x>
-     <y>208</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>454</x>
-     <y>570</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>noteSizeSpinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>scoreView</receiver>
-   <slot>setNoteFontSize(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>193</x>
-     <y>208</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>349</x>
-     <y>447</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>sectionFontSizeSpinbox</sender>
    <signal>valueChanged(int)</signal>
    <receiver>scoreView</receiver>
    <slot>setSectionFontSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>193</x>
-     <y>428</y>
+     <x>247</x>
+     <y>443</y>
     </hint>
     <hint type="destinationlabel">
      <x>349</x>
      <y>528</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>sectionFontCombo</sender>
-   <signal>currentFontChanged(QFont)</signal>
-   <receiver>scoreView</receiver>
-   <slot>setSectionFont(QFont)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>88</x>
-     <y>428</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>320</x>
-     <y>600</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>metadataFontCombo</sender>
-   <signal>currentFontChanged(QFont)</signal>
-   <receiver>scoreView</receiver>
-   <slot>setMetadataFont(QFont)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>88</x>
-     <y>648</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>351</x>
-     <y>427</y>
     </hint>
    </hints>
   </connection>
@@ -2087,7 +2382,7 @@ p, li { white-space: pre-wrap; }
    <slot>setMetadataFontSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>193</x>
+     <x>247</x>
      <y>648</y>
     </hint>
     <hint type="destinationlabel">
@@ -2163,22 +2458,6 @@ p, li { white-space: pre-wrap; }
   <connection>
    <sender>actionShowScoreInfo</sender>
    <signal>toggled(bool)</signal>
-   <receiver>metadataFontCombo</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>88</x>
-     <y>648</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionShowScoreInfo</sender>
-   <signal>toggled(bool)</signal>
    <receiver>metadataFontSizeSpinbox</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
@@ -2187,7 +2466,7 @@ p, li { white-space: pre-wrap; }
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>193</x>
+     <x>247</x>
      <y>648</y>
     </hint>
    </hints>
@@ -2199,12 +2478,12 @@ p, li { white-space: pre-wrap; }
    <slot>setWidth(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>373</x>
-     <y>99</y>
+     <x>925</x>
+     <y>168</y>
     </hint>
     <hint type="destinationlabel">
-     <x>488</x>
-     <y>145</y>
+     <x>706</x>
+     <y>313</y>
     </hint>
    </hints>
   </connection>
@@ -2215,12 +2494,12 @@ p, li { white-space: pre-wrap; }
    <slot>systemSpacingChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>475</x>
-     <y>101</y>
+     <x>942</x>
+     <y>169</y>
     </hint>
     <hint type="destinationlabel">
-     <x>661</x>
-     <y>146</y>
+     <x>879</x>
+     <y>314</y>
     </hint>
    </hints>
   </connection>
@@ -2231,12 +2510,12 @@ p, li { white-space: pre-wrap; }
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>469</x>
-     <y>130</y>
+     <x>687</x>
+     <y>298</y>
     </hint>
     <hint type="destinationlabel">
-     <x>373</x>
-     <y>99</y>
+     <x>925</x>
+     <y>168</y>
     </hint>
    </hints>
   </connection>
@@ -2247,8 +2526,8 @@ p, li { white-space: pre-wrap; }
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>661</x>
-     <y>101</y>
+     <x>1240</x>
+     <y>172</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -2279,8 +2558,8 @@ p, li { white-space: pre-wrap; }
    <slot>showSection(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>745</x>
-     <y>99</y>
+     <x>693</x>
+     <y>168</y>
     </hint>
     <hint type="destinationlabel">
      <x>876</x>
@@ -2327,12 +2606,12 @@ p, li { white-space: pre-wrap; }
    <slot>setLilypondSize(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>856</x>
-     <y>101</y>
+     <x>330</x>
+     <y>143</y>
     </hint>
     <hint type="destinationlabel">
-     <x>815</x>
-     <y>143</y>
+     <x>1033</x>
+     <y>311</y>
     </hint>
    </hints>
   </connection>
@@ -2343,12 +2622,12 @@ p, li { white-space: pre-wrap; }
    <slot>setLilypondPages(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>808</x>
-     <y>101</y>
+     <x>330</x>
+     <y>143</y>
     </hint>
     <hint type="destinationlabel">
-     <x>913</x>
-     <y>180</y>
+     <x>1131</x>
+     <y>348</y>
     </hint>
    </hints>
   </connection>
@@ -2359,12 +2638,12 @@ p, li { white-space: pre-wrap; }
    <slot>setLilyFill(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>944</x>
-     <y>99</y>
+     <x>330</x>
+     <y>143</y>
     </hint>
     <hint type="destinationlabel">
-     <x>852</x>
-     <y>163</y>
+     <x>1070</x>
+     <y>331</y>
     </hint>
    </hints>
   </connection>
@@ -2381,6 +2660,118 @@ p, li { white-space: pre-wrap; }
     <hint type="destinationlabel">
      <x>593</x>
      <y>430</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>exportLilypondButton</sender>
+   <signal>clicked()</signal>
+   <receiver>actionExportLilypond</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>330</x>
+     <y>143</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>textExportButton</sender>
+   <signal>clicked()</signal>
+   <receiver>actionExportASCII</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>330</x>
+     <y>143</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>FitWindowButton</sender>
+   <signal>clicked()</signal>
+   <receiver>actionFitInWindow</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>330</x>
+     <y>156</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>FitPageButton</sender>
+   <signal>clicked()</signal>
+   <receiver>actionFitPage</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>375</x>
+     <y>156</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>PrintScoreButton</sender>
+   <signal>clicked()</signal>
+   <receiver>actionPrint</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>420</x>
+     <y>156</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>PrintPdfButton</sender>
+   <signal>clicked()</signal>
+   <receiver>actionExportPDF</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>465</x>
+     <y>156</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>noteSizeSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scoreView</receiver>
+   <slot>setNoteFontSize(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>247</x>
+     <y>237</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>349</x>
+     <y>447</y>
     </hint>
    </hints>
   </connection>

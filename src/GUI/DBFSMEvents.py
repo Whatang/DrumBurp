@@ -57,7 +57,9 @@ class MenuCancel(FsmEvent):
     pass
 
 class RepeatNotes(FsmEvent):
-    pass
+    def __init__(self, note):
+        super(RepeatNotes, self).__init__()
+        self.note = note
 
 class MeasureLineContext(FsmEvent):
     def __init__(self, prevMeasure, nextMeasure, endNote, startNote, screenPos):
@@ -67,6 +69,9 @@ class MeasureLineContext(FsmEvent):
         self.endNote = endNote
         self.startNote = startNote
         self.screenPos = screenPos
+
+class MeasureCountContext(_MouseEvent):
+    pass
 
 class StartPlaying(FsmEvent):
     pass
@@ -94,3 +99,15 @@ class ChangeRepeatCount(_MeasureEvents):
     def __init__(self, repeatCount, measurePosition):
         super(ChangeRepeatCount, self).__init__(measurePosition)
         self.repeatCount = repeatCount
+
+class SetSticking(FsmEvent):
+    def __init__(self, note, above):
+        super(SetSticking, self).__init__()
+        self.note = note
+        self.above = above
+
+class SetBpmEvent(FsmEvent):
+    def __init__(self, measurePosition, currentBpm):
+        super(SetBpmEvent, self).__init__()
+        self.measurePosition = measurePosition
+        self.currentBpm = currentBpm

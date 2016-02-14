@@ -23,68 +23,9 @@ Created on 12 Dec 2010
 '''
 import unittest
 import inspect
-from cStringIO import StringIO
 
 # pylint: disable-msg=R0904
 from Data.Drum import Drum, HeadData
-from Data.fileUtils import Indenter
-from Data import DefaultKits
-
-class TestHeadData(unittest.TestCase):
-    def testWrite_Default(self):
-        handle = StringIO()
-        headData = HeadData()
-        indenter = Indenter(handle)
-        headData.write("x", indenter)
-        self.assertEqual(handle.getvalue().rstrip(),
-                         "NOTEHEAD x 71,96,normal,default,0,none,0,")
-
-    def testWrite_Different(self):
-        handle = StringIO()
-        headData = HeadData(72, 100, "ghost", "cross", 1, "choke", 1, "c")
-        indenter = Indenter(handle)
-        headData.write("x", indenter)
-        self.assertEqual(handle.getvalue().rstrip(),
-                         "NOTEHEAD x 72,100,ghost,cross,1,choke,1,c")
-
-    def testRead_New(self):
-        dataString = "x 72,100,ghost,cross,1,choke,1,c"
-        head, data = HeadData.read("Hh", dataString)
-        self.assertEqual(head, "x")
-        self.assertEqual(data.midiNote, 72)
-        self.assertEqual(data.midiVolume, 100)
-        self.assertEqual(data.effect, "ghost")
-        self.assertEqual(data.notationHead, "cross")
-        self.assertEqual(data.notationLine, 1)
-        self.assertEqual(data.notationEffect, "choke")
-        self.assertEqual(data.stemDirection, 1)
-        self.assertEqual(data.shortcut, "c")
-
-    def testRead_Old_Recognised_Drum(self):
-        dataString = "g 72,100,ghost"
-        head, data = HeadData.read("Sn", dataString)
-        self.assertEqual(head, "g")
-        self.assertEqual(data.midiNote, 72)
-        self.assertEqual(data.midiVolume, 100)
-        self.assertEqual(data.effect, "ghost")
-        self.assertEqual(data.notationHead, "default")
-        self.assertEqual(data.notationLine, 1)
-        self.assertEqual(data.notationEffect, "ghost")
-        self.assertEqual(data.stemDirection, 1)
-        self.assertEqual(data.shortcut, "")
-
-    def testRead_Old_Unrecognised_Drum(self):
-        dataString = "g 72,100,ghost"
-        head, data = HeadData.read("Xx", dataString)
-        self.assertEqual(head, "g")
-        self.assertEqual(data.midiNote, 72)
-        self.assertEqual(data.midiVolume, 100)
-        self.assertEqual(data.effect, "ghost")
-        self.assertEqual(data.notationHead, "default")
-        self.assertEqual(data.notationLine, 0)
-        self.assertEqual(data.notationEffect, "none")
-        self.assertEqual(data.stemDirection, 0)
-        self.assertEqual(data.shortcut, "")
 
 
 class TestDrum(unittest.TestCase):
@@ -229,56 +170,5 @@ class TestDrum(unittest.TestCase):
         drum.setDefaultHead("a")
         self.assertEqual(drum.head, "z")
         self.assertEqual(list(drum), ["z", "y", "x"])
-
-    def testReadHead(self):
-        dataString = "x 72,100,ghost,cross,1,choke,1,c"
-        drum = Drum("test", "td", "x")
-        drum.readHeadData(dataString)
-        self.assertEqual(len(drum), 1)
-        self.assertEqual(drum.head, "x")
-        self.assertEqual(drum[0], "x")
-
-    def testGuessHeadData_Unknown(self):
-        drum = Drum("test", "td", "x")
-        drum.guessHeadData()
-        self.assertEqual(len(drum), 1)
-        self.assertEqual(drum[0], "x")
-        headData = drum.headData(None)
-        self.assertEqual(headData.midiNote, DefaultKits.DEFAULT_NOTE)
-        self.assertEqual(headData.midiVolume, DefaultKits.DEFAULT_VOLUME)
-        self.assertEqual(headData.effect, "normal")
-        self.assertEqual(headData.notationHead, "default")
-        self.assertEqual(headData.notationLine, 0)
-        self.assertEqual(headData.notationEffect, "none")
-        self.assertEqual(headData.stemDirection, DefaultKits.STEM_UP)
-        self.assertEqual(headData.shortcut, "x")
-
-    def testGuessHeadData_Known(self):
-        drum = Drum("HiTom", "HT", "o")
-        drum.guessHeadData()
-        self.assertEqual(list(drum), ["o", "O", "g", "f", "d"])
-        headData = drum.headData(None)
-        self.assertEqual(headData.midiNote, 50)
-
-    def testWrite(self):
-        drum, first_, second_ = self.makeDrum()
-        second_.shortcut = "a"
-        outstring = StringIO()
-        indenter = Indenter(outstring)
-        drum.write(indenter)
-        outlines = outstring.getvalue().splitlines()
-        self.assertEqual(len(outlines), 4)
-        self.assertEqual(outlines[0], "DRUM test,td,x,False")
-        self.assertEqual(outlines[1],
-                         "  NOTEHEAD x 71,96,normal,default,0,none,0,y")
-        self.assertEqual(outlines[2],
-                         "  NOTEHEAD y 100,96,normal,default,0,none,0,a")
-        self.assertEqual(outlines[3],
-                         "  NOTEHEAD z 71,96,normal,default,0,none,0,z")
-
-
-
-
-
 if __name__ == "__main__":
     unittest.main()

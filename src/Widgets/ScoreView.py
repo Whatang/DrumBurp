@@ -24,15 +24,48 @@ Created on 5 Dec 2010
 '''
 from PyQt4 import QtGui, QtCore
 
+class SmoothScroller(object):
+    NUM_STEPS = 100
+
+    def __init__(self, view):
+        self.view = view
+        self._timeline = None
+        self._xStart = None
+        self._xEnd = None
+        self._yStart = None
+        self._yEnd = None
+        self._mutex = QtCore.QMutex()
+
+    def scrollTo(self, xEnd, yEnd, timeInMs = 250):
+        if not timeInMs:
+            self.view.horizontalScrollBar().setValue(xEnd)
+            self.view.verticalScrollBar().setValue(yEnd)
+            return
+        self._xStart = self.view.horizontalScrollBar().value()
+        self._yStart = self.view.verticalScrollBar().value()
+        self._xEnd = xEnd
+        self._yEnd = yEnd
+        self._timeline = QtCore.QTimeLine(duration = timeInMs)
+        self._timeline.setFrameRange(0, self.NUM_STEPS)
+        self._timeline.frameChanged.connect(self._frame)
+        self._timeline.finished.connect(self._finished)
+        self._timeline.start()
+
+    def _frame(self, frameNum):
+        xDelta = ((self._xEnd - self._xStart) * frameNum) / self.NUM_STEPS
+        yDelta = ((self._yEnd - self._yStart) * frameNum) / self.NUM_STEPS
+        self.view.horizontalScrollBar().setValue(self._xStart + xDelta)
+        self.view.verticalScrollBar().setValue(self._yStart + yDelta)
+
+    def _finished(self):
+        del self._timeline
+        self._timeline = None
 
 class ScoreView(QtGui.QGraphicsView):
-    '''
-    classdocs
-    '''
-
     def __init__(self, parent = None):
         super(ScoreView, self).__init__(parent)
         self._props = None
+        self._scroller = SmoothScroller(self)
 
     def setScene(self, scene):
         super(ScoreView, self).setScene(scene)
@@ -61,25 +94,13 @@ class ScoreView(QtGui.QGraphicsView):
     def setLilyFill(self, lilyFill):
         self.scene().setLilyFill(lilyFill)
 
-    @QtCore.pyqtSlot(QtGui.QFont)
-    def setFont(self, font):
-        self.scene().setScoreFont(font, "note")
-
     @QtCore.pyqtSlot(int)
     def setNoteFontSize(self, size):
         self.scene().setScoreFontSize(size, "note")
 
-    @QtCore.pyqtSlot(QtGui.QFont)
-    def setSectionFont(self, font):
-        self.scene().setScoreFont(font, "section")
-
     @QtCore.pyqtSlot(int)
     def setSectionFontSize(self, size):
         self.scene().setScoreFontSize(size, "section")
-
-    @QtCore.pyqtSlot(QtGui.QFont)
-    def setMetadataFont(self, font):
-        self.scene().setScoreFont(font, "metadata")
 
     @QtCore.pyqtSlot(int)
     def setMetadataFontSize(self, size):
@@ -118,9 +139,9 @@ class ScoreView(QtGui.QGraphicsView):
             event.ignore()
             return super(ScoreView, self).keyPressEvent(event)
         if event.key() == QtCore.Qt.Key_Home:
-            self.centerOn(0, 0)
+            self.setTopLeft(0, 0)
         elif event.key() == QtCore.Qt.Key_End:
-            self.centerOn(0, self.sceneRect().height())
+            self.setTopLeft(0, self.sceneRect().height())
         else:
             event.ignore()
             return super(ScoreView, self).keyPressEvent(event)
@@ -128,5 +149,36 @@ class ScoreView(QtGui.QGraphicsView):
     @QtCore.pyqtSlot(int)
     def showSection(self, sectionIndex):
         section = self.scene().getQSection(sectionIndex)
-        self.centerOn(section)
+        self.showItemAtTop(section)
 
+    def setTopLeft(self, left, top, timeInMs = 250):
+        self._scroller.scrollTo(left, top, timeInMs)
+
+    @QtCore.pyqtSlot(QtGui.QGraphicsItem)
+    def showItemAtTop(self, item, timeInMs = 250, margins = 20):
+        itemRect = item.sceneBoundingRect()
+        left = max(0, itemRect.right() + margins - self.viewport().width())
+        top = max(0, itemRect.top() - margins)
+        self.setTopLeft(left, top, timeInMs)
+
+    @QtCore.pyqtSlot(QtGui.QGraphicsItem, QtGui.QGraphicsItem)
+    def showTwoItems(self, primary, secondary, timeInMs = 250, margins = 20):
+        primRect = primary.sceneBoundingRect()
+        secRect = secondary.sceneBoundingRect()
+        top = min(primRect.top(), secRect.top())
+        bottom = max(primRect.bottom(), secRect.bottom())
+        left = min(primRect.left(), secRect.left())
+        right = max(primRect.right(), secRect.right())
+        vwidth = self.viewport().width()
+        vheight = self.viewport().height()
+        if (right - left - 2 * margins) > vwidth or (top - bottom - 2 * margins) > vheight:
+            if (right - left) > vwidth or (top - bottom) > vheight:
+                self.showItemAtTop(primary, timeInMs, margins)
+            else:
+                vleft = max(0, right - vwidth)
+                vtop = max(0, top)
+                self.setTopLeft(vleft, vtop, timeInMs)
+        else:
+            vleft = max(0, right + margins - vwidth)
+            vtop = max(0, top - margins)
+            self.setTopLeft(vleft, vtop, timeInMs)

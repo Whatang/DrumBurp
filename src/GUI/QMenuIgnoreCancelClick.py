@@ -24,20 +24,24 @@ Created on 19 Jan 2011
 '''
 
 from PyQt4.QtGui import QMenu
-from DBFSMEvents import MenuCancel
+from functools import wraps
+from GUI.DBFSMEvents import MenuCancel, MenuSelect
 
 class QMenuIgnoreCancelClick(QMenu):
-    '''
-    classdocs
-    '''
+    @staticmethod
+    def menuSelection(method):
+        @wraps(method)
+        def wrapper(self, *args, **kwargs):
+            val = method(self, *args, **kwargs)
+            self._qScore.sendFsmEvent(MenuSelect())  # IGNORE:protected-access
+            return val
+        return wrapper
 
 
     def __init__(self, qScore, parent = None):
-        '''
-        Constructor
-        '''
         super(QMenuIgnoreCancelClick, self).__init__(parent)
         self._qScore = qScore
+        self._props = self._qScore.displayProperties
         self.aboutToHide.connect(self._checkGoodSelection)
 
     def _checkGoodSelection(self):

@@ -4,15 +4,10 @@ Created on Feb 25, 2012
 @author: Mike
 '''
 
-from ui_alternateRepeatWidget import Ui_AlternateWidget
+from GUI.ui_alternateRepeatWidget import Ui_AlternateWidget
 from PyQt4.QtGui import QWidget
 
 class QAlternateWidget(QWidget, Ui_AlternateWidget):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self, startVal, endVal, isRange, parent = None):
         super(QAlternateWidget, self).__init__(parent)
         self.setupUi(self)

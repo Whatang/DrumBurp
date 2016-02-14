@@ -20,256 +20,152 @@
 
 @author: Mike
 '''
-
-from DBCommands import (ToggleNote, RepeatNoteCommand,
-                        EditMeasurePropertiesCommand, SetRepeatCountCommand,
-                        SetAlternateCommand)
-from QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
-from QMeasureContextMenu import QMeasureContextMenu
-from QMeasureLineContextMenu import QMeasureLineContextMenu
-from QEditMeasureDialog import QEditMeasureDialog
-from QRepeatCountDialog import QRepeatCountDialog
-from QAlternateDialog import QAlternateDialog
-import DBFSMEvents as Event
+from GUI.StateMachine import StateMachine, State
+from GUI.DBCommands import (ToggleNote, RepeatNoteCommand,
+                            ChangeMeasureCountCommand, SetRepeatCountCommand,
+                            SetAlternateCommand, SetStickingCommand,
+                            SetNewBpmCommand)
+from GUI.QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
+from GUI.QMeasureContextMenu import QMeasureContextMenu
+from GUI.QMeasureLineContextMenu import QMeasureLineContextMenu
+from GUI.QCountContextMenu import QCountContextMenu
+from GUI.QEditMeasureDialog import QEditMeasureDialog
+from GUI.QRepeatCountDialog import QRepeatCountDialog
+from GUI.QAlternateDialog import QAlternateDialog
+import GUI.DBFSMEvents as Event
 from PyQt4 import QtCore
 
-class FsmState(object):
-    def __init__(self, qscore):
+class DbState(State):
+    @property
+    def qscore(self):
+        return self.machine.qscore
+
+class DBStateMachine(StateMachine):
+    def __init__(self, initialStateType, qscore):
+        super(DBStateMachine, self).__init__(initialStateType)
         self.qscore = qscore
 
-    def send(self, event_):
-        # Ignore this event
-        return self
+    def setQscore(self, qscore):
+        self.qscore = qscore
 
-class Waiting(FsmState):
-    def send(self, event):
-        msgType = type(event)
-        newState = self
-        if msgType == Event.Escape:
-            self.qscore.clearDragSelection()
-        elif msgType == Event.LeftPress:
-            self.qscore.clearDragSelection()
-            if event.note is not None:
-                newState = ButtonDown(self.qscore, event.measure, event.note)
-        elif msgType == Event.MidPress:
-            newState = NotesMenu(self.qscore, event.note, event.screenPos)
-        elif msgType == Event.RightPress:
-            newState = ContextMenu(self.qscore, event.measure,
-                                   event.note, event.screenPos)
-        elif msgType == Event.MeasureLineContext:
-            newState = MeasureLineContextMenuState(self.qscore,
-                                                   event.prevMeasure,
-                                                   event.nextMeasure,
-                                                   event.endNote,
-                                                   event.startNote,
-                                                   event.screenPos)
-        elif msgType == Event.StartPlaying:
-            newState = Playing(self.qscore)
-        elif msgType == Event.EditMeasureProperties:
-            newState = EditMeasurePropertiesState(self.qscore,
-                                              event.counter,
-                                              event.counterRegistry,
-                                              event.measurePosition)
-        elif msgType == Event.ChangeRepeatCount:
-            newState = RepeatCountState(self.qscore, event.repeatCount,
-                                        event.measurePosition)
-        elif msgType == Event.SetAlternateEvent:
-            newState = SetAlternateState(self.qscore, event.alternateText,
-                                         event.measurePosition)
-        return newState
-
-class ButtonDown(FsmState):
-    def __init__(self, qscore, measure, note):
-        super(ButtonDown, self).__init__(qscore)
-        qscore.clearDragSelection()
-        self.measure = measure
-        self.note = note
-
-    def send(self, event):
-        msgType = type(event)
-        if msgType == Event.MouseMove:
-            if event.note != self.note:
-                return Dragging(self.qscore, event.measure)
-            else:
-                return self
-        elif msgType == Event.MouseRelease:
-            head = self.qscore.getCurrentHead()
-            command = ToggleNote(self.qscore, self.note, head)
-            self.qscore.addCommand(command)
-            return Waiting(self.qscore)
-        elif msgType == Event.StartPlaying:
-            return Playing(self.qscore)
-        else:
-            return self
-
-class Dragging(FsmState):
-    def __init__(self, qscore, measure):
-        super(Dragging, self).__init__(qscore)
-        self.qscore.dragging(measure)
-
-    def send(self, event):
-        msgType = type(event)
-        if msgType == Event.MouseMove:
-            self.qscore.dragging(event.measure)
-            return self
-        elif msgType == Event.MouseRelease:
-            self.qscore.endDragging()
-            return Waiting(self.qscore)
-        elif msgType == Event.StartPlaying:
-            return Playing(self.qscore)
-        else:
-            return self
-
-
-class NotesMenu(FsmState):
-    def __init__(self, qscore, note, screenPos):
-        super(NotesMenu, self).__init__(qscore)
-        self.note = note
-        qscore.clearDragSelection()
-        self.menu = QMenuIgnoreCancelClick(qscore)
-        kit = qscore.score.drumKit
-        for noteHead in kit.allowedNoteHeads(note.drumIndex):
-            def noteAction(nh = noteHead):
-                qscore.sendFsmEvent(Event.MenuSelect(nh))
-            self.menu.addAction(noteHead, noteAction)
-        QtCore.QTimer.singleShot(0, lambda: self.menu.exec_(screenPos))
-
-    def send(self, event):
-        msgType = type(event)
-        if msgType == Event.MenuSelect:
-            command = ToggleNote(self.qscore, self.note, event.data)
-            self.qscore.addCommand(command)
-            return Waiting(self.qscore)
-        elif msgType == Event.MenuCancel:
-            return Waiting(self.qscore)
-        elif msgType == Event.Escape:
-            self.menu.close()
-            return Waiting(self.qscore)
-        elif msgType == Event.StartPlaying:
-            self.menu.close()
-            return Playing(self.qscore)
-        else:
-            return self
-
-
-class ContextMenu(FsmState):
-    def __init__(self, qscore, qmeasure, note, screenPos):
-        super(ContextMenu, self).__init__(qscore)
-        if qscore.hasDragSelection():
-            if not qscore.inDragSelection(note):
-                qscore.clearDragSelection()
-        self.menu = QMeasureContextMenu(qscore, qmeasure, note,
-                                        qmeasure.alternateText())
-        self.measure = qmeasure
-        self.note = note
-        QtCore.QTimer.singleShot(0, lambda: self.menu.exec_(screenPos))
-
-
-    def send(self, event):
-        msgType = type(event)
-        newState = self
-        if msgType == Event.MenuSelect:
-            newState = Waiting(self.qscore)
-        elif msgType == Event.MenuCancel:
-            newState = Waiting(self.qscore)
-        elif msgType == Event.Escape:
-            self.menu.close()
-            newState = Waiting(self.qscore)
-        elif msgType == Event.RepeatNotes:
-            newState = Repeating(self.qscore, self.note)
-        elif msgType == Event.StartPlaying:
-            self.menu.close()
-            newState = Playing(self.qscore)
-        elif msgType == Event.SetAlternateEvent:
-            newState = SetAlternateState(self.qscore, event.alternateText,
-                                     event.measurePosition)
-        elif msgType == Event.EditMeasureProperties:
-            newState = EditMeasurePropertiesState(self.qscore,
-                                                  event.counter,
-                                                  event.counterRegistry,
-                                                  event.measurePosition)
-        return newState
-
-class Repeating(FsmState):
-    def __init__(self, qscore, note):
-        super(Repeating, self).__init__(qscore)
+@DBStateMachine.add_state
+class Waiting(DbState):
+    def clearDrag(self, event_):
         self.qscore.clearDragSelection()
-        self.statusBar = qscore.parent().statusBar()
+
+    def setSticking(self, event):
+        rotate = {" " : "R", "R":"L", "L":"F", "F":" "}
+        measure = self.qscore.score.getMeasureByPosition(event.note)
+        if event.above:
+            sticking = measure.aboveText[event.note.noteTime]
+        else:
+            sticking = measure.belowText[event.note.noteTime]
+        sticking = rotate.get(sticking, " ")
+        command = SetStickingCommand(self.qscore, event.note, event.above,
+                                     sticking)
+        self.qscore.addCommand(command)
+
+@DBStateMachine.add_state
+class ButtonDown(DbState):
+    def isSameNote(self, event):
+        return event.note != self.event.note
+
+    def release(self, event_):
+        head = self.qscore.getCurrentHead()
+        command = ToggleNote(self.qscore, self.event.note, head)
+        self.qscore.addCommand(command)
+
+
+@DBStateMachine.add_state
+class Dragging(DbState):
+    def initialize(self):
+        self.dragging(self.event)
+
+    def dragging(self, event):
+        self.qscore.dragging(event.measure)
+
+    def release(self, event_):
+        self.qscore.endDragging()
+
+    def cancel(self, event):
+        self.release(event)
+        self.qscore.clearDragSelection()
+
+@DBStateMachine.add_state
+class NotesMenu(DbState):
+    def initialize(self):
+        self.qscore.clearDragSelection()
+        self.menu = QMenuIgnoreCancelClick(self.qscore)
+        kit = self.qscore.score.drumKit
+        for noteHead in kit.allowedNoteHeads(self.event.note.drumIndex):
+            def noteAction(nh = noteHead):
+                self.qscore.sendFsmEvent(Event.MenuSelect(nh))
+            self.menu.addAction(noteHead, noteAction)
+        QtCore.QTimer.singleShot(0,
+                                 lambda: self.menu.exec_(self.event.screenPos))
+
+    def select(self, event):
+        command = ToggleNote(self.qscore, self.event.note, event.data)
+        self.qscore.addCommand(command)
+
+    def close(self, event_):
+        self.menu.close()
+
+@DBStateMachine.add_state
+class ContextMenu(DbState):
+    def initialize(self):
+        if self.qscore.hasDragSelection():
+            if not self.qscore.inDragSelection(self.event.note):
+                self.qscore.clearDragSelection()
+        self.menu = QMeasureContextMenu(self.qscore, self.event.measure,
+                                        self.event.note,
+                                        self.event.measure.alternateText())
+        QtCore.QTimer.singleShot(0,
+                                 lambda: self.menu.exec_(self.event.screenPos))
+
+    def close(self, event_):
+        self.menu.close()
+
+@DBStateMachine.add_state
+class Repeating(DbState):
+    def initialize(self):
+        self.qscore.clearDragSelection()
+        self.statusBar = self.qscore.parent().statusBar()
         self.statusBar.showMessage("Drag from the first repeat "
                                    "of this note to the last "
                                    "(or press ESCAPE to cancel)", 0)
-        self.note = note
 
-    def send(self, event):
-        msgType = type(event)
-        if msgType == Event.LeftPress:
-            if event.note is None:
-                return self
-            interval = self.qscore.score.tickDifference(event.note, self.note)
-            if interval <= 0:
-                self.statusBar.showMessage("Cannot repeat notes backwards!",
-                                           5000)
-                return Waiting(self.qscore)
-            head = self.qscore.score.getItemAtPosition(self.note)
-            return RepeatingDragging(self.qscore, self.note,
-                                     event.note, interval, head)
-        elif msgType == Event.Escape:
-            self.statusBar.clearMessage()
-            return Waiting(self.qscore)
-        elif msgType == Event.StartPlaying:
-            self.statusBar.clearMessage()
-            return Playing(self.qscore)
-        else:
+    def clear(self, event_):
+        self.statusBar.clearMessage()
+
+    def startRepeatDrag(self, event):
+        if event.note is None:
             return self
+        interval = self.qscore.score.tickDifference(event.note, self.event.note)
+        if interval <= 0:
+            self.statusBar.showMessage("Cannot repeat notes backwards!",
+                                       5000)
+            return Waiting(self.machine, None)
+        measure = self.qscore.score.getMeasureByPosition(self.event.note)
+        head = measure.getNote(self.event.note)
+        return RepeatingDragging(self.machine, event, self.event.note,
+                                  interval, head)
 
-class RepeatingDragging(FsmState):
-    def __init__(self, qscore, firstNote, secondNote, interval, head):
-        super(RepeatingDragging, self).__init__(qscore)
-        self.statusBar = qscore.parent().statusBar()
+@DBStateMachine.add_state
+class RepeatingDragging(DbState):
+    def __init__(self, machine, event, firstNote, interval, head):
+        super(RepeatingDragging, self).__init__(machine, event)
+        self.statusBar = self.qscore.parent().statusBar()
         self.statusBar.showMessage("Drag to the last repeat of this note "
                                    "(or press ESCAPE to cancel)", 0)
         self.firstNote = firstNote
-        self.secondNote = secondNote
-        self._lastNote = secondNote
+        self.secondNote = event.note
+        self._lastNote = event.note
         self.interval = interval
         self._notes = []
         self.score = self.qscore.score
         self._head = head
         self._makeNotePositions()
-
-    def send(self, event):
-        msgType = type(event)
-        if msgType == Event.MouseRelease:
-            self.qscore.setPotentialRepeatNotes([], None)
-            if self._lastNote is not None:
-                totalTicks = self.qscore.score.tickDifference(self._lastNote,
-                                                              self.firstNote)
-                numRepeats = totalTicks / self.interval
-                if numRepeats <= 0:
-                    self.statusBar.showMessage("Must repeat note "
-                                               "at least once!",
-                                               5000)
-                    return Waiting(self.qscore)
-                command = RepeatNoteCommand(self.qscore, self.firstNote,
-                                            numRepeats, self.interval)
-                self.qscore.addCommand(command)
-            self.statusBar.clearMessage()
-            return Waiting(self.qscore)
-        elif msgType == Event.MouseMove:
-            if event.note is not None and event.note != self._lastNote:
-                self._lastNote = event.note
-                self._makeNotePositions()
-            return self
-        elif msgType == Event.Escape:
-            self.statusBar.clearMessage()
-            self.qscore.setPotentialRepeatNotes([], None)
-            return Waiting(self.qscore)
-        elif msgType == Event.StartPlaying:
-            self.statusBar.clearMessage()
-            self.qscore.setPotentialRepeatNotes([], None)
-            return Playing(self.qscore)
-        else:
-            return self
 
     def _makeNotePositions(self):
         note = self.secondNote.makeCopy()
@@ -287,61 +183,81 @@ class RepeatingDragging(FsmState):
                       and note.noteTime <= self._lastNote.noteTime))))
             if more:
                 notes.append(note)
-
-
         if len(notes) != len(self._notes):
             self.qscore.setPotentialRepeatNotes(notes, self._head)
             self._notes = notes
 
-class MeasureLineContextMenuState(FsmState):
-    def __init__(self, qscore, prevMeasure, nextMeasure,
-                 endNote, startNote, screenPos):
-        super(MeasureLineContextMenuState, self).__init__(qscore)
-        self.menu = QMeasureLineContextMenu(qscore, prevMeasure, nextMeasure,
-                                            endNote, startNote)
-        QtCore.QTimer.singleShot(0, lambda: self.menu.exec_(screenPos))
+    def move(self, event):
+        if event.note is not None and event.note != self._lastNote:
+            self._lastNote = event.note
+            self._makeNotePositions()
 
-    def send(self, event):
-        msgType = type(event)
-        if msgType == Event.MenuSelect:
-            return Waiting(self.qscore)
-        elif msgType == Event.MenuCancel:
-            return Waiting(self.qscore)
-        elif msgType == Event.Escape:
-            self.menu.close()
-            return Waiting(self.qscore)
-        elif msgType == Event.StartPlaying:
-            self.menu.close()
-            return Playing(self.qscore)
-        elif msgType == Event.ChangeRepeatCount:
-            return RepeatCountState(self.qscore, event.repeatCount,
-                                    event.measurePosition)
-        else:
-            return self
+    def cancel(self, event_):
+        self.statusBar.clearMessage()
+        self.qscore.setPotentialRepeatNotes([], None)
 
-class Playing(FsmState):
-    def __init__(self, qscore):
-        super(Playing, self).__init__(qscore)
+    def release(self, event_):
+        self.qscore.setPotentialRepeatNotes([], None)
+        if self._lastNote is not None:
+            totalTicks = self.qscore.score.tickDifference(self._lastNote,
+                                                          self.firstNote)
+            numRepeats = totalTicks / self.interval
+            if numRepeats <= 0:
+                self.statusBar.showMessage("Must repeat note "
+                                           "at least once!",
+                                           5000)
+            else:
+                command = RepeatNoteCommand(self.qscore, self.firstNote,
+                                            numRepeats, self.interval)
+                self.qscore.addCommand(command)
+        self.statusBar.clearMessage()
+
+
+@DBStateMachine.add_state
+class MeasureLineContextMenuState(DbState):
+    def initialize(self):
+        self.menu = QMeasureLineContextMenu(self.qscore,
+                                            self.event.prevMeasure,
+                                            self.event.nextMeasure,
+                                            self.event.endNote,
+                                            self.event.startNote)
+        self.qscore.clearDragSelection()
+        QtCore.QTimer.singleShot(0,
+                                 lambda: self.menu.exec_(self.event.screenPos))
+
+    def close(self, event_):
+        self.menu.close()
+
+@DBStateMachine.add_state
+class MeasureCountContextMenuState(DbState):
+    def initialize(self):
+        self.menu = QCountContextMenu(self.qscore, self.event.note,
+                                      self.event.measure)
+        self.qscore.clearDragSelection()
+        QtCore.QTimer.singleShot(0,
+                                 lambda: self.menu.exec_(self.event.screenPos))
+
+    def close(self, event_):
+        self.menu.close()
+
+@DBStateMachine.add_state
+class Playing(DbState):
+    def initialize(self):
         self.qscore.playing.emit(True)
-    def send(self, event):
-        msgType = type(event)
-        if msgType == Event.StopPlaying:
-            self.qscore.playing.emit(False)
-            return Waiting(self.qscore)
-        else:
-            return self
 
-class DialogState(FsmState):
-    def __init__(self, qscore, measurePosition):
-        super(DialogState, self).__init__(qscore)
-        self.measurePosition = measurePosition
-        self.dialog = None
+    def stop(self, event_):
+        self.qscore.playing.emit(False)
 
-    def setupDialog(self, dialog):
-        self.dialog = dialog
+class DialogState_(DbState):
+    def __init__(self, machine, event):
+        super(DialogState_, self).__init__(machine, event)
+        self.dialog = self.makeDialog()
         self.dialog.accepted.connect(self._accepted)
         self.dialog.rejected.connect(self._rejected)
         QtCore.QTimer.singleShot(0, self.dialog.exec_)
+
+    def makeDialog(self):
+        raise NotImplementedError()
 
     def _accepted(self):
         self.qscore.sendFsmEvent(Event.MenuSelect())
@@ -349,66 +265,192 @@ class DialogState(FsmState):
     def _rejected(self):
         self.qscore.sendFsmEvent(Event.MenuCancel())
 
-    def send(self, event):
-        msgType = type(event)
-        if msgType == Event.StartPlaying:
-            self.dialog.reject()
-            return Playing(self.qscore)
-        elif msgType == Event.MenuSelect:
-            return Waiting(self.qscore)
-        elif msgType == Event.MenuCancel:
-            return Waiting(self.qscore)
-        else:
-            return self
+    def reject(self, event_):
+        self.dialog.reject()
 
-class EditMeasurePropertiesState(DialogState):
-    def __init__(self, qscore, counter, counterRegistry, measurePosition):
-        super(EditMeasurePropertiesState, self).__init__(qscore,
-                                                         measurePosition)
-        self.counter = counter
-        defCounter = qscore.defaultCount
-        dialog = QEditMeasureDialog(counter, defCounter,
-                                    counterRegistry, qscore.parent())
-        self.setupDialog(dialog)
+@DBStateMachine.add_state
+class EditMeasurePropertiesState(DialogState_):
+    def makeDialog(self):
+        return QEditMeasureDialog(self.event.counter,
+                                  self.qscore.defaultCount,
+                                  self.event.counterRegistry,
+                                  self.qscore.parent())
+
 
     def _accepted(self):
         newCounter = self.dialog.getValues()
-        if (newCounter.countString() != self.counter.countString()):
-            command = EditMeasurePropertiesCommand(self.qscore,
-                                                   self.measurePosition,
-                                                   newCounter)
+        if newCounter.countString() != self.event.counter.countString():
+            command = ChangeMeasureCountCommand(self.qscore,
+                                                self.event.measurePosition,
+                                                newCounter)
             self.qscore.clearDragSelection()
             self.qscore.addCommand(command)
         super(EditMeasurePropertiesState, self)._accepted()  # IGNORE:W0212
 
-class RepeatCountState(DialogState):
-    def __init__(self, qscore, repeatCount, position):
-        super(RepeatCountState, self).__init__(qscore, position)
-        self.oldCount = repeatCount
-        dialog = QRepeatCountDialog(self.oldCount, qscore.parent())
-        self.setupDialog(dialog)
+@DBStateMachine.add_state
+class RepeatCountState(DialogState_):
+    def makeDialog(self):
+        return QRepeatCountDialog(self.event.repeatCount,
+                                  self.qscore.parent())
 
     def _accepted(self):
         newCount = self.dialog.getValue()
-        if self.oldCount != newCount:
+        if self.event.repeatCount != newCount:
             command = SetRepeatCountCommand(self.qscore,
-                                            self.measurePosition,
-                                            self.oldCount,
+                                            self.event.measurePosition,
+                                            self.event.repeatCount,
                                             newCount)
             self.qscore.addCommand(command)
         super(RepeatCountState, self)._accepted()  # IGNORE:W0212
 
-class SetAlternateState(DialogState):
-    def __init__(self, qscore, alternateText, position):
-        super(SetAlternateState, self).__init__(qscore, position)
-        self.oldText = alternateText
-        altDialog = QAlternateDialog(alternateText, qscore.parent())
-        self.setupDialog(altDialog)
+@DBStateMachine.add_state
+class SetAlternateState(DialogState_):
+    def makeDialog(self):
+        return QAlternateDialog(self.event.alternateText, self.qscore.parent())
 
     def _accepted(self):
         newText = self.dialog.getValue()
-        if self.oldText != newText:
-            command = SetAlternateCommand(self.qscore, self.measurePosition,
+        if self.event.alternateText != newText:
+            command = SetAlternateCommand(self.qscore,
+                                          self.event.measurePosition,
                                           newText)
             self.qscore.addCommand(command)
         super(SetAlternateState, self)._accepted()  # IGNORE:W0212
+
+@DBStateMachine.add_state
+class SetNewBpmState(DialogState_):
+    def makeDialog(self):
+        return QRepeatCountDialog(self.event.currentBpm, self.qscore.parent(),
+                                  "New BPM")
+
+    def _accepted(self):
+        newBpm = self.dialog.getValue()
+        if newBpm != 0 and newBpm != self.event.currentBpm:
+            command = SetNewBpmCommand(self.qscore, self.event.measurePosition,
+                                       newBpm)
+            self.qscore.addCommand(command)
+        super(SetNewBpmState, self)._accepted()
+
+DBStateMachine.add_transition(Waiting, Event.Escape, Waiting,
+                              Waiting.clearDrag)
+DBStateMachine.add_transition(Waiting, Event.LeftPress, ButtonDown,
+                              Waiting.clearDrag,
+                              lambda state_, event: event.note is not None)
+DBStateMachine.add_transition(Waiting, Event.MidPress, NotesMenu)
+DBStateMachine.add_transition(Waiting, Event.RightPress, ContextMenu)
+DBStateMachine.add_transition(Waiting, Event.MeasureLineContext,
+                              MeasureLineContextMenuState)
+DBStateMachine.add_transition(Waiting, Event.MeasureCountContext,
+                              MeasureCountContextMenuState)
+DBStateMachine.add_transition(Waiting, Event.StartPlaying, Playing)
+DBStateMachine.add_transition(Waiting, Event.EditMeasureProperties,
+                              EditMeasurePropertiesState)
+DBStateMachine.add_transition(Waiting, Event.ChangeRepeatCount,
+                              RepeatCountState)
+DBStateMachine.add_transition(Waiting, Event.SetAlternateEvent,
+                              SetAlternateState)
+DBStateMachine.add_transition(Waiting, Event.SetSticking,
+                              Waiting, Waiting.setSticking)
+DBStateMachine.add_transition(Waiting, Event.SetBpmEvent,
+                              SetNewBpmState)
+
+DBStateMachine.add_transition(ButtonDown, Event.MouseMove, Dragging,
+                              guard = ButtonDown.isSameNote)
+DBStateMachine.add_transition(ButtonDown, Event.MouseRelease, Waiting,
+                              ButtonDown.release)
+DBStateMachine.add_transition(ButtonDown, Event.StartPlaying, Playing)
+DBStateMachine.add_transition(ButtonDown, Event.Escape, Waiting)
+
+
+DBStateMachine.add_transition(Dragging, Event.MouseMove, Dragging,
+                              Dragging.dragging)
+DBStateMachine.add_transition(Dragging, Event.MouseRelease, Waiting,
+                              Dragging.release)
+DBStateMachine.add_transition(Dragging, Event.StartPlaying, Playing)
+DBStateMachine.add_transition(Dragging, Event.Escape, Waiting,
+                              Dragging.cancel)
+
+
+DBStateMachine.add_transition(NotesMenu, Event.MenuSelect, Waiting,
+                              NotesMenu.select)
+DBStateMachine.add_transition(NotesMenu, Event.MenuCancel, Waiting)
+DBStateMachine.add_transition(NotesMenu, Event.Escape, Waiting,
+                              NotesMenu.close)
+DBStateMachine.add_transition(NotesMenu, Event.StartPlaying, Playing,
+                              NotesMenu.close)
+
+
+DBStateMachine.add_transition(ContextMenu, Event.MenuSelect, Waiting)
+DBStateMachine.add_transition(ContextMenu, Event.MenuCancel, Waiting)
+DBStateMachine.add_transition(ContextMenu, Event.Escape, Waiting,
+                              ContextMenu.close)
+DBStateMachine.add_transition(ContextMenu, Event.RepeatNotes, Repeating)
+DBStateMachine.add_transition(ContextMenu, Event.StartPlaying, Playing,
+                              ContextMenu.close)
+DBStateMachine.add_transition(ContextMenu, Event.SetAlternateEvent,
+                              SetAlternateState)
+DBStateMachine.add_transition(ContextMenu, Event.SetBpmEvent,
+                              SetNewBpmState)
+
+DBStateMachine.add_factory_transition(Repeating, Event.LeftPress,
+                                      Repeating.startRepeatDrag)
+DBStateMachine.add_transition(Repeating, Event.Escape, Waiting,
+                              Repeating.clear)
+DBStateMachine.add_transition(Repeating, Event.StartPlaying, Playing,
+                              Repeating.clear)
+
+DBStateMachine.add_transition(RepeatingDragging, Event.MouseRelease, Waiting,
+                                  RepeatingDragging.release)
+DBStateMachine.add_transition(RepeatingDragging, Event.MouseMove, Waiting,
+                              RepeatingDragging.move,
+                              lambda state, event: False)
+DBStateMachine.add_transition(RepeatingDragging, Event.Escape, Waiting,
+                              RepeatingDragging.cancel)
+DBStateMachine.add_transition(RepeatingDragging, Event.StartPlaying, Playing,
+                              RepeatingDragging.cancel)
+
+
+DBStateMachine.add_transition(MeasureLineContextMenuState, Event.MenuSelect,
+                              Waiting)
+DBStateMachine.add_transition(MeasureLineContextMenuState, Event.MenuCancel,
+                              Waiting, MeasureLineContextMenuState.close)
+DBStateMachine.add_transition(MeasureLineContextMenuState, Event.Escape,
+                              Waiting, MeasureLineContextMenuState.close)
+DBStateMachine.add_transition(MeasureLineContextMenuState, Event.StartPlaying,
+                              Playing, MeasureLineContextMenuState.close)
+DBStateMachine.add_transition(MeasureLineContextMenuState,
+                              Event.ChangeRepeatCount, RepeatCountState)
+DBStateMachine.add_transition(MeasureCountContextMenuState, Event.Escape,
+                              Waiting, MeasureCountContextMenuState.close)
+DBStateMachine.add_transition(MeasureCountContextMenuState, Event.MenuSelect,
+                              Waiting)
+DBStateMachine.add_transition(MeasureCountContextMenuState, Event.MenuCancel,
+                              Waiting, MeasureCountContextMenuState.close)
+DBStateMachine.add_transition(MeasureCountContextMenuState,
+                              Event.EditMeasureProperties,
+                              EditMeasurePropertiesState)
+
+
+DBStateMachine.add_transition(Playing, Event.StopPlaying, Waiting, Playing.stop)
+
+DBStateMachine.add_transition(EditMeasurePropertiesState, Event.StartPlaying,
+                              Playing, DialogState_.reject)
+DBStateMachine.add_transition(EditMeasurePropertiesState, Event.MenuSelect,
+                              Waiting)
+DBStateMachine.add_transition(EditMeasurePropertiesState, Event.MenuCancel,
+                              Waiting)
+
+DBStateMachine.add_transition(RepeatCountState, Event.StartPlaying, Playing,
+                              DialogState_.reject)
+DBStateMachine.add_transition(RepeatCountState, Event.MenuSelect, Waiting)
+DBStateMachine.add_transition(RepeatCountState, Event.MenuCancel, Waiting)
+
+DBStateMachine.add_transition(SetAlternateState, Event.StartPlaying, Playing,
+                              DialogState_.reject)
+DBStateMachine.add_transition(SetAlternateState, Event.MenuSelect, Waiting)
+DBStateMachine.add_transition(SetAlternateState, Event.MenuCancel, Waiting)
+
+DBStateMachine.add_transition(SetNewBpmState, Event.StartPlaying, Playing,
+                              DialogState_.reject)
+DBStateMachine.add_transition(SetNewBpmState, Event.MenuSelect, Waiting)
+DBStateMachine.add_transition(SetNewBpmState, Event.MenuCancel, Waiting)

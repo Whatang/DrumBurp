@@ -23,23 +23,17 @@ Created on 9 Jan 2011
 
 '''
 
-from ui_newScoreDialog import Ui_newScoreDialog
 from PyQt4.QtGui import QDialog
 from PyQt4.QtCore import QSettings, QVariant
 from cStringIO import StringIO
+from GUI.ui_newScoreDialog import Ui_newScoreDialog
+from GUI.QComplexCountDialog import QComplexCountDialog
 import Data.MeasureCount
-from QComplexCountDialog import QComplexCountDialog
-from Data import DefaultKits, DrumKit, fileUtils
+from Data import DefaultKits, DrumKitFactory, DrumKitSerializer
 
 class QNewScoreDialog(QDialog, Ui_newScoreDialog):
-    '''
-    classdocs
-    '''
     def __init__(self, parent = None,
                  counter = None, registry = None):
-        '''
-        Constructor
-        '''
         super(QNewScoreDialog, self).__init__(parent)
         self.setupUi(self)
         self.measureTabs.setup(counter, registry,
@@ -57,11 +51,9 @@ class QNewScoreDialog(QDialog, Ui_newScoreDialog):
         kitIndex = self.kitCombobox.currentIndex()
         isUserKit = self.kitCombobox.itemData(kitIndex).toBool()
         if isUserKit:
-            kitString = str(self._settings.value(kitName).toString())
+            kitString = unicode(self._settings.value(kitName).toString())
             handle = StringIO(kitString)
-            dbfile = fileUtils.dbFileIterator(handle)
-            kit = DrumKit.DrumKit()
-            kit.read(dbfile)
+            kit = DrumKitSerializer.DrumKitSerializer.read(handle)
         else:
-            kit = DrumKit.getNamedDefaultKit(kitName)
+            kit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit(kitName)
         return (self.numMeasuresSpinBox.value(), mc, kit)
