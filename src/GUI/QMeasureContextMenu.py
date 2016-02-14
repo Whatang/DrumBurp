@@ -32,7 +32,6 @@ from GUI.DBCommands import (InsertMeasuresCommand,
                             SetStickingVisibility, SetNewBpmCommand)
 from GUI.QInsertMeasuresDialog import QInsertMeasuresDialog
 from GUI.DBFSMEvents import RepeatNotes
-from GUI.QRepeatCountDialog import QRepeatCountDialog
 from Data import DBConstants
 
 class QMeasureContextMenu(QMenuIgnoreCancelClick):
@@ -181,7 +180,8 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
 
     def _setupBpmSection(self):
         self.addSeparator()
-        self.addAction("Set new BPM", self._setNewBpm)
+        self.addAction("Set new BPM",
+                       self._qmeasure.setNewBpm)
         if self._measure.newBpm != 0:
             self.addAction("Delete BPM change", self._removeBpmChange)
 
@@ -376,22 +376,6 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         command = SetStickingVisibility(self._qScore,
                                         self._np,
                                         above, onOff)
-        self._qScore.addCommand(command)
-
-    @QMenuIgnoreCancelClick.menuSelection
-    def _setNewBpm(self):
-        currentBpm = self._measure.newBpm
-        if currentBpm == 0:
-            currentBpm = self._score.bpmAtMeasureByPosition(self._np)
-        dialog = QRepeatCountDialog(currentBpm,
-                                    self._qScore.parent(),
-                                    "New BPM")
-        if not dialog.exec_():
-            return
-        newBpm = dialog.getValue()
-        if newBpm == currentBpm or newBpm == 0:
-            return
-        command = SetNewBpmCommand(self._qScore, self._np, newBpm)
         self._qScore.addCommand(command)
 
     @QMenuIgnoreCancelClick.menuSelection

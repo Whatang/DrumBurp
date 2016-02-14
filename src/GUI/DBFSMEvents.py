@@ -105,3 +105,9 @@ class SetSticking(FsmEvent):
         super(SetSticking, self).__init__()
         self.note = note
         self.above = above
+
+class SetBpmEvent(FsmEvent):
+    def __init__(self, measurePosition, currentBpm):
+        super(SetBpmEvent, self).__init__()
+        self.measurePosition = measurePosition
+        self.currentBpm = currentBpm

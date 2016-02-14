@@ -34,7 +34,8 @@ from GUI.DBFSMEvents import (LeftPress, MidPress, RightPress,
                              ChangeRepeatCount,
                              SetAlternateEvent,
                              MeasureCountContext,
-                             SetSticking)
+                             SetSticking,
+                             SetBpmEvent)
 
 def _painterSaver(method):
     def wrapper(self, painter, *args, **kwargs):
@@ -63,6 +64,7 @@ class QMeasure(QtGui.QGraphicsItem):
         self._highlight = None
         self._rect = QtCore.QRectF(0, 0, 0, 0)
         self._repeatCountRect = None
+        self._bpmRect = None
         self._alternate = None
         self._stickingAbove = None
         self._stickingBelow = None
@@ -356,6 +358,11 @@ class QMeasure(QtGui.QGraphicsItem):
     def _paintNewBpm(self, painter):
         text = "BPM = %d" % self._measure.newBpm
         painter.drawText(1, self._bpmBase + self._props.bpmHeight() - 1, text)
+        textWidth = QtGui.QFontMetrics(painter.font()).width(text)
+        if self._bpmRect is None:
+            self._bpmRect = QtCore.QRectF(0, 0, 0, 0)
+        self._bpmRect.setSize(QtCore.QSizeF(textWidth, self._props.bpmHeight()))
+        self._bpmRect.moveTopLeft(QtCore.QPointF(1, self._bpmBase))
 
 
     @_painterSaver
@@ -374,6 +381,8 @@ class QMeasure(QtGui.QGraphicsItem):
         self._paintNotes(painter, xValues)
         if self._measure.newBpm != 0:
             self._paintNewBpm(painter)
+        else:
+            self._bpmRect = None
         if self._props.beatCountVisible:
             self._paintBeatCount(painter, xValues)
         if self._props.measureCountsVisible and self._isFirst:
@@ -428,6 +437,10 @@ class QMeasure(QtGui.QGraphicsItem):
     def _isOverStickingBelow(self, point):
         return (self._stickingBelow is not None
                 and self._stickingBelow.contains(point))
+
+    def _isOverBpmChange(self, point):
+        return (self._bpmRect is not None
+                and self._bpmRect.contains(point))
 
     def _getMouseLine(self, point):
         offset = point.y() - self._notesTop
@@ -486,6 +499,9 @@ class QMeasure(QtGui.QGraphicsItem):
             self.setCursor(QtCore.Qt.PointingHandCursor)
         elif self._isOverRepeatCount(point):
             self._qScore.setStatusMessage("Double click to edit repeat count.")
+            self.setCursor(QtCore.Qt.PointingHandCursor)
+        elif self._isOverBpmChange(point):
+            self._qScore.setStatusMessage("Double click to edit BPM change.")
             self.setCursor(QtCore.Qt.PointingHandCursor)
         elif self._isOverAlternate(point):
             self._qScore.setStatusMessage("Double click to edit "
@@ -569,6 +585,8 @@ class QMeasure(QtGui.QGraphicsItem):
             fsmEvent = ChangeRepeatCount(self._measure.repeatCount,
                                          self.measurePosition())
             self._qScore.sendFsmEvent(fsmEvent)
+        elif self._isOverBpmChange(point):
+            self.setNewBpm()
         elif self._isOverAlternate(point):
             self.setAlternate()
         elif self._isOverStickingAbove(point) or self._isOverStickingBelow(point):
@@ -592,6 +610,14 @@ class QMeasure(QtGui.QGraphicsItem):
     def setAlternate(self):
         self._qScore.sendFsmEvent(SetAlternateEvent(self._measure.alternateText,
                                                     self.measurePosition()))
+
+    def setNewBpm(self):
+        bpm = self._measure.newBpm
+        if bpm == 0:
+            bpm = self._qScore.score.bpmAtMeasureByPosition(self.measurePosition())
+        if bpm == 0:
+            bpm = 120
+        self._qScore.sendFsmEvent(SetBpmEvent(self.measurePosition(), bpm))
 
     def setPlaying(self, onOff):
         self._playing = onOff

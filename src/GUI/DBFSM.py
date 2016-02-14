@@ -23,7 +23,8 @@
 from GUI.StateMachine import StateMachine, State
 from GUI.DBCommands import (ToggleNote, RepeatNoteCommand,
                             ChangeMeasureCountCommand, SetRepeatCountCommand,
-                            SetAlternateCommand, SetStickingCommand)
+                            SetAlternateCommand, SetStickingCommand,
+                            SetNewBpmCommand)
 from GUI.QMenuIgnoreCancelClick import QMenuIgnoreCancelClick
 from GUI.QMeasureContextMenu import QMeasureContextMenu
 from GUI.QMeasureLineContextMenu import QMeasureLineContextMenu
@@ -316,6 +317,20 @@ class SetAlternateState(DialogState_):
             self.qscore.addCommand(command)
         super(SetAlternateState, self)._accepted()  # IGNORE:W0212
 
+@DBStateMachine.add_state
+class SetNewBpmState(DialogState_):
+    def makeDialog(self):
+        return QRepeatCountDialog(self.event.currentBpm, self.qscore.parent(),
+                                  "New BPM")
+
+    def _accepted(self):
+        newBpm = self.dialog.getValue()
+        if newBpm != 0 and newBpm != self.event.currentBpm:
+            command = SetNewBpmCommand(self.qscore, self.event.measurePosition,
+                                       newBpm)
+            self.qscore.addCommand(command)
+        super(SetNewBpmState, self)._accepted()
+
 DBStateMachine.add_transition(Waiting, Event.Escape, Waiting,
                               Waiting.clearDrag)
 DBStateMachine.add_transition(Waiting, Event.LeftPress, ButtonDown,
@@ -336,6 +351,8 @@ DBStateMachine.add_transition(Waiting, Event.SetAlternateEvent,
                               SetAlternateState)
 DBStateMachine.add_transition(Waiting, Event.SetSticking,
                               Waiting, Waiting.setSticking)
+DBStateMachine.add_transition(Waiting, Event.SetBpmEvent,
+                              SetNewBpmState)
 
 DBStateMachine.add_transition(ButtonDown, Event.MouseMove, Dragging,
                               guard = ButtonDown.isSameNote)
@@ -372,6 +389,8 @@ DBStateMachine.add_transition(ContextMenu, Event.StartPlaying, Playing,
                               ContextMenu.close)
 DBStateMachine.add_transition(ContextMenu, Event.SetAlternateEvent,
                               SetAlternateState)
+DBStateMachine.add_transition(ContextMenu, Event.SetBpmEvent,
+                              SetNewBpmState)
 
 DBStateMachine.add_factory_transition(Repeating, Event.LeftPress,
                                       Repeating.startRepeatDrag)
@@ -401,7 +420,6 @@ DBStateMachine.add_transition(MeasureLineContextMenuState, Event.StartPlaying,
                               Playing, MeasureLineContextMenuState.close)
 DBStateMachine.add_transition(MeasureLineContextMenuState,
                               Event.ChangeRepeatCount, RepeatCountState)
-
 DBStateMachine.add_transition(MeasureCountContextMenuState, Event.Escape,
                               Waiting, MeasureCountContextMenuState.close)
 DBStateMachine.add_transition(MeasureCountContextMenuState, Event.MenuSelect,
@@ -432,3 +450,7 @@ DBStateMachine.add_transition(SetAlternateState, Event.StartPlaying, Playing,
 DBStateMachine.add_transition(SetAlternateState, Event.MenuSelect, Waiting)
 DBStateMachine.add_transition(SetAlternateState, Event.MenuCancel, Waiting)
 
+DBStateMachine.add_transition(SetNewBpmState, Event.StartPlaying, Playing,
+                              DialogState_.reject)
+DBStateMachine.add_transition(SetNewBpmState, Event.MenuSelect, Waiting)
+DBStateMachine.add_transition(SetNewBpmState, Event.MenuCancel, Waiting)
