@@ -342,13 +342,8 @@ class TestReadMeasure(unittest.TestCase):
                   NOTE 7,2,x
                   ENDBARLINE 1
                   REPEAT_COUNT 1
-                  ALTERNATE
-                  SIMILE 0
-                  SIMINDEX 0
                   SHOWABOVE False',
-                  ABOVETEXT ICAgICAgICA=',
                   SHOWBELOW False',
-                  BELOWTEXT ICAgICAgICA=',
                 END_MEASURE"""
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
@@ -402,9 +397,6 @@ class TestReadMeasure(unittest.TestCase):
                     STARTBARLINE 3
                     ENDBARLINE 5
                     REPEAT_COUNT 6
-                    ALTERNATE
-                    SIMILE 0
-                    SIMINDEX 0
                   END_MEASURE"""
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
@@ -441,8 +433,6 @@ class TestReadMeasure(unittest.TestCase):
           ENDBARLINE 1
           REPEAT_COUNT 2
           ALTERNATE 2.
-          SIMILE 0
-          SIMINDEX 0
         END_MEASURE
         """
         handle = StringIO(data)
@@ -473,9 +463,6 @@ class TestReadMeasure(unittest.TestCase):
                     STARTBARLINE 1
                     ENDBARLINE 17
                     REPEAT_COUNT 6
-                    ALTERNATE
-                    SIMILE 0
-                    SIMINDEX 0
                   END_MEASURE"""
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
@@ -505,7 +492,6 @@ class TestReadMeasure(unittest.TestCase):
                     STARTBARLINE 1
                     ENDBARLINE 9
                     REPEAT_COUNT 6
-                    ALTERNATE
                     SIMILE 0
                     SIMINDEX 0
                   END_MEASURE"""
@@ -537,7 +523,6 @@ class TestReadMeasure(unittest.TestCase):
                     STARTBARLINE 1
                     ENDBARLINE 9
                     REPEAT_COUNT 6
-                    ALTERNATE
                     SIMILE 2
                     SIMINDEX 1
                   END_MEASURE"""
@@ -667,12 +652,8 @@ class TestWriteMeasure(unittest.TestCase):
                           '  STARTBARLINE 1',
                           '  ENDBARLINE 1',
                           '  REPEAT_COUNT 1',
-                          '  SIMILE 0',
-                          '  SIMINDEX 0',
                           '  SHOWABOVE False',
-                          '  ABOVETEXT ICAgICAgICAgICAgICAgIA==',
                           '  SHOWBELOW False',
-                          '  BELOWTEXT ICAgICAgICAgICAgICAgIA==',
                           'END_MEASURE'])
 
     def testWriteSimple(self):
@@ -732,12 +713,8 @@ class TestWriteMeasure(unittest.TestCase):
                           '  NOTE 15,1,p',
                           '  ENDBARLINE 1',
                           '  REPEAT_COUNT 1',
-                          '  SIMILE 0',
-                          '  SIMINDEX 0',
                           '  SHOWABOVE False',
-                          '  ABOVETEXT ICAgICAgICAgICAgICAgIA==',
                           '  SHOWBELOW False',
-                          '  BELOWTEXT ICAgICAgICAgICAgICAgIA==',
                           'END_MEASURE'])
 
     def testWriteDecorations(self):
@@ -781,7 +758,6 @@ class TestWriteMeasure(unittest.TestCase):
                           '  SHOWABOVE True',
                           '  ABOVETEXT IFIgICAgICAgICAgICAgIA==',
                           '  SHOWBELOW False',
-                          '  BELOWTEXT ICAgICAgICAgICAgICAgIA==',
                           'END_MEASURE'])
 
 class TestNoteHead(unittest.TestCase):

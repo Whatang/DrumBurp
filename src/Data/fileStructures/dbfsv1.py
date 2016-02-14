@@ -72,12 +72,16 @@ class MeasureStructureV1(FileStructure):
     endBar = NonNegativeIntegerField("ENDBARLINE")
     repeatCount = PositiveIntegerField("REPEAT_COUNT")
     alternateText = StringField("ALTERNATE")
-    simileDistance = NonNegativeIntegerField("SIMILE")
-    simileIndex = NonNegativeIntegerField("SIMINDEX")
+    simileDistance = conditionalWriteField(NonNegativeIntegerField("SIMILE"),
+                                           lambda measure: measure.simileDistance > 0)
+    simileIndex = conditionalWriteField(NonNegativeIntegerField("SIMINDEX"),
+                                           lambda measure: measure.simileIndex > 0)
     showAbove = BooleanField("SHOWABOVE")
-    aboveText = Base64StringField("ABOVETEXT")
+    aboveText = conditionalWriteField(Base64StringField("ABOVETEXT"),
+                                      lambda measure: any(ch != " " for ch in measure.aboveText))
     showBelow = BooleanField("SHOWBELOW")
-    belowText = Base64StringField("BELOWTEXT")
+    belowText = conditionalWriteField(Base64StringField("BELOWTEXT"),
+                                      lambda measure: any(ch != " " for ch in measure.belowText))
     newBpm = conditionalWriteField(NonNegativeIntegerField("NEWBPM"),
                                    lambda measure: measure.newBpm > 0)
 
