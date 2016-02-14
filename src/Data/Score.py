@@ -58,6 +58,7 @@ class Score(object):
         self.lilypages = 0
         self.lilyFill = True
         self.lilyFormat = 0
+        self.fileFormat = None
 
     def __len__(self):
         return sum(len(staff) for staff in self._staffs)

@@ -59,7 +59,9 @@ class ScoreSerializer(object):
         if fileVersion > DBConstants.CURRENT_FILE_FORMAT:
             raise DBVersionError(scoreIterator)
         fileStructure = _FS_MAP[fileVersion]()
-        return fileStructure.read(scoreIterator)
+        score = fileStructure.read(scoreIterator)
+        score.fileFormat = fileVersion
+        return score
 
     @staticmethod
     def write(score, handle, version = DBConstants.CURRENT_FILE_FORMAT):
@@ -76,4 +78,5 @@ class ScoreSerializer(object):
                   version = DBConstants.CURRENT_FILE_FORMAT,
                   compressed = True):
         with fileUtils.DataWriter(filename, compressed) as writer:
+            score.fileFormat = version
             cls.write(score, writer, version)

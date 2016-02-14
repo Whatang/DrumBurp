@@ -25,6 +25,7 @@ Created on 31 Jul 2010
 import webbrowser
 from StringIO import StringIO
 import os
+import shutil
 from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QFileDialog, QMessageBox,
                          QPrintPreviewDialog, QWhatsThis,
@@ -47,6 +48,7 @@ import GUI.DBMidi as DBMidi
 from GUI.DBFSMEvents import StartPlaying, StopPlaying
 from GUI.LilypondExporter import LilypondExporter
 from DBVersion import APPNAME, DB_VERSION, doesNewerVersionExist
+from Data.DBConstants import CURRENT_FILE_FORMAT
 from Data.DBErrors import InconsistentRepeats
 from Data import FontOptions
 from Notation.lilypond import LilypondScore, LilypondProblem
@@ -508,12 +510,51 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.filename = unicode(fname)
         return True
 
+    def _checkForBackup(self):
+        # Returns True if it is OK to continue writing to self.filename,
+        # False otherwise
+        if self.filename is None:
+            return True
+        fileFormat = self.scoreScene.score.fileFormat
+        if fileFormat is None or fileFormat == CURRENT_FILE_FORMAT:
+            return True
+        reply = QMessageBox.question(self,
+                                     "Backup old file format?",
+                                     "This score was loaded from an older "
+                                     "file format. Would you like to make "
+                                     "a backup of that file before overwriting?",
+                                     QMessageBox.Yes,
+                                     QMessageBox.No,
+                                     QMessageBox.Cancel)
+        if reply == QMessageBox.Yes:
+            backup = self.filename + ".dbff%d.bak" % fileFormat
+            if os.path.exists(backup):
+                backup += "."
+                index = 1
+                while os.path.exists(backup + str(index)):
+                    index += 1
+                backup += str(index)
+            try:
+                shutil.copyfile(self.filename, backup)
+                QMessageBox.warning(self, "Backup successful",
+                                    "Old score backed up to " + backup)
+            except StandardError, exc:
+                msg = "Error backing up: %s" % unicode(exc)
+                QMessageBox.warning(self, "Backup failed", msg)
+                return False
+        elif reply == QMessageBox.Cancel:
+            return False
+        return True
+
+
     def fileSave(self):
         if self.filename is None:
             if not self._getFileName():
                 return False
             self.addToRecentFiles()
             self.updateRecentFiles()
+        elif not self._checkForBackup():
+            return False
         return self.scoreScene.saveScore(self.filename)
 
     @pyqtSignature("")
@@ -523,7 +564,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionSaveAs_triggered(self):
+        oldFilename = self.filename
         if self._getFileName():
+            if oldFilename == self.filename and not self._checkForBackup():
+                return
             self.scoreScene.saveScore(self.filename)
             self.updateStatus("Successfully saved %s" % self.filename)
             self.addToRecentFiles()
