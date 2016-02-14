@@ -52,7 +52,7 @@ class QLineLabel(QtGui.QGraphicsItem):
         return self.scene().ySpacing
 
     def cellWidth(self):
-        return 2 * self.scene().xSpacing
+        return 2 * self.scene().xSpacing + 2
 
     def mouseDoubleClickEvent(self, event_):
         self.scene().editKit()
@@ -63,7 +63,7 @@ class QLineLabel(QtGui.QGraphicsItem):
 
     def setDimensions(self):
         self.prepareGeometryChange()
-        self._rect.setBottomRight(QtCore.QPointF(self.cellWidth(),
+        self._rect.moveBottomRight(QtCore.QPointF(self.cellWidth(),
                                                  self.cellHeight()))
 
     def xSpacingChanged(self):
@@ -78,12 +78,12 @@ class QLineLabel(QtGui.QGraphicsItem):
     def paint(self, painter, dummyOption, dummyWidget = None):
         painter.save()
         painter.setPen(QtCore.Qt.NoPen)
+        scheme = self._qScore.parent().colourScheme
         if self._highlighted:
-            painter.setBrush(QtGui.QColor(QtCore.Qt.yellow).lighter())
-            painter.drawRect(0, 0, self.cellWidth() - 1, self.cellHeight())
+            scheme.noteHighlight.setPainter(painter)
+            painter.drawRect(0, 0, self.cellWidth(), self.cellHeight())
         if len(self._text) > 0:
-            painter.setPen(QtCore.Qt.SolidLine)
-            painter.setBrush(QtCore.Qt.NoBrush)
+            scheme.text.setPainter(painter)
             font = self._props.noteFont
             if font is None:
                 font = painter.font()
@@ -93,7 +93,7 @@ class QLineLabel(QtGui.QGraphicsItem):
             br = br.tightBoundingRect(self._text)
             w = br.width()
             h = br.height()
-            textLocation = QtCore.QPointF(self.cellWidth() - w,
+            textLocation = QtCore.QPointF(self.cellWidth() - w - 4,
                                           (self.cellHeight() + h) / 2)
             painter.drawText(textLocation, self._text)
         painter.restore()

@@ -22,19 +22,10 @@ Created on 12 Dec 2010
 @author: Mike Thomas
 
 '''
-from DBErrors import BadTimeError
+from Data.DBErrors import BadTimeError
 
-# pylint:disable-msg=R0904
 class Staff(object):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self):
-        '''
-        Constructor
-        '''
         self._measures = []
         self._callBack = None
         self._visibleLines = {}
@@ -98,7 +89,7 @@ class Staff(object):
         self._isValidPosition(position, True)
         self._measures.insert(position.measureIndex, measure)
         self._visibleLines = {}
-        for index in range(position.measureIndex, self.numMeasures()):
+        for index in xrange(position.measureIndex, self.numMeasures()):
             nextMeasure = self[index]
             self._setMeasureCallBack(nextMeasure, index)
 
@@ -130,18 +121,6 @@ class Staff(object):
             measure.clearCallBack()
         self._measures = []
         self._visibleLines = {}
-
-    def gridWidth(self):
-        if self.numMeasures() == 0:
-            return 0
-        return (len(self) + self.numMeasures() + 1)
-
-    def getItemAtPosition(self, position):
-        self._isValidPosition(position)
-        measure = self[position.measureIndex]
-        if position.noteTime is None:
-            return measure
-        return measure.getNote(position)
 
     def addNote(self, position, head):
         self._isValidPosition(position)

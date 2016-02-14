@@ -23,24 +23,16 @@ Created on 20 Jan 2011
 
 '''
 
-from ui_measurePropertiesDialog import Ui_measurePropertiesDialog
 from PyQt4.QtGui import QDialog
+from GUI.ui_measurePropertiesDialog import Ui_measurePropertiesDialog
+from GUI.QComplexCountDialog import QComplexCountDialog
 import Data.MeasureCount
-from QComplexCountDialog import QComplexCountDialog
 
 class QEditMeasureDialog(QDialog, Ui_measurePropertiesDialog):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self, measureCount,
                  defaultCounter,
                  counterRegistry,
                  parent = None):
-        '''
-        Constructor
-        '''
         super(QEditMeasureDialog, self).__init__(parent = parent)
         self.setupUi(self)
         self.measureTabs.setup(measureCount,

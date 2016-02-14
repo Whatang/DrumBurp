@@ -22,9 +22,8 @@ Created on 12 Dec 2012
 @author: Mike Thomas
 '''
 import unittest
-from cStringIO import StringIO
 from Data import Counter
-from Data import fileUtils
+
 # pylint: disable-msg=R0904
 
 class TestCounter(unittest.TestCase):
@@ -39,15 +38,8 @@ class TestCounter(unittest.TestCase):
         self.assertEqual(str(self.counter), "^bcd")
 
     def testBadCounter(self):
-        self.assertRaises(ValueError, Counter.Counter, "abcd")
         self.assertRaises(ValueError, Counter.Counter, "^bcd", "defg")
         self.assertRaises(ValueError, Counter.Counter, "^bcd", "^de")
-
-    def testWrite(self):
-        handle = StringIO()
-        indenter = fileUtils.Indenter(handle)
-        self.counter.write(indenter)
-        self.assertEqual(handle.getvalue(), "COUNT |^bcd|\n")
 
     def testMatchExact(self):
         self.assert_(self.counter.matchesExact("^bcd"))

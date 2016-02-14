@@ -26,6 +26,7 @@ import optparse
 from PyQt4.QtGui import QApplication
 import GUI.DBMainwindow
 import GUI.DBIcons
+import GUI.DBFonts
 import GUI.DBStartupDialog
 from DBVersion import APPNAME, DB_VERSION
 
@@ -46,8 +47,9 @@ def main():
     app.setOrganizationName("Whatang Software")
     app.setOrganizationDomain("whatang.org")
     app.setApplicationName(APPNAME)
-    splash = GUI.DBStartupDialog.DBStartupDialog(DB_VERSION)
     GUI.DBIcons.initialiseIcons()
+    GUI.DBFonts.initialiseFonts()
+    splash = GUI.DBStartupDialog.DBStartupDialog(DB_VERSION)
     app.setWindowIcon(GUI.DBIcons.getIcon("drumburp"))
     splash.exec_()
     mainWindow = GUI.DBMainwindow.DrumBurp(fakeStartup = opts.virgin,

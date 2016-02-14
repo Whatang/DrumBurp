@@ -16,6 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with DrumBurp.  If not, see <http://www.gnu.org/licenses/>
+from PyQt4.QtGui import QGraphicsItem
 '''
 Created on 4 Jan 2011
 
@@ -26,29 +27,110 @@ Created on 4 Jan 2011
 from PyQt4 import QtGui, QtCore
 import itertools
 import functools
-from QStaff import QStaff
-from QSection import QSection
-from QMeasure import QMeasure
-from QMetaData import QMetaData
-from QKitData import QKitData
-from QEditKitDialog import QEditKitDialog
+from GUI.QStaff import QStaff
+from GUI.QSection import QSection
+from GUI.QMeasure import QMeasure
+from GUI.QMetaData import QMetaData
+from GUI.QKitData import QKitData
+from GUI.QEditKitDialog import QEditKitDialog
+from GUI.DBCommands import (MetaDataCommand, ScoreWidthCommand,
+                            DeleteMeasureCommand, InsertAndPasteMeasures,
+                            ClearMeasureCommand, PasteMeasuresCommand,
+                            SetPaperSizeCommand, SetDefaultCountCommand,
+                            SetSystemSpacingCommand, InsertMeasuresCommand,
+                            SetFontCommand, SetFontSizeCommand,
+                            SetVisibilityCommand, SetLilypondSizeCommand,
+                            SetLilypondPagesCommand, SetLilypondFillCommand,
+                            SaveFormatStateCommand, CheckFormatStateCommand,
+                            CheckUndo, SetLilypondFormatCommand)
+import GUI.DBMidi as DBMidi
+from GUI.DBFSM import DBStateMachine, Waiting
+from GUI.DBFSMEvents import Escape
 from Data import DBErrors
-from Data.Score import ScoreFactory
+from Data.ScoreFactory import ScoreFactory
+from Data.ScoreSerializer import ScoreSerializer
 from Data.NotePosition import NotePosition
-from DBCommands import (MetaDataCommand, ScoreWidthCommand,
-                        DeleteMeasureCommand, InsertAndPasteMeasures,
-                        ClearMeasureCommand, PasteMeasuresCommand,
-                        SetPaperSizeCommand, SetDefaultCountCommand,
-                        SetSystemSpacingCommand, InsertMeasuresCommand,
-                        SetFontCommand, SetFontSizeCommand,
-                        SetVisibilityCommand, SetLilypondSizeCommand,
-                        SetLilypondPagesCommand, SetLilypondFillCommand,
-                        SaveFormatStateCommand, CheckFormatStateCommand,
-                        CheckUndo)
-import DBMidi
-from DBFSM import Waiting
-from DBFSMEvents import Escape
-_SCORE_FACTORY = ScoreFactory()
+
+class DragSelection(object):
+    def __init__(self, qscore):
+        self.qscore = qscore
+        self.start = None
+        self.end = None
+        self._isDragging = False
+        self._dragged = []
+
+    def startDragging(self, notePos):
+        self._isDragging = True
+        self.start = notePos
+        self.end = notePos
+        self._dragged = []
+
+    def drag(self, np):
+        if not self.isDragging():
+            self.startDragging(np)
+        elif self.end != np:
+            self.end = np
+        self._updateDragged()
+
+    def isDragging(self):
+        return self._isDragging
+
+    def endDragging(self):
+        self._isDragging = False
+
+    def hasDragSelection(self):
+        return (self.start is not None and self.end is not None)
+
+    def inDragSelection(self, np):
+        if not self.hasDragSelection():
+            return False
+        start = self.start
+        end = self.end
+        return ((start.staffIndex == np.staffIndex
+                 and start.measureIndex <= np.measureIndex
+                 and (np.staffIndex < end.staffIndex or
+                      np.measureIndex <= end.measureIndex))
+                or (start.staffIndex < np.staffIndex < end.staffIndex)
+                or (np.staffIndex == end.staffIndex
+                    and np.measureIndex <= end.measureIndex))
+
+    def iterDragSelection(self):
+        if self.hasDragSelection():
+            return self.qscore.score.iterMeasuresBetween(self.start,
+                                                         self.end)
+        else:
+            return iter([])
+
+    def clear(self):
+        self.start = None
+        self.end = None
+        self._updateDragged()
+
+    def _updateDragged(self):
+        if not self.hasDragSelection():
+            for index, position in self._dragged:
+                # Turn off
+                self._setDragHighlight(position, False)
+            self._dragged = []
+            return
+        newDragged = [(index, position) for (unused, index, position) in
+                      self.qscore.score.iterMeasuresBetween(self.start,
+                                                            self.end)]
+        oldIndexes = set(x[0] for x in self._dragged)
+        for index, position in newDragged:
+            if index not in oldIndexes:
+                # Turn on
+                self._setDragHighlight(position, True)
+        newIndexes = set(x[0] for x in newDragged)
+        for index, position in self._dragged:
+            if index not in newIndexes:
+                # Turn off
+                self._setDragHighlight(position, False)
+        self._dragged = newDragged
+
+    def _setDragHighlight(self, position, onOff):
+        qmeasure = self.qscore.getQMeasure(position)
+        qmeasure.setDragHighlight(onOff)
 
 class _HeadShortcut(object):
     def __init__(self, currentHeads):
@@ -132,15 +214,7 @@ def _metaDataProperty(varname):
     return property(fget = _getData, fset = _setData)
 
 class QScore(QtGui.QGraphicsScene):
-    '''
-    classdocs
-    '''
-
-
     def __init__(self, parent):
-        '''
-        Constructor
-        '''
         super(QScore, self).__init__(parent)
         self._scale = 1
         self._qStaffs = []
@@ -152,10 +226,8 @@ class QScore(QtGui.QGraphicsScene):
         self._ignoreNext = False
         self.measureClipboard = []
         self._playingMeasure = None
-        self._dragStart = None
-        self._lastDrag = None
-        self._dragSelection = []
-        self._dragged = []
+        self._nextMeasure = None
+        self._dragSelection = DragSelection(self)
         self._saved = False
         self._undoStack = QtGui.QUndoStack(self)
         self._inMacro = False
@@ -185,7 +257,7 @@ class QScore(QtGui.QGraphicsScene):
         self._properties.connectScore(self)
         self._potentials = []
         self._shortcutMemo = _HeadShortcutsMap(self._score.drumKit)
-        self._state = Waiting(self)
+        self._stateMachine = DBStateMachine(Waiting, self)
 
     canUndoChanged = QtCore.pyqtSignal(bool)
     canRedoChanged = QtCore.pyqtSignal(bool)
@@ -196,6 +268,7 @@ class QScore(QtGui.QGraphicsScene):
     defaultCountChanged = QtCore.pyqtSignal(object)
     spacingChanged = QtCore.pyqtSignal(int)
     sectionsChanged = QtCore.pyqtSignal()
+    showItem = QtCore.pyqtSignal(QGraphicsItem)
     dragHighlight = QtCore.pyqtSignal(bool)
     sceneFormatted = QtCore.pyqtSignal()
     playing = QtCore.pyqtSignal(bool)
@@ -204,6 +277,8 @@ class QScore(QtGui.QGraphicsScene):
     lilysizeChanged = QtCore.pyqtSignal(int)
     lilypagesChanged = QtCore.pyqtSignal(int)
     lilyFillChanged = QtCore.pyqtSignal(bool)
+    lilyFormatChanged = QtCore.pyqtSignal(int)
+    widthChanged = QtCore.pyqtSignal(int)
 
     def addCommand(self, command):
         if not self._inMacro:
@@ -301,7 +376,7 @@ class QScore(QtGui.QGraphicsScene):
     @property
     def lineOffsets(self):
         yOffsets = [drumIndex * self.ySpacing
-                    for drumIndex in range(0, self.kitSize)]
+                    for drumIndex in xrange(self.kitSize)]
         yOffsets.reverse()
         return yOffsets
 
@@ -321,6 +396,7 @@ class QScore(QtGui.QGraphicsScene):
             self.lilysizeChanged.emit(self._score.lilysize)
             self.lilypagesChanged.emit(self._score.lilypages)
             self.lilyFillChanged.emit(self._score.lilyFill)
+            self.lilyFormatChanged.emit(self._score.lilyFormat)
             self.sectionsChanged.emit()
             self._properties.newScore(self)
             self._kitData.setVisible(self._properties.kitDataVisible)
@@ -329,11 +405,11 @@ class QScore(QtGui.QGraphicsScene):
             self._undoStack.clear()
             self._undoStack.setClean()
             self._inMacro = False
-            for view in self.views():
-                view.setWidth(self.scoreWidth)
+            self.widthChanged.emit(self.scoreWidth)
             self.reBuild()
             self.dirty = False
-            self._state = Waiting(self)
+            self._stateMachine = DBStateMachine(Waiting, self)
+            self.scoreDisplayChanged.emit()
 
     @property
     def score(self):
@@ -383,13 +459,19 @@ class QScore(QtGui.QGraphicsScene):
         self.placeStaffs()
         self.invalidate()
 
+    scoreDisplayChanged = QtCore.pyqtSignal()
+
     @delayCall
-    def reBuild(self):
-        self._score.formatScore(None)
+    def reBuild(self, afterwards = None):
+        if self._score.formatScore(None):
+            self.scoreDisplayChanged.emit()
         self._build()
+        if afterwards:
+            afterwards()
 
     def checkFormatting(self):
         if self._score.formatScore(None):
+            self.scoreDisplayChanged.emit()
             self.reBuild()
 
     def __iter__(self):
@@ -506,6 +588,7 @@ class QScore(QtGui.QGraphicsScene):
     def dataChanged(self, notePosition):
         staff = self._qStaffs[notePosition.staffIndex]
         staff.dataChanged(notePosition)
+        self.scoreDisplayChanged.emit()
 
     def ignoreNextClick(self):
         self._ignoreNext = True
@@ -528,6 +611,7 @@ class QScore(QtGui.QGraphicsScene):
                 if self._currentKey == None and event.text():
                     self._currentKey = unicode(event.text())
                     self._highlightCurrentKeyHead()
+                    self.update()
         return super(QScore, self).keyPressEvent(event)
 
     def keyReleaseEvent(self, event):
@@ -536,6 +620,7 @@ class QScore(QtGui.QGraphicsScene):
                 if unicode(event.text()) == self._currentKey:
                     self._currentKey = None
                     self._highlightCurrentKeyHead()
+                    self.update()
         return super(QScore, self).keyReleaseEvent(event)
 
     def getCurrentHead(self):
@@ -576,8 +661,8 @@ class QScore(QtGui.QGraphicsScene):
         else:
             if not self.hasDragSelection():
                 return
-            start = self._dragSelection[0]
-            measureIndex = self._score.getMeasureIndex(start)
+            start = self._dragSelection.start
+            measureIndex = self._score.measurePositionToIndex(start)
             measures = list(self.iterDragSelection())
             self.clearDragSelection()
             self.beginMacro("delete measures")
@@ -597,8 +682,8 @@ class QScore(QtGui.QGraphicsScene):
     def pasteMeasuresOver(self, repeating = False):
         if len(self.measureClipboard) == 0 or not self.hasDragSelection():
             return
-        start = self._dragSelection[0]
-        measureIndex = self._score.getMeasureIndex(start)
+        start = self._dragSelection.start
+        measureIndex = self._score.measurePositionToIndex(start)
         sourceLength = len(self.measureClipboard)
         targetLength = len(list(self.iterDragSelection()))
         self.clearDragSelection()
@@ -608,7 +693,7 @@ class QScore(QtGui.QGraphicsScene):
         if repeating:
             resultLength = targetLength
             while measureCount < resultLength:
-                position = self.score.getMeasurePosition(measureIndex
+                position = self.score.measureIndexToPosition(measureIndex
                                                          + measureCount)
                 clearPositions.append(position)
                 measureCount += 1
@@ -621,21 +706,21 @@ class QScore(QtGui.QGraphicsScene):
         else:
             resultLength = min([sourceLength, targetLength])
             while measureCount < resultLength:
-                position = self.score.getMeasurePosition(measureIndex
+                position = self.score.measureIndexToPosition(measureIndex
                                                          + measureCount)
                 clearPositions.append(position)
                 measureCount += 1
             command = ClearMeasureCommand(self, clearPositions)
             self.addCommand(command)
             while measureCount < targetLength:
-                deletePosition = self.score.getMeasurePosition(measureIndex
+                deletePosition = self.score.measureIndexToPosition(measureIndex
                                                                + sourceLength)
                 command = DeleteMeasureCommand(self, deletePosition,
                                                measureIndex + sourceLength)
                 self.addCommand(command)
                 measureCount += 1
             if measureCount < sourceLength:
-                position = self.score.getMeasurePosition(measureIndex
+                position = self.score.measureIndexToPosition(measureIndex
                                                          + measureCount)
                 command = InsertMeasuresCommand(self,
                                                 position,
@@ -650,13 +735,13 @@ class QScore(QtGui.QGraphicsScene):
 
     def loadScore(self, filename, quiet = False):
         try:
-            newScore = _SCORE_FACTORY(filename = filename)
+            newScore = ScoreSerializer.loadScore(filename)
         except DBErrors.DbReadError, exc:
             if not quiet:
                 msg = "Error loading DrumBurp file %s" % filename
                 QtGui.QMessageBox.warning(self.parent(),
                                           "Score load error",
-                                          msg + "\n" + str(exc))
+                                          msg + "\n" + unicode(exc))
             return False
         except Exception, exc:
             raise
@@ -666,9 +751,9 @@ class QScore(QtGui.QGraphicsScene):
 
     def saveScore(self, filename):
         try:
-            _SCORE_FACTORY.saveScore(self._score, filename)
+            ScoreSerializer.saveScore(self._score, filename)
         except StandardError, exc:
-            msg = "Error saving DrumBurp file: %s" % str(exc)
+            msg = "Error saving DrumBurp file: %s" % unicode(exc)
             QtGui.QMessageBox.warning(self.parent(),
                                       "Score save error",
                                       msg)
@@ -685,9 +770,9 @@ class QScore(QtGui.QGraphicsScene):
                 counter = None
             else:
                 counter = self.defaultCount
-        newScore = _SCORE_FACTORY(numMeasures = numMeasures,
-                                  counter = counter,
-                                  kit = kit)
+        newScore = ScoreFactory.makeEmptyScore(numMeasures = numMeasures,
+                                               counter = counter,
+                                               kit = kit)
         self._setScore(newScore)
 
     def numPages(self, pageHeight):
@@ -762,6 +847,11 @@ class QScore(QtGui.QGraphicsScene):
             command = SetLilypondFillCommand(self, lilyFill)
             self.addCommand(command)
 
+    def setLilyFormat(self, lilyFormat):
+        if lilyFormat != self.score.lilyFormat:
+            command = SetLilypondFormatCommand(self, lilyFormat)
+            self.addCommand(command)
+
     def setScoreFontSize(self, size, fontType):
         fontName = fontType + "FontSize"
         if size == getattr(self._properties, fontName):
@@ -791,8 +881,8 @@ class QScore(QtGui.QGraphicsScene):
     def getQMeasure(self, position):
         return self._qStaffs[position.staffIndex].getQMeasure(position)
 
-    def getQStaff(self, possition):
-        return self._qStaffs[possition.staffIndex]
+    def getQStaff(self, position):
+        return self._qStaffs[position.staffIndex]
 
     def highlightPlayingMeasure(self, position):
         if position == self._playingMeasure:
@@ -805,6 +895,18 @@ class QScore(QtGui.QGraphicsScene):
             return
         qMeasure = self.getQMeasure(self._playingMeasure)
         qMeasure.setPlaying(True)
+
+    def highlightNextMeasure(self, position):
+        if position == self._nextMeasure:
+            return
+        if self._nextMeasure != None:
+            qMeasure = self.getQMeasure(self._nextMeasure)
+            qMeasure.setNextToPlay(False)
+        self._nextMeasure = position
+        if self._nextMeasure == None:
+            return
+        qMeasure = self.getQMeasure(self._nextMeasure)
+        qMeasure.setNextToPlay(True)
 
     def editKit(self):
         emptyDrums = set(self.score.drumKit)
@@ -834,89 +936,35 @@ class QScore(QtGui.QGraphicsScene):
             self.reBuild()
             self.dirty = True
 
-    def _startDragging(self, qmeasure):
-        self._dragStart = qmeasure
-        self._lastDrag = qmeasure
-        self._dragSelection = [qmeasure.makeNotePosition(None, None),
-                               qmeasure.makeNotePosition(None, None)]
-        self._dragged = []
-        self._updateDragged()
+    def dragging(self, qmeasure):
+        self._dragSelection.drag(qmeasure.makeNotePosition(None, None))
         self.dragHighlight.emit(True)
 
-    def _updateDragged(self):
-        if not self.hasDragSelection():
-            for index, position in self._dragged:
-                # Turn off
-                self._setDragHighlight(position, False)
-            self._dragged = []
-            return
-        newDragged = [(index, position) for (unused, index, position) in
-                      self.score.iterMeasuresBetween(*self._dragSelection)]
-        for index, position in newDragged:
-            if all(x[0] != index for x in self._dragged):  # Turn on
-                self._setDragHighlight(position, True)
-        for index, position in self._dragged:
-            if all(x[0] != index for x in newDragged):  # Turn off
-                self._setDragHighlight(position, False)
-        self._dragged = newDragged
-
-    def dragging(self, qmeasure):
-        if self._dragStart is None:
-            self._startDragging(qmeasure)
-        elif self._lastDrag != qmeasure:
-            self._lastDrag = qmeasure
-            self._dragSelection[1] = self._lastDrag.makeNotePosition(None, None)
-            self._updateDragged()
-
-    def isDragging(self):
-        return self._dragStart is not None
-
     def endDragging(self):
-        self._dragStart = None
-        self._lastDrag = None
+        self._dragSelection.endDragging()
 
     def hasDragSelection(self):
-        return len(self._dragSelection) == 2
+        return self._dragSelection.hasDragSelection()
 
     def iterDragSelection(self):
-        if self.hasDragSelection():
-            return self.score.iterMeasuresBetween(*self._dragSelection)
-        else:
-            return iter([])
+        return self._dragSelection.iterDragSelection()
 
     def clearDragSelection(self):
-        self._dragSelection = []
-        self._updateDragged()
+        self._dragSelection.clear()
         self.dragHighlight.emit(False)
 
-    def _setDragHighlight(self, position, onOff):
-        staff = self._qStaffs[position.staffIndex]
-        qmeasure = staff.getQMeasure(position)
-        qmeasure.setDragHighlight(onOff)
-
     def inDragSelection(self, np):
-        if not self.hasDragSelection():
-            return False
-        start, end = self._dragSelection
-        return ((start.staffIndex == np.staffIndex
-                 and start.measureIndex <= np.measureIndex
-                 and (np.staffIndex < end.staffIndex or
-                      np.measureIndex <= end.measureIndex))
-                or (start.staffIndex < np.staffIndex < end.staffIndex)
-                or (np.staffIndex == end.staffIndex
-                    and np.measureIndex <= end.measureIndex))
+        return self._dragSelection.inDragSelection(np)
 
     def metaChange(self):
         return _metaChangeContext(self, self._metaData)
 
     def sendFsmEvent(self, event):
-#        print self._state, event
         try:
-            self._state = self._state.send(event)
+            self._stateMachine.send_event(event)
         except StandardError:
-            self._state = Waiting(self)
+            self._stateMachine.set_state(Waiting)
             raise
-#        print self._state
 
     def setStatusMessage(self, msg = None):
         if not msg:
@@ -939,6 +987,10 @@ class QScore(QtGui.QGraphicsScene):
             notes = notesByMeasures[measure]
             qmeasure.setPotentials(notes, head)
         self._potentials = newMeasures
+
+    def recolor(self):
+        for qsection in self._qSections:
+            qsection.recolor()
 
 
 class _metaChangeContext(object):

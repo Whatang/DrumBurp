@@ -26,15 +26,17 @@ from Data.DBConstants import (REPEAT_EXTENDER, BARLINE, DRUM_ABBR_WIDTH,
                               ALTERNATE_EXTENDER)
 from Data.NotePosition import NotePosition
 import time
+from StringIO import StringIO
 
 def getExportDate():
     return time.strftime("%d %B %Y")
 
 class Exporter(object):
-    def __init__(self, score, settings):
+    def __init__(self, score, settings, date = True):
         self.score = score
         self.settings = settings
         self._isRepeating = False
+        self._date = date
         self._repeatExtender = None
 
     def _exportScoreData(self):
@@ -47,7 +49,8 @@ class Exporter(object):
             metadataString.append("BPM       : " + str(scoreData.bpm))
         if scoreData.creatorVisible:
             metadataString.append("Tabbed by : " + scoreData.creator)
-        metadataString.append("Date      : " + getExportDate())
+        if self._date:
+            metadataString.append("Date      : " + getExportDate())
         metadataString.append("")
         return metadataString
 
@@ -68,23 +71,44 @@ class Exporter(object):
             barString = self._barString(lastBar, measure)
             lineString += barString
             lastBar = measure
-            for noteTime in range(len(measure)):
-                position.noteTime = noteTime
-                note = measure.getNote(position)
-                lineString += note
-                lineOk = lineOk or note != EMPTY_NOTE
+            if measure.simileDistance > 0:
+                referredMeasure = self.score.getReferredMeasure(self.score.measurePositionToIndex(position))
+                displayCols = referredMeasure.counter.numBeats()
+                simText = "%%%d" % measure.simileDistance
+                left = " "
+                right = " "
+                if measure.simileIndex > 0:
+                    left = "-"
+                if measure.simileIndex < measure.simileDistance - 1:
+                    right = "-"
+                while len(simText) < displayCols:
+                    simText = left + simText + right
+                lineString += simText[:displayCols]
+            else:
+                for noteTime in xrange(len(measure)):
+                    position.noteTime = noteTime
+                    note = measure.getNote(position)
+                    lineString += note
+                    lineOk = lineOk or note != EMPTY_NOTE
         barString = self._barString(lastBar, None)
         lineString += barString
         return lineString, lineOk
 
-    def _getCountLine(self, staff):
+    def _getCountLine(self, staff, position):
         countString = "  "
         lastBar = None
         for measure in staff:
             barString = self._barString(lastBar, measure)
             lastBar = measure
+            if measure.simileDistance > 0:
+                referredMeasure = self.score.getReferredMeasure(self.score.measurePositionToIndex(position))
+                displayCols = referredMeasure.counter.numBeats()
+                measureCountString = "".join("%d" % (beat + 1)
+                                             for beat in xrange(displayCols))
+            else:
+                measureCountString = "".join(measure.count())
             countString += " " * len(barString)
-            countString += "".join(measure.count())
+            countString += measureCountString
         barString = self._barString(lastBar, None)
         countString += " " * len(barString)
         return countString
@@ -110,18 +134,23 @@ class Exporter(object):
         return repeatString, delta
 
 
-    def _measureMiddle(self, repeatString, measure, delta):
+    def _measureMiddle(self, repeatString, measure, delta, position):
         if measure is not None:
+            if measure.simileDistance > 0:
+                referredMeasure = self.score.getReferredMeasure(self.score.measurePositionToIndex(position))
+                displayCols = referredMeasure.counter.numBeats()
+            else:
+                displayCols = len(measure)
             if measure.alternateText:
                 repeatString += measure.alternateText
                 delta += len(measure.alternateText)
                 self._repeatExtender = ALTERNATE_EXTENDER
                 self._isRepeating = True
             if self._isRepeating:
-                repeatString += self._repeatExtender * (len(measure) - delta)
+                repeatString += self._repeatExtender * (displayCols - delta)
                 delta = 0
             else:
-                repeatString += " " * len(measure)
+                repeatString += " " * displayCols
         return repeatString, delta
 
 
@@ -135,34 +164,91 @@ class Exporter(object):
                                 + repeatCount + repeatString[-1:])
         return repeatString
 
-    def _getRepeatString(self, staff):
-        staffString = []
+    def _getRepeatString(self, staff, position):
         hasRepeat = (self._isRepeating or
                      any(measure.isRepeatStart() for measure in staff) or
                      any(measure.alternateText for measure in staff))
         if not hasRepeat:
-            return staffString
+            return None
         repeatString = "  "
         lastMeasure = None
         delta = 0
-        for measure in list(staff) + [None]:
+        for measureIndex, measure in enumerate(list(staff) + [None]):
+            position.measureIndex = measureIndex
             repeatString, delta = self._measureBegin(repeatString,
                                                      measure, lastMeasure,
                                                      delta)
             repeatString, delta = self._measureMiddle(repeatString,
-                                                      measure, delta)
+                                                      measure, delta, position)
             repeatString = self._measureEnd(measure, repeatString)
             lastMeasure = measure
-        staffString = [repeatString]
-        return staffString
+        return repeatString
 
-    def _exportStaff(self, staff):
+    def _getSticking(self, staff, above, position):
+        hasSticking = any(measure.stickingVisible(above)
+                          for measure in staff)
+        if not hasSticking:
+            return None
+        stickingString = ["  "]
+        for measureIndex, measure in enumerate(staff):
+            position.measureIndex = measureIndex
+            if measure.simileDistance > 0:
+                referredMeasure = self.score.getReferredMeasure(self.score.measurePositionToIndex(position))
+                displayCols = referredMeasure.counter.numBeats()
+                stickingString.append(" " * displayCols)
+            else:
+                if above:
+                    stickingString.append(measure.aboveText)
+                else:
+                    stickingString.append(measure.belowText)
+        stickingString = " ".join(stickingString)
+        if all(ch == " " for ch in stickingString):
+            return None
+        return stickingString
+
+    def _getBpmChanges(self, staff, position):
+        hasBpmChanges = any(measure.newBpm > 0 for measure in staff)
+        if not hasBpmChanges:
+            return None
+        bpmString = ["  "]
+        for measureIndex, measure in enumerate(staff):
+            position.measureIndex = measureIndex
+            if measure.simileDistance > 0:
+                referredMeasure = self.score.getReferredMeasure(self.score.measurePositionToIndex(position))
+                displayCols = referredMeasure.counter.numBeats()
+            else:
+                referredMeasure = measure
+                displayCols = len(measure)
+            if referredMeasure.newBpm > 0:
+                thisBpmString = "BPM=%d" % referredMeasure.newBpm
+                if len(thisBpmString) > displayCols:
+                    thisBpmString = thisBpmString[:displayCols]
+                elif len(thisBpmString) < displayCols:
+                    thisBpmString += " " * (displayCols - len(thisBpmString))
+                bpmString.append(thisBpmString)
+            else:
+                bpmString.append(" " * displayCols)
+        bpmString = " ".join(bpmString)
+        if all(ch == " " for ch in bpmString):
+            return None
+        return bpmString
+
+    def _exportStaff(self, staff, staffIndex):
         kit = self.score.drumKit
         kitSize = len(kit)
         indices = range(0, kitSize)
         indices.reverse()
-        position = NotePosition()
-        staffString = self._getRepeatString(staff)
+        position = NotePosition(staffIndex = staffIndex)
+        staffString = []
+        bpmString = self._getBpmChanges(staff, position)
+        if bpmString:
+            staffString.append(bpmString)
+        repeatString = self._getRepeatString(staff, position)
+        if repeatString:
+            staffString.append(repeatString)
+        stickAbove = self._getSticking(staff, True, position)
+        if stickAbove:
+            staffString.append(stickAbove)
         for drumIndex in indices:
             drum = kit[drumIndex]
             lineString, lineOk = self._getDrumLine(staff,
@@ -172,8 +258,11 @@ class Exporter(object):
             if lineOk or drum.locked or not self.settings.omitEmpty:
                 staffString.append(lineString)
         if self.settings.printCounts:
-            countString = self._getCountLine(staff)
+            countString = self._getCountLine(staff, position)
             staffString.append(countString)
+        stickBelow = self._getSticking(staff, False, position)
+        if stickBelow:
+            staffString.append(stickBelow)
         return staffString
 
     def _exportKit(self):
@@ -190,7 +279,7 @@ class Exporter(object):
         sectionIndex = 0
         self._isRepeating = False
         self._repeatExtender = REPEAT_EXTENDER
-        for staff in self.score.iterStaffs():
+        for staffIndex, staff in enumerate(self.score.iterStaffs()):
             assert staff.isConsistent()
             if newSection:
                 self._isRepeating = False
@@ -207,29 +296,38 @@ class Exporter(object):
                         asciiString.append("")
                     sectionIndex += 1
             newSection = staff.isSectionEnd()
-            staffString = self._exportStaff(staff)
+            staffString = self._exportStaff(staff, staffIndex)
             asciiString.extend(staffString)
             asciiString.append("")
 
         asciiString = asciiString[:-1]
         return asciiString
 
-    def export(self, handle):
+    def export(self, outHandle):
         metadataString = self._exportScoreData()
         asciiString = []
         asciiString = self._exportMusic(asciiString)
         kitString = self._exportKit()
+        handle = StringIO()
         print >> handle, ("Tabbed with DrumBurp, "
                           "a drum tab editor from www.whatang.org")
+        print >> handle, ""
         if self.settings.metadata:
             for mString in metadataString:
-                print >> handle, mString
+                print >> handle, unicode(mString)
+            print >> handle, ""
         if self.settings.kitKey:
             for iString in kitString:
-                print >> handle, iString
+                print >> handle, unicode(iString)
+            print >> handle, ""
         for sString in asciiString:
-            print >> handle, sString
+            print >> handle, unicode(sString)
         print >> handle, ""
         print >> handle, ("Tabbed with DrumBurp, "
                           "a drum tab editor from www.whatang.org")
-
+        lines = handle.getvalue().splitlines()
+        lastBlank = False
+        for line in lines:
+            if line or not lastBlank:
+                print >> outHandle, line
+            lastBlank = (len(line) == 0)

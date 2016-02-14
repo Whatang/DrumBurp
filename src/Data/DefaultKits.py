@@ -21,7 +21,6 @@ Created on 17 Sep 2011
 
 @author: Mike Thomas
 '''
-#pylint:disable-msg=C0301
 
 STEM_UP = 0
 STEM_DOWN = 1

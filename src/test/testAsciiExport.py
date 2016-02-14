@@ -10,7 +10,6 @@ from Data import DrumKit, Drum, MeasureCount
 from Data.Score import Score
 from Data.NotePosition import NotePosition
 from Notation.AsciiExport import Exporter, getExportDate
-# pylint:disable-msg=C0301
 
 class TestExport(unittest.TestCase):
     exportDate = getExportDate()
@@ -27,13 +26,12 @@ class TestExport(unittest.TestCase):
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
+                          '',
                           'Title     : ',
                           'Artist    : ',
                           'BPM       : 120',
                           'Tabbed by : ',
                           'Date      : ' + self.exportDate,
-                          '',
-                          '',
                           '',
                           'Tabbed with DrumBurp, a drum tab editor from www.whatang.org'])
 
@@ -46,6 +44,7 @@ class TestExport(unittest.TestCase):
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
+                          '',
                           'Title     : ',
                           'Artist    : ',
                           'BPM       : 120',
@@ -54,7 +53,6 @@ class TestExport(unittest.TestCase):
                           '',
                           'Cr - Crash',
                           'Hh - HiHat',
-                          '',
                           '',
                           'Tabbed with DrumBurp, a drum tab editor from www.whatang.org'])
 
@@ -70,6 +68,7 @@ class TestExport(unittest.TestCase):
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
+                          '',
                           'Title     : ',
                           'Artist    : ',
                           'BPM       : 120',
@@ -102,6 +101,7 @@ class TestExport(unittest.TestCase):
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
+                          '',
                           'Title     : ',
                           'Artist    : ',
                           'BPM       : 120',
@@ -135,6 +135,7 @@ class TestExport(unittest.TestCase):
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
+                          '',
                           'Title     : ',
                           'Artist    : ',
                           'BPM       : 120',
@@ -177,6 +178,7 @@ class TestExport(unittest.TestCase):
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
+                          '',
                           'Title     : ',
                           'Artist    : ',
                           'BPM       : 120',
@@ -192,7 +194,6 @@ class TestExport(unittest.TestCase):
                           'Cr|----------------|----------------|',
                           'Hh|x---------------|y---------------|',
                           '   1e+a2e+a3e+a4e+a 1e+a2e+a3e+a4e+a ',
-                          '',
                           '',
                           'Section 2',
                           '~~~~~~~~~',
@@ -217,12 +218,13 @@ class TestExport(unittest.TestCase):
         score.addNote(NotePosition(0, 0, 0, 0), "x")
         score.addNote(NotePosition(0, 1, 0, 0), "y")
         score.addNote(NotePosition(0, 2, 0, 0), "z")
-        score.getMeasure(0).setRepeatStart(True)
-        score.getMeasure(0).setRepeatEnd(True)
+        score.getMeasureByIndex(0).setRepeatStart(True)
+        score.getMeasureByIndex(0).setRepeatEnd(True)
         score.formatScore(40)
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
+                          '',
                           'Title     : ',
                           'Artist    : ',
                           'BPM       : 120',
@@ -232,7 +234,7 @@ class TestExport(unittest.TestCase):
                           'Cr - Crash',
                           'Hh - HiHat',
                           '',
-                          '  /-------------2x-\                ',
+                          r'  /-------------2x-\                ',
                           'Cr|----------------|----------------|',
                           'Hh|x---------------|y---------------|',
                           '   1e+a2e+a3e+a4e+a 1e+a2e+a3e+a4e+a ',
@@ -257,15 +259,16 @@ class TestExport(unittest.TestCase):
         score.addNote(NotePosition(0, 0, 0, 0), "x")
         score.addNote(NotePosition(0, 1, 0, 0), "y")
         score.addNote(NotePosition(0, 2, 0, 0), "z")
-        score.getMeasure(0).setRepeatStart(True)
-        score.getMeasure(0).setRepeatEnd(True)
-        score.getMeasure(1).setRepeatStart(True)
-        score.getMeasure(1).setRepeatEnd(True)
-        score.getMeasure(1).repeatCount = 3
+        score.getMeasureByIndex(0).setRepeatStart(True)
+        score.getMeasureByIndex(0).setRepeatEnd(True)
+        score.getMeasureByIndex(1).setRepeatStart(True)
+        score.getMeasureByIndex(1).setRepeatEnd(True)
+        score.getMeasureByIndex(1).repeatCount = 3
         score.formatScore(40)
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
+                          '',
                           'Title     : ',
                           'Artist    : ',
                           'BPM       : 120',
@@ -300,15 +303,16 @@ class TestExport(unittest.TestCase):
         score.addNote(NotePosition(0, 0, 0, 0), "x")
         score.addNote(NotePosition(0, 1, 0, 0), "y")
         score.addNote(NotePosition(0, 2, 0, 0), "z")
-        score.getMeasure(0).setRepeatStart(True)
-        score.getMeasure(0).setRepeatEnd(True)
-        score.getMeasure(0).alternateText = "1."
-        score.getMeasure(1).setRepeatEnd(True)
-        score.getMeasure(1).alternateText = "2."
+        score.getMeasureByIndex(0).setRepeatStart(True)
+        score.getMeasureByIndex(0).setRepeatEnd(True)
+        score.getMeasureByIndex(0).alternateText = "1."
+        score.getMeasureByIndex(1).setRepeatEnd(True)
+        score.getMeasureByIndex(1).alternateText = "2."
         score.formatScore(40)
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
+                          '',
                           'Title     : ',
                           'Artist    : ',
                           'BPM       : 120',
@@ -343,12 +347,13 @@ class TestExport(unittest.TestCase):
         score.addNote(NotePosition(0, 0, 0, 0), "x")
         score.addNote(NotePosition(0, 1, 0, 0), "y")
         score.addNote(NotePosition(0, 2, 0, 0), "z")
-        score.getMeasure(0).setRepeatStart(True)
-        score.getMeasure(2).setRepeatEnd(True)
+        score.getMeasureByIndex(0).setRepeatStart(True)
+        score.getMeasureByIndex(2).setRepeatEnd(True)
         score.formatScore(40)
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
+                          '',
                           'Title     : ',
                           'Artist    : ',
                           'BPM       : 120',

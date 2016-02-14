@@ -25,12 +25,10 @@ Created on Mar 31, 2013
 from PyQt4.QtGui import QDialog
 from PyQt4.QtCore import QTimer
 from DBVersion import doesNewerVersionExist
-from ui_versionDownloader import Ui_VersionDownloader
+from GUI.ui_versionDownloader import Ui_VersionDownloader
+
 class QVersionDownloader(QDialog, Ui_VersionDownloader):
     def __init__(self, newer = None, parent = None):
-        '''
-        Constructor
-        '''
         super(QVersionDownloader, self).__init__(parent = parent)
         self.setupUi(self)
         QTimer.singleShot(0, lambda : self._download(newer))

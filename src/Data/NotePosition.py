@@ -22,7 +22,7 @@ Created on 14 Dec 2010
 @author: Mike Thomas
 '''
 
-from DBErrors import BadNoteSpecification
+from Data.DBErrors import BadNoteSpecification
 import copy
 
 class NotePosition(object):

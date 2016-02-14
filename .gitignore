@@ -1,0 +1,5 @@
+*.pyc
+.pydevproject
+.project
+.settings
+Thumbs.db

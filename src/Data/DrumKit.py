@@ -23,17 +23,10 @@ Created on 12 Dec 2010
 
 '''
 
-from Drum import Drum, HeadData
-from DefaultKits import STEM_DOWN, STEM_UP, NAMED_DEFAULTS
-from DBErrors import DuplicateDrumError, NoSuchDrumError
+# from Data.DefaultKits import STEM_DOWN, STEM_UP
+from Data.DBErrors import DuplicateDrumError, NoSuchDrumError
 
 class DrumKit(object):
-    '''
-    classdocs
-    '''
-    UP = STEM_UP
-    DOWN = STEM_DOWN
-
     def __init__(self):
         self._drums = []
         self._lily = {}
@@ -53,8 +46,8 @@ class DrumKit(object):
         self._drums.append(drum)
 
     def deleteDrum(self, name = None, index = None):
-        assert(not(index is None and name is None))
-        assert(not(index is not None and name is not None))
+        assert not(index is None and name is None)
+        assert not(index is not None and name is not None)
         if name is not None:
             index = [i for i, dr in enumerate(self._drums)
                      if dr.name == name]
@@ -72,74 +65,7 @@ class DrumKit(object):
         drum = self._drums[drumIndex]
         return drum.shortcutsAndNoteHeads()
 
-    def write(self, indenter):
-        with indenter.section("KIT_START", "KIT_END"):
-            for drum in self:
-                drum.write(indenter)
-
-    def read(self, scoreIterator):
-        class DrumTracker(object):
-            lastDrum = None
-            @classmethod
-            def addDrum(cls, lineData):
-                fields = lineData.split(",")
-                if len(fields) > 3:
-                    fields[3] = (fields[3] == "True")
-                    if len(fields) > 4:
-                        fields = fields[:3]
-                drum = Drum(*fields)
-                self.addDrum(drum)
-                cls.lastDrum = drum
-            @classmethod
-            def readHeadData(cls, headData):
-                cls.lastDrum.readHeadData(headData)
-        tracker = DrumTracker
-        with scoreIterator.section("KIT_START", "KIT_END") as section:
-            section.readCallback("DRUM", tracker.addDrum)
-            section.readCallback("NOTEHEAD", tracker.readHeadData)
-        for drum in self:
-            if len(drum) == 0:
-                drum.guessHeadData()
-            drum.checkShortcuts()
-
     def getDefaultHead(self, index):
         return self[index].head
 
-def _loadDefaultKit(kit, kitInfo = None):
-    for (drumData, midiNote, notationHead,
-         notationLine, stemDirection) in kitInfo["drums"]:
-        drum = Drum(*drumData)
-        headData = HeadData(midiNote = midiNote,
-                            notationHead = notationHead,
-                            notationLine = notationLine,
-                            stemDirection = stemDirection)
-        drum.addNoteHead(drum.head, headData)
-        for (extraHead,
-             newMidi,
-             newMidiVolume,
-             newEffect,
-             newNotationHead,
-             newNotationEffect,
-             shortcut) in kitInfo["heads"].get(drum.abbr, []):
-            if newMidi is None:
-                newMidi = midiNote
-            if newMidiVolume is None:
-                newMidiVolume = headData.midiVolume
-            newData = HeadData(newMidi, newMidiVolume, newEffect,
-                               notationLine = notationLine,
-                               notationHead = newNotationHead,
-                               notationEffect = newNotationEffect,
-                               stemDirection = stemDirection,
-                               shortcut = shortcut)
-            drum.addNoteHead(extraHead, newData)
-        drum.checkShortcuts()
-        kit.addDrum(drum)
-
-def getNamedDefaultKit(defaultName = None):
-    if defaultName is None:
-        defaultName = "Default"
-    kitInfo = NAMED_DEFAULTS[defaultName]
-    kit = DrumKit()
-    _loadDefaultKit(kit, kitInfo)
-    return kit
 

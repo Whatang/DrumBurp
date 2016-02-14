@@ -22,15 +22,21 @@ Created on 12 Dec 2010
 @author: Mike Thomas
 '''
 
-#pylint:disable-msg=C0301
+# Storage & text constants
 
 EMPTY_NOTE = "-"
-BAR_TYPES = {"NO_BAR": 0,
-             "NORMAL_BAR": 1,
-             "REPEAT_START": 2,
-             "REPEAT_END":4,
-             "SECTION_END":8,
-             "LINE_BREAK":16}
+NO_BAR = "NO_BAR"
+NORMAL_BAR = "NORMAL_BAR"
+REPEAT_START = "REPEAT_START"
+REPEAT_END_STR = "REPEAT_END"
+SECTION_END = "SECTION_END"
+LINE_BREAK = "LINE_BREAK"
+BAR_TYPES = {NO_BAR: 0,
+             NORMAL_BAR: 1,
+             REPEAT_START: 2,
+             REPEAT_END_STR:4,
+             SECTION_END:8,
+             LINE_BREAK:16}
 BARLINE = "|"
 REPEAT_STARTER = "/"
 REPEAT_END = "\\"
@@ -38,3 +44,18 @@ REPEAT_EXTENDER = EMPTY_NOTE
 ALTERNATE_EXTENDER = "_"
 DRUM_ABBR_WIDTH = 2
 BEAT_COUNT = "^"
+
+# MIDI
+MIDITICKSPERBEAT = 192
+
+# File format numbers
+DB_FILE_FORMAT_STR = "DB_FILE_FORMAT"
+DBFF_0 = 0
+DBFF_1 = 1
+CURRENT_FILE_FORMAT = DBFF_1
+
+# Kit file format numbers
+DB_KIT_FILE_FORMAT_STR = "DB_KIT_FILE_FORMAT"
+KIT_FF_0 = 0
+KIT_FF_1 = 1
+CURRENT_KIT_FORMAT = KIT_FF_1

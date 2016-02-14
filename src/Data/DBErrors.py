@@ -39,13 +39,21 @@ class OverSizeMeasure(StandardError):
 
 class DbReadError(StandardError):
     "There was an error reading the score."
-    
-    def __init__(self, scoreIterator):
-        self.lineNumber = scoreIterator.lineNumber
-        self.line = scoreIterator.currentLine
+
+    def __init__(self, scoreIterator = None):
+        super(DbReadError, self).__init__()
+        self.lineNumber = None
+        self.line = None
+        if scoreIterator is not None:
+            self.lineNumber = scoreIterator.lineNumber
+            self.line = scoreIterator.currentLine
+
+    def setIterator(self, iterator):
+        self.lineNumber = iterator.lineNumber
+        self.line = iterator.currentLine
 
     def __str__(self):
-        return "\n".join(self.__doc__, "", "Line %d" % self.lineNumber, self.line)
+        return "\n".join([self.__doc__, "", "Line %d" % self.lineNumber, self.line])
 
 class UnrecognisedLine(DbReadError):
     "Unrecognised line type."
@@ -59,6 +67,12 @@ class InvalidNonNegativeInteger(DbReadError):
 class InvalidPositiveInteger(DbReadError):
     "The value must be a positive integer."
 
+class BadBase64(DbReadError):
+    "Bad Base64 string"
+
+class BadUnicode(DbReadError):
+    "Bad Unicode encoding"
+
 class TooManyBarLines(DbReadError):
     "There are too many bar lines specifed for this measure."
 
@@ -70,3 +84,6 @@ class DBVersionError(DbReadError):
 
     def __str__(self):
         return self.__doc__
+
+class InconsistentRepeats(StandardError):
+    "Bad repeat data"

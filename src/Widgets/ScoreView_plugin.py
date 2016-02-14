@@ -22,7 +22,7 @@ Created on 5 Dec 2010
 @author: Mike Thomas
 '''
 from PyQt4.QtDesigner import QPyDesignerCustomWidgetPlugin
-from ScoreView import ScoreView
+from .ScoreView import ScoreView
 
 #pylint: disable-msg=R0923
 
