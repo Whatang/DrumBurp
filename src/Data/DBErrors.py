@@ -53,7 +53,12 @@ class DbReadError(StandardError):
         self.line = iterator.currentLine
 
     def __str__(self):
-        return "\n".join([self.__doc__, "", "Line %d" % self.lineNumber, self.line])
+        if self.lineNumber is not None and self.line is not None:
+            return "\n".join([self.__doc__, "", "Line %d" % self.lineNumber, self.line])
+        return "\n" + self.__doc__
+
+class NoContent(DbReadError):
+    "No content in file"
 
 class UnrecognisedLine(DbReadError):
     "Unrecognised line type."

@@ -26,6 +26,7 @@ import itertools
 from cStringIO import StringIO
 from Data.fileStructures import dbfsv0, dbfsv1
 from Data.DBErrors import DBVersionError
+from Data.DBErrors import DBVersionError, NoContent
 from Data import DBConstants
 import Data.fileUtils as fileUtils
 
@@ -43,7 +44,10 @@ class ScoreSerializer(object):
     def read(handle):
         # Check the file format version
         handle, handleCopy = itertools.tee(handle)
-        firstline = handleCopy.next()
+        try:
+            firstline = handleCopy.next()
+        except StopIteration:
+            raise NoContent()
         del handleCopy
         scoreIterator = fileUtils.dbFileIterator(handle)
         if firstline.startswith(DBConstants.DB_FILE_FORMAT_STR):
