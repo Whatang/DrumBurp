@@ -25,11 +25,21 @@ Created on Jun 20, 2015
 import unittest
 import glob
 import os
-from cStringIO import StringIO
+import tempfile
+import codecs
+import cStringIO
 from Data.ScoreSerializer import ScoreSerializer
+from Data.ScoreFactory import ScoreFactory
 from Data import DBConstants
 from Data import DBErrors
 from Data import fileUtils
+
+def StringIO(*args, **kwargs):  # IGNORE:invalid-name
+    "Utility function to wrap StringIO with utf-8 reading/writing"
+    handle = cStringIO.StringIO(*args, **kwargs)
+    return codecs.StreamReaderWriter(handle,
+                                     codecs.getreader('utf-8'),
+                                     codecs.getwriter('utf-8'))
 
 class TestScoreSerializerGeneral(unittest.TestCase):
     def testReadTooHighVersionNumber(self):
@@ -385,10 +395,30 @@ class TestScoreSerializerV1(unittest.TestCase):
             score = ScoreSerializer.loadScore(testfile)
             written = StringIO()
             ScoreSerializer.write(score, written, DBConstants.DBFF_1)
-            with fileUtils.DataReader(testfile) as reader:
-                data = reader.read().splitlines()
-            written = written.getvalue().splitlines()
-            self.assertEqual(data, written)
+            written.seek(0)
+            score2 = ScoreSerializer.read(written)
+            self.assertEqual(score.hashScore(), score2.hashScore())
+
+
+class TestUnicode(unittest.TestCase):
+    def testWriteUnicode(self):
+        tmp = tempfile.NamedTemporaryFile(suffix = ".brp",
+                                          prefix = "unicode_test_v1",
+                                          delete = False)
+        try:
+            tmp.close()
+            score = ScoreFactory.makeEmptyScore(8)
+            score.scoreData.title = u"\u20b9"
+            ScoreSerializer.saveScore(score, tmp.name)
+            score2 = ScoreSerializer.loadScore(tmp.name)
+            self.assertEqual(score.hashScore(), score2.hashScore())
+            self.assertEqual(score2.scoreData.title, u"\u20b9")
+        finally:
+            try:
+                tmp.close()
+            except RuntimeError:
+                pass
+            os.unlink(tmp.name)
 
 if __name__ == "__main__":
     unittest.main()
