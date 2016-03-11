@@ -270,6 +270,8 @@ class TestScoreSerializerV0(unittest.TestCase):
         pass
     class NoLilySize(RuntimeError):
         pass
+    class NoLilyFill(RuntimeError):
+        pass
     class NoLilyPages(RuntimeError):
         pass
     class ShortNoteHeads(RuntimeError):
@@ -292,6 +294,8 @@ class TestScoreSerializerV0(unittest.TestCase):
                     raise self.NoLilySize()
                 elif line2.lstrip().startswith('LILYPAGES'):
                     raise self.NoLilyPages()
+                elif line2.lstrip().startswith('LILYFILL'):
+                    raise self.NoLilyFill()
                 elif line2.startswith("  MEASURECOUNTSVISIBLE"):
                     raise self.MCounts()
                 elif "NORMAL_BAR," in line1:
@@ -349,6 +353,9 @@ class TestScoreSerializerV0(unittest.TestCase):
                 except self.NoLilyPages:
                     written = [x for x in written
                                if not x.lstrip().startswith("LILYPAGES")]
+                except self.NoLilyFill:
+                    written = [x for x in written
+                               if not x.lstrip().startswith("LILYFILL")]
                 except self.ShortNoteHeads:
                     data, written = self._tidyShortNoteHeads(data, written)
                 except self.OldTriplets:
