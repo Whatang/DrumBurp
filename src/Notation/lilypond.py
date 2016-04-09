@@ -332,6 +332,8 @@ class LilyMeasure(object):
             lilyStick.append(stick + dur)
             if restTime:
                 lilyStick.append('" "' + restTime)
+        if isTriplet:
+            lilyStick.append("}")
         lilyStick = " ".join(lilyStick)
         lilyStick = r" \lyricmode { " + lilyStick + " }"
         lilyStick = r'\new Lyrics \with { align%sContext = #"main" }' + lilyStick
