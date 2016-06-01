@@ -596,6 +596,9 @@ class LilypondScore(object):
     @staticmethod
     def _getNextRepeats(repeatCommands, hasAlternate, measure):
         if measure.isRepeatStart():
+            if hasAlternate > 0:
+                repeatCommands.append("(volta #f)")
+                hasAlternate = -1
             repeatCommands.append("start-repeat")
         if measure.alternateText is not None:
             if hasAlternate > 0:
