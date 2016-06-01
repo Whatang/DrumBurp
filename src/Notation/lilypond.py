@@ -596,13 +596,16 @@ class LilypondScore(object):
     @staticmethod
     def _getNextRepeats(repeatCommands, hasAlternate, measure):
         if measure.isRepeatStart():
+            if hasAlternate > 0:
+                repeatCommands.append("(volta #f)")
+                hasAlternate = -1
             repeatCommands.append("start-repeat")
         if measure.alternateText is not None:
-            if hasAlternate:
+            if hasAlternate > 0:
                 repeatCommands.append("(volta #f)")
             repeatCommands.append("(volta %s)" %
                                   lilyString(measure.alternateText))
-            hasAlternate = True
+            hasAlternate = 0
         return hasAlternate
 
 
@@ -640,10 +643,12 @@ class LilypondScore(object):
                 self.indenter(r'\mark %s'
                               % lilyString("x%d" % measure.repeatCount))
             repeatCommands.append("end-repeat")
-        if hasAlternate and (measure.isSectionEnd() or
-            measure.isRepeatEnd()):
-            repeatCommands.append("(volta #f)")
-            hasAlternate = False
+        if hasAlternate >= 0:
+            hasAlternate += 1
+            if (measure.isSectionEnd() or measure.isRepeatEnd()
+                or hasAlternate == 2):
+                repeatCommands.append("(volta #f)")
+                hasAlternate = -1
         return hasAlternate
 
 
@@ -687,7 +692,7 @@ class LilypondScore(object):
     def _writeMusic(self):
         secIndex, secTitle = self._getNextSectionTitle(-1)
         repeatCommands = []
-        hasAlternate = False
+        hasAlternate = -1
         self._lastTimeSig = None
         self._firstMeasureRepeat()
         percentRepeated = False
