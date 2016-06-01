@@ -51,7 +51,7 @@ from DBVersion import APPNAME, DB_VERSION, doesNewerVersionExist
 from Data.DBConstants import CURRENT_FILE_FORMAT
 from Data.DBErrors import InconsistentRepeats
 from Data import FontOptions
-from Notation.lilypond import LilypondScore, LilypondProblem
+from Notation.lilypond import LilypondScore, LilypondProblem, findLilyPath
 from Notation import AsciiExport
 # pylint:disable=too-many-instance-attributes,too-many-public-methods
 
@@ -93,6 +93,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.paperBox.blockSignals(False)
         settings = self._makeQSettings()
         self.lilyPath = settings.value("LilypondPath").toString()
+        if not self.lilyPath or not os.path.exists(self.lilyPath):
+            self.lilyPath = findLilyPath()
         self.recentFiles = [unicode(fname) for fname in
                             settings.value("RecentFiles").toStringList()
                             if os.path.exists(unicode(fname))]
@@ -1194,3 +1196,4 @@ class VersionCheckThread(QThread):
 
     def run(self):
         self.newVersionInfo = doesNewerVersionExist()
+
