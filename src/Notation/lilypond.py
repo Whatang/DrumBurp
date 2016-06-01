@@ -29,6 +29,9 @@ from Data.DefaultKits import STEM_DOWN, STEM_UP
 from DBVersion import DB_VERSION
 
 import sys
+import os
+import subprocess
+import platform
 
 class LilyIndenter(object):
     def __init__(self, spaces = 2):
@@ -822,3 +825,41 @@ class LilypondScore(object):
                    'length (ly:music-length note)))
 
 """)
+
+def findLilyPath():
+    platsys = platform.system()
+    if platsys == 'Windows':
+        return _findWindowsLilyPath()
+    elif platsys == "Linux":
+        return _findLinuxLilyPath()
+    else:
+        return None
+
+def _findWindowsLilyPath():
+    for drive in map(chr, xrange(0x41, 0x5a)):
+        if not os.path.exists(drive + ":"):
+            continue
+        for basepath in (drive + r":\Program Files\Lilypond",
+                         drive + r":\Program Files (x86)\Lilypond"):
+            if os.path.exists(basepath):
+                path = os.path.join(basepath, "usr", "bin", "lilypond.exe")
+                if os.path.exists(path):
+                    return path
+    if "PATH" in os.environ:
+        for basepath in os.environ["PATH"].split(";"):
+            path = os.path.join(basepath, "lilypond.exe")
+            if os.path.exists(path):
+                return path
+    return None
+
+def _findLinuxLilyPath():
+    try:
+        path = subprocess.check_output(['which', 'lilypond'])
+        return path.strip()
+    except subprocess.CalledProcessError:
+        pass
+    return None
+
+if __name__ == "__main__":
+    print(findLilyPath())
+

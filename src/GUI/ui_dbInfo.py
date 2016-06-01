@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\DrumBurp\src\GUI\dbInfo.ui'
+# Form implementation generated from reading ui file 'C:\Users\mike_000\workspace\DrumBurp\src\GUI\dbInfo.ui'
 #
-# Created: Sat Mar 31 13:52:20 2012
-#      by: PyQt4 UI code generator 4.9.1
+# Created: Wed Jun 01 21:43:09 2016
+#      by: PyQt4 UI code generator 4.11
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_InfoDialog(object):
     def setupUi(self, InfoDialog):
@@ -133,27 +142,27 @@ class Ui_InfoDialog(object):
         QtCore.QMetaObject.connectSlotsByName(InfoDialog)
 
     def retranslateUi(self, InfoDialog):
-        InfoDialog.setWindowTitle(QtGui.QApplication.translate("InfoDialog", "DrumBurp Information", None, QtGui.QApplication.UnicodeUTF8))
-        self.copyrightLabel.setText(QtGui.QApplication.translate("InfoDialog", "DrumBurp is Copyright 2011-12 Michael Thomas. All rights reserved.", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_6.setText(QtGui.QApplication.translate("InfoDialog", "Contact Details", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_3.setText(QtGui.QApplication.translate("InfoDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        InfoDialog.setWindowTitle(_translate("InfoDialog", "DrumBurp Information", None))
+        self.copyrightLabel.setText(_translate("InfoDialog", "DrumBurp is Copyright 2011-16 Michael Thomas. All rights reserved.", None))
+        self.label_6.setText(_translate("InfoDialog", "Contact Details", None))
+        self.label_3.setText(_translate("InfoDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">For more information go to </span><a href=\"http://www.whatang.org\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">www.whatang.org</span></a><span style=\" font-size:8pt;\"> or email </span><a href=\"mailto:drumburp@whatang.org\"><span style=\" text-decoration: underline; color:#0000ff;\">drumburp@whatang.org</span></a><span style=\" font-size:8pt;\">.</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_7.setText(QtGui.QApplication.translate("InfoDialog", "Technologies", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setText(QtGui.QApplication.translate("InfoDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">For more information go to </span><a href=\"http://www.whatang.org\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">www.whatang.org</span></a><span style=\" font-size:8pt;\"> or email </span><a href=\"mailto:drumburp@whatang.org\"><span style=\" text-decoration: underline; color:#0000ff;\">drumburp@whatang.org</span></a><span style=\" font-size:8pt;\">.</span></p></body></html>", None))
+        self.label_7.setText(_translate("InfoDialog", "Technologies", None))
+        self.label_4.setText(_translate("InfoDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">DrumBurp is built using </span><a href=\"http://www.python.org\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">Python</span></a><span style=\" font-size:8pt;\"> 2.6, </span><a href=\"http://www.riverbankcomputing.co.uk\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">PyQt</span></a><span style=\" font-size:8pt;\"> 4.8 and </span><a href=\"http://www.pygame.org\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">PyGame</span></a><span style=\" font-size:8pt;\"> 1.9.1.</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.licenseButton.setText(QtGui.QApplication.translate("InfoDialog", "License", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_5.setText(QtGui.QApplication.translate("InfoDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">DrumBurp is built using </span><a href=\"http://www.python.org\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">Python</span></a><span style=\" font-size:8pt;\"> 2.7, </span><a href=\"http://www.riverbankcomputing.co.uk\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">PyQt</span></a><span style=\" font-size:8pt;\"> 4.8 and </span><a href=\"http://www.pygame.org\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">PyGame</span></a><span style=\" font-size:8pt;\"> 1.9.1.</span></p></body></html>", None))
+        self.licenseButton.setText(_translate("InfoDialog", "License", None))
+        self.label_5.setText(_translate("InfoDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">DrumBurp is issued under the </span><a href=\"http://www.gnu.org/licenses/gpl.html\"><span style=\" text-decoration: underline; color:#0000ff;\">GNU GPLv3</span></a><span style=\" font-size:8pt;\">.</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_8.setText(QtGui.QApplication.translate("InfoDialog", "Cost", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_9.setText(QtGui.QApplication.translate("InfoDialog", "DrumBurp is free for private, non-commercial use. Donations to fund DrumBurp development & support are welcome: please see the website.", None, QtGui.QApplication.UnicodeUTF8))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">DrumBurp is issued under the </span><a href=\"http://www.gnu.org/licenses/gpl.html\"><span style=\" text-decoration: underline; color:#0000ff;\">GNU GPLv3</span></a><span style=\" font-size:8pt;\">.</span></p></body></html>", None))
+        self.label_8.setText(_translate("InfoDialog", "Cost", None))
+        self.label_9.setText(_translate("InfoDialog", "DrumBurp is free for private, non-commercial use. Donations to fund DrumBurp development & support are welcome: please see the website.", None))
 
 import DrumBurp_rc

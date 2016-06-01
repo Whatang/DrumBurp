@@ -51,7 +51,7 @@ from DBVersion import APPNAME, DB_VERSION, doesNewerVersionExist
 from Data.DBConstants import CURRENT_FILE_FORMAT
 from Data.DBErrors import InconsistentRepeats
 from Data import FontOptions
-from Notation.lilypond import LilypondScore, LilypondProblem
+from Notation.lilypond import LilypondScore, LilypondProblem, findLilyPath
 from Notation import AsciiExport
 # pylint:disable=too-many-instance-attributes,too-many-public-methods
 
@@ -60,6 +60,12 @@ class FakeQSettings(object):
         return QVariant()
 
     def setValue(self, key_, value_):  # IGNORE:no-self-use
+        return
+
+    def contains(self, key_):
+        return False
+
+    def sync(self):
         return
 
 
@@ -93,6 +99,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.paperBox.blockSignals(False)
         settings = self._makeQSettings()
         self.lilyPath = settings.value("LilypondPath").toString()
+        if not self.lilyPath or not os.path.exists(self.lilyPath):
+            self.lilyPath = findLilyPath()
         self.recentFiles = [unicode(fname) for fname in
                             settings.value("RecentFiles").toStringList()
                             if os.path.exists(unicode(fname))]
@@ -1143,6 +1151,17 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
 
     def checkLilypondPath(self, existing = None):
+        if not existing and not self.lilyPath:
+            QMessageBox.information(self, "Lilypond",
+                                    "Lilypond is a program for displaying music "
+                                    "notation. DrumBurp can export Lilypond files "
+                                    "and use Lilypond to display your drum score "
+                                    "as sheet music. First you must download "
+                                    "and install Lilypond from www.lilypond.org "
+                                    "and set the path to the lilypond program in "
+                                    "this window.",
+                                    buttons = QMessageBox.Ok,
+                                    defaultButton = QMessageBox.Ok)
         if (self.lilyPath is None
             or not os.path.exists(self.lilyPath)
             or existing is not None):
@@ -1150,7 +1169,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             path = QFileDialog.getOpenFileName(parent = self,
                                                caption = caption,
                                                directory = existing)
-            if path is None or not os.path.exists(path):
+            if not path and existing:
+                path = existing
+            if not path or not os.path.exists(path):
                 self.lilyPreviewControls.setEnabled(False)
                 return
             self.lilyPreviewControls.setEnabled(True)
@@ -1194,3 +1215,4 @@ class VersionCheckThread(QThread):
 
     def run(self):
         self.newVersionInfo = doesNewerVersionExist()
+

@@ -71,6 +71,8 @@ class ButtonDown(DbState):
         return event.note != self.event.note
 
     def release(self, event_):
+        if self.event.measure.isSimile():
+            return
         head = self.qscore.getCurrentHead()
         command = ToggleNote(self.qscore, self.event.note, head)
         self.qscore.addCommand(command)
@@ -336,7 +338,8 @@ DBStateMachine.add_transition(Waiting, Event.Escape, Waiting,
 DBStateMachine.add_transition(Waiting, Event.LeftPress, ButtonDown,
                               Waiting.clearDrag,
                               lambda state_, event: event.note is not None)
-DBStateMachine.add_transition(Waiting, Event.MidPress, NotesMenu)
+DBStateMachine.add_transition(Waiting, Event.MidPress, NotesMenu,
+                              guard = lambda state_, event: not event.measure.isSimile())
 DBStateMachine.add_transition(Waiting, Event.RightPress, ContextMenu)
 DBStateMachine.add_transition(Waiting, Event.MeasureLineContext,
                               MeasureLineContextMenuState)
