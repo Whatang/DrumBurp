@@ -96,29 +96,38 @@ class ElevenTwelfthsProblem(BadNoteDuration):
     "DrumBurp cannot set notes of length 11/12 beat."
 
 
-def _getCompoundDuration(ticksInFullBeat, ticks):
+def _getCompoundDuration(ticksInFullBeat, ticks, tickNum):
     if ticks * 12 == ticksInFullBeat:  # 1/12
-        dur = "@32"
+        dur = LilyDuration("32", isCompound = True)
     elif ticks * 6 == ticksInFullBeat:  # 2/12
-        dur = "@16"
+        dur = LilyDuration("16", isCompound = True)
     elif ticks * 4 == ticksInFullBeat:  # 3/12
-        dur = "@16."
+        if (tickNum * 4) % ticksInFullBeat == 0:
+            dur = LilyDuration("16")
+        else:
+            dur = LilyDuration("16.", isCompound = True)
     elif ticks * 3 == ticksInFullBeat:  # 4/12
-        dur = "@8"
+        dur = LilyDuration("8", isCompound = True)
     elif ticks * 12 == 5 * ticksInFullBeat:  # 5/12
-        dur = "@8,32"
+        dur = LilyDuration("8", "32", isCompound = True)
     elif ticks * 2 == ticksInFullBeat:  # 6/12
-        dur = "@8."
+        if (tickNum * 2) % ticksInFullBeat == 0:
+            dur = LilyDuration("8")
+        else:
+            dur = LilyDuration("8.", isCompound = True)
     elif ticks * 12 == 7 * ticksInFullBeat:  # 7/12
-        dur = "@8.,32"
+        dur = LilyDuration("8.", "32", isCompound = True)
     elif ticks * 3 == 2 * ticksInFullBeat:  # 8/12
-        dur = "@4"
+        dur = LilyDuration("4", isCompound = True)
     elif ticks * 4 == 3 * ticksInFullBeat:  # 9/12
-        dur = "@4,32"
+        if (tickNum * 4) % ticksInFullBeat == 0:
+            dur = LilyDuration("8.")
+        else:
+            dur = LilyDuration("4", "32", isCompound = True)
     elif ticks * 6 == 5 * ticksInFullBeat:  # 10/12
-        dur = "@4,16"
+        dur = LilyDuration("4", "16", isCompound = True)
     elif ticks * 12 == 11 * ticksInFullBeat:  # 11/12
-        dur = "@4,16."
+        dur = LilyDuration("4", "16.", isCompound = True)
     else:
         raise LilypondProblem("Note duration not recognised")
     return dur
@@ -126,37 +135,76 @@ def _getCompoundDuration(ticksInFullBeat, ticks):
 
 def _getStraightDuration(ticksInFullBeat, ticks):
     if 2 * ticks == ticksInFullBeat:
-        dur = "8"
+        dur = LilyDuration("8")
     elif 4 * ticks == ticksInFullBeat:
-        dur = "16"
+        dur = LilyDuration("16")
     elif 4 * ticks == 3 * ticksInFullBeat:
-        dur = "8."
+        dur = LilyDuration("8.")
     elif 8 * ticks == ticksInFullBeat:
-        dur = "32"
+        dur = LilyDuration("32")
     elif 8 * ticks == 3 * ticksInFullBeat:
-        dur = "16."
+        dur = LilyDuration("16.")
     elif 8 * ticks == 5 * ticksInFullBeat:
-        dur = "8,32"
+        dur = LilyDuration("8", "32")
     elif 8 * ticks == 7 * ticksInFullBeat:
-        dur = "8.,32"
+        dur = LilyDuration("8.", "32")
     else:
         raise LilypondProblem("Note duration not recognised")
     return dur
 
-def lilyDuration(beat, ticks):
+def makeLilyDuration(beat, ticks, tickNum):
     dur = None
     ticksInFullBeat = beat.ticksPerBeat
     if ticks == ticksInFullBeat:
-        dur = "4"
+        dur = LilyDuration("4")
     elif ticksInFullBeat % 3 == 0:
-        dur = _getCompoundDuration(ticksInFullBeat, ticks)
+        dur = _getCompoundDuration(ticksInFullBeat, ticks, tickNum)
     else:
         dur = _getStraightDuration(ticksInFullBeat, ticks)
+    if tickNum == 0:
+        dur.isBeatStart = True
     return dur
 
 
 def lilyString(inString):
     return '"%s"' % inString
+
+class LilyDuration(object):
+    def __init__(self, duration, restTime = None, isCompound = False):
+        self.duration = duration
+        self.restTime = restTime
+        self.isCompound = isCompound
+        self.isBeatStart = False
+        self._compoundList = []
+        self.compoundStart = None
+        self._compoundEnd = False
+
+    def addCompound(self, dur):
+        self._compoundList.append(dur)
+
+    def terminateCompound(self):
+        compLen = len(self._compoundList) + 1
+        if compLen > 6:
+            frac = "8/12"
+        elif compLen > 3:
+            frac = "4/6"
+        else:
+            frac = "2/3"
+        self.compoundStart = r"\times %s {" % frac
+
+    def setCompoundEnd(self):
+        self._compoundEnd = True
+
+    def isCompoundEnd(self):
+        return self._compoundEnd
+
+
+class LilyBarEnd(LilyDuration):
+    def __init__(self, endsCompound = False):
+        super(LilyBarEnd, self).__init__("0")
+        if endsCompound:
+            self._compoundEnd = True
+
 
 class LilyMeasure(object):
     _FLAM_STRING = (r"\override Stem #'length = #4 \acciaccatura{%s8} "
@@ -170,6 +218,8 @@ class LilyMeasure(object):
         self._beats = list(self.measure.counter.iterBeatTicks())
         self._voices = {STEM_UP:[], STEM_DOWN:[]}
         self._sticking = []
+        self._voiceOneEmpty = False
+        self._voiceTwoEmpty = False
         self._build()
 
 
@@ -178,6 +228,10 @@ class LilyMeasure(object):
         for notePos, head in self.measure:
             direction = self.kit.getDirection(notePos.drumIndex, head)
             notes[direction].append((notePos, head))
+        if len(notes[STEM_UP]) == 0:
+            self._voiceOneEmpty = True
+        if len(notes[STEM_DOWN]) == 0:
+            self._voiceTwoEmpty = True
         return notes
 
     def _calculateEventTimes(self, eventTimes):
@@ -197,17 +251,36 @@ class LilyMeasure(object):
             noteTimes[direction] = self._calculateEventTimes(eventTimes)
         return noteTimes
 
-
     def _calculateEventDurations(self, timeList):
         durationDict = {}
         for thisTime, nextTime in zip(timeList[:-1], timeList[1:]):
-            beatNum, beat, tick_ = self._beats[thisTime]
+            beatNum, beat, tick = self._beats[thisTime]
             numTicks = nextTime - thisTime
             try:
-                durationDict[thisTime] = lilyDuration(beat, numTicks)
+                dur = makeLilyDuration(beat, numTicks, tick)
+                durationDict[thisTime] = dur
             except BadNoteDuration:
-                print(beatNum, beat, tick_, numTicks)
+                print(beatNum, beat, tick, numTicks)
                 raise
+        compoundStart = None
+        for thisTime in timeList[:-1]:
+            dur = durationDict[thisTime]
+            if dur.isBeatStart and compoundStart:
+                dur.setCompoundEnd()
+                compoundStart.terminateCompound()
+                compoundStart = None
+            if dur.isCompound:
+                if not compoundStart:
+                    compoundStart = dur
+                else:
+                    compoundStart.addCompound(dur)
+            elif compoundStart:
+                dur.setCompoundEnd()
+                compoundStart.terminateCompound()
+                compoundStart = None
+        if compoundStart:
+            compoundStart.terminateCompound()
+        durationDict[timeList[-1]] = LilyBarEnd(compoundStart is not None)
         return durationDict
 
     def _calculateNoteDurations(self, noteTimes):
@@ -251,13 +324,14 @@ class LilyMeasure(object):
         return noteString
 
 
-    def _makeNoteEffect(self, lNotes, lEffects, voice, noteTime, dur):
+    def _makeNoteEffect(self, lNotes, lEffects, noteTime, dur):
         if noteTime not in lEffects:
-            return ""
+            return "", []
         accent = ""
+        flams = []
         for noteIndicator, effect in lEffects[noteTime]:
             if effect == "flam":
-                voice.append(self._FLAM_STRING % noteIndicator)
+                flams.append(self._FLAM_STRING % noteIndicator)
             elif effect == "accent":
                 accent += self._ACCENT_STRING
             elif effect == "choke":
@@ -267,7 +341,19 @@ class LilyMeasure(object):
             elif effect == "ghost":
                 noteIndex = lNotes[noteTime].index(noteIndicator)
                 lNotes[noteTime][noteIndex] = r"\parenthesize " + noteIndicator
-        return accent
+        return accent, flams
+
+    @staticmethod
+    def _iterDurations(voice, timeList, durationDict):
+        for thisTime in timeList[:-1]:
+            dur = durationDict[thisTime]
+            if dur.isCompoundEnd():
+                voice.append("}")
+            if dur.compoundStart:
+                voice.append(dur.compoundStart)
+            yield dur, thisTime
+        if durationDict[timeList[-1]].isCompoundEnd():
+            voice.append("}")
 
     def _buildVoices(self, noteTimes, durations, lilyNotes, effects):
         wholeRests = collections.defaultdict(dict)
@@ -275,37 +361,20 @@ class LilyMeasure(object):
             lNotes = lilyNotes[direction]
             lEffects = effects[direction]
             voice = self._voices[direction]
-            isTriplet = False
-            for noteTime in timeList[:-1]:
-                dur = durations[direction][noteTime]
-                restTime = None
-                if "," in dur:
-                    dur, restTime = dur.split(",", 1)
-                if dur.startswith("@"):
-                    dur = dur[1:]
-                    if not isTriplet:
-                        if dur == "8.":
-                            dur = "8"
-                        elif dur == "16.":
-                            dur = "16"
-                        else:
-                            isTriplet = True
-                            voice.append(r"\times 2/3 {")
-                elif isTriplet:
-                    voice.append("}")
-                    isTriplet = False
-                accent = self._makeNoteEffect(lNotes, lEffects, voice,
-                                              noteTime, dur)
+            for dur, noteTime in self._iterDurations(voice, timeList,
+                                                     durations[direction]):
+                accent, flams = self._makeNoteEffect(lNotes, lEffects,
+                                                     noteTime, dur.duration)
+                for flam in flams:
+                    voice.append(flam)
                 if noteTime not in lNotes:
                     lNotes[noteTime] = ["r"]
-                if lNotes[noteTime] == ["r"] and dur == "4":
+                if lNotes[noteTime] == ["r"] and dur.duration == "4":
                     wholeRests[direction][noteTime] = len(voice)
                 voice.append(self._makeNoteString(lNotes[noteTime])
-                             + dur + accent)
-                if restTime:
-                    voice.append("r" + restTime)
-            if isTriplet:
-                voice.append("}")
+                             + dur.duration + accent)
+                if dur.restTime:
+                    voice.append("r" + dur.restTime)
         return wholeRests
 
     def _makeSticking(self, stickingText, where):
@@ -314,35 +383,17 @@ class LilyMeasure(object):
                                                if stick != " ")
         stickDurations = self._calculateEventDurations(stickTimes)
         lilyStick = []
-        isTriplet = False
-        for time in stickTimes[:-1]:
+        for dur, time in self._iterDurations(lilyStick, stickTimes, stickDurations):
             stick = stickingText[time]
             if stick == " ":
                 stick = '" "'
-            dur = stickDurations[time]
-            restTime = None
-            if "," in dur:
-                dur, restTime = dur.split(",", 1)
-            if dur.startswith("@"):
-                dur = dur[1:]
-                if not isTriplet:
-                    if dur == "8.":
-                        dur = "8"
-                    else:
-                        isTriplet = True
-                        lilyStick.append(r"\times 2/3 {")
-            elif isTriplet:
-                lilyStick.append("}")
-                isTriplet = False
-            lilyStick.append(stick + dur)
-            if restTime:
-                lilyStick.append('" "' + restTime)
-        if isTriplet:
-            lilyStick.append("}")
+            lilyStick.append(stick + dur.duration)
+            if dur.restTime:
+                lilyStick.append('" "' + dur.restTime)
         lilyStick = " ".join(lilyStick)
         lilyStick = r" \lyricmode { " + lilyStick + " }"
-        lilyStick = r'\new Lyrics \with { align%sContext = #"main" }' + lilyStick
-        return lilyStick % where
+        lilyStick = (r'\new Lyrics \with { align%sContext = #"main" }' % where) + lilyStick
+        return lilyStick
 
     def _build(self):
         notes = self._separateNotesByDirection()
@@ -395,9 +446,15 @@ class LilyMeasure(object):
             newVoice.append("r" + newLength)
         self._voices[direction] = newVoice
 
+    def isVoiceOneEmpty(self):
+        return self._voiceOneEmpty
+
     def voiceOne(self, indenter):
         voice = self._voices[STEM_UP]
         indenter(" ".join(voice))
+
+    def isVoiceTwoEmpty(self):
+        return self._voiceTwoEmpty
 
     def voiceTwo(self, indenter):
         voice = self._voices[STEM_DOWN]
@@ -749,12 +806,16 @@ class LilypondScore(object):
 
     def _writeMeasure(self, measure):
         parsed = LilyMeasure(measure, self._lilyKit)
-        with LILY_CONTEXT(self.indenter, r'\new DrumVoice'):
-            self.indenter(r'\voiceOne')
-            parsed.voiceOne(self.indenter)
-        with LILY_CONTEXT(self.indenter, r'\new DrumVoice'):
-            self.indenter(r'\voiceTwo')
-            parsed.voiceTwo(self.indenter)
+        if not parsed.isVoiceOneEmpty():
+            with LILY_CONTEXT(self.indenter, r'\new DrumVoice'):
+                if not parsed.isVoiceTwoEmpty():
+                    self.indenter(r'\voiceOne')
+                parsed.voiceOne(self.indenter)
+        if not parsed.isVoiceTwoEmpty() or parsed.isVoiceOneEmpty():
+            with LILY_CONTEXT(self.indenter, r'\new DrumVoice'):
+                if not parsed.isVoiceOneEmpty():
+                    self.indenter(r'\voiceTwo')
+                parsed.voiceTwo(self.indenter)
         parsed.sticking(self.indenter)
 
     @staticmethod
