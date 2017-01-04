@@ -286,6 +286,8 @@ class LilyMeasure(object):
                     if not isTriplet:
                         if dur == "8.":
                             dur = "8"
+                        elif dur == "16.":
+                            dur = "16"
                         else:
                             isTriplet = True
                             voice.append(r"\times 2/3 {")
