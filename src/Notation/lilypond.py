@@ -177,6 +177,8 @@ class LilyMeasure(object):
         self._beats = list(self.measure.counter.iterBeatTicks())
         self._voices = {STEM_UP:[], STEM_DOWN:[]}
         self._sticking = []
+        self._voiceOneEmpty = False
+        self._voiceTwoEmpty = False
         self._build()
 
 
@@ -185,6 +187,10 @@ class LilyMeasure(object):
         for notePos, head in self.measure:
             direction = self.kit.getDirection(notePos.drumIndex, head)
             notes[direction].append((notePos, head))
+        if len(notes[STEM_UP]) == 0:
+            self._voiceOneEmpty = True
+        if len(notes[STEM_DOWN]) == 0:
+            self._voiceTwoEmpty = True
         return notes
 
     def _calculateEventTimes(self, eventTimes):
@@ -405,9 +411,15 @@ class LilyMeasure(object):
             newVoice.append("r" + newLength)
         self._voices[direction] = newVoice
 
+    def isVoiceOneEmpty(self):
+        return self._voiceOneEmpty
+
     def voiceOne(self, indenter):
         voice = self._voices[STEM_UP]
         indenter(" ".join(voice))
+
+    def isVoiceTwoEmpty(self):
+        return self._voiceTwoEmpty
 
     def voiceTwo(self, indenter):
         voice = self._voices[STEM_DOWN]
@@ -759,12 +771,16 @@ class LilypondScore(object):
 
     def _writeMeasure(self, measure):
         parsed = LilyMeasure(measure, self._lilyKit)
-        with LILY_CONTEXT(self.indenter, r'\new DrumVoice'):
-            self.indenter(r'\voiceOne')
-            parsed.voiceOne(self.indenter)
-        with LILY_CONTEXT(self.indenter, r'\new DrumVoice'):
-            self.indenter(r'\voiceTwo')
-            parsed.voiceTwo(self.indenter)
+        if not parsed.isVoiceOneEmpty():
+            with LILY_CONTEXT(self.indenter, r'\new DrumVoice'):
+                if not parsed.isVoiceTwoEmpty():
+                    self.indenter(r'\voiceOne')
+                parsed.voiceOne(self.indenter)
+        if not parsed.isVoiceTwoEmpty() or parsed.isVoiceOneEmpty():
+            with LILY_CONTEXT(self.indenter, r'\new DrumVoice'):
+                if not parsed.isVoiceOneEmpty():
+                    self.indenter(r'\voiceTwo')
+                parsed.voiceTwo(self.indenter)
         parsed.sticking(self.indenter)
 
     @staticmethod
