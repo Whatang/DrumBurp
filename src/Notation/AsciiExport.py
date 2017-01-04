@@ -31,6 +31,8 @@ from StringIO import StringIO
 def getExportDate():
     return time.strftime("%d %B %Y")
 
+_SWING_TO_TEXT = {8:"8ths", 16:"16ths", 32:"32nds"}
+
 class Exporter(object):
     def __init__(self, score, settings, date = True):
         self.score = score
@@ -52,6 +54,9 @@ class Exporter(object):
         if self._date:
             metadataString.append("Date      : " + getExportDate())
         metadataString.append("")
+        if scoreData.swing:
+            metadataString.append("Swung " + _SWING_TO_TEXT[scoreData.swing])
+            metadataString.append("")
         return metadataString
 
     @staticmethod

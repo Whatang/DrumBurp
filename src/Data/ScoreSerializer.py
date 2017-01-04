@@ -16,6 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with DrumBurp.  If not, see <http://www.gnu.org/licenses/>
+import DBConstants
 '''
 Created on Jun 20, 2015
 
@@ -25,13 +26,14 @@ Created on Jun 20, 2015
 import itertools
 from cStringIO import StringIO
 import codecs
-from Data.fileStructures import dbfsv0, dbfsv1
+from Data.fileStructures import dbfsv0, dbfsv1, dbfsv2
 from Data.DBErrors import DBVersionError, NoContent
 from Data import DBConstants
 import Data.fileUtils as fileUtils
 
 _FS_MAP = {DBConstants.DBFF_0: dbfsv0.ScoreStructureV0,
-           DBConstants.DBFF_1: dbfsv1.ScoreStructureV1}
+           DBConstants.DBFF_1: dbfsv1.ScoreStructureV1,
+           DBConstants.DBFF_2: dbfsv2.ScoreStructureV2}
 
 class ScoreSerializer(object):
     @classmethod

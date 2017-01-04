@@ -751,6 +751,16 @@ class LilypondScore(object):
 """
         self.indenter(firstRepeatCode)
 
+    def _swing(self):
+        if not self.score.scoreData.swing:
+            return
+        swingType = {8:"eight", 16:"sixteen", 32:"thirtytwo"}[self.score.scoreData.swing]
+        swingCode = r"""\override Score.RehearsalMark #'X-offset = #0
+\override Score.RehearsalMark #'outside-staff-padding = #1.5
+\swing_"""
+        swingCode += swingType + "\n"
+        self.indenter(swingCode)
+
     def _writeMusic(self):
         secIndex, secTitle = self._getNextSectionTitle(-1)
         repeatCommands = []
@@ -758,6 +768,7 @@ class LilypondScore(object):
         self._lastTimeSig = None
         self._firstMeasureRepeat()
         percentRepeated = False
+        self._swing()
         for measureIndex, measure in enumerate(self.score.iterMeasures()):
             hasAlternate = self._getNextRepeats(repeatCommands,
                                                 hasAlternate, measure)
@@ -887,6 +898,143 @@ class LilypondScore(object):
        (make-music 'PercentEvent
                    'length (ly:music-length note)))
 
+    swing_eight = \mark \markup {
+      \line \general-align #Y #DOWN { \score {
+      \new Staff \with {
+        fontSize = #-2
+        \override StaffSymbol #'line-count = #0
+        \override VerticalAxisGroup #'Y-extent = #'(0 . 0)
+      }
+      \relative {
+        \stemUp
+        \override Score.SpacingSpanner
+          #'common-shortest-duration = #(ly:make-moment 3 16)
+        \override Beam #'positions = #'(2.5 . 2.5)
+        b'8[ b8]
+      }
+      \layout {
+        ragged-right= ##t
+        indent = 0
+        \context {
+        \Staff \remove "Clef_engraver"
+        \remove "Time_signature_engraver" }
+      }} " ="
+      \score { \new Staff \with {
+        fontSize = #-2
+        \override StaffSymbol #'line-count = #0
+        \override VerticalAxisGroup #'Y-extent = #'(0 . 0)
+      }
+      \relative {
+        \stemUp
+        \override Score.SpacingSpanner
+          #'common-shortest-duration = #(ly:make-moment 3 16)
+        \override Beam #'positions = #'(2.5 . 2.5)
+        \times 2/3 { b'8[ r b8] }
+      }
+      \layout {
+        ragged-right= ##t
+        indent = 0
+        \context {
+          \Staff
+          \remove "Clef_engraver"
+          \remove "Time_signature_engraver" }
+        }}
+      \fontsize #-2
+      \italic { "  swing" }
+      }
+    }
+
+    swing_sixteen = \mark \markup {
+      \line \general-align #Y #DOWN { \score {
+      \new Staff \with {
+        fontSize = #-2
+        \override StaffSymbol #'line-count = #0
+        \override VerticalAxisGroup #'Y-extent = #'(0 . 0)
+      }
+      \relative {
+        \stemUp
+        \override Score.SpacingSpanner
+          #'common-shortest-duration = #(ly:make-moment 3 16)
+        \override Beam #'positions = #'(2.5 . 2.5)
+        b'16[ b16]
+      }
+      \layout {
+        ragged-right= ##t
+        indent = 0
+        \context {
+        \Staff \remove "Clef_engraver"
+        \remove "Time_signature_engraver" }
+      }} " ="
+      \score { \new Staff \with {
+        fontSize = #-2
+        \override StaffSymbol #'line-count = #0
+        \override VerticalAxisGroup #'Y-extent = #'(0 . 0)
+      }
+      \relative {
+        \stemUp
+        \override Score.SpacingSpanner
+          #'common-shortest-duration = #(ly:make-moment 3 16)
+        \override Beam #'positions = #'(2.5 . 2.5)
+        \times 2/3 { b'16[ r b16] }
+      }
+      \layout {
+        ragged-right= ##t
+        indent = 0
+        \context {
+          \Staff
+          \remove "Clef_engraver"
+          \remove "Time_signature_engraver" }
+        }}
+      \fontsize #-2
+      \italic { "  swing" }
+      }
+    }
+
+    swing_thirtytwo = \mark \markup {
+      \line \general-align #Y #DOWN { \score {
+      \new Staff \with {
+        fontSize = #-2
+        \override StaffSymbol #'line-count = #0
+        \override VerticalAxisGroup #'Y-extent = #'(0 . 0)
+      }
+      \relative {
+        \stemUp
+        \override Score.SpacingSpanner
+          #'common-shortest-duration = #(ly:make-moment 3 16)
+        \override Beam #'positions = #'(2.5 . 2.5)
+        b'32[ b32]
+      }
+      \layout {
+        ragged-right= ##t
+        indent = 0
+        \context {
+        \Staff \remove "Clef_engraver"
+        \remove "Time_signature_engraver" }
+      }} " ="
+      \score { \new Staff \with {
+        fontSize = #-2
+        \override StaffSymbol #'line-count = #0
+        \override VerticalAxisGroup #'Y-extent = #'(0 . 0)
+      }
+      \relative {
+        \stemUp
+        \override Score.SpacingSpanner
+          #'common-shortest-duration = #(ly:make-moment 3 16)
+        \override Beam #'positions = #'(2.5 . 2.5)
+        \times 2/3 { b'32[ r b32] }
+      }
+      \layout {
+        ragged-right= ##t
+        indent = 0
+        \context {
+          \Staff
+          \remove "Clef_engraver"
+          \remove "Time_signature_engraver" }
+        }}
+      \fontsize #-2
+      \italic { "  swing" }
+      }
+    }
 """)
 
 def findLilyPath():

@@ -14,13 +14,13 @@
    <string>Edit Score Properties</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QLabel" name="label">
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_3">
      <property name="toolTip">
-      <string>The title of the score</string>
+      <string>The name of the person who wrote this score</string>
      </property>
      <property name="text">
-      <string>Title</string>
+      <string>Tabbed by</string>
      </property>
     </widget>
    </item>
@@ -28,6 +28,36 @@
     <widget class="QLineEdit" name="titleEdit">
      <property name="toolTip">
       <string>The title of the score</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0" colspan="4">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QCheckBox" name="bpmVisible">
+     <property name="toolTip">
+      <string>Show/hide BPM</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="toolTip">
+      <string>The title of the score</string>
+     </property>
+     <property name="text">
+      <string>Title</string>
      </property>
     </widget>
    </item>
@@ -41,20 +71,13 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="2">
-    <widget class="QLineEdit" name="artistEdit">
+   <item row="2" column="1">
+    <widget class="QCheckBox" name="creatorVisible">
      <property name="toolTip">
-      <string>The score's artist</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="label_3">
-     <property name="toolTip">
-      <string>The name of the person who wrote this score</string>
+      <string>Show.hide tabber name</string>
      </property>
      <property name="text">
-      <string>Tabbed by</string>
+      <string/>
      </property>
     </widget>
    </item>
@@ -72,6 +95,13 @@
      </property>
      <property name="text">
       <string>BPM</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QLineEdit" name="artistEdit">
+     <property name="toolTip">
+      <string>The score's artist</string>
      </property>
     </widget>
    </item>
@@ -103,16 +133,6 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="0" colspan="4">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="1">
     <widget class="QCheckBox" name="artistVisible">
      <property name="toolTip">
@@ -123,23 +143,51 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
-    <widget class="QCheckBox" name="creatorVisible">
-     <property name="toolTip">
-      <string>Show.hide tabber name</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
+   <item row="4" column="2">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QComboBox" name="swingComboBox">
+       <item>
+        <property name="text">
+         <string>No</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>8ths</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>16ths</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>32nds</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
    </item>
-   <item row="3" column="1">
-    <widget class="QCheckBox" name="bpmVisible">
-     <property name="toolTip">
-      <string>Show/hide BPM</string>
-     </property>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_5">
      <property name="text">
-      <string/>
+      <string>Swing?</string>
      </property>
     </widget>
    </item>
