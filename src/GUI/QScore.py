@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with DrumBurp.  If not, see <http://www.gnu.org/licenses/>
 from PyQt4.QtGui import QGraphicsItem
+
 '''
 Created on 4 Jan 2011
 
@@ -355,6 +356,7 @@ class QScore(QtGui.QGraphicsScene):
     title = _metaDataProperty("title")
     bpm = _metaDataProperty("bpm")
     bpmVisible = _metaDataProperty("bpmVisible")
+    swing = _metaDataProperty("swing")
 
     @property
     def displayProperties(self):

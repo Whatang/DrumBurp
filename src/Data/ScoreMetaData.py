@@ -38,6 +38,7 @@ class ScoreMetaData(object):
         self.beatCountVisible = True
         self.emptyLinesVisible = True
         self.measureCountsVisible = False
+        self.swing = 0
 
     def makeEmpty(self):
         self.title = "Untitled"

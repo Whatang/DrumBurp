@@ -23,13 +23,15 @@ Created on Dec 15, 2012
 '''
 from Data.DBConstants import (REPEAT_EXTENDER, BARLINE, DRUM_ABBR_WIDTH,
                               EMPTY_NOTE, REPEAT_END, REPEAT_STARTER,
-                              ALTERNATE_EXTENDER)
+                              ALTERNATE_EXTENDER, SWING_TO_TEXT)
 from Data.NotePosition import NotePosition
 import time
 from StringIO import StringIO
 
 def getExportDate():
     return time.strftime("%d %B %Y")
+
+
 
 class Exporter(object):
     def __init__(self, score, settings, date = True):
@@ -52,6 +54,9 @@ class Exporter(object):
         if self._date:
             metadataString.append("Date      : " + getExportDate())
         metadataString.append("")
+        if scoreData.swing:
+            metadataString.append("Swung " + SWING_TO_TEXT[scoreData.swing])
+            metadataString.append("")
         return metadataString
 
     @staticmethod
