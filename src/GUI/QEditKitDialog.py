@@ -106,12 +106,20 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
 
     def _populate(self):
         self.kitTable.blockSignals(True)
+        self.noteHeadTable.blockSignals(True)
+        self.midiNoteCombo.blockSignals(True)
+        for effect in self.effectsGroup.children():
+            effect.blockSignals(True)
         self.kitTable.clear()
         for drum in self._currentKit:
             self.kitTable.addItem(drum.name)
-        self.kitTable.blockSignals(False)
         self.kitTable.setCurrentRow(0)
         self._checkAbbrs()
+        self.kitTable.blockSignals(False)
+        self.noteHeadTable.blockSignals(False)
+        self.midiNoteCombo.blockSignals(False)
+        for effect in self.effectsGroup.children():
+            effect.blockSignals(False)
 
     @property
     def _currentDrumIndex(self):
