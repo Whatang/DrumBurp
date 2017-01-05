@@ -25,7 +25,8 @@ Created on 12 Mar 2011
 from GUI.QMetaDataDialog import QMetadataDialog
 from GUI.QGraphicsListData import QGraphicsListData
 
-_SWING_TO_TEXT = {8:"8ths", 16:"16ths", 32:"32nds"}
+from Data.DBConstants import SWING_TO_TEXT
+
 
 class QMetaData(QGraphicsListData):
     _editName = "score information."
@@ -46,7 +47,7 @@ class QMetaData(QGraphicsListData):
         if self._qScore.creatorVisible and self._qScore.creator:
             yield "Tabbed by " + self._qScore.creator
         if self._qScore.swing:
-            yield "Swung " + _SWING_TO_TEXT[self._qScore.swing]
+            yield "Swung " + SWING_TO_TEXT[self._qScore.swing]
 
     def _dataLen(self):
         total = 1

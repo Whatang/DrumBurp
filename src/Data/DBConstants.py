@@ -60,3 +60,6 @@ DB_KIT_FILE_FORMAT_STR = "DB_KIT_FILE_FORMAT"
 KIT_FF_0 = 0
 KIT_FF_1 = 1
 CURRENT_KIT_FORMAT = KIT_FF_1
+
+# Swing markers
+SWING_TO_TEXT = {8:"8ths", 16:"16ths", 32:"32nds"}
