@@ -42,6 +42,23 @@ _KIT_FILTER = "DrumBurp kits (*%s)" % _KIT_FILE_EXT
 _BAD_ABBR_COLOR = QColor("red")
 _GOOD_ABBR_COLOR = QColor("black")
 
+def noSounds(method):
+    def wrapper(self, *args, **kwargs):
+        blocked = self.kitTable.blockSignals(True)
+        self.noteHeadTable.blockSignals(True)
+        self.midiNoteCombo.blockSignals(True)
+        for effect in self.effectsGroup.children():
+            effect.blockSignals(True)
+        try:
+            return method(self, *args, **kwargs)
+        finally:
+            self.kitTable.blockSignals(blocked)
+            self.noteHeadTable.blockSignals(blocked)
+            self.midiNoteCombo.blockSignals(blocked)
+            for effect in self.effectsGroup.children():
+                effect.blockSignals(blocked)
+    return wrapper
+
 class QEditKitDialog(QDialog, Ui_editKitDialog):
     def __init__(self, kit, emptyDrums = None, parent = None, directory = None):
         super(QEditKitDialog, self).__init__(parent)
@@ -104,22 +121,14 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             self.oldDrum.addItem(drum.name, userData = QVariant(drumIndex))
             self._oldLines[drum] = drumIndex
 
+    @noSounds
     def _populate(self):
-        self.kitTable.blockSignals(True)
-        self.noteHeadTable.blockSignals(True)
-        self.midiNoteCombo.blockSignals(True)
-        for effect in self.effectsGroup.children():
-            effect.blockSignals(True)
         self.kitTable.clear()
         for drum in self._currentKit:
             self.kitTable.addItem(drum.name)
         self.kitTable.setCurrentRow(0)
+        self._setDrumInfo()
         self._checkAbbrs()
-        self.kitTable.blockSignals(False)
-        self.noteHeadTable.blockSignals(False)
-        self.midiNoteCombo.blockSignals(False)
-        for effect in self.effectsGroup.children():
-            effect.blockSignals(False)
 
     @property
     def _currentDrumIndex(self):
@@ -136,15 +145,20 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.upButton.setEnabled(index > 0)
         self.downButton.setEnabled(index < len(self._currentKit) - 1)
 
-    def _drumChanged(self):
+    def _setDrumInfo(self):
         drum = self._currentDrum
         self.drumName.setText(drum.name)
         self.drumAbbr.setText(drum.abbr)
         self.oldDrum.setCurrentIndex(self._oldLines[drum] + 1)
         self.lockedCheckBox.setChecked(drum.locked)
         self._populateHeadTable()
+        self._setNoteHeadInfo()
         self._checkDrumButtons()
 
+    def _drumChanged(self):
+        self._setDrumInfo()
+        if not self.muteButton.isChecked():
+            DBMidi.playHeadData(self._currentHeadData)
 
     def _addDrum(self):
         drum = Drum.makeSimple("New drum", "XX", "o")
@@ -171,7 +185,8 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self._checkDrumButtons()
         self._checkAbbrs()
 
-    def _moveDrumUp(self):
+    @noSounds
+    def _moveDrumUp(self, unusedClickInfo):
         idx = self._currentDrumIndex
         druma, drumb = self._currentKit[idx - 1], self._currentKit[idx]
         self._currentKit[idx - 1], self._currentKit[idx] = drumb, druma
@@ -179,7 +194,8 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.kitTable.item(idx - 1).setText(self._currentKit[idx - 1].name)
         self.kitTable.setCurrentRow(idx - 1)
 
-    def _moveDrumDown(self):
+    @noSounds
+    def _moveDrumDown(self, unusedClickInfo):
         idx = self._currentDrumIndex
         druma, drumb = self._currentKit[idx], self._currentKit[idx + 1]
         self._currentKit[idx], self._currentKit[idx + 1] = drumb, druma
@@ -306,8 +322,8 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         newOldDrumIndex = self.oldDrum.itemData(newOldDrumIndex).toInt()[0]
         self._oldLines[drum] = newOldDrumIndex
 
+    @noSounds
     def _populateHeadTable(self):
-        self.noteHeadTable.blockSignals(True)
         drum = self._currentDrum
         self.noteHeadTable.clear()
         for head in drum:
@@ -316,9 +332,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
                 headString += " (Default)"
             self.noteHeadTable.addItem(headString)
         self.noteHeadTable.setCurrentRow(-1)
-        self.noteHeadTable.blockSignals(False)
         self.noteHeadTable.setCurrentRow(0)
-
 
     @property
     def _currentHead(self):
@@ -346,17 +360,21 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.noteHeadTable.item(row).setText(headString)
         self._populateCurrentNoteHead()
 
-    def _noteHeadChanged(self):
+    def _setNoteHeadInfo(self):
         self._populateCurrentNoteHead()
         headData = self._currentHeadData
         self.volumeSlider.setValue(headData.midiVolume)
         midiIndex = self.midiNoteCombo.findData(QVariant(headData.midiNote))
         self.midiNoteCombo.setCurrentIndex(midiIndex)
+        self._setMidiNote()
         self._setEffect(headData.effect)
-        if not self.muteButton.isChecked():
-            DBMidi.playHeadData(self._currentHeadData)
         self._checkHeadButtons()
         self._setNotation()
+
+    def _noteHeadChanged(self):
+        self._setNoteHeadInfo()
+        if not self.muteButton.isChecked():
+            DBMidi.playHeadData(self._currentHeadData)
 
     def _shortcutEdited(self):
         shortcut = str(self.shortcutCombo.currentText())
@@ -430,30 +448,35 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             self.headDownButton.setEnabled(index <
                                            len(self._currentDrum) - 1)
 
-    def _moveNoteHeadUp(self):
+    @noSounds
+    def _moveNoteHeadUp(self, unusedClickInfo):
         index = self.noteHeadTable.currentRow()
         self._currentDrum.moveHeadUp(self._currentHead)
         self._populateHeadTable()
         self.noteHeadTable.setCurrentRow(index - 1)
+        self._checkHeadButtons()
 
-    def _moveNoteHeadDown(self):
+    @noSounds
+    def _moveNoteHeadDown(self, unusedClickInfo):
         index = self.noteHeadTable.currentRow()
         self._currentDrum.moveHeadDown(self._currentHead)
         self._populateHeadTable()
         self.noteHeadTable.setCurrentRow(index + 1)
+        self._checkHeadButtons()
 
-    def _setDefaultHead(self):
-        self.noteHeadTable.blockSignals(True)
+    @noSounds
+    def _setDefaultHead(self, unusedClickInfo):
         self._currentDrum.setDefaultHead(self._currentHead)
         self._populateHeadTable()
-        self.noteHeadTable.blockSignals(False)
         self.noteHeadTable.setCurrentRow(0)
 
-
-    def _midiNoteChanged(self):
+    def _setMidiNote(self):
         midiNote = self.midiNoteCombo.currentIndex()
         midiNote = self.midiNoteCombo.itemData(midiNote).toInt()[0]
         self._currentHeadData.midiNote = midiNote
+
+    def _midiNoteChanged(self):
+        self._setMidiNote()
         if not self.muteButton.isChecked():
             DBMidi.playHeadData(self._currentHeadData)
 
