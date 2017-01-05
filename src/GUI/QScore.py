@@ -930,9 +930,11 @@ class QScore(QtGui.QGraphicsScene):
                                          buttons = (QtGui.QMessageBox.Yes
                                                     | QtGui.QMessageBox.No))
         if box == QtGui.QMessageBox.Yes:
+            self.score.turnOffCallBacks()
             self.score.changeKit(kit, changes)
             DBMidi.setKit(kit)
             self._shortcutMemo = _HeadShortcutsMap(kit)
+            self.score.turnOnCallBacks()
             self._undoStack.clear()
             self._saved = False
             self.reBuild()
