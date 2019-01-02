@@ -25,6 +25,7 @@ Created on 16 Apr 2011
 
 from Data import DBConstants
 
+
 class Counter(object):
     '''A Counter represents a way of subdividing a single beat.
 
@@ -41,7 +42,6 @@ class Counter(object):
     that will also be recognised as matching this Counter. This is to facilitate
     backwards compatibility when the default count string for a Counter changes.
     '''
-
 
     def __init__(self, counts, *alternatives):
         if not counts.startswith(DBConstants.BEAT_COUNT):
@@ -71,6 +71,7 @@ class Counter(object):
     def matchesAlternative(self, beatStr):
         return any(beatStr == alt for alt in self._alternatives)
 
+
 _COUNTER_BEAT = Counter("")
 _EIGHTH_COUNT = Counter("+", "&")
 _TRIPLET_COUNT = Counter("+a", "ea")
@@ -84,8 +85,9 @@ _THIRTY_SECONDS_COUNT_SPARSE = Counter(' e + a ')
 _THIRTY_SECONDS_TRIPLET_COUNT = Counter('.e.a.+.e.a.')
 _THIRTY_SECONDS_TRIPLET_COUNT_SPARSE = Counter(' e a + e a ')
 
+
 class CounterRegistry(object):
-    def __init__(self, defaults = True):
+    def __init__(self, defaults=True):
         self._names = []
         self._counts = {}
         if defaults:
@@ -154,4 +156,3 @@ class CounterRegistry(object):
 
 
 DEFAULT_REGISTRY = CounterRegistry()
-

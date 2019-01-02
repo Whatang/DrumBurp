@@ -22,39 +22,42 @@ Created on 31 Jul 2010
 @author: Mike Thomas
 
 '''
-import webbrowser
 from StringIO import StringIO
 import os
 import shutil
+import webbrowser
+
+from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer, QThread, \
+    pyqtSignal, Qt
 from PyQt4.QtGui import (QMainWindow, QFontDatabase,
                          QFileDialog, QMessageBox,
                          QPrintPreviewDialog, QWhatsThis,
                          QPrinterInfo, QLabel, QFrame,
                          QPrinter, QDesktopServices, QAction,
                          QFont)
-from PyQt4.QtCore import pyqtSignature, QSettings, QVariant, QTimer, QThread, \
-    pyqtSignal, Qt
-from GUI.ui_drumburp import Ui_DrumBurpWindow
-from GUI.QScore import QScore
-from GUI.QDisplayProperties import QDisplayProperties
-from GUI.QNewScoreDialog import QNewScoreDialog
-from GUI.QEditMeasureDialog import QEditMeasureDialog
-from GUI.QVersionDownloader import QVersionDownloader
-from GUI.QLilypondPreview import QLilypondPreview
+
+from DBVersion import APPNAME, DB_VERSION, doesNewerVersionExist
+from Data import FontOptions
+from Data.DBConstants import CURRENT_FILE_FORMAT
+from Data.DBErrors import InconsistentRepeats
+from GUI.DBFSMEvents import StartPlaying, StopPlaying
 from GUI.DBInfoDialog import DBInfoDialog
+from GUI.LilypondExporter import LilypondExporter
+from GUI.QDisplayProperties import QDisplayProperties
+from GUI.QEditMeasureDialog import QEditMeasureDialog
+from GUI.QLilypondPreview import QLilypondPreview
+from GUI.QNewScoreDialog import QNewScoreDialog
+from GUI.QScore import QScore
+from GUI.QVersionDownloader import QVersionDownloader
+from GUI.ui_drumburp import Ui_DrumBurpWindow
+from Notation import AsciiExport
+from Notation.lilypond import LilypondScore, LilypondProblem, findLilyPath
 import GUI.DBColourPicker as DBColourPicker
 import GUI.DBIcons as DBIcons
 import GUI.DBMidi as DBMidi
-from GUI.DBFSMEvents import StartPlaying, StopPlaying
-from GUI.LilypondExporter import LilypondExporter
-from DBVersion import APPNAME, DB_VERSION, doesNewerVersionExist
-from Data.DBConstants import CURRENT_FILE_FORMAT
-from Data.DBErrors import InconsistentRepeats
-from Data import FontOptions
-from Notation.lilypond import LilypondScore, LilypondProblem, findLilyPath
-from Notation import AsciiExport
-# pylint:disable=too-many-instance-attributes,too-many-public-methods
 
+
+# pylint:disable=too-many-instance-attributes,too-many-public-methods
 class FakeQSettings(object):
     def value(self, key_):  # IGNORE:no-self-use
         return QVariant()
@@ -72,7 +75,7 @@ class FakeQSettings(object):
 class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     exporterDone = pyqtSignal(unicode)
 
-    def __init__(self, parent = None, fakeStartup = False, filename = None):
+    def __init__(self, parent=None, fakeStartup=False, filename=None):
         self._fakeStartup = fakeStartup
         super(DrumBurp, self).__init__(parent)
         self._state = None
@@ -91,7 +94,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         for name in dir(QPrinter):
             attr = getattr(QPrinter, name)
             if (isinstance(attr, QPrinter.PageSize)
-                and name != "Custom"):
+                    and name != "Custom"):
                 self.paperBox.addItem(name)
                 printer.setPaperSize(attr)
                 self._knownPageHeights.append(printer.pageRect().height())
@@ -149,8 +152,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.menuSelectMidiOut.menuAction().setVisible(False)
         self._midiInitThread = DBMidi.MidiInit(self)
         self._midiInitThread.finished.connect(self._midiInitFinished)
-        QTimer.singleShot(0, lambda : self._startUp(erroredFiles))
-        self.actionCheckOnStartup.setChecked(settings.value("CheckOnStartup").toBool())
+        QTimer.singleShot(0, lambda: self._startUp(erroredFiles))
+        self.actionCheckOnStartup.setChecked(
+            settings.value("CheckOnStartup").toBool())
         self.statusbar.showMessage("Initializing MIDI...")
         self.setEnabled(False)
 
@@ -171,7 +175,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         scene.dragHighlight.connect(self.actionDeleteMeasures.setEnabled)
         scene.sceneFormatted.connect(self.sceneFormatted)
         scene.playing.connect(self._scorePlaying)
-        scene.currentHeadsChanged.connect(self.availableNotesLabel.setText)
+#         scene.currentHeadsChanged.connect(self.availableNotesLabel.setText)
+        scene.currentHeadsChanged.connect(self._showAltNotes)
         scene.statusMessageSet.connect(self._setStatusFromScene)
         scene.lilysizeChanged.connect(self._setLilySize)
         scene.lilypagesChanged.connect(self._setLilyPages)
@@ -182,7 +187,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.paperBox.currentIndexChanged.connect(self._setPaperSize)
         props.kitDataVisibleChanged.connect(self._setKitDataVisible)
         props.emptyLinesVisibleChanged.connect(self._setEmptyLinesVisible)
-        props.measureCountsVisibleChanged.connect(self._setMeasureCountsVisible)
+        props.measureCountsVisibleChanged.connect(
+            self._setMeasureCountsVisible)
         props.metadataVisibilityChanged.connect(self._setMetadataVisible)
         props.beatCountVisibleChanged.connect(self._setBeatCountVisible)
         DBMidi.SONGEND_SIGNAL.connect(self.musicDone)
@@ -191,11 +197,16 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.refreshLilypond.clicked.connect(self._lilyScene.preview)
         self.scoreScene.scoreDisplayChanged.connect(self._refreshTextExport)
         self.underlineCheck.clicked.connect(self._refreshTextExport)
-        self.emptyLineBeforeSectionCheck.clicked.connect(self._refreshTextExport)
-        self.emptyLineAfterSectionCheck.clicked.connect(self._refreshTextExport)
-        self.noteFontComboBox.currentIndexChanged.connect(self._noteFontChanged)
-        self.metadataFontCombo.currentIndexChanged.connect(self._metadataFontChanged)
-        self.sectionFontCombo.currentIndexChanged.connect(self._sectionFontChanged)
+        self.emptyLineBeforeSectionCheck.clicked.connect(
+            self._refreshTextExport)
+        self.emptyLineAfterSectionCheck.clicked.connect(
+            self._refreshTextExport)
+        self.noteFontComboBox.currentIndexChanged.connect(
+            self._noteFontChanged)
+        self.metadataFontCombo.currentIndexChanged.connect(
+            self._metadataFontChanged)
+        self.sectionFontCombo.currentIndexChanged.connect(
+            self._sectionFontChanged)
 
     def _initializeState(self):
         props = self.songProperties
@@ -230,10 +241,12 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.actionUndo.setEnabled(False)
         self.actionRedo.setEnabled(False)
         scene.canUndoChanged.connect(self.actionUndo.setEnabled)
-        changeUndoText = lambda txt:self.actionUndo.setText("Undo " + txt)
+
+        def changeUndoText(txt): return self.actionUndo.setText("Undo " + txt)
         scene.undoTextChanged.connect(changeUndoText)
         scene.canRedoChanged.connect(self.actionRedo.setEnabled)
-        changeRedoText = lambda txt:self.actionRedo.setText("Redo " + txt)
+
+        def changeRedoText(txt): return self.actionRedo.setText("Redo " + txt)
         scene.redoTextChanged.connect(changeRedoText)
         # Default beat
         self._beatChanged(scene.defaultCount)
@@ -248,7 +261,6 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.firstLilyPage.clicked.connect(self._lilyScene.firstPage)
         self.lastLilyPage.clicked.connect(self._lilyScene.lastPage)
 
-
     def _startUp(self, erroredFiles):
         self._midiInitThread.start()
         self._doUpdateSplashScreen()
@@ -256,13 +268,12 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.updateStatus("Welcome to %s v%s" % (APPNAME, DB_VERSION))
         self.scoreView.setFocus()
         if self.actionCheckOnStartup.isChecked():
-#             self.on_actionCheckForUpdates_triggered()
+            #             self.on_actionCheckForUpdates_triggered()
             self._versionThread.start()
         if erroredFiles:
             QMessageBox.warning(self, "Problem during startup",
                                 "Error opening files:\n %s" %
                                 "\n".join(erroredFiles))
-
 
     def _doUpdateSplashScreen(self):
         settings = self._makeQSettings()
@@ -371,7 +382,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     def _setMeasureCountsVisible(self):
         props = self.songProperties
         if (props.measureCountsVisible !=
-            self.actionShowMeasureCounts.isChecked()):
+                self.actionShowMeasureCounts.isChecked()):
             self.actionShowMeasureCounts.setChecked(props.measureCountsVisible)
 
     def updateStatus(self, message):
@@ -471,10 +482,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         else:
             loc = QDesktopServices.HomeLocation
             directory = QDesktopServices.storageLocation(loc)
-        fname = QFileDialog.getOpenFileName(parent = self,
-                                            caption = caption,
-                                            directory = directory,
-                                            filter = "DrumBurp files (*.brp)")
+        fname = QFileDialog.getOpenFileName(parent=self,
+                                            caption=caption,
+                                            directory=directory,
+                                            filter="DrumBurp files (*.brp)")
         if len(fname) == 0:
             return
         self._loadScore(fname)
@@ -509,11 +520,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if os.path.splitext(directory)[-1] == os.extsep + 'brp':
             directory = os.path.splitext(directory)[0]
         caption = "Choose a DrumBurp file to save"
-        fname = QFileDialog.getSaveFileName(parent = self,
-                                            caption = caption,
-                                            directory = directory,
-                                            filter = "DrumBurp files (*.brp)")
-        if len(fname) == 0 :
+        fname = QFileDialog.getSaveFileName(parent=self,
+                                            caption=caption,
+                                            directory=directory,
+                                            filter="DrumBurp files (*.brp)")
+        if len(fname) == 0:
             return False
         self.filename = unicode(fname)
         return True
@@ -554,7 +565,6 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             return False
         return True
 
-
     def fileSave(self):
         if self.filename is None:
             if not self._getFileName():
@@ -592,8 +602,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             if dialog.exec_():
                 nMeasures, counter, kit = dialog.getValues()
                 self.scoreScene.newScore(kit,
-                                         numMeasures = nMeasures,
-                                         counter = counter)
+                                         numMeasures=nMeasures,
+                                         counter=counter)
                 self.filename = None
                 self.updateRecentFiles()
                 self._beatChanged(counter)
@@ -611,7 +621,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.menuRecentScores.clear()
         for fname in self.recentFiles:
             if fname != self.filename and os.path.exists(fname):
-                def openRecentFile(bool_, filename = fname):
+                def openRecentFile(bool_, filename=fname):
                     if not self.okToContinue():
                         return
                     self._loadScore(filename)
@@ -648,10 +658,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             fname = os.path.join(unicode(fname), 'Untitled.txt')
         if os.path.splitext(fname)[-1] == '.brp':
             fname = os.path.splitext(fname)[0] + '.txt'
-        fname = QFileDialog.getSaveFileName(parent = self,
-                                            caption = "Select file to export text tab to",
-                                            directory = fname,
-                                            filter = "Text files (*.txt)")
+        fname = QFileDialog.getSaveFileName(parent=self,
+                                            caption="Select file to export text tab to",
+                                            directory=fname,
+                                            filter="Text files (*.txt)")
         if not fname:
             return
         try:
@@ -697,7 +707,6 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             self.textExportButton.setEnabled(False)
             raise
 
-
     @pyqtSignature("")
     def on_actionPrint_triggered(self):
         if self._printer is None:
@@ -705,7 +714,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self._printer = QPrinter(QPrinterInfo(self._printer),
                                  QPrinter.HighResolution)
         self._printer.setPaperSize(self._getPaperSize())
-        dialog = QPrintPreviewDialog(self._printer, parent = self)
+        dialog = QPrintPreviewDialog(self._printer, parent=self)
+
         def updatePages(qprinter):
             self.scoreScene.printScore(qprinter, self.scoreView)
         dialog.paintRequested.connect(updatePages)
@@ -714,7 +724,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     @pyqtSignature("")
     def on_actionExportPDF_triggered(self):
         try:
-            printer = QPrinter(mode = QPrinter.HighResolution)
+            printer = QPrinter(mode=QPrinter.HighResolution)
             printer.setPaperSize(self._getPaperSize())
             printer.setOutputFormat(QPrinter.PdfFormat)
             if self.filename:
@@ -724,7 +734,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 outfileName = "Untitled.pdf"
             printer.setOutputFileName(outfileName)
             printer.setPaperSize(self._getPaperSize())
-            dialog = QPrintPreviewDialog(printer, parent = self)
+            dialog = QPrintPreviewDialog(printer, parent=self)
+
             def updatePages(qprinter):
                 self.scoreScene.printScore(qprinter, self.scoreView)
             dialog.paintRequested.connect(updatePages)
@@ -762,10 +773,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                     home = unicode(QDesktopServices.storageLocation(loc))
                     directory = os.path.join(home, outfileName)
                 caption = "Choose a Lilypond input file to write to"
-                fname = QFileDialog.getSaveFileName(parent = self,
-                                                    caption = caption,
-                                                    directory = directory,
-                                                    filter = "(*.ly)")
+                fname = QFileDialog.getSaveFileName(parent=self,
+                                                    caption=caption,
+                                                    directory=directory,
+                                                    filter="(*.ly)")
                 if len(fname) == 0:
                     return
                 fname = unicode(fname)
@@ -777,7 +788,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 self._exporter = LilypondExporter(lilyBuffer.getvalue(), fname,
                                                   self.lilyPath,
                                                   self.scoreScene.score.lilyFormat,
-                                                  lambda : self.exporterDone.emit(fname),
+                                                  lambda: self.exporterDone.emit(
+                                                      fname),
                                                   self)
                 self.setLilypondControlsEnabled(False)
                 self._exporter.start()
@@ -803,7 +815,6 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         elif status == self._exporter.ERROR_IN_RUNNING_LY:
             QMessageBox.warning(self.parent(), "Export failed!",
                                 "Could not run Lilypond on " + fname)
-
 
     @staticmethod
     @pyqtSignature("")
@@ -883,9 +894,10 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         current = DBMidi.currentDevice()
         for device in DBMidi.iterMidiDevices():
             action = QAction(device.name, self.menuSelectMidiOut,
-                             checkable = True)
+                             checkable=True)
             self.menuSelectMidiOut.addAction(action)
-            def selectDevice(unused, dev = device, act = action):
+
+            def selectDevice(unused, dev=device, act=action):
                 DBMidi.selectMidiDevice(dev)
                 for otherAction in self.menuSelectMidiOut.actions():
                     otherAction.setChecked(False)
@@ -978,11 +990,11 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         if os.path.splitext(directory)[-1] == os.extsep + 'brp':
             directory = os.path.splitext(directory)[0]
         caption = "Export to MIDI"
-        fname = QFileDialog.getSaveFileName(parent = self,
-                                            caption = caption,
-                                            directory = directory,
-                                            filter = "DrumBurp files (*.mid)")
-        if len(fname) == 0 :
+        fname = QFileDialog.getSaveFileName(parent=self,
+                                            caption=caption,
+                                            directory=directory,
+                                            filter="DrumBurp files (*.mid)")
+        if len(fname) == 0:
             return
         try:
             with open(fname, 'wb') as handle:
@@ -1014,7 +1026,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 return
             DBMidi.loopBars(self.scoreScene.iterDragSelection(),
                             self.scoreScene.score,
-                            loopCount = 1)
+                            loopCount=1)
             self.musicStart()
         else:
             self.musicDone()
@@ -1036,7 +1048,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionFillPasteMeasures_triggered(self):
-        self.scoreScene.pasteMeasuresOver(repeating = True)
+        self.scoreScene.pasteMeasuresOver(repeating=True)
 
     @pyqtSignature("")
     def on_actionClearMeasures_triggered(self):
@@ -1093,7 +1105,8 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
             pagetext = "%d Page" % numPages
             if numPages > 1:
                 pagetext += "s"
-            self._infoBar.setText(", ".join([measureText, staffText, pagetext]))
+            self._infoBar.setText(
+                ", ".join([measureText, staffText, pagetext]))
 
     def _setStatusFromScene(self, msg):
         self.statusbar.showMessage(msg)
@@ -1121,18 +1134,20 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
 
     @pyqtSignature("")
     def on_actionCheckForUpdates_triggered(self):
-        dialog = QVersionDownloader(newer = None, parent = self)
+        dialog = QVersionDownloader(newer=None, parent=self)
         dialog.exec_()
 
     def _finishedVersionCheck(self):
         newer = self._versionThread.newVersionInfo
         if newer:
-            dialog = QVersionDownloader(newer = newer, parent = self)
+            dialog = QVersionDownloader(newer=newer, parent=self)
             dialog.exec_()
         elif newer is None:
-            self.statusbar.showMessage("Failed to get latest version info from www.whatang.org", 5000)
+            self.statusbar.showMessage(
+                "Failed to get latest version info from www.whatang.org", 5000)
         else:
-            self.statusbar.showMessage("Check successful: You have the latest version of DrumBurp", 5000)
+            self.statusbar.showMessage(
+                "Check successful: You have the latest version of DrumBurp", 5000)
 
     def _midiInitFinished(self):
         self._refreshMidiDevices()
@@ -1149,8 +1164,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.scoreView.update()
         self.scoreScene.recolor()
 
-
-    def checkLilypondPath(self, existing = None):
+    def checkLilypondPath(self, existing=None):
         if not existing and not self.lilyPath:
             QMessageBox.information(self, "Lilypond",
                                     "Lilypond is a program for displaying music "
@@ -1160,15 +1174,15 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                                     "and install Lilypond from www.lilypond.org "
                                     "and set the path to the lilypond program in "
                                     "this window.",
-                                    buttons = QMessageBox.Ok,
-                                    defaultButton = QMessageBox.Ok)
+                                    buttons=QMessageBox.Ok,
+                                    defaultButton=QMessageBox.Ok)
         if (self.lilyPath is None
             or not os.path.exists(self.lilyPath)
-            or existing is not None):
+                or existing is not None):
             caption = "Please select path to Lilypond executable"
-            path = QFileDialog.getOpenFileName(parent = self,
-                                               caption = caption,
-                                               directory = existing)
+            path = QFileDialog.getOpenFileName(parent=self,
+                                               caption=caption,
+                                               directory=existing)
             if not path and existing:
                 path = existing
             if not path or not os.path.exists(path):
@@ -1176,7 +1190,6 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
                 return
             self.lilyPreviewControls.setEnabled(True)
             self.lilyPath = path
-
 
     @pyqtSignature("int")
     def on_tabWidget_currentChanged(self, tabIndex_):
@@ -1209,10 +1222,9 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self._setLilyFormat(2)
 
 class VersionCheckThread(QThread):
-    def __init__(self, parent = None):
-        super(VersionCheckThread, self).__init__(parent = parent)
+    def __init__(self, parent=None):
+        super(VersionCheckThread, self).__init__(parent=parent)
         self.newVersionInfo = None
 
     def run(self):
         self.newVersionInfo = doesNewerVersionExist()
-

@@ -24,10 +24,11 @@ Created on 19 Jan 2011
 
 from PyQt4 import QtGui, QtCore
 
+
 class QLineLabel(QtGui.QGraphicsItem):
     def __init__(self, drum, qScore, parent):
-        super(QLineLabel, self).__init__(parent = parent,
-                                         scene = qScore)
+        super(QLineLabel, self).__init__(parent=parent,
+                                         scene=qScore)
         self._text = ""
         self._qScore = qScore
         self._props = qScore.displayProperties
@@ -64,7 +65,7 @@ class QLineLabel(QtGui.QGraphicsItem):
     def setDimensions(self):
         self.prepareGeometryChange()
         self._rect.moveBottomRight(QtCore.QPointF(self.cellWidth(),
-                                                 self.cellHeight()))
+                                                  self.cellHeight()))
 
     def xSpacingChanged(self):
         self.setDimensions()
@@ -75,7 +76,7 @@ class QLineLabel(QtGui.QGraphicsItem):
     def boundingRect(self):
         return self._rect
 
-    def paint(self, painter, dummyOption, dummyWidget = None):
+    def paint(self, painter, dummyOption, dummyWidget=None):
         painter.save()
         painter.setPen(QtCore.Qt.NoPen)
         scheme = self._qScore.parent().colourScheme
@@ -102,4 +103,3 @@ class QLineLabel(QtGui.QGraphicsItem):
         if onOff != self._highlighted:
             self._highlighted = onOff
             self.update()
-

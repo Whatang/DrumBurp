@@ -27,11 +27,12 @@ from PyQt4.QtGui import (QDialog, QColor, QLabel, QPushButton,
 from PyQt4 import QtCore
 from GUI.ui_dbColours import Ui_ColourPicker
 
-STYLE_MAP = {"None":QtCore.Qt.NoPen,
-             "Solid":QtCore.Qt.SolidLine,
-             "Dashed":QtCore.Qt.DashLine}
+STYLE_MAP = {"None": QtCore.Qt.NoPen,
+             "Solid": QtCore.Qt.SolidLine,
+             "Dashed": QtCore.Qt.DashLine}
 STYLES = ["None", "Dashed", "Solid"]
 REVERSE_STYLE_MAP = dict((x, y) for (y, x) in STYLE_MAP.iteritems())
+
 
 class ColouredItem(object):
     def __init__(self, backgroundColour, borderStyle, borderColour):
@@ -70,10 +71,10 @@ class ColouredItem(object):
     def toString(self):
         answer = "/".join([self._colourToString("backgroundColour",
                                                 self.backgroundColour),
-                          self._lineToString("borderStyle",
-                                             self.borderStyle),
-                          self._colourToString("borderColour",
-                                               self.borderColour)])
+                           self._lineToString("borderStyle",
+                                              self.borderStyle),
+                           self._colourToString("borderColour",
+                                                self.borderColour)])
         return answer
 
     def fromString(self, colString):
@@ -86,11 +87,13 @@ class ColouredItem(object):
             elif name.endswith("Style"):
                 setattr(self, name, self._lineFromString(detail))
 
+
 class TextColouredItem(ColouredItem):
     def __init__(self, textColour):
         super(TextColouredItem, self).__init__(QColor(QtCore.Qt.transparent),
                                                "None",
                                                textColour)
+
 
 class BorderColouredItem(ColouredItem):
     def __init__(self, borderStyle, borderColour):
@@ -98,10 +101,11 @@ class BorderColouredItem(ColouredItem):
                                                  borderStyle,
                                                  borderColour)
 
+
 class ColAttrs(object):
     KNOWN_COLOURS = []
 
-    def __init__(self, longName, attrName, default, background = True, border = True, text = False):
+    def __init__(self, longName, attrName, default, background=True, border=True, text=False):
         self.longName = longName
         self.attrName = attrName
         self.default = default
@@ -120,6 +124,7 @@ class ColAttrs(object):
     def getInstance(self, scheme):
         return getattr(scheme, self.attrName)
 
+
 class TextColAttrs(ColAttrs):
     def __init__(self, longName, attrName, default):
         super(TextColAttrs, self).__init__(longName, attrName, default,
@@ -129,6 +134,7 @@ class TextColAttrs(ColAttrs):
         pen = QPen()
         pen.setColor(colour.borderColour)
         painter.setPen(pen)
+
 
 class SolidBoxAttrs(ColAttrs):
     def __init__(self, longName, attrName, default):
@@ -141,6 +147,7 @@ class SolidBoxAttrs(ColAttrs):
         painter.setPen(pen)
         painter.setBrush(colour.backgroundColour)
 
+
 class BorderAttrs(ColAttrs):
     def __init__(self, longName, attrName, default):
         super(BorderAttrs, self).__init__(longName, attrName, default,
@@ -151,6 +158,7 @@ class BorderAttrs(ColAttrs):
         pen.setColor(colour.borderColour)
         painter.setPen(pen)
         painter.setBrush(QColor(QtCore.Qt.transparent))
+
 
 _TEXT_ATTRS = TextColAttrs("Text", "text",
                            TextColouredItem(QColor(QtCore.Qt.black)))
@@ -180,6 +188,7 @@ _STICKING_ATTRS = SolidBoxAttrs("Sticking Display", "sticking",
                                              "Dashed",
                                              QColor(QtCore.Qt.gray)))
 
+
 class ColourInstance(object):
     def __init__(self, colourAttrs):
         self.colour = copy.deepcopy(colourAttrs.default)
@@ -191,6 +200,7 @@ class ColourInstance(object):
     @property
     def borderStyle(self):
         return self.colour.borderStyle
+
     @borderStyle.setter
     def borderStyle(self, value):
         self.colour.borderStyle = value
@@ -198,6 +208,7 @@ class ColourInstance(object):
     @property
     def borderColour(self):
         return self.colour.borderColour
+
     @borderColour.setter
     def borderColour(self, value):
         self.colour.borderColour = value
@@ -205,6 +216,7 @@ class ColourInstance(object):
     @property
     def backgroundColour(self):
         return self.colour.backgroundColour
+
     @backgroundColour.setter
     def backgroundColour(self, value):
         self.colour.backgroundColour = value
@@ -214,6 +226,7 @@ class ColourInstance(object):
 
     def fromString(self, colString):
         return self.colour.fromString(colString)
+
 
 class ColourScheme(object):
     def __init__(self):
@@ -234,9 +247,10 @@ class ColourScheme(object):
             if not colour.text:
                 yield getattr(self, colour.attrName)
 
+
 class DBColourPicker(QDialog, Ui_ColourPicker):
 
-    def __init__(self, colour_scheme, parent = None):
+    def __init__(self, colour_scheme, parent=None):
         super(DBColourPicker, self).__init__(parent)
         self.setupUi(self)
         self._originalScheme = copy.deepcopy(colour_scheme)
@@ -309,7 +323,8 @@ class DBColourPicker(QDialog, Ui_ColourPicker):
     def _makeBackgroundButton(self, colourAttr):
         backgroundButton = QPushButton(self)
         backgroundButton.setObjectName(colourAttr.attrName + "background_col")
-        self._makeColourSelector(backgroundButton, colourAttr, "backgroundColour")
+        self._makeColourSelector(
+            backgroundButton, colourAttr, "backgroundColour")
         return backgroundButton
 
     def _makeLineCombo(self, colourAttr):
@@ -317,6 +332,7 @@ class DBColourPicker(QDialog, Ui_ColourPicker):
         combo.setObjectName(colourAttr.attrName + "border_style")
         for lineStyle in STYLES:
             combo.addItem(lineStyle)
+
         def setLineStyle(newIndex):
             colour = colourAttr.getInstance(self._currentScheme)
             colour.borderStyle = STYLES[newIndex]
@@ -353,6 +369,7 @@ class DBColourPicker(QDialog, Ui_ColourPicker):
         self._currentScheme = copy.deepcopy(ColourScheme())
         self._setColourValues()
 
+
 def main():
     from PyQt4.QtGui import QApplication
     import sys
@@ -365,6 +382,7 @@ def main():
         scheme = dialog.getColourScheme()
         for col in scheme.iterColours():
             print col.colourAttrs.longName, col.toString()
+
 
 if __name__ == "__main__":
     main()

@@ -13,6 +13,7 @@ from Data.MeasureCount import MeasureCount
 
 _REG = CounterRegistry()
 
+
 class TestCompoundSticking(unittest.TestCase):
     def setUp(self):
         self.kit = DrumKitFactory.getNamedDefaultKit()

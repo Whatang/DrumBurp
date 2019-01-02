@@ -34,9 +34,9 @@ LINE_BREAK = "LINE_BREAK"
 BAR_TYPES = {NO_BAR: 0,
              NORMAL_BAR: 1,
              REPEAT_START: 2,
-             REPEAT_END_STR:4,
-             SECTION_END:8,
-             LINE_BREAK:16}
+             REPEAT_END_STR: 4,
+             SECTION_END: 8,
+             LINE_BREAK: 16}
 BARLINE = "|"
 REPEAT_STARTER = "/"
 REPEAT_END = "\\"
@@ -62,4 +62,4 @@ KIT_FF_1 = 1
 CURRENT_KIT_FORMAT = KIT_FF_1
 
 # Swing markers
-SWING_TO_TEXT = {8:"8ths", 16:"16ths", 32:"32nds"}
+SWING_TO_TEXT = {8: "8ths", 16: "16ths", 32: "32nds"}

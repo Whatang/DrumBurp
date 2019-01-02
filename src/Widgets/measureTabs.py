@@ -27,8 +27,9 @@ from PyQt4.QtGui import QWidget
 from PyQt4.QtCore import pyqtSignal
 from .ui_measureTabs import Ui_measureTabs
 
+
 class measureTabs(QWidget, Ui_measureTabs):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         super(measureTabs, self).__init__(parent)
         self.setupUi(self)
         self._measureCount = None
@@ -112,4 +113,3 @@ class measureTabs(QWidget, Ui_measureTabs):
         if dlg.exec_():
             self._currentCount = dlg.getCount()
             self.preview()
-

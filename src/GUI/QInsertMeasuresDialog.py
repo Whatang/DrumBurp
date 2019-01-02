@@ -26,6 +26,7 @@ from GUI.ui_insertMeasuresDialog import Ui_InsertMeasuresDialog
 from GUI.QComplexCountDialog import QComplexCountDialog
 import Data.MeasureCount
 
+
 class QInsertMeasuresDialog(QDialog, Ui_InsertMeasuresDialog):
     def __init__(self, parent, measureCount, counterRegistry):
         super(QInsertMeasuresDialog, self).__init__(parent)

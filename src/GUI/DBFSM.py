@@ -35,10 +35,12 @@ from GUI.QAlternateDialog import QAlternateDialog
 import GUI.DBFSMEvents as Event
 from PyQt4 import QtCore
 
+
 class DbState(State):
     @property
     def qscore(self):
         return self.machine.qscore
+
 
 class DBStateMachine(StateMachine):
     def __init__(self, initialStateType, qscore):
@@ -48,13 +50,14 @@ class DBStateMachine(StateMachine):
     def setQscore(self, qscore):
         self.qscore = qscore
 
+
 @DBStateMachine.add_state
 class Waiting(DbState):
     def clearDrag(self, event_):
         self.qscore.clearDragSelection()
 
     def setSticking(self, event):
-        rotate = {" " : "R", "R":"L", "L":"F", "F":" "}
+        rotate = {" ": "R", "R": "L", "L": "F", "F": " "}
         measure = self.qscore.score.getMeasureByPosition(event.note)
         if event.above:
             sticking = measure.aboveText[event.note.noteTime]
@@ -64,6 +67,7 @@ class Waiting(DbState):
         command = SetStickingCommand(self.qscore, event.note, event.above,
                                      sticking)
         self.qscore.addCommand(command)
+
 
 @DBStateMachine.add_state
 class ButtonDown(DbState):
@@ -93,6 +97,7 @@ class Dragging(DbState):
         self.release(event)
         self.qscore.clearDragSelection()
 
+
 @DBStateMachine.add_state
 class NotesMenu(DbState):
     def initialize(self):
@@ -100,7 +105,7 @@ class NotesMenu(DbState):
         self.menu = QMenuIgnoreCancelClick(self.qscore)
         kit = self.qscore.score.drumKit
         for noteHead in kit.allowedNoteHeads(self.event.note.drumIndex):
-            def noteAction(nh = noteHead):
+            def noteAction(nh=noteHead):
                 self.qscore.sendFsmEvent(Event.MenuSelect(nh))
             self.menu.addAction(noteHead, noteAction)
         QtCore.QTimer.singleShot(0,
@@ -112,6 +117,7 @@ class NotesMenu(DbState):
 
     def close(self, event_):
         self.menu.close()
+
 
 @DBStateMachine.add_state
 class ContextMenu(DbState):
@@ -128,6 +134,7 @@ class ContextMenu(DbState):
     def close(self, event_):
         self.menu.close()
 
+
 @DBStateMachine.add_state
 class Repeating(DbState):
     def initialize(self):
@@ -143,7 +150,8 @@ class Repeating(DbState):
     def startRepeatDrag(self, event):
         if event.note is None:
             return self
-        interval = self.qscore.score.tickDifference(event.note, self.event.note)
+        interval = self.qscore.score.tickDifference(
+            event.note, self.event.note)
         if interval <= 0:
             self.statusBar.showMessage("Cannot repeat notes backwards!",
                                        5000)
@@ -151,7 +159,8 @@ class Repeating(DbState):
         measure = self.qscore.score.getMeasureByPosition(self.event.note)
         head = measure.getNote(self.event.note)
         return RepeatingDragging(self.machine, event, self.event.note,
-                                  interval, head)
+                                 interval, head)
+
 
 @DBStateMachine.add_state
 class RepeatingDragging(DbState):
@@ -178,11 +187,11 @@ class RepeatingDragging(DbState):
             note = self.score.notePlus(note, self.interval)
             more = (note is not None and
                     ((note.staffIndex < self._lastNote.staffIndex) or
-                    (note.staffIndex == self._lastNote.staffIndex
-                     and note.measureIndex < self._lastNote.measureIndex) or
-                    ((note.staffIndex == self._lastNote.staffIndex
-                      and note.measureIndex == self._lastNote.measureIndex
-                      and note.noteTime <= self._lastNote.noteTime))))
+                     (note.staffIndex == self._lastNote.staffIndex
+                      and note.measureIndex < self._lastNote.measureIndex) or
+                     ((note.staffIndex == self._lastNote.staffIndex
+                       and note.measureIndex == self._lastNote.measureIndex
+                       and note.noteTime <= self._lastNote.noteTime))))
             if more:
                 notes.append(note)
         if len(notes) != len(self._notes):
@@ -230,6 +239,7 @@ class MeasureLineContextMenuState(DbState):
     def close(self, event_):
         self.menu.close()
 
+
 @DBStateMachine.add_state
 class MeasureCountContextMenuState(DbState):
     def initialize(self):
@@ -242,6 +252,7 @@ class MeasureCountContextMenuState(DbState):
     def close(self, event_):
         self.menu.close()
 
+
 @DBStateMachine.add_state
 class Playing(DbState):
     def initialize(self):
@@ -249,6 +260,7 @@ class Playing(DbState):
 
     def stop(self, event_):
         self.qscore.playing.emit(False)
+
 
 class DialogState_(DbState):
     def __init__(self, machine, event):
@@ -270,6 +282,7 @@ class DialogState_(DbState):
     def reject(self, event_):
         self.dialog.reject()
 
+
 @DBStateMachine.add_state
 class EditMeasurePropertiesState(DialogState_):
     def makeDialog(self):
@@ -277,7 +290,6 @@ class EditMeasurePropertiesState(DialogState_):
                                   self.qscore.defaultCount,
                                   self.event.counterRegistry,
                                   self.qscore.parent())
-
 
     def _accepted(self):
         newCounter = self.dialog.getValues()
@@ -288,6 +300,7 @@ class EditMeasurePropertiesState(DialogState_):
             self.qscore.clearDragSelection()
             self.qscore.addCommand(command)
         super(EditMeasurePropertiesState, self)._accepted()  # IGNORE:W0212
+
 
 @DBStateMachine.add_state
 class RepeatCountState(DialogState_):
@@ -305,6 +318,7 @@ class RepeatCountState(DialogState_):
             self.qscore.addCommand(command)
         super(RepeatCountState, self)._accepted()  # IGNORE:W0212
 
+
 @DBStateMachine.add_state
 class SetAlternateState(DialogState_):
     def makeDialog(self):
@@ -318,6 +332,7 @@ class SetAlternateState(DialogState_):
                                           newText)
             self.qscore.addCommand(command)
         super(SetAlternateState, self)._accepted()  # IGNORE:W0212
+
 
 @DBStateMachine.add_state
 class SetNewBpmState(DialogState_):
@@ -333,13 +348,14 @@ class SetNewBpmState(DialogState_):
             self.qscore.addCommand(command)
         super(SetNewBpmState, self)._accepted()
 
+
 DBStateMachine.add_transition(Waiting, Event.Escape, Waiting,
                               Waiting.clearDrag)
 DBStateMachine.add_transition(Waiting, Event.LeftPress, ButtonDown,
                               Waiting.clearDrag,
                               lambda state_, event: event.note is not None)
 DBStateMachine.add_transition(Waiting, Event.MidPress, NotesMenu,
-                              guard = lambda state_, event: not event.measure.isSimile())
+                              guard=lambda state_, event: not event.measure.isSimile())
 DBStateMachine.add_transition(Waiting, Event.RightPress, ContextMenu)
 DBStateMachine.add_transition(Waiting, Event.MeasureLineContext,
                               MeasureLineContextMenuState)
@@ -358,7 +374,7 @@ DBStateMachine.add_transition(Waiting, Event.SetBpmEvent,
                               SetNewBpmState)
 
 DBStateMachine.add_transition(ButtonDown, Event.MouseMove, Dragging,
-                              guard = ButtonDown.isSameNote)
+                              guard=ButtonDown.isSameNote)
 DBStateMachine.add_transition(ButtonDown, Event.MouseRelease, Waiting,
                               ButtonDown.release)
 DBStateMachine.add_transition(ButtonDown, Event.StartPlaying, Playing)
@@ -403,7 +419,7 @@ DBStateMachine.add_transition(Repeating, Event.StartPlaying, Playing,
                               Repeating.clear)
 
 DBStateMachine.add_transition(RepeatingDragging, Event.MouseRelease, Waiting,
-                                  RepeatingDragging.release)
+                              RepeatingDragging.release)
 DBStateMachine.add_transition(RepeatingDragging, Event.MouseMove, Waiting,
                               RepeatingDragging.move,
                               lambda state, event: False)
@@ -434,7 +450,8 @@ DBStateMachine.add_transition(MeasureCountContextMenuState,
                               EditMeasurePropertiesState)
 
 
-DBStateMachine.add_transition(Playing, Event.StopPlaying, Waiting, Playing.stop)
+DBStateMachine.add_transition(
+    Playing, Event.StopPlaying, Waiting, Playing.stop)
 
 DBStateMachine.add_transition(EditMeasurePropertiesState, Event.StartPlaying,
                               Playing, DialogState_.reject)

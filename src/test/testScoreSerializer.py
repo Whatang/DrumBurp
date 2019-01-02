@@ -34,6 +34,7 @@ from Data import DBConstants
 from Data import DBErrors
 from Data import fileUtils
 
+
 def StringIO(*args, **kwargs):  # IGNORE:invalid-name
     "Utility function to wrap StringIO with utf-8 reading/writing"
     handle = cStringIO.StringIO(*args, **kwargs)
@@ -41,12 +42,15 @@ def StringIO(*args, **kwargs):  # IGNORE:invalid-name
                                      codecs.getreader('utf-8'),
                                      codecs.getwriter('utf-8'))
 
+
 class TestScoreSerializerGeneral(unittest.TestCase):
     def testReadTooHighVersionNumber(self):
         data = """DB_FILE_FORMAT 10000
         """
         handle = StringIO(data)
-        self.assertRaises(DBErrors.DBVersionError, ScoreSerializer.read, handle)
+        self.assertRaises(DBErrors.DBVersionError,
+                          ScoreSerializer.read, handle)
+
 
 class TestScoreSerializerV0(unittest.TestCase):
 
@@ -272,22 +276,31 @@ class TestScoreSerializerV0(unittest.TestCase):
 
     class NoFF(RuntimeError):
         pass
+
     class MCounts(RuntimeError):
         pass
+
     class Barline(RuntimeError):
         pass
+
     class NoLilyFormat(RuntimeError):
         pass
+
     class NoLilySize(RuntimeError):
         pass
+
     class NoLilyFill(RuntimeError):
         pass
+
     class NoLilyPages(RuntimeError):
         pass
+
     class ShortNoteHeads(RuntimeError):
         pass
+
     class OldTriplets(RuntimeError):
         pass
+
     class NoNoteheads(RuntimeError):
         pass
 
@@ -374,6 +387,7 @@ class TestScoreSerializerV0(unittest.TestCase):
                     written = [x for x in written if "NOTEHEAD" not in x]
                     data = [x for x in data if "NOTEHEAD" not in x]
 
+
 class TestScoreSerializerV1(unittest.TestCase):
     def testReadV0WriteV1ReadV1(self):
         print "Read Version 0, Write Version 1"
@@ -402,9 +416,9 @@ class TestScoreSerializerV1(unittest.TestCase):
 
 class TestUnicode(unittest.TestCase):
     def testWriteUnicode(self):
-        tmp = tempfile.NamedTemporaryFile(suffix = ".brp",
-                                          prefix = "unicode_test_v1",
-                                          delete = False)
+        tmp = tempfile.NamedTemporaryFile(suffix=".brp",
+                                          prefix="unicode_test_v1",
+                                          delete=False)
         try:
             tmp.close()
             score = ScoreFactory.makeEmptyScore(8)
@@ -419,6 +433,7 @@ class TestUnicode(unittest.TestCase):
             except RuntimeError:
                 pass
             os.unlink(tmp.name)
+
 
 if __name__ == "__main__":
     unittest.main()

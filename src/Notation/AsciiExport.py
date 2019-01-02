@@ -30,6 +30,7 @@ from Data.DBConstants import (REPEAT_EXTENDER, BARLINE, DRUM_ABBR_WIDTH,
                               ALTERNATE_EXTENDER, SWING_TO_TEXT)
 from Data.NotePosition import NotePosition
 
+
 def getExportDate():
     return time.strftime("%d %B %Y")
 

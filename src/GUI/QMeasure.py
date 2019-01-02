@@ -37,6 +37,7 @@ from GUI.DBFSMEvents import (LeftPress, MidPress, RightPress,
                              SetSticking,
                              SetBpmEvent)
 
+
 def _painterSaver(method):
     def wrapper(self, painter, *args, **kwargs):
         painter.save()
@@ -45,6 +46,7 @@ def _painterSaver(method):
         finally:
             painter.restore()
     return wrapper
+
 
 class QMeasure(QtGui.QGraphicsItem):
     def __init__(self, index, qScore, measure, parent):
@@ -60,7 +62,8 @@ class QMeasure(QtGui.QGraphicsItem):
         self._notesTop = 0
         self._notesBottom = 0
         self._stickingBelowTop = 0
-        self._measureIndex = qScore.score.measurePositionToIndex(self.measurePosition())
+        self._measureIndex = qScore.score.measurePositionToIndex(
+            self.measurePosition())
         self._highlight = None
         self._rect = QtCore.QRectF(0, 0, 0, 0)
         self._repeatCountRect = None
@@ -92,7 +95,8 @@ class QMeasure(QtGui.QGraphicsItem):
     def _setDimensions(self):
         self.prepareGeometryChange()
         if self.isSimile():
-            referredMeasure = self._qScore.score.getReferredMeasure(self._measureIndex)
+            referredMeasure = self._qScore.score.getReferredMeasure(
+                self._measureIndex)
             self._displayCols = referredMeasure.counter.numBeats()
         else:
             self._displayCols = len(self._measure)
@@ -166,7 +170,7 @@ class QMeasure(QtGui.QGraphicsItem):
                     else:
                         text = " "
                 elif (lineIndex == self._potentialDrum
-                    and noteTime in self._potentialSet):
+                      and noteTime in self._potentialSet):
                     text = self._potentialHead
                     potential = True
                     scheme.potential.setPainter(painter)
@@ -175,7 +179,8 @@ class QMeasure(QtGui.QGraphicsItem):
                     current = self._measure.noteAt(noteTime, lineIndex)
                     potentialHead = self._qScore.getCurrentHead()
                     if potentialHead is None:
-                        potentialHead = self._qScore.score.drumKit.getDefaultHead(lineIndex)
+                        potentialHead = self._qScore.score.drumKit.getDefaultHead(
+                            lineIndex)
                     if current == potentialHead:
                         text = current
                         scheme.delete.setPainter(painter)
@@ -293,13 +298,11 @@ class QMeasure(QtGui.QGraphicsItem):
         painter.setFont(font)
         painter.drawText(1, self._base - 2, "%d" % (1 + self._measureIndex))
 
-
     @_painterSaver
     def _paintDragHighlight(self, painter):
         scheme = self._colourScheme()
         scheme.selectedMeasure.setPainter(painter)
         painter.drawRect(self._rect)
-
 
     def _paintSticking(self, painter, sticking, baseline, xValues):
         font = painter.font()
@@ -361,12 +364,12 @@ class QMeasure(QtGui.QGraphicsItem):
         textWidth = QtGui.QFontMetrics(painter.font()).width(text)
         if self._bpmRect is None:
             self._bpmRect = QtCore.QRectF(0, 0, 0, 0)
-        self._bpmRect.setSize(QtCore.QSizeF(textWidth, self._props.bpmHeight()))
+        self._bpmRect.setSize(QtCore.QSizeF(
+            textWidth, self._props.bpmHeight()))
         self._bpmRect.moveTopLeft(QtCore.QPointF(1, self._bpmBase))
 
-
     @_painterSaver
-    def paint(self, painter, dummyOption, dummyWidget = None):
+    def paint(self, painter, dummyOption, dummyWidget=None):
         if self._dragHighlight:
             self._paintDragHighlight(painter)
         self._colourScheme().text.setPainter(painter)
@@ -598,13 +601,13 @@ class QMeasure(QtGui.QGraphicsItem):
             event.ignore()
 
     def makeNotePosition(self, noteTime, drumIndex):
-        np = NotePosition(measureIndex = self._index,
-                          noteTime = noteTime,
-                          drumIndex = drumIndex)
+        np = NotePosition(measureIndex=self._index,
+                          noteTime=noteTime,
+                          drumIndex=drumIndex)
         return self.parentItem().augmentNotePosition(np)
 
     def measurePosition(self):
-        np = NotePosition(measureIndex = self._index)
+        np = NotePosition(measureIndex=self._index)
         return self.parentItem().augmentNotePosition(np)
 
     def setAlternate(self):
@@ -614,7 +617,8 @@ class QMeasure(QtGui.QGraphicsItem):
     def setNewBpm(self):
         bpm = self._measure.newBpm
         if bpm == 0:
-            bpm = self._qScore.score.bpmAtMeasureByPosition(self.measurePosition())
+            bpm = self._qScore.score.bpmAtMeasureByPosition(
+                self.measurePosition())
         if bpm == 0:
             bpm = 120
         self._qScore.sendFsmEvent(SetBpmEvent(self.measurePosition(), bpm))
@@ -637,7 +641,7 @@ class QMeasure(QtGui.QGraphicsItem):
     def alternateText(self):
         return self._measure.alternateText
 
-    def setPotentials(self, notes = None, head = None):
+    def setPotentials(self, notes=None, head=None):
         if notes is None:
             newNotes = []
             self._potentialDrum = None

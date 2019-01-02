@@ -24,7 +24,6 @@ Created on 5 Sep 2011
 '''
 
 
-
 class FontOptions(object):
     DEFAULT_FONT = "Noto Sans"
 

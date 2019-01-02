@@ -28,6 +28,7 @@ from Data.Drum import Drum
 
 # pylint: disable-msg=R0904
 
+
 class TestDrumKit(unittest.TestCase):
     def setUp(self):
         self.kit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit()
@@ -58,29 +59,30 @@ class TestDrumKit(unittest.TestCase):
         numDrums = len(self.kit)
         self.assert_(numDrums > 0)
         drum = self.kit[0]
-        self.kit.deleteDrum(name = drum.name)
+        self.kit.deleteDrum(name=drum.name)
         self.assertEqual(len(self.kit), numDrums - 1)
         for remainingDrum in self.kit:
             self.assertNotEqual(drum, remainingDrum)
 
     def testDeleteDrumByName_DrumNotFound(self):
         self.assertRaises(NoSuchDrumError,
-                          self.kit.deleteDrum, name = "no such drum")
+                          self.kit.deleteDrum, name="no such drum")
 
     def testDeleteDrumByIndex(self):
         numDrums = len(self.kit)
         self.assert_(numDrums > 0)
         drum = self.kit[0]
-        self.kit.deleteDrum(index = 0)
+        self.kit.deleteDrum(index=0)
         self.assertEqual(len(self.kit), numDrums - 1)
         for remainingDrum in self.kit:
             self.assertNotEqual(drum, remainingDrum)
 
     def testDeleteDrumByIndex_BadIndex(self):
         self.assertRaises(NoSuchDrumError,
-                          self.kit.deleteDrum, index = -1)
+                          self.kit.deleteDrum, index=-1)
         self.assertRaises(NoSuchDrumError,
-                          self.kit.deleteDrum, index = len(self.kit))
+                          self.kit.deleteDrum, index=len(self.kit))
+
 
 if __name__ == "__main__":
     unittest.main()

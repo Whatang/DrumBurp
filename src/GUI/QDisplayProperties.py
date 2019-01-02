@@ -29,6 +29,7 @@ from PyQt4.QtGui import QFontMetrics, QFont
 
 # pylint: disable-msg=R0902
 
+
 class QDisplayProperties(QObject):
     _START_NOTE_WIDTH = 12
     MIN_NOTE_WIDTH = 12
@@ -99,7 +100,8 @@ class QDisplayProperties(QObject):
         self.sectionFontSizeChanged.connect(qScore.sectionFontChanged)
         self.metadataFontChanged.connect(qScore.metadataFontChanged)
         self.metadataFontSizeChanged.connect(qScore.metadataFontChanged)
-        self.metadataVisibilityChanged.connect(qScore.metadataVisibilityChanged)
+        self.metadataVisibilityChanged.connect(
+            qScore.metadataVisibilityChanged)
         self.kitDataVisibleChanged.connect(qScore.kitDataVisibleChanged)
         self.beatCountVisibleChanged.connect(qScore.reBuild)
         self.emptyLinesVisibleChanged.connect(qScore.reBuild)
@@ -108,6 +110,7 @@ class QDisplayProperties(QObject):
 
     def _getxSpacing(self):
         return self._xSpacing
+
     def _setxSpacing(self, value):
         if value < 0:
             value += 101
@@ -116,10 +119,11 @@ class QDisplayProperties(QObject):
         if self._xSpacing != value:
             self._xSpacing = value
             self.xSpacingChanged.emit()
-    xSpacing = property(fget = _getxSpacing, fset = _setxSpacing)
+    xSpacing = property(fget=_getxSpacing, fset=_setxSpacing)
 
     def _getySpacing(self):
         return self._ySpacing
+
     def _setySpacing(self, value):
         if value < 0:
             value += 101
@@ -128,10 +132,11 @@ class QDisplayProperties(QObject):
         if self._ySpacing != value:
             self._ySpacing = value
             self.ySpacingChanged.emit()
-    ySpacing = property(fget = _getySpacing, fset = _setySpacing)
+    ySpacing = property(fget=_getySpacing, fset=_setySpacing)
 
     def _getlineSpacing(self):
         return self._lineSpacing
+
     def _setlineSpacing(self, value):
         if value < 0:
             value += 101
@@ -140,24 +145,27 @@ class QDisplayProperties(QObject):
         if self._lineSpacing != value:
             self._lineSpacing = value
             self.lineSpacingChanged.emit()
-    lineSpacing = property(fget = _getlineSpacing, fset = _setlineSpacing)
+    lineSpacing = property(fget=_getlineSpacing, fset=_setlineSpacing)
 
     def _getxMargins(self):
         return self._xMargins
+
     def _setxMargins(self, value):
         if self._xMargins != value:
             self._xMargins = value
-    xMargins = property(fget = _getxMargins, fset = _setxMargins)
+    xMargins = property(fget=_getxMargins, fset=_setxMargins)
 
     def _getyMargins(self):
         return self._yMargins
+
     def _setyMargins(self, value):
         if self._yMargins != value:
             self._yMargins = value
-    yMargins = property(fget = _getyMargins, fset = _setyMargins)
+    yMargins = property(fget=_getyMargins, fset=_setyMargins)
 
     def _getnoteFont(self):
         return self._noteFont
+
     def _setnoteFont(self, value):
         if self._noteFont != value:
             self._noteFont = value
@@ -165,7 +173,7 @@ class QDisplayProperties(QObject):
                 self._score.fontOptions.noteFont = value.family()
             self._updateSpacing()
             self.fontChanged.emit()
-    noteFont = property(fget = _getnoteFont, fset = _setnoteFont)
+    noteFont = property(fget=_getnoteFont, fset=_setnoteFont)
 
     def _updateSpacing(self):
         fm = QFontMetrics(self.noteFont)
@@ -185,6 +193,7 @@ class QDisplayProperties(QObject):
             return self._defaultNoteFontSize
         else:
             return self.noteFont.pointSize()
+
     def _setNoteFontSize(self, size):
         if size == self.noteFontSize:
             return
@@ -195,12 +204,12 @@ class QDisplayProperties(QObject):
             self.noteFont.setPointSize(size)
             self._updateSpacing()
         self.noteSizeChanged.emit(size)
-    noteFontSize = property(fget = _getnoteFontSize,
-                            fset = _setNoteFontSize)
-
+    noteFontSize = property(fget=_getnoteFontSize,
+                            fset=_setNoteFontSize)
 
     def _getsectionFontSize(self):
         return self._sectionFontSize
+
     def _setsectionFontSize(self, value):
         if self._sectionFontSize != value:
             self._sectionFontSize = value
@@ -209,11 +218,12 @@ class QDisplayProperties(QObject):
             if self.sectionFont is not None:
                 self.sectionFont.setPointSize(value)
             self.sectionFontSizeChanged.emit()
-    sectionFontSize = property(fget = _getsectionFontSize,
-                               fset = _setsectionFontSize)
+    sectionFontSize = property(fget=_getsectionFontSize,
+                               fset=_setsectionFontSize)
 
     def _getsectionFont(self):
         return self._sectionFont
+
     def _setsectionFont(self, value):
         if self._sectionFont != value:
             value.setBold(True)
@@ -223,10 +233,11 @@ class QDisplayProperties(QObject):
             if self._score is not None:
                 self._score.fontOptions.sectionFont = value.family()
             self.sectionFontChanged.emit()
-    sectionFont = property(fget = _getsectionFont, fset = _setsectionFont)
+    sectionFont = property(fget=_getsectionFont, fset=_setsectionFont)
 
     def _getmetadataFontSize(self):
         return self._metadataFontSize
+
     def _setmetadataFontSize(self, value):
         if self._metadataFontSize != value:
             self._metadataFontSize = value
@@ -235,11 +246,12 @@ class QDisplayProperties(QObject):
             if self._score is not None:
                 self._score.fontOptions.metadataFontSize = self.metadataFontSize
             self.metadataFontSizeChanged.emit()
-    metadataFontSize = property(fget = _getmetadataFontSize,
-                                fset = _setmetadataFontSize)
+    metadataFontSize = property(fget=_getmetadataFontSize,
+                                fset=_setmetadataFontSize)
 
     def _getmetadataFont(self):
         return self._metadataFont
+
     def _setmetadataFont(self, value):
         if self._metadataFont != value:
             value.setBold(True)
@@ -248,7 +260,7 @@ class QDisplayProperties(QObject):
             if self._score is not None:
                 self._score.fontOptions.metadataFont = value.family()
             self.metadataFontChanged.emit()
-    metadataFont = property(fget = _getmetadataFont, fset = _setmetadataFont)
+    metadataFont = property(fget=_getmetadataFont, fset=_setmetadataFont)
 
     def _readFromFontOptions(self, qScore):
         if self._score is not None:
@@ -280,60 +292,66 @@ class QDisplayProperties(QObject):
 
     def _gethead(self):
         return self._head
+
     def _sethead(self, value):
         if self._head != value:
             self._head = value
-    head = property(fget = _gethead, fset = _sethead)
+    head = property(fget=_gethead, fset=_sethead)
 
     def _getmetadataVisible(self):
         return self._metadataVisible
+
     def _setmetadataVisible(self, value):
         if self._metadataVisible != value:
             self._metadataVisible = value
             self._score.scoreData.metadataVisible = value
             self.metadataVisibilityChanged.emit()
-    metadataVisible = property(fget = _getmetadataVisible,
-                               fset = _setmetadataVisible)
+    metadataVisible = property(fget=_getmetadataVisible,
+                               fset=_setmetadataVisible)
 
     def _getkitDataVisible(self):
         return self._kitDataVisible
+
     def _setkitDataVisible(self, value):
         if self._kitDataVisible != value:
             self._kitDataVisible = value
             self._score.scoreData.kitDataVisible = value
             self.kitDataVisibleChanged.emit()
-    kitDataVisible = property(fget = _getkitDataVisible,
-                              fset = _setkitDataVisible)
+    kitDataVisible = property(fget=_getkitDataVisible,
+                              fset=_setkitDataVisible)
 
     def _getbeatCountVisible(self):
         return self._beatCountVisible
+
     def _setbeatCountVisible(self, value):
         if self._beatCountVisible != value:
             self._beatCountVisible = value
             self._score.scoreData.beatCountVisible = value
             self.beatCountVisibleChanged.emit()
-    beatCountVisible = property(fget = _getbeatCountVisible,
-                                fset = _setbeatCountVisible)
+    beatCountVisible = property(fget=_getbeatCountVisible,
+                                fset=_setbeatCountVisible)
 
     def _getemptyLinesVisible(self):
         return self._emptyLinesVisible
+
     def _setemptyLinesVisible(self, value):
         if self._emptyLinesVisible != value:
             self._emptyLinesVisible = value
             self._score.scoreData.emptyLinesVisible = value
             self.emptyLinesVisibleChanged.emit()
-    emptyLinesVisible = property(fget = _getemptyLinesVisible,
-                                 fset = _setemptyLinesVisible)
+    emptyLinesVisible = property(fget=_getemptyLinesVisible,
+                                 fset=_setemptyLinesVisible)
 
     def _getmeasureCountsVisible(self):
         return self._measureCountsVisible
+
     def _setmeasureCountsVisible(self, value):
         if self._measureCountsVisible != value:
             self._measureCountsVisible = value
             self._score.scoreData.measureCountsVisible = value
             self.measureCountsVisibleChanged.emit()
-    measureCountsVisible = property(fget = _getmeasureCountsVisible,
-                                    fset = _setmeasureCountsVisible)
+    measureCountsVisible = property(fget=_getmeasureCountsVisible,
+                                    fset=_setmeasureCountsVisible)
 
     def alternateHeight(self):
         return self._ySpacing + 2
@@ -343,7 +361,6 @@ class QDisplayProperties(QObject):
 
     def measureCountHeight(self):
         return self._ySpacing + 4
-
 
     def maxColumns(self, widthInPixels):
         widthInPixels -= 2 * (self.xMargins + self.xSpacing)
@@ -360,7 +377,7 @@ class QDisplayProperties(QObject):
     def counterRegistry(self):
         return self._counterRegistry
 
-    def generateAsciiSettings(self, settings = None):
+    def generateAsciiSettings(self, settings=None):
         if settings is None:
             settings = ASCIISettings()
         settings.metadata = self.metadataVisible

@@ -29,9 +29,10 @@ from Data import DBConstants
 from Data import DBErrors
 from Data.fileStructures import dbfsv0, dbfsv1
 
+
 class DrumKitSerializer(object):
-    _KIT_FF_MAP = {DBConstants.KIT_FF_0:dbfsv0.DrumKitStructureV0,
-                   DBConstants.KIT_FF_1:dbfsv1.DrumKitStructureV1}
+    _KIT_FF_MAP = {DBConstants.KIT_FF_0: dbfsv0.DrumKitStructureV0,
+                   DBConstants.KIT_FF_1: dbfsv1.DrumKitStructureV1}
 
     @classmethod
     def read(cls, handle):
@@ -62,7 +63,7 @@ class DrumKitSerializer(object):
         return score
 
     @classmethod
-    def write(cls, kit, handle, version = DBConstants.CURRENT_KIT_FORMAT):
+    def write(cls, kit, handle, version=DBConstants.CURRENT_KIT_FORMAT):
         kitBuffer = StringIO()
         indenter = fileUtils.Indenter(kitBuffer)
         indenter(DBConstants.DB_KIT_FILE_FORMAT_STR, version)
@@ -72,7 +73,7 @@ class DrumKitSerializer(object):
         handle.write(kitBuffer.getvalue())
 
     @classmethod
-    def saveKit(cls, kit, filename, version = DBConstants.CURRENT_KIT_FORMAT,
-                compressed = True):
+    def saveKit(cls, kit, filename, version=DBConstants.CURRENT_KIT_FORMAT,
+                compressed=True):
         with fileUtils.DataWriter(filename, compressed) as writer:
             cls.write(kit, writer, version)

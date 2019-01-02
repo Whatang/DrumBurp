@@ -39,8 +39,10 @@ import Data.DefaultKits
 from Data.Counter import CounterRegistry
 import Data.Score
 
+
 class CounterFieldV0(SimpleValueField):
     registry = CounterRegistry()
+
     def _processData(self, data):
         if data[0] == "|" and data[-1] == "|":
             data = data[1:-1]
@@ -52,6 +54,7 @@ class CounterFieldV0(SimpleValueField):
 
     def _toString(self, counter):
         return "|" + str(counter) + "|"
+
 
 class BeatStructureV0(FileStructure):
     tag = "BEAT"
@@ -65,18 +68,19 @@ class BeatStructureV0(FileStructure):
     def postProcessObject(self, instance):
         return Data.Beat.Beat(instance["counter"], instance.get("numTicks"))
 
+
 class MeasureCountStructureV0(FileStructure):
     tag = "COUNT_INFO"
     startTag = "COUNT_INFO_START"
     endTag = "COUNT_INFO_END"
 
     repeat = conditionalWriteField(PositiveIntegerField('REPEAT_BEATS',
-                                                        getter = lambda count: count.numBeats()),
+                                                        getter=lambda count: count.numBeats()),
                                    lambda count: count.isSimpleCount())
-    beats = BeatStructureV0(singleton = False,
-                            getter = lambda count: ([count.beats[0]] if
-                                                    count.isSimpleCount()
-                                                    else count.beats))
+    beats = BeatStructureV0(singleton=False,
+                            getter=lambda count: ([count.beats[0]] if
+                                                  count.isSimpleCount()
+                                                  else count.beats))
 
     def postProcessObject(self, instance):
         mCount = Data.MeasureCount.MeasureCount()
@@ -85,26 +89,30 @@ class MeasureCountStructureV0(FileStructure):
         mCount.beats = instance["beats"] * instance["repeat"]
         return mCount
 
+
 class NoteFieldV0(Field):
     def read(self, target, data):
         noteTime, drumIndex, head = data.split(",")
-        pos = Data.NotePosition.NotePosition(noteTime = int(noteTime),
-                                             drumIndex = int(drumIndex))
+        pos = Data.NotePosition.NotePosition(noteTime=int(noteTime),
+                                             drumIndex=int(drumIndex))
         target.addNote(pos, head)
 
     def write(self, noteAndHead):
         pos, head = noteAndHead
         yield self.format("%s,%s,%s" % (pos.noteTime, pos.drumIndex, head))
 
+
 class BeatLengthFieldV0(NoWriteField):
     def read(self, target, data):
         target.counter = Data.MeasureCount.counterMaker(int(data),
                                                         len(target))
 
+
 def startBarlineString(measure):
     return ",".join([name for name, value in
                      Data.DBConstants.BAR_TYPES.iteritems()
                      if (measure.startBar & value) == value])
+
 
 def endBarlineString(measure):
     return ",".join([name for name, value in
@@ -120,8 +128,9 @@ class BarlineReadFieldV0(NoWriteField):
                Data.DBConstants.SECTION_END: Data.Measure.Measure.setSectionEnd,
                Data.DBConstants.LINE_BREAK: Data.Measure.Measure.setLineBreak}
 
-    def __init__(self, title, attributeName = None, singleton = True):
-        super(BarlineReadFieldV0, self).__init__(title, attributeName, singleton)
+    def __init__(self, title, attributeName=None, singleton=True):
+        super(BarlineReadFieldV0, self).__init__(
+            title, attributeName, singleton)
         self.seenStartLine = weakref.WeakSet()
         self.seenEndLine = weakref.WeakSet()
 
@@ -139,14 +148,16 @@ class BarlineReadFieldV0(NoWriteField):
         else:
             raise DBErrors.TooManyBarLines()
 
+
 class BarlineFieldWriteV0(NoReadField):
-    def __init__(self, title, attributeName = None, singleton = True,
-                 getter = None):
+    def __init__(self, title, attributeName=None, singleton=True,
+                 getter=None):
         super(BarlineFieldWriteV0, self).__init__(title, attributeName,
                                                   singleton, getter)
 
     def write(self, barlineString):
         yield "BARLINE %s" % barlineString
+
 
 class MeasureStructureV0(FileStructure):
     tag = "BAR"
@@ -154,16 +165,17 @@ class MeasureStructureV0(FileStructure):
 
     counter = MeasureCountStructureV0()
     startBarLine = BarlineFieldWriteV0(" STARTBARLINE",
-                                       getter = startBarlineString)
+                                       getter=startBarlineString)
     barlines = BarlineReadFieldV0("BARLINE")
-    notes = NoteFieldV0("NOTE", getter = list, singleton = False)
+    notes = NoteFieldV0("NOTE", getter=list, singleton=False)
     endBarLine = BarlineFieldWriteV0(" ENDBARLINE",
-                                     getter = endBarlineString)
+                                     getter=endBarlineString)
     beatLength = BeatLengthFieldV0("BEATLENGTH")
     repeatCount = conditionalWriteField(PositiveIntegerField("REPEAT_COUNT"),
                                         lambda measure: measure.repeatCount > 1)
     alternateText = StringField("ALTERNATE")
-    hasSimile = lambda measure: measure.simileDistance > 0
+
+    def hasSimile(measure): return measure.simileDistance > 0
     simileDistance = conditionalWriteField(NonNegativeIntegerField("SIMILE"),
                                            hasSimile)
     simileIndex = conditionalWriteField(NonNegativeIntegerField("SIMINDEX"),
@@ -174,6 +186,7 @@ class MeasureStructureV0(FileStructure):
 
     def startTagData(self, source):
         return str(len(source))
+
 
 class MetadataStructureV0(FileStructure):
     tag = "SCORE_METADATA"
@@ -194,6 +207,7 @@ class MetadataStructureV0(FileStructure):
     emptyLinesVisible = BooleanField("EMPTYLINESVISIBLE")
     measureCountsVisible = BooleanField("MEASURECOUNTSVISIBLE")
 
+
 class DrumFieldV0(Field):
     def read(self, target, data):
         fields = data.split(",")
@@ -210,14 +224,15 @@ class DrumFieldV0(Field):
         for head in src:
             data = src.headData(head)
             dataString = "%s %d,%d,%s,%s,%d,%s,%d,%s" % (head, data.midiNote,
-                                                          data.midiVolume,
-                                                          data.effect,
-                                                          data.notationHead,
-                                                          data.notationLine,
-                                                          data.notationEffect,
-                                                          data.stemDirection,
-                                                          data.shortcut)
+                                                         data.midiVolume,
+                                                         data.effect,
+                                                         data.notationHead,
+                                                         data.notationLine,
+                                                         data.notationEffect,
+                                                         data.stemDirection,
+                                                         data.shortcut)
             yield "  NOTEHEAD %s" % dataString
+
 
 class NoteHeadFieldV0(NoWriteField):
     @staticmethod
@@ -259,13 +274,14 @@ class NoteHeadFieldV0(NoWriteField):
         head, headData = self.readHeadData(lastDrum.abbr, data)
         lastDrum.addNoteHead(head, headData)
 
+
 class DrumKitStructureV0(FileStructure):
     tag = "KIT"
     startTag = "KIT_START"
     endTag = "KIT_END"
     targetClass = Data.DrumKit.DrumKit
 
-    drums = DrumFieldV0("DRUM", getter = list, singleton = False)
+    drums = DrumFieldV0("DRUM", getter=list, singleton=False)
     noteheads = NoteHeadFieldV0("NOTEHEAD")
 
     def postProcessObject(self, instance):
@@ -293,9 +309,9 @@ class DrumKitStructureV0(FileStructure):
             notationHead = "default"
             notationLine = 0
             stemDir = Data.DefaultKits.STEM_UP
-        headData = Data.Drum.HeadData(midiNote, notationHead = notationHead,
-                                      notationLine = notationLine,
-                                      stemDirection = stemDir)
+        headData = Data.Drum.HeadData(midiNote, notationHead=notationHead,
+                                      notationLine=notationLine,
+                                      stemDirection=stemDir)
         drum.addNoteHead(drum.head, headData)
         Data.Drum.guessEffect(drum, drum.head)
         for (extraHead,
@@ -311,11 +327,11 @@ class DrumKitStructureV0(FileStructure):
             if newMidiVolume is None:
                 newMidiVolume = headData.midiVolume
             newData = Data.Drum.HeadData(newMidi, newMidiVolume, newEffect,
-                                         notationHead = newNotationHead,
-                                         notationLine = notationLine,
-                                         notationEffect = newNotationEffect,
-                                         stemDirection = stemDir,
-                                         shortcut = shortcut)
+                                         notationHead=newNotationHead,
+                                         notationLine=notationLine,
+                                         notationEffect=newNotationEffect,
+                                         stemDirection=stemDir,
+                                         shortcut=shortcut)
             drum.addNoteHead(extraHead, newData)
         drum.checkShortcuts()
 
@@ -333,6 +349,7 @@ class FontOptionsStructureV0(FileStructure):
     metadataFont = StringField("METADATAFONT")
     metadataFontSize = PositiveIntegerField("METADATAFONTSIZE")
 
+
 class ScoreStructureV0(FileStructure):
     tag = None
     targetClass = Data.Score.Score
@@ -340,18 +357,19 @@ class ScoreStructureV0(FileStructure):
 
     scoreData = MetadataStructureV0()
     drumKit = DrumKitStructureV0()
-    measures = MeasureStructureV0(singleton = False,
-                                  getter = lambda score:list(score.iterMeasures()),
-                                  setter = lambda score, msr: score.insertMeasureByIndex(0, measure = msr))
-    _sections = StringField("SECTION_TITLE", singleton = False)
+    measures = MeasureStructureV0(singleton=False,
+                                  getter=lambda score: list(
+                                      score.iterMeasures()),
+                                  setter=lambda score, msr: score.insertMeasureByIndex(0, measure=msr))
+    _sections = StringField("SECTION_TITLE", singleton=False)
     paperSize = StringField("PAPER_SIZE")
     lilysize = PositiveIntegerField("LILYSIZE")
     lilypages = NonNegativeIntegerField("LILYPAGES")
     lilyFill = conditionalWriteField(YesNoField("LILYFILL"),
-                                     lambda score:score.lilyFill)
+                                     lambda score: score.lilyFill)
     lilyFormat = NonNegativeIntegerField("LILYFORMAT")
-    defaultCount = MeasureCountStructureV0(singleton = True,
-                                           startTag = "DEFAULT_COUNT_INFO_START")
+    defaultCount = MeasureCountStructureV0(singleton=True,
+                                           startTag="DEFAULT_COUNT_INFO_START")
     systemSpacing = NonNegativeIntegerField("SYSTEM_SPACE")
     fontOptions = FontOptionsStructureV0()
 

@@ -26,6 +26,7 @@ import Data.Score
 from Data.fileStructures.dbfsv1 import DrumKitStructureV1, MeasureStructureV1, DefaultMeasureCountStructureV1
 from Data.fileStructures.dbfsv0 import FontOptionsStructureV0
 
+
 class MetadataStructureV2(FileStructure):
     tag = "SCORE_METADATA"
     startTag = "SCORE_METADATA"
@@ -46,16 +47,18 @@ class MetadataStructureV2(FileStructure):
     measureCountsVisible = BooleanField("MEASURECOUNTSVISIBLE")
     swing = NonNegativeIntegerField("SWING")
 
+
 class ScoreStructureV2(FileStructure):
     tag = "SCORE"
     targetClass = Data.Score.Score
 
     scoreData = MetadataStructureV2()
     drumKit = DrumKitStructureV1()
-    measures = MeasureStructureV1(singleton = False,
-                                  getter = lambda score:list(score.iterMeasures()),
-                                  setter = lambda score, msr: score.insertMeasureByIndex(0, measure = msr))
-    _sections = StringField("SECTION_TITLE", singleton = False)
+    measures = MeasureStructureV1(singleton=False,
+                                  getter=lambda score: list(
+                                      score.iterMeasures()),
+                                  setter=lambda score, msr: score.insertMeasureByIndex(0, measure=msr))
+    _sections = StringField("SECTION_TITLE", singleton=False)
     paperSize = StringField("PAPER_SIZE")
     lilysize = PositiveIntegerField("LILYSIZE")
     lilypages = NonNegativeIntegerField("LILYPAGES")

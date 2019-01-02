@@ -21,9 +21,10 @@ from Data import DrumKitFactory
 from Data.Counter import CounterRegistry
 from Data.MeasureCount import makeSimpleCount
 
+
 class ScoreFactory(object):
     @staticmethod
-    def makeEmptyScore(numMeasures, counter = None, kit = None):
+    def makeEmptyScore(numMeasures, counter=None, kit=None):
         score = Score()
         if kit is None:
             kit = DrumKitFactory.DrumKitFactory.getNamedDefaultKit()
@@ -34,7 +35,6 @@ class ScoreFactory(object):
             counter = counter[0][1]
             counter = makeSimpleCount(counter, 4)
         for dummy in xrange(numMeasures):
-            score.insertMeasureByIndex(len(counter), counter = counter)
+            score.insertMeasureByIndex(len(counter), counter=counter)
         score.scoreData.makeEmpty()
         return score
-

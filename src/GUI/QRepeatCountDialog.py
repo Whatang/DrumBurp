@@ -25,9 +25,10 @@ Created on Jan 30, 2011
 from PyQt4.QtGui import QDialog
 from GUI.ui_repeatCountDialog import Ui_repeatCountDialog
 
+
 class QRepeatCountDialog(QDialog, Ui_repeatCountDialog):
-    def __init__(self, repeatCount, parent = None, labelText = None):
-        super(QRepeatCountDialog, self).__init__(parent = parent)
+    def __init__(self, repeatCount, parent=None, labelText=None):
+        super(QRepeatCountDialog, self).__init__(parent=parent)
         self._repeatCount = repeatCount
         self.setupUi(self)
         if labelText is not None:

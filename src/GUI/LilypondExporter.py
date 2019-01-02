@@ -26,6 +26,7 @@ import subprocess
 import os
 import platform
 
+
 class LilypondExporter(QThread):
     NOT_STARTED = 0
     STARTED = 1
@@ -34,8 +35,8 @@ class LilypondExporter(QThread):
     ERROR_IN_WRITING_LY = -1
     ERROR_IN_RUNNING_LY = -2
 
-    def __init__(self, lilypondString, outputPath, lilypondPath, lilyFormat, onFinish = None, parent = None):
-        super(LilypondExporter, self).__init__(parent = parent)
+    def __init__(self, lilypondString, outputPath, lilypondPath, lilyFormat, onFinish=None, parent=None):
+        super(LilypondExporter, self).__init__(parent=parent)
         self.lilyString = lilypondString
         self._outputPath = outputPath
         self._processedPath = self._calcProcessedPath(self._outputPath)

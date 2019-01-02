@@ -25,6 +25,7 @@ import unittest
 import Data.ASCIISettings as ASCIISettings
 # pylint: disable-msg=R0904
 
+
 class TestAsciiSettings(unittest.TestCase):
     def testNames(self):
         settings = ASCIISettings.ASCIISettings()

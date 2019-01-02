@@ -34,6 +34,7 @@ _FS_MAP = {DBConstants.DBFF_0: dbfsv0.ScoreStructureV0,
            DBConstants.DBFF_1: dbfsv1.ScoreStructureV1,
            DBConstants.DBFF_2: dbfsv2.ScoreStructureV2}
 
+
 class ScoreSerializer(object):
     @classmethod
     def loadScore(cls, filename):
@@ -69,7 +70,7 @@ class ScoreSerializer(object):
         return score
 
     @staticmethod
-    def write(score, handle, version = DBConstants.CURRENT_FILE_FORMAT):
+    def write(score, handle, version=DBConstants.CURRENT_FILE_FORMAT):
         scoreBuffer = StringIO()
         scoreWriter = codecs.getwriter("utf-8")(scoreBuffer)
         indenter = fileUtils.Indenter(scoreWriter)
@@ -81,8 +82,8 @@ class ScoreSerializer(object):
 
     @classmethod
     def saveScore(cls, score, filename,
-                  version = DBConstants.CURRENT_FILE_FORMAT,
-                  compressed = True):
+                  version=DBConstants.CURRENT_FILE_FORMAT,
+                  compressed=True):
         with fileUtils.DataWriter(filename, compressed) as writer:
             score.fileFormat = version
             cls.write(score, writer, version)

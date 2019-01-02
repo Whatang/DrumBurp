@@ -35,6 +35,7 @@ STEM_WIDTH = 1
 EFFECTS_Z = -15
 HEAD_Z = -10
 
+
 class QNotationScene(QGraphicsScene):
     _heads = {}
     _effects = {}
@@ -125,7 +126,6 @@ class QNotationScene(QGraphicsScene):
             cls._loadEffect(effectname)
         cls._drag = QPixmap(":/heads/GUI/Notation/Effect_Drag.png")
 
-
     def setHeadData(self, headData):
         self._head.setPixmap(self._heads.get(headData.notationHead,
                                              self._heads["default"]))
@@ -189,7 +189,8 @@ class QNotationScene(QGraphicsScene):
             elif headData.stemDirection == STEM_UP:
                 self._effectImage.setY(middle - STEM_LENGTH - effectHeight - 2)
             else:
-                self._effectImage.setY(middle + STEM_LENGTH + pixHeight / 2 + 2)
+                self._effectImage.setY(
+                    middle + STEM_LENGTH + pixHeight / 2 + 2)
             self._effectImage.setVisible(True)
         elif headData.notationEffect == "drag":
             self._flamImage.setVisible(False)

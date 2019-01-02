@@ -23,6 +23,7 @@ Created on Jul 19, 2015
 '''
 from functools import wraps
 
+
 class _StateMachineMetaClass(type):
     def __new__(mcs, name, bases, attrs):
         # We want every sub-class of StateMachine to get its own set of states
@@ -31,13 +32,16 @@ class _StateMachineMetaClass(type):
         attrs["_transitions"] = {}
         return super(_StateMachineMetaClass, mcs).__new__(mcs, name, bases, attrs)
 
+
 # Set this to True to see all events sent to the state machine, and the
 # resulting state.
 _DEBUG = False
 
+
 def _debugStateMachine(method):
     if not _DEBUG:
         return method
+
     @wraps(method)
     def wrapper(self, event):
         print type(event).__name__
@@ -45,6 +49,7 @@ def _debugStateMachine(method):
         print type(self._state).__name__  # IGNORE:protected-access
         return retval
     return wrapper
+
 
 class StateMachine(object):
     __metaclass__ = _StateMachineMetaClass
@@ -68,11 +73,12 @@ class StateMachine(object):
         return state
 
     @classmethod
-    def add_transition(cls, oldState, eventType, newState, function = None, guard = None):
+    def add_transition(cls, oldState, eventType, newState, function=None, guard=None):
         assert issubclass(oldState, State)
         assert issubclass(newState, State)
         assert oldState in cls._states
-        cls._transitions[oldState][eventType] = (cls.SIMPLE, (newState, function, guard))
+        cls._transitions[oldState][eventType] = (
+            cls.SIMPLE, (newState, function, guard))
 
     @classmethod
     def add_factory_transition(cls, oldState, eventType, factory):
@@ -107,6 +113,7 @@ class StateMachine(object):
             return transition(self._state, event)
         else:
             return
+
 
 class State(object):
     def __init__(self, machine, event):

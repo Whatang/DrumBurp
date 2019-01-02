@@ -27,11 +27,12 @@ Created on 13 Mar 2011
 from PyQt4.QtGui import QGraphicsItem, QFontMetrics, QPen
 from PyQt4.QtCore import QPoint, QRectF, QPointF, Qt
 
+
 class QGraphicsListData(QGraphicsItem):  # IGNORE:abstract-class-not-used
     _editName = ""
 
-    def __init__(self, qScore, parent = None):
-        super(QGraphicsListData, self).__init__(parent = parent, scene = qScore)
+    def __init__(self, qScore, parent=None):
+        super(QGraphicsListData, self).__init__(parent=parent, scene=qScore)
         self._qScore = qScore
         self._props = qScore.displayProperties
         self._rect = QRectF(0, 0, 0, 0)
@@ -48,7 +49,7 @@ class QGraphicsListData(QGraphicsItem):  # IGNORE:abstract-class-not-used
     def font(self):
         raise NotImplementedError()
 
-    def setRect(self, fm = None):
+    def setRect(self, fm=None):
         if fm is None:
             font = self.font()
             if font is None:
@@ -64,7 +65,7 @@ class QGraphicsListData(QGraphicsItem):  # IGNORE:abstract-class-not-used
     def boundingRect(self):
         return self._rect
 
-    def paint(self, painter, dummyOption, dummyWidget = None):
+    def paint(self, painter, dummyOption, dummyWidget=None):
         painter.save()
         try:
             scheme = self._qScore.parent().colourScheme

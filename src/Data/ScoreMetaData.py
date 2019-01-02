@@ -23,6 +23,7 @@ Created on 23 Jan 2011
 
 '''
 
+
 class ScoreMetaData(object):
     def __init__(self):
         self.title = ""

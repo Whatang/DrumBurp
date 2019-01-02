@@ -25,6 +25,7 @@ Created on Jul 19, 2015
 from PyQt4.Qt import QFontDatabase, QFont
 import Data.FontOptions
 
+
 def initialiseFonts():
     fonts = [("NotCourierSans", "ncs.otf"),
              ('Inconsolata', 'inconsolata.otf'),

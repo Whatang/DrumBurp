@@ -26,9 +26,10 @@ from PyQt4 import QtGui
 from GUI.ui_alternateRepeats import Ui_AlternateDialog
 from GUI.QAlternateWidget import QAlternateWidget
 
+
 class QAlternateDialog(QtGui.QDialog, Ui_AlternateDialog):
-    def __init__(self, alternate, parent = None):
-        super(QAlternateDialog, self).__init__(parent = parent)
+    def __init__(self, alternate, parent=None):
+        super(QAlternateDialog, self).__init__(parent=parent)
         self.setupUi(self)
         self._repeats = []
         if alternate is not None:
@@ -36,7 +37,6 @@ class QAlternateDialog(QtGui.QDialog, Ui_AlternateDialog):
         else:
             self.populate("1")
         self.addButton.clicked.connect(self._addClicked)
-
 
     def getValue(self):
         value = ", ".join(repeat.getString() for repeat in self._repeats)
@@ -47,7 +47,8 @@ class QAlternateDialog(QtGui.QDialog, Ui_AlternateDialog):
         repeats = [repeat.strip() for repeat in alternate.split(",")]
         for repeat in repeats:
             if "-" in repeat:
-                startVal, endVal = [int(x.strip(".")) for x in repeat.split("-")]
+                startVal, endVal = [int(x.strip("."))
+                                    for x in repeat.split("-")]
                 isRange = True
             else:
                 startVal = int(repeat.strip().strip("."))
@@ -61,7 +62,7 @@ class QAlternateDialog(QtGui.QDialog, Ui_AlternateDialog):
                                      isRange, self.repeatsFrame)
         self._repeats.append(newWidget)
         self.repeatsLayout.addWidget(newWidget)
-        callback = lambda value, widget = newWidget : self.deleteRepeat(widget)
+        callback = lambda value, widget = newWidget: self.deleteRepeat(widget)
         newWidget.deleteButton.clicked.connect(callback)
 
     def deleteRepeat(self, widget):
@@ -86,7 +87,6 @@ class QAlternateDialog(QtGui.QDialog, Ui_AlternateDialog):
         self._checkButtons()
 
 
-
 def main():
     import sys
     from PyQt4.QtGui import QApplication
@@ -96,6 +96,7 @@ def main():
     app.exec_()
     if dialog.result() == dialog.Accepted:
         print dialog.getValue()
+
 
 if __name__ == "__main__":
     main()

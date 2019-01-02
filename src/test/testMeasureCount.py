@@ -101,6 +101,7 @@ class TestSimple(unittest.TestCase):
                           (2, 0, 4), (2, 1, 4), (2, 2, 4), (2, 3, 4),
                           (3, 0, 4), (3, 1, 4), (3, 2, 4), (3, 3, 4)])
 
+
 class TestComplex(unittest.TestCase):
     counter1 = Counter.Counter("e+a")
     counter2 = Counter.Counter("+a")
@@ -182,12 +183,14 @@ class TestComplex(unittest.TestCase):
                           (2, 0, 2), (2, 1, 2),
                           (3, 0, 4), (3, 1, 4)])
 
+
 class TestCounterMaker(unittest.TestCase):
     def testMake(self):
         count = MeasureCount.counterMaker(4, 16)
         self.assert_(isinstance(count, MeasureCount.MeasureCount))
         self.assert_(count.isSimpleCount())
         self.assertEqual(len(count), 16)
+
 
 class TestTimeSigs(unittest.TestCase):
     sixteenths = Counter.Counter("e+a")

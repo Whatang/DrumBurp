@@ -24,6 +24,7 @@ Created on 12 Dec 2010
 '''
 from Data.DBErrors import BadTimeError
 
+
 class Staff(object):
     def __init__(self):
         self._measures = []
@@ -58,11 +59,10 @@ class Staff(object):
             self._runCallBack(position)
         measure.setCallBack(wrappedCallBack)
 
-    def _isValidPosition(self, position, afterOk = False):
+    def _isValidPosition(self, position, afterOk=False):
         if not (0 <= position.measureIndex < self.numMeasures()):
             if not (afterOk and position.measureIndex == self.numMeasures()):
                 raise BadTimeError(position)
-
 
     def addMeasure(self, measure):
         self._measures.append(measure)
@@ -97,7 +97,7 @@ class Staff(object):
         self._isValidPosition(position)
         return self[position.measureIndex].copyMeasure()
 
-    def pasteMeasure(self, position, notes, copyMeasureDecorations = False):
+    def pasteMeasure(self, position, notes, copyMeasureDecorations=False):
         self._isValidPosition(position)
         self._visibleLines = {}
         return self[position.measureIndex].pasteMeasure(notes,

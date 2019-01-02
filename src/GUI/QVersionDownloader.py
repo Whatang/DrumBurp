@@ -27,17 +27,19 @@ from PyQt4.QtCore import QTimer
 from DBVersion import doesNewerVersionExist
 from GUI.ui_versionDownloader import Ui_VersionDownloader
 
+
 class QVersionDownloader(QDialog, Ui_VersionDownloader):
-    def __init__(self, newer = None, parent = None):
-        super(QVersionDownloader, self).__init__(parent = parent)
+    def __init__(self, newer=None, parent=None):
+        super(QVersionDownloader, self).__init__(parent=parent)
         self.setupUi(self)
-        QTimer.singleShot(0, lambda : self._download(newer))
+        QTimer.singleShot(0, lambda: self._download(newer))
 
     def _download(self, newer):
         if newer is None:
             newer = doesNewerVersionExist()
         self.resultBox.setEnabled(True)
-        self.message.setText("Finished checking for new version at www.whatang.org.")
+        self.message.setText(
+            "Finished checking for new version at www.whatang.org.")
         if newer is None:
             self.resultLabel.setText('<span style="color:#ff0000;"><b>'
                                      'Failed :Could not access version information.'
@@ -52,5 +54,3 @@ class QVersionDownloader(QDialog, Ui_VersionDownloader):
                                      "DrumBurp version %s is now available "
                                      "from <a href='http://www.whatang.org'>"
                                      "www.whatang.org</a></b></span>" % newer)
-
-

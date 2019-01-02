@@ -25,10 +25,12 @@ Created on 12 Mar 2011
 from GUI.ui_scorePropertiesDialog import Ui_ScoreDialog
 from PyQt4.QtGui import QDialog
 
+
 class QMetadataDialog(QDialog, Ui_ScoreDialog):
-    _SWING_TO_INDEXES = {0:0, 8:1, 16:2, 32:3}
-    _INDEXES_TO_SWING = {0:0, 1:8, 2:16, 3:32}
-    def __init__(self, qscore, parent = None):
+    _SWING_TO_INDEXES = {0: 0, 8: 1, 16: 2, 32: 3}
+    _INDEXES_TO_SWING = {0: 0, 1: 8, 2: 16, 3: 32}
+
+    def __init__(self, qscore, parent=None):
         super(QMetadataDialog, self).__init__(parent)
         self.setupUi(self)
         self._qscore = qscore
@@ -43,11 +45,11 @@ class QMetadataDialog(QDialog, Ui_ScoreDialog):
         self.swingComboBox.setCurrentIndex(index)
 
     def getValues(self):
-        return {"title" : self.titleEdit.text(),
-                "artist" : self.artistEdit.text(),
-                "artistVisible" : self.artistVisible.isChecked(),
+        return {"title": self.titleEdit.text(),
+                "artist": self.artistEdit.text(),
+                "artistVisible": self.artistVisible.isChecked(),
                 "creator": self.creatorEdit.text(),
                 "creatorVisible": self.creatorVisible.isChecked(),
-                "bpm" : self.bpmSpinBox.value(),
-                "bpmVisible":self.bpmVisible.isChecked(),
-                "swing":self._INDEXES_TO_SWING[self.swingComboBox.currentIndex()]}
+                "bpm": self.bpmSpinBox.value(),
+                "bpmVisible": self.bpmVisible.isChecked(),
+                "swing": self._INDEXES_TO_SWING[self.swingComboBox.currentIndex()]}

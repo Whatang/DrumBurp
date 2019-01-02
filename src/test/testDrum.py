@@ -30,7 +30,6 @@ from Data.Drum import Drum, HeadData
 
 class TestDrum(unittest.TestCase):
 
-
     def testDrum(self):
         drum = Drum("test drum", "td", "x")
         self.assertEqual(drum.name, "test drum")
@@ -54,12 +53,12 @@ class TestDrum(unittest.TestCase):
         self.assertEqual(len(drum), 0)
         self.assertEqual(drum.head, "x")
         self.assertFalse(drum.isAllowedHead("x"))
-        self.assertRaises(KeyError, drum.headData , None)
+        self.assertRaises(KeyError, drum.headData, None)
 
     @staticmethod
     def makeDrum():
         drum = Drum("test", "td", "x")
-        defaultHead = HeadData(shortcut = "y")
+        defaultHead = HeadData(shortcut="y")
         drum.addNoteHead("x", defaultHead)
         newHead = HeadData(100)
         drum.addNoteHead("y", newHead)
@@ -82,7 +81,7 @@ class TestDrum(unittest.TestCase):
         thirdHead = drum.headData("z")
         for attr in dir(thirdHead):
             if (attr.startswith("_")
-                or inspect.ismethod(getattr(defaultHead, attr))):
+                    or inspect.ismethod(getattr(defaultHead, attr))):
                 continue
             if attr == "shortcut":
                 self.assertNotEqual(defaultHead.shortcut, thirdHead.shortcut)
@@ -170,5 +169,7 @@ class TestDrum(unittest.TestCase):
         drum.setDefaultHead("a")
         self.assertEqual(drum.head, "z")
         self.assertEqual(list(drum), ["z", "y", "x"])
+
+
 if __name__ == "__main__":
     unittest.main()

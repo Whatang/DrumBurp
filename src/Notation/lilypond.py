@@ -33,8 +33,9 @@ import os
 import subprocess
 import platform
 
+
 class LilyIndenter(object):
-    def __init__(self, spaces = 2):
+    def __init__(self, spaces=2):
         self._spaces = spaces
         self._level = 0
         self._handle = sys.stdout
@@ -52,9 +53,10 @@ class LilyIndenter(object):
         self._handle = handle
 
     def write(self, *args, **kwargs):
-        print(" " * self._level, end = '', file = self._handle)
+        print(" " * self._level, end='', file=self._handle)
         kwargs['file'] = self._handle
         print(*args, **kwargs)
+
 
 def makeLilyContext(opener, closer):
     def myLilyContext(indenter, context):
@@ -65,32 +67,42 @@ def makeLilyContext(opener, closer):
         indenter.write(closer)
     return myLilyContext
 
+
 LILY_CONTEXT = contextmanager(makeLilyContext("{", "}"))
 VOICE_CONTEXT = contextmanager(makeLilyContext("<<", ">>"))
+
 
 class LilypondProblem(RuntimeError):
     pass
 
+
 class TripletsProblem(LilypondProblem):
     "DrumBurp cannot yet set triplets in Lilypond"
+
 
 class BadNoteDuration(LilypondProblem):
     "Cannot handle this note duration"
 
+
 class FiveSixthsProblem(BadNoteDuration):
     "DrumBurp cannot set notes of length 5/6 beat."
+
 
 class FiveEighthsProblem(BadNoteDuration):
     "DrumBurp cannot set notes of length 5/8 beat."
 
+
 class SevenEighthsProblem(BadNoteDuration):
     "DrumBurp cannot set notes of length 7/8 beat."
+
 
 class FiveTwelfthsProblem(BadNoteDuration):
     "DrumBurp cannot set notes of length 5/12 beat."
 
+
 class SevenTwelfthsProblem(BadNoteDuration):
     "DrumBurp cannot set notes of length 7/12 beat."
+
 
 class ElevenTwelfthsProblem(BadNoteDuration):
     "DrumBurp cannot set notes of length 11/12 beat."
@@ -98,36 +110,36 @@ class ElevenTwelfthsProblem(BadNoteDuration):
 
 def _getCompoundDuration(ticksInFullBeat, ticks, tickNum):
     if ticks * 12 == ticksInFullBeat:  # 1/12
-        dur = LilyDuration("32", isCompound = True)
+        dur = LilyDuration("32", isCompound=True)
     elif ticks * 6 == ticksInFullBeat:  # 2/12
-        dur = LilyDuration("16", isCompound = True)
+        dur = LilyDuration("16", isCompound=True)
     elif ticks * 4 == ticksInFullBeat:  # 3/12
         if (tickNum * 4) % ticksInFullBeat == 0:
             dur = LilyDuration("16")
         else:
-            dur = LilyDuration("16.", isCompound = True)
+            dur = LilyDuration("16.", isCompound=True)
     elif ticks * 3 == ticksInFullBeat:  # 4/12
-        dur = LilyDuration("8", isCompound = True)
+        dur = LilyDuration("8", isCompound=True)
     elif ticks * 12 == 5 * ticksInFullBeat:  # 5/12
-        dur = LilyDuration("8", "32", isCompound = True)
+        dur = LilyDuration("8", "32", isCompound=True)
     elif ticks * 2 == ticksInFullBeat:  # 6/12
         if (tickNum * 2) % ticksInFullBeat == 0:
             dur = LilyDuration("8")
         else:
-            dur = LilyDuration("8.", isCompound = True)
+            dur = LilyDuration("8.", isCompound=True)
     elif ticks * 12 == 7 * ticksInFullBeat:  # 7/12
-        dur = LilyDuration("8.", "32", isCompound = True)
+        dur = LilyDuration("8.", "32", isCompound=True)
     elif ticks * 3 == 2 * ticksInFullBeat:  # 8/12
-        dur = LilyDuration("4", isCompound = True)
+        dur = LilyDuration("4", isCompound=True)
     elif ticks * 4 == 3 * ticksInFullBeat:  # 9/12
         if (tickNum * 4) % ticksInFullBeat == 0:
             dur = LilyDuration("8.")
         else:
-            dur = LilyDuration("4", "32", isCompound = True)
+            dur = LilyDuration("4", "32", isCompound=True)
     elif ticks * 6 == 5 * ticksInFullBeat:  # 10/12
-        dur = LilyDuration("4", "16", isCompound = True)
+        dur = LilyDuration("4", "16", isCompound=True)
     elif ticks * 12 == 11 * ticksInFullBeat:  # 11/12
-        dur = LilyDuration("4", "16.", isCompound = True)
+        dur = LilyDuration("4", "16.", isCompound=True)
     else:
         raise LilypondProblem("Note duration not recognised")
     return dur
@@ -152,6 +164,7 @@ def _getStraightDuration(ticksInFullBeat, ticks):
         raise LilypondProblem("Note duration not recognised")
     return dur
 
+
 def makeLilyDuration(beat, ticks, tickNum):
     dur = None
     ticksInFullBeat = beat.ticksPerBeat
@@ -169,8 +182,9 @@ def makeLilyDuration(beat, ticks, tickNum):
 def lilyString(inString):
     return '"%s"' % inString
 
+
 class LilyDuration(object):
-    def __init__(self, duration, restTime = None, isCompound = False):
+    def __init__(self, duration, restTime=None, isCompound=False):
         self.duration = duration
         self.restTime = restTime
         self.isCompound = isCompound
@@ -200,7 +214,7 @@ class LilyDuration(object):
 
 
 class LilyBarEnd(LilyDuration):
-    def __init__(self, endsCompound = False):
+    def __init__(self, endsCompound=False):
         super(LilyBarEnd, self).__init__("0")
         if endsCompound:
             self._compoundEnd = True
@@ -216,15 +230,14 @@ class LilyMeasure(object):
         self.measure = measure
         self.kit = kit
         self._beats = list(self.measure.counter.iterBeatTicks())
-        self._voices = {STEM_UP:[], STEM_DOWN:[]}
+        self._voices = {STEM_UP: [], STEM_DOWN: []}
         self._sticking = []
         self._voiceOneEmpty = False
         self._voiceTwoEmpty = False
         self._build()
 
-
     def _separateNotesByDirection(self):
-        notes = {STEM_UP:[], STEM_DOWN:[]}
+        notes = {STEM_UP: [], STEM_DOWN: []}
         for notePos, head in self.measure:
             direction = self.kit.getDirection(notePos.drumIndex, head)
             notes[direction].append((notePos, head))
@@ -247,7 +260,7 @@ class LilyMeasure(object):
         noteTimes = {}
         for direction in notes:
             eventTimes = [notePos.noteTime for (notePos, head_) in
-                         notes[direction]]
+                          notes[direction]]
             noteTimes[direction] = self._calculateEventTimes(eventTimes)
         return noteTimes
 
@@ -290,10 +303,9 @@ class LilyMeasure(object):
             durations[direction] = durationDict
         return durations
 
-
     def _getLilyNotesAndEffects(self, notes):
         lilyNotes = {}
-        effects = {STEM_UP:{}, STEM_DOWN:{}}
+        effects = {STEM_UP: {}, STEM_DOWN: {}}
         for direction, timeList in notes.iteritems():
             lilyDict = {}
             effectsDict = collections.defaultdict(list)
@@ -306,7 +318,6 @@ class LilyMeasure(object):
             lilyNotes[direction] = lilyDict
             effects[direction] = effectsDict
         return lilyNotes, effects
-
 
     @staticmethod
     def _makeDrag(dur):
@@ -322,7 +333,6 @@ class LilyMeasure(object):
         else:
             noteString = lNotes[0]
         return noteString
-
 
     def _makeNoteEffect(self, lNotes, lEffects, noteTime, dur):
         if noteTime not in lEffects:
@@ -392,7 +402,8 @@ class LilyMeasure(object):
                 lilyStick.append('" "' + dur.restTime)
         lilyStick = " ".join(lilyStick)
         lilyStick = r" \lyricmode { " + lilyStick + " }"
-        lilyStick = (r'\new Lyrics \with { align%sContext = #"main" }' % where) + lilyStick
+        lilyStick = (
+            r'\new Lyrics \with { align%sContext = #"main" }' % where) + lilyStick
         return lilyStick
 
     def _build(self):
@@ -406,7 +417,7 @@ class LilyMeasure(object):
             otherDirection = 1 - direction
             for (rest, index) in restTimes.iteritems():
                 if (otherDirection not in wholeRests
-                    or rest not in wholeRests[otherDirection]):
+                        or rest not in wholeRests[otherDirection]):
                     self._voices[direction][index] = "s4"
         if any(ch != " " for ch in self.measure.aboveText):
             self._sticking.append(self._makeSticking(self.measure.aboveText,
@@ -420,7 +431,7 @@ class LilyMeasure(object):
     def _mergeWholeRests(self, direction):
         resting = False
         start = None
-        newRestLengths = {1: "4", 2: "2", 3:"2.", 4:"1"}
+        newRestLengths = {1: "4", 2: "2", 3: "2.", 4: "1"}
         newVoice = []
         for index, info in enumerate(self._voices[direction]):
             if info == "r4":
@@ -464,11 +475,13 @@ class LilyMeasure(object):
         for sticking in self._sticking:
             indenter(sticking)
 
+
 class LilyKit(object):
     _HEADS = {"default": "()",
               "harmonic black": "harmonic-black"}
-    _EFFECTS = {"open":'"open"',
-                "stopped":'"stopped"'}
+    _EFFECTS = {"open": '"open"',
+                "stopped": '"stopped"'}
+
     def __init__(self, kit):
         self._kit = kit
         self._lilyHeads = []
@@ -514,24 +527,24 @@ class LilyKit(object):
         effect = headData.notationEffect
         return lilyHead, effect
 
-    def getDirection(self, drumIndex, head = None):
+    def getDirection(self, drumIndex, head=None):
         headData = self._kit[drumIndex].headData(head)
         return headData.stemDirection
 
     def write(self, handle):
-        print("drumPitchNames = #'(", end = '', file = handle)
+        print("drumPitchNames = #'(", end='', file=handle)
         for drumIndex, drum in enumerate(self._kit):
             for head in drum:
                 name = self._lilyNames[drumIndex][head]
-                print("   (%s . %s)" % (name, name), file = handle)
+                print("   (%s . %s)" % (name, name), file=handle)
         for drumIndex, drum in enumerate(self._kit):
             for head in drum:
                 name = self._lilyNames[drumIndex][head]
                 abbr = self._lilyHeads[drumIndex][head]
-                print("   (%s . %s)" % (abbr, name), file = handle)
-        print (")", file = handle)
-        print("", file = handle)
-        print("#(define dbdrums '(", file = handle)
+                print("   (%s . %s)" % (abbr, name), file=handle)
+        print (")", file=handle)
+        print("", file=handle)
+        print("#(define dbdrums '(", file=handle)
         for drumIndex, drum in enumerate(self._kit):
             for head in drum:
                 name = self._lilyNames[drumIndex][head]
@@ -545,41 +558,45 @@ class LilyKit(object):
                                             lilyNoteHead,
                                             lilyEffect,
                                             headData.notationLine),
-                      file = handle)
-        print("))", file = handle)
-        print ("", file = handle)
+                      file=handle)
+        print("))", file=handle)
+        print ("", file=handle)
 
-_PAPER_SIZES = { "A0" : "a0",
-                 "A1" : "a1",
-                 "A2" : "a2",
-                 "A3" : "a3",
-                 "A4" : "a4",
-                 "A5" : "a5",
-                 "A6" : "a6",
-                 "A7" : "a7",
-                 "A8" : "a8",
-                 "A9" : "a9",
-                 "B0" : "b0",
-                 "B1" : "b1",
-                 "B10" : "b10",
-                 "B2" : "b2",
-                 "B3" : "b3",
-                 "B4" : "b4",
-                 "B5" : "b5",
-                 "B6" : "b6",
-                 "B7" : "b7",
-                 "B8" : "b8",
-                 "B9" : "b9",
-                 "C5E" : "c5",
-                 "Executive" : "executive",
-                 "Folio" : "folio",
-                 "Ledger" : "ledger",
-                 "Legal" : "legal",
-                 "Letter" : "letter",
-                 "Tabloid" : "tabloid" }
+
+_PAPER_SIZES = {"A0": "a0",
+                "A1": "a1",
+                "A2": "a2",
+                "A3": "a3",
+                "A4": "a4",
+                "A5": "a5",
+                "A6": "a6",
+                "A7": "a7",
+                "A8": "a8",
+                "A9": "a9",
+                "B0": "b0",
+                "B1": "b1",
+                "B10": "b10",
+                "B2": "b2",
+                "B3": "b3",
+                "B4": "b4",
+                "B5": "b5",
+                "B6": "b6",
+                "B7": "b7",
+                "B8": "b8",
+                "B9": "b9",
+                "C5E": "c5",
+                "Executive": "executive",
+                "Folio": "folio",
+                "Ledger": "ledger",
+                "Legal": "legal",
+                "Letter": "letter",
+                "Tabloid": "tabloid"}
+
 
 class BadPaperSize(LilypondProblem):
     "DrumBurp cannot create a Lilypond score on this paper size."
+
+
 class LilypondScore(object):
     def __init__(self, score):
         self.score = score
@@ -653,8 +670,6 @@ class LilypondScore(object):
         self.indenter(r'\override Score.TimeSignature.break-visibility '
                       '= #end-of-line-invisible')
 
-
-
     @staticmethod
     def _getNextRepeats(repeatCommands, hasAlternate, measure):
         if measure.isRepeatStart():
@@ -669,7 +684,6 @@ class LilypondScore(object):
                                   lilyString(measure.alternateText))
             hasAlternate = 0
         return hasAlternate
-
 
     def _writeSectionTitle(self, sectionTitle):
         if sectionTitle:
@@ -692,7 +706,6 @@ class LilypondScore(object):
             sectionTitle = None
         return sectionTitle
 
-
     def _getLastRepeats(self, repeatCommands, hasAlternate, measure):
         self._hadRepeatCount = False
         if measure.isRepeatEnd():
@@ -708,11 +721,10 @@ class LilypondScore(object):
         if hasAlternate >= 0:
             hasAlternate += 1
             if (measure.isSectionEnd() or measure.isRepeatEnd()
-                or hasAlternate == 2):
+                    or hasAlternate == 2):
                 repeatCommands.append("(volta #f)")
                 hasAlternate = -1
         return hasAlternate
-
 
     def _getNextSectionTitle(self, sectionIndex):
         sectionIndex += 1
@@ -725,7 +737,6 @@ class LilypondScore(object):
     def _getTimeSig(measure):
         counter = measure.counter
         return "%d/%d" % counter.timeSig()
-
 
     def _firstMeasureRepeat(self):
         measure = self.score.getMeasureByIndex(0)
@@ -754,7 +765,8 @@ class LilypondScore(object):
     def _swing(self):
         if not self.score.scoreData.swing:
             return
-        swingType = {8:"eight", 16:"sixteen", 32:"thirtytwo"}[self.score.scoreData.swing]
+        swingType = {8: "eight", 16: "sixteen", 32: "thirtytwo"}[
+            self.score.scoreData.swing]
         swingCode = r"""\override Score.RehearsalMark #'X-offset = #0
 \override Score.RehearsalMark #'outside-staff-padding = #1.5
 \swing_"""
@@ -784,7 +796,8 @@ class LilypondScore(object):
                     self.indenter(r"\time %s" % self._timeSig)
                 self._lastTimeSig = self._timeSig
             elif percentRepeated:
-                self.indenter(r"\once \omit Score.TimeSignature \time %s" % self._timeSig)
+                self.indenter(
+                    r"\once \omit Score.TimeSignature \time %s" % self._timeSig)
             if measure.newBpm > 0:
                 self.indenter(r'\tempo 4 = %d' % measure.newBpm)
             if measure.simileDistance:
@@ -792,7 +805,8 @@ class LilypondScore(object):
                     self.indenter(r"\once \omit Score.TimeSignature \time 2/4")
                     with VOICE_CONTEXT(self.indenter, ""):
                         with LILY_CONTEXT(self.indenter, r"\repeat unfold 1"):
-                            self.indenter(r" \noBreak ".join([r"s2"] * measure.simileDistance))
+                            self.indenter(r" \noBreak ".join(
+                                [r"s2"] * measure.simileDistance))
                         with LILY_CONTEXT(self.indenter, ""):
                             self.indenter(r"\makePercent s2*%d"
                                           % measure.simileDistance)
@@ -1037,6 +1051,7 @@ class LilypondScore(object):
     }
 """)
 
+
 def findLilyPath():
     platsys = platform.system()
     if platsys == 'Windows':
@@ -1045,6 +1060,7 @@ def findLilyPath():
         return _findLinuxLilyPath()
     else:
         return None
+
 
 def _findWindowsLilyPath():
     for drive in map(chr, xrange(0x41, 0x5a)):
@@ -1063,6 +1079,7 @@ def _findWindowsLilyPath():
                 return path
     return None
 
+
 def _findLinuxLilyPath():
     try:
         path = subprocess.check_output(['which', 'lilypond'])
@@ -1071,6 +1088,6 @@ def _findLinuxLilyPath():
         pass
     return None
 
+
 if __name__ == "__main__":
     print(findLilyPath())
-

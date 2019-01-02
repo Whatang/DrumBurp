@@ -27,6 +27,7 @@ from Data.Beat import Beat
 from Data.Counter import CounterRegistry
 from Data import DBConstants
 
+
 class MeasureCount(object):
     def __init__(self):
         self.beats = []
@@ -141,6 +142,7 @@ class MeasureCount(object):
     def numBeats(self):
         return len(self.beats)
 
+
 def counterMaker(beatLength, numTicks):
     # Create a MeasureCount from an 'old style' specification, where
     # all we are given is the number of ticks in a beat and the total number
@@ -152,6 +154,7 @@ def counterMaker(beatLength, numTicks):
     mc = MeasureCount()
     mc.addSimpleBeats(count, numTicks / beatLength)
     return mc
+
 
 def makeSimpleCount(counter, numBeats):
     mc = MeasureCount()

@@ -35,6 +35,7 @@ import Data.DefaultKits
 import Data.Score
 import Data.fileStructures.dbfsv0 as dbfsv0
 
+
 class BeatStructureV1(FileStructure):
     tag = "BEAT"
     startTag = "BEAT_START"
@@ -46,9 +47,11 @@ class BeatStructureV1(FileStructure):
     def postProcessObject(self, instance):
         return Data.Beat.Beat(instance["counter"], instance.get("numTicks"))
 
+
 def _beatStructure():
-    return BeatStructureV1(singleton = False,
-                            setter = lambda count, beat: count.addBeats(beat, 1))
+    return BeatStructureV1(singleton=False,
+                           setter=lambda count, beat: count.addBeats(beat, 1))
+
 
 class MeasureCountStructureV1(FileStructure):
     tag = "MEASURE_COUNT"
@@ -56,11 +59,13 @@ class MeasureCountStructureV1(FileStructure):
 
     beats = _beatStructure()
 
+
 class DefaultMeasureCountStructureV1(FileStructure):
     tag = "DEFAULT_MEASURE_COUNT"
     targetClass = Data.MeasureCount.MeasureCount
 
     beats = _beatStructure()
+
 
 class MeasureStructureV1(FileStructure):
     tag = "MEASURE"
@@ -68,14 +73,14 @@ class MeasureStructureV1(FileStructure):
 
     counter = MeasureCountStructureV1()
     startBar = NonNegativeIntegerField("STARTBARLINE")
-    notes = dbfsv0.NoteFieldV0("NOTE", getter = list, singleton = False)
+    notes = dbfsv0.NoteFieldV0("NOTE", getter=list, singleton=False)
     endBar = NonNegativeIntegerField("ENDBARLINE")
     repeatCount = PositiveIntegerField("REPEAT_COUNT")
     alternateText = StringField("ALTERNATE")
     simileDistance = conditionalWriteField(NonNegativeIntegerField("SIMILE"),
                                            lambda measure: measure.simileDistance > 0)
     simileIndex = conditionalWriteField(NonNegativeIntegerField("SIMINDEX"),
-                                           lambda measure: measure.simileIndex > 0)
+                                        lambda measure: measure.simileIndex > 0)
     showAbove = BooleanField("SHOWABOVE")
     aboveText = conditionalWriteField(Base64StringField("ABOVETEXT"),
                                       lambda measure: any(ch != " " for ch in measure.aboveText))
@@ -99,6 +104,7 @@ class NoteHeadStructureV1(FileStructure):
     stemDirection = IntegerField("STEM")
     shortcut = StringField("SHORTCUT")
 
+
 class DrumStructureV1(FileStructure):
     tag = "DRUM"
 
@@ -107,9 +113,9 @@ class DrumStructureV1(FileStructure):
     head = StringField("DEFAULT_HEAD")
     locked = BooleanField("LOCKED")
     headlist = StringField("HEADLIST",
-                           getter = lambda drum: "".join(list(drum)))
-    noteheads = NoteHeadStructureV1(singleton = False,
-                                    getter = lambda drum: [drum.headData(head) for head in drum])
+                           getter=lambda drum: "".join(list(drum)))
+    noteheads = NoteHeadStructureV1(singleton=False,
+                                    getter=lambda drum: [drum.headData(head) for head in drum])
 
     def postProcessObject(self, instance):
         drum = Data.Drum.Drum(instance["name"],
@@ -120,11 +126,13 @@ class DrumStructureV1(FileStructure):
             drum.addNoteHead(head, headData)
         return drum
 
+
 class DrumKitStructureV1(FileStructure):
     tag = "KIT"
     targetClass = Data.DrumKit.DrumKit
-    drums = DrumStructureV1(singleton = False, getter = list,
-                            setter = lambda kit, drum: kit.addDrum(drum))
+    drums = DrumStructureV1(singleton=False, getter=list,
+                            setter=lambda kit, drum: kit.addDrum(drum))
+
 
 class ScoreStructureV1(FileStructure):
     tag = "SCORE"
@@ -132,10 +140,11 @@ class ScoreStructureV1(FileStructure):
 
     scoreData = dbfsv0.MetadataStructureV0()
     drumKit = DrumKitStructureV1()
-    measures = MeasureStructureV1(singleton = False,
-                                  getter = lambda score:list(score.iterMeasures()),
-                                  setter = lambda score, msr: score.insertMeasureByIndex(0, measure = msr))
-    _sections = StringField("SECTION_TITLE", singleton = False)
+    measures = MeasureStructureV1(singleton=False,
+                                  getter=lambda score: list(
+                                      score.iterMeasures()),
+                                  setter=lambda score, msr: score.insertMeasureByIndex(0, measure=msr))
+    _sections = StringField("SECTION_TITLE", singleton=False)
     paperSize = StringField("PAPER_SIZE")
     lilysize = PositiveIntegerField("LILYSIZE")
     lilypages = NonNegativeIntegerField("LILYPAGES")

@@ -31,19 +31,20 @@ from GUI.QComplexCountDialog import QComplexCountDialog
 import Data.MeasureCount
 from Data import DefaultKits, DrumKitFactory, DrumKitSerializer
 
+
 class QNewScoreDialog(QDialog, Ui_newScoreDialog):
-    def __init__(self, parent = None,
-                 counter = None, registry = None):
+    def __init__(self, parent=None,
+                 counter=None, registry=None):
         super(QNewScoreDialog, self).__init__(parent)
         self.setupUi(self)
         self.measureTabs.setup(counter, registry,
                                Data.MeasureCount, QComplexCountDialog)
         for name in DefaultKits.DEFAULT_KIT_NAMES:
-            self.kitCombobox.addItem(name, userData = QVariant(False))
+            self.kitCombobox.addItem(name, userData=QVariant(False))
         self._settings = QSettings()
         self._settings.beginGroup("UserDefaultKits")
         for kitName in self._settings.allKeys():
-            self.kitCombobox.addItem(kitName, userData = QVariant(True))
+            self.kitCombobox.addItem(kitName, userData=QVariant(True))
 
     def getValues(self):
         mc = self.measureTabs.getCounter()

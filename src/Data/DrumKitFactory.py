@@ -25,14 +25,15 @@ from Data.Drum import Drum, HeadData, Drum
 from Data.DefaultKits import NAMED_DEFAULTS
 from Data import DrumKit
 
-def _loadDefaultKit(kit, kitInfo = None):
+
+def _loadDefaultKit(kit, kitInfo=None):
     for (drumData, midiNote, notationHead,
          notationLine, stemDirection) in kitInfo["drums"]:
         drum = Drum(*drumData)
-        headData = HeadData(midiNote = midiNote,
-                            notationHead = notationHead,
-                            notationLine = notationLine,
-                            stemDirection = stemDirection)
+        headData = HeadData(midiNote=midiNote,
+                            notationHead=notationHead,
+                            notationLine=notationLine,
+                            stemDirection=stemDirection)
         drum.addNoteHead(drum.head, headData)
         for (extraHead,
              newMidi,
@@ -46,11 +47,11 @@ def _loadDefaultKit(kit, kitInfo = None):
             if newMidiVolume is None:
                 newMidiVolume = headData.midiVolume
             newData = HeadData(newMidi, newMidiVolume, newEffect,
-                               notationLine = notationLine,
-                               notationHead = newNotationHead,
-                               notationEffect = newNotationEffect,
-                               stemDirection = stemDirection,
-                               shortcut = shortcut)
+                               notationLine=notationLine,
+                               notationHead=newNotationHead,
+                               notationEffect=newNotationEffect,
+                               stemDirection=stemDirection,
+                               shortcut=shortcut)
             drum.addNoteHead(extraHead, newData)
         drum.checkShortcuts()
         kit.addDrum(drum)
@@ -62,7 +63,7 @@ class DrumKitFactory(object):
         return DrumKit.DrumKit()
 
     @staticmethod
-    def getNamedDefaultKit(defaultName = None):
+    def getNamedDefaultKit(defaultName=None):
         if defaultName is None:
             defaultName = "Default"
         kitInfo = NAMED_DEFAULTS[defaultName]

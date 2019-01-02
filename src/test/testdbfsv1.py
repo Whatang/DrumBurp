@@ -34,6 +34,7 @@ from Data.NotePosition import NotePosition
 
 from Data.fileStructures import dbfsv1
 
+
 class TestBeat(unittest.TestCase):
     def testWriteFullBeat(self):
         beat = Beat.Beat(Counter.Counter("e+a"))
@@ -46,7 +47,6 @@ class TestBeat(unittest.TestCase):
                           "  NUM_TICKS 4",
                           "  COUNT |^e+a|",
                           "BEAT_END"])
-
 
     def testWritePartialBeat(self):
         beat = Beat.Beat(Counter.Counter("e+a"), 2)
@@ -114,6 +114,7 @@ class TestBeat(unittest.TestCase):
         iterator = fileUtils.dbFileIterator(handle)
         self.assertRaises(DBErrors.UnrecognisedLine,
                           dbfsv1.BeatStructureV1().read, iterator)
+
 
 class TestMeasureCount(unittest.TestCase):
     def testSimpleWrite(self):
@@ -256,7 +257,6 @@ class TestMeasureCount(unittest.TestCase):
         self.assertEqual(len(count), 16)
         self.assertEqual(count.countString(), "1e+a2e+a3e+a4e+a")
 
-
     def testReadComplex(self):
         data = """START_MEASURE_COUNT
                   BEAT_START
@@ -304,6 +304,7 @@ class TestMeasureCount(unittest.TestCase):
         iterator = fileUtils.dbFileIterator(handle)
         self.assertRaises(DBErrors.UnrecognisedLine,
                           dbfsv1.MeasureCountStructureV1().read, iterator)
+
 
 class TestReadMeasure(unittest.TestCase):
     def testReadMeasure(self):
@@ -611,6 +612,7 @@ class TestReadMeasure(unittest.TestCase):
         measure = dbfsv1.MeasureStructureV1().read(iterator)
         self.assertEqual(measure.newBpm, 120)
 
+
 class TestWriteMeasure(unittest.TestCase):
     reg = CounterRegistry()
 
@@ -657,22 +659,22 @@ class TestWriteMeasure(unittest.TestCase):
                           'END_MEASURE'])
 
     def testWriteSimple(self):
-        self.measure.addNote(NotePosition(noteTime = 0, drumIndex = 0), "a")
-        self.measure.addNote(NotePosition(noteTime = 1, drumIndex = 1), "b")
-        self.measure.addNote(NotePosition(noteTime = 2, drumIndex = 0), "c")
-        self.measure.addNote(NotePosition(noteTime = 3, drumIndex = 1), "d")
-        self.measure.addNote(NotePosition(noteTime = 4, drumIndex = 0), "e")
-        self.measure.addNote(NotePosition(noteTime = 5, drumIndex = 1), "f")
-        self.measure.addNote(NotePosition(noteTime = 6, drumIndex = 0), "g")
-        self.measure.addNote(NotePosition(noteTime = 7, drumIndex = 1), "h")
-        self.measure.addNote(NotePosition(noteTime = 8, drumIndex = 0), "i")
-        self.measure.addNote(NotePosition(noteTime = 9, drumIndex = 1), "j")
-        self.measure.addNote(NotePosition(noteTime = 10, drumIndex = 0), "k")
-        self.measure.addNote(NotePosition(noteTime = 11, drumIndex = 1), "l")
-        self.measure.addNote(NotePosition(noteTime = 12, drumIndex = 0), "m")
-        self.measure.addNote(NotePosition(noteTime = 13, drumIndex = 1), "n")
-        self.measure.addNote(NotePosition(noteTime = 14, drumIndex = 0), "o")
-        self.measure.addNote(NotePosition(noteTime = 15, drumIndex = 1), "p")
+        self.measure.addNote(NotePosition(noteTime=0, drumIndex=0), "a")
+        self.measure.addNote(NotePosition(noteTime=1, drumIndex=1), "b")
+        self.measure.addNote(NotePosition(noteTime=2, drumIndex=0), "c")
+        self.measure.addNote(NotePosition(noteTime=3, drumIndex=1), "d")
+        self.measure.addNote(NotePosition(noteTime=4, drumIndex=0), "e")
+        self.measure.addNote(NotePosition(noteTime=5, drumIndex=1), "f")
+        self.measure.addNote(NotePosition(noteTime=6, drumIndex=0), "g")
+        self.measure.addNote(NotePosition(noteTime=7, drumIndex=1), "h")
+        self.measure.addNote(NotePosition(noteTime=8, drumIndex=0), "i")
+        self.measure.addNote(NotePosition(noteTime=9, drumIndex=1), "j")
+        self.measure.addNote(NotePosition(noteTime=10, drumIndex=0), "k")
+        self.measure.addNote(NotePosition(noteTime=11, drumIndex=1), "l")
+        self.measure.addNote(NotePosition(noteTime=12, drumIndex=0), "m")
+        self.measure.addNote(NotePosition(noteTime=13, drumIndex=1), "n")
+        self.measure.addNote(NotePosition(noteTime=14, drumIndex=0), "o")
+        self.measure.addNote(NotePosition(noteTime=15, drumIndex=1), "p")
         output = self.get_output()
         self.assertEqual(output,
                          ['START_MEASURE',
@@ -760,6 +762,7 @@ class TestWriteMeasure(unittest.TestCase):
                           '  SHOWBELOW False',
                           'END_MEASURE'])
 
+
 class TestNoteHead(unittest.TestCase):
     @staticmethod
     def get_output(head):
@@ -820,39 +823,40 @@ class TestNoteHead(unittest.TestCase):
         self.assertEqual(head.stemDirection, DefaultKits.STEM_DOWN)
         self.assertEqual(head.shortcut, 'x')
 
+
 class TestDrum(unittest.TestCase):
     def testWriteSimple(self):
         drum = Drum("test", "td", "x", True)
-        defaultHead = HeadData(shortcut = "y")
+        defaultHead = HeadData(shortcut="y")
         drum.addNoteHead("x", defaultHead)
         outstring = StringIO()
         indenter = fileUtils.Indenter(outstring)
         dbfsv1.DrumStructureV1().write(drum, indenter)
         outlines = outstring.getvalue().splitlines()
         self.assertEqual(outlines,
-                           ['START_DRUM',
-                            '  NAME test',
-                            '  ABBR td',
-                            '  DEFAULT_HEAD x',
-                            '  LOCKED True',
-                            '  HEADLIST x',
-                            '  START_NOTEHEAD',
-                            '    MIDINOTE 71',
-                            '    MIDIVOLUME 96',
-                            '    EFFECT normal',
-                            '    NOTATIONHEAD default',
-                            '    NOTATIONLINE 0',
-                            '    NOTATIONEFFECT none',
-                            '    STEM 0',
-                            '    SHORTCUT y',
-                            '  END_NOTEHEAD',
-                            'END_DRUM' ])
+                         ['START_DRUM',
+                          '  NAME test',
+                          '  ABBR td',
+                          '  DEFAULT_HEAD x',
+                          '  LOCKED True',
+                          '  HEADLIST x',
+                          '  START_NOTEHEAD',
+                          '    MIDINOTE 71',
+                          '    MIDIVOLUME 96',
+                          '    EFFECT normal',
+                          '    NOTATIONHEAD default',
+                          '    NOTATIONLINE 0',
+                          '    NOTATIONEFFECT none',
+                          '    STEM 0',
+                          '    SHORTCUT y',
+                          '  END_NOTEHEAD',
+                          'END_DRUM'])
 
     def testWriteExtraHeads(self):
         drum = Drum("test", "td", "x")
-        defaultHead = HeadData(shortcut = "y")
+        defaultHead = HeadData(shortcut="y")
         drum.addNoteHead("x", defaultHead)
-        newHead = HeadData(100, shortcut = 'a')
+        newHead = HeadData(100, shortcut='a')
         drum.addNoteHead("y", newHead)
         headData = HeadData(72, 100, "ghost", "cross", 1, "choke",
                             DefaultKits.STEM_DOWN, "c")
@@ -862,43 +866,43 @@ class TestDrum(unittest.TestCase):
         dbfsv1.DrumStructureV1().write(drum, indenter)
         outlines = outstring.getvalue().splitlines()
         self.assertEqual(outlines,
-                           ['START_DRUM',
-                            '  NAME test',
-                            '  ABBR td',
-                            '  DEFAULT_HEAD x',
-                            '  LOCKED False',
-                            '  HEADLIST xyz',
-                            '  START_NOTEHEAD',
-                            '    MIDINOTE 71',
-                            '    MIDIVOLUME 96',
-                            '    EFFECT normal',
-                            '    NOTATIONHEAD default',
-                            '    NOTATIONLINE 0',
-                            '    NOTATIONEFFECT none',
-                            '    STEM 0',
-                            '    SHORTCUT y',
-                            '  END_NOTEHEAD',
-                            '  START_NOTEHEAD',
-                            '    MIDINOTE 100',
-                            '    MIDIVOLUME 96',
-                            '    EFFECT normal',
-                            '    NOTATIONHEAD default',
-                            '    NOTATIONLINE 0',
-                            '    NOTATIONEFFECT none',
-                            '    STEM 0',
-                            '    SHORTCUT a',
-                            '  END_NOTEHEAD',
-                            '  START_NOTEHEAD',
-                            '    MIDINOTE 72',
-                            '    MIDIVOLUME 100',
-                            '    EFFECT ghost',
-                            '    NOTATIONHEAD cross',
-                            '    NOTATIONLINE 1',
-                            '    NOTATIONEFFECT choke',
-                            '    STEM 1',
-                            '    SHORTCUT c',
-                            '  END_NOTEHEAD',
-                            'END_DRUM' ])
+                         ['START_DRUM',
+                          '  NAME test',
+                          '  ABBR td',
+                          '  DEFAULT_HEAD x',
+                          '  LOCKED False',
+                          '  HEADLIST xyz',
+                          '  START_NOTEHEAD',
+                          '    MIDINOTE 71',
+                          '    MIDIVOLUME 96',
+                          '    EFFECT normal',
+                          '    NOTATIONHEAD default',
+                          '    NOTATIONLINE 0',
+                          '    NOTATIONEFFECT none',
+                          '    STEM 0',
+                          '    SHORTCUT y',
+                          '  END_NOTEHEAD',
+                          '  START_NOTEHEAD',
+                          '    MIDINOTE 100',
+                          '    MIDIVOLUME 96',
+                          '    EFFECT normal',
+                          '    NOTATIONHEAD default',
+                          '    NOTATIONLINE 0',
+                          '    NOTATIONEFFECT none',
+                          '    STEM 0',
+                          '    SHORTCUT a',
+                          '  END_NOTEHEAD',
+                          '  START_NOTEHEAD',
+                          '    MIDINOTE 72',
+                          '    MIDIVOLUME 100',
+                          '    EFFECT ghost',
+                          '    NOTATIONHEAD cross',
+                          '    NOTATIONLINE 1',
+                          '    NOTATIONEFFECT choke',
+                          '    STEM 1',
+                          '    SHORTCUT c',
+                          '  END_NOTEHEAD',
+                          'END_DRUM'])
 
     def testReadSimple(self):
         data = """
@@ -980,6 +984,7 @@ class TestDrum(unittest.TestCase):
         self.assertEqual(drum[1], 'y')
         self.assertEqual(drum[2], 'z')
 
+
 class TestDrumKit(unittest.TestCase):
     def testRead(self):
         kitData = """START_KIT
@@ -1048,7 +1053,8 @@ class TestDrumKit(unittest.TestCase):
         self.assertEqual(kit.getDefaultHead(0), "x")
         self.assertEqual(kit.allowedNoteHeads(0),
                          ["x", "g"])
-        self.assertEqual(kit.shortcutsAndNoteHeads(0), [("x", "x"), ("g", "g")])
+        self.assertEqual(kit.shortcutsAndNoteHeads(0),
+                         [("x", "x"), ("g", "g")])
         self.assertEqual(kit[1].name, "Kick")
         self.assertEqual(len(kit[1]), 2)
         self.assertEqual(kit.getDefaultHead(1), "o")
@@ -1058,14 +1064,14 @@ class TestDrumKit(unittest.TestCase):
         drum = Drum("One", "d1", "x", True)
         drum.addNoteHead("x", HeadData())
         drum.addNoteHead("g",
-                         HeadData(effect = "ghost", notationEffect = "ghost"))
+                         HeadData(effect="ghost", notationEffect="ghost"))
         drum.checkShortcuts()
         kit.addDrum(drum)
         drum = Drum("Two", "d2", "o")
-        drum.addNoteHead("o", HeadData(notationLine = -5, stemDirection = 1))
-        drum.addNoteHead("O", HeadData(effect = "accent",
-                                       notationEffect = "accent",
-                                       notationLine = -5, stemDirection = 1))
+        drum.addNoteHead("o", HeadData(notationLine=-5, stemDirection=1))
+        drum.addNoteHead("O", HeadData(effect="accent",
+                                       notationEffect="accent",
+                                       notationLine=-5, stemDirection=1))
         drum.checkShortcuts()
         kit.addDrum(drum)
         handle = StringIO()
@@ -1074,61 +1080,63 @@ class TestDrumKit(unittest.TestCase):
         outlines = handle.getvalue().splitlines()
         self.assertEqual(outlines,
                          ['START_KIT',
-                            '  START_DRUM',
-                            '    NAME One',
-                            '    ABBR d1',
-                            '    DEFAULT_HEAD x',
-                            '    LOCKED True',
-                            '    HEADLIST xg',
-                            '    START_NOTEHEAD',
-                            '      MIDINOTE 71',
-                            '      MIDIVOLUME 96',
-                            '      EFFECT normal',
-                            '      NOTATIONHEAD default',
-                            '      NOTATIONLINE 0',
-                            '      NOTATIONEFFECT none',
-                            '      STEM 0',
-                            '      SHORTCUT x',
-                            '    END_NOTEHEAD',
-                            '    START_NOTEHEAD',
-                            '      MIDINOTE 71',
-                            '      MIDIVOLUME 96',
-                            '      EFFECT ghost',
-                            '      NOTATIONHEAD default',
-                            '      NOTATIONLINE 0',
-                            '      NOTATIONEFFECT ghost',
-                            '      STEM 0',
-                            '      SHORTCUT g',
-                            '    END_NOTEHEAD',
-                            '  END_DRUM',
-                            '  START_DRUM',
-                            '    NAME Two',
-                            '    ABBR d2',
-                            '    DEFAULT_HEAD o',
-                            '    LOCKED False',
-                            '    HEADLIST oO',
-                            '    START_NOTEHEAD',
-                            '      MIDINOTE 71',
-                            '      MIDIVOLUME 96',
-                            '      EFFECT normal',
-                            '      NOTATIONHEAD default',
-                            '      NOTATIONLINE -5',
-                            '      NOTATIONEFFECT none',
-                            '      STEM 1',
-                            '      SHORTCUT o',
-                            '    END_NOTEHEAD',
-                            '    START_NOTEHEAD',
-                            '      MIDINOTE 71',
-                            '      MIDIVOLUME 96',
-                            '      EFFECT accent',
-                            '      NOTATIONHEAD default',
-                            '      NOTATIONLINE -5',
-                            '      NOTATIONEFFECT accent',
-                            '      STEM 1',
-                            '      SHORTCUT a',
-                            '    END_NOTEHEAD',
-                            '  END_DRUM',
-                            'END_KIT'])
+                          '  START_DRUM',
+                          '    NAME One',
+                          '    ABBR d1',
+                          '    DEFAULT_HEAD x',
+                          '    LOCKED True',
+                          '    HEADLIST xg',
+                          '    START_NOTEHEAD',
+                          '      MIDINOTE 71',
+                          '      MIDIVOLUME 96',
+                          '      EFFECT normal',
+                          '      NOTATIONHEAD default',
+                          '      NOTATIONLINE 0',
+                          '      NOTATIONEFFECT none',
+                          '      STEM 0',
+                          '      SHORTCUT x',
+                          '    END_NOTEHEAD',
+                          '    START_NOTEHEAD',
+                          '      MIDINOTE 71',
+                          '      MIDIVOLUME 96',
+                          '      EFFECT ghost',
+                          '      NOTATIONHEAD default',
+                          '      NOTATIONLINE 0',
+                          '      NOTATIONEFFECT ghost',
+                          '      STEM 0',
+                          '      SHORTCUT g',
+                          '    END_NOTEHEAD',
+                          '  END_DRUM',
+                          '  START_DRUM',
+                          '    NAME Two',
+                          '    ABBR d2',
+                          '    DEFAULT_HEAD o',
+                          '    LOCKED False',
+                          '    HEADLIST oO',
+                          '    START_NOTEHEAD',
+                          '      MIDINOTE 71',
+                          '      MIDIVOLUME 96',
+                          '      EFFECT normal',
+                          '      NOTATIONHEAD default',
+                          '      NOTATIONLINE -5',
+                          '      NOTATIONEFFECT none',
+                          '      STEM 1',
+                          '      SHORTCUT o',
+                          '    END_NOTEHEAD',
+                          '    START_NOTEHEAD',
+                          '      MIDINOTE 71',
+                          '      MIDIVOLUME 96',
+                          '      EFFECT accent',
+                          '      NOTATIONHEAD default',
+                          '      NOTATIONLINE -5',
+                          '      NOTATIONEFFECT accent',
+                          '      STEM 1',
+                          '      SHORTCUT a',
+                          '    END_NOTEHEAD',
+                          '  END_DRUM',
+                          'END_KIT'])
+
+
 # TODO: test scores
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

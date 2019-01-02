@@ -30,8 +30,9 @@ from Data.Beat import Beat
 from Data.MeasureCount import MeasureCount
 from GUI.ui_DBComplextCountDialog import Ui_complexCountDialog
 
+
 class QComplexCountDialog(QDialog, Ui_complexCountDialog):
-    def __init__(self, registry, measureCount, parent = None):
+    def __init__(self, registry, measureCount, parent=None):
         super(QComplexCountDialog, self).__init__(parent)
         self.setupUi(self)
         self._default = measureCount
@@ -82,7 +83,8 @@ class QComplexCountDialog(QDialog, Ui_complexCountDialog):
         self.numTicksSpinBox.setEnabled(isLastBeat)
 
     def _beatChanged(self):
-        counter = self._registry.getCounterByIndex(self.countBox.currentIndex())
+        counter = self._registry.getCounterByIndex(
+            self.countBox.currentIndex())
         self.numTicksSpinBox.setMaximum(len(counter))
         self.numTicksSpinBox.setValue(len(counter))
         item = self.beatList.currentItem()
@@ -107,7 +109,8 @@ class QComplexCountDialog(QDialog, Ui_complexCountDialog):
         if len(item.text()) < len(counter):
             beat = Beat(counter)
             item.setText("".join(beat.count(index + 1)))
-        counter = self._registry.getCounterByIndex(self.countBox.currentIndex())
+        counter = self._registry.getCounterByIndex(
+            self.countBox.currentIndex())
         beat = Beat(counter)
         beatNum = self.beatList.count()
         item = QListWidgetItem("".join(beat.count(beatNum + 1)))
@@ -123,7 +126,8 @@ class QComplexCountDialog(QDialog, Ui_complexCountDialog):
         self.preview()
 
     def numTicksChanged(self):
-        counter = self._registry.getCounterByIndex(self.countBox.currentIndex())
+        counter = self._registry.getCounterByIndex(
+            self.countBox.currentIndex())
         beat = Beat(counter, self.numTicksSpinBox.value())
         beatText = "".join(beat.count(self.beatList.currentRow() + 1))
         self.beatList.currentItem().setText(beatText)
