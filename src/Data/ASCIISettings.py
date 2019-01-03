@@ -29,6 +29,7 @@ class ASCIISettings(object):
         self._registerCheckName("metadata")
         self._registerCheckName("kitKey")
         self._registerCheckName("omitEmpty")
+        self._registerCheckName("sectionBrackets", False)
         self._registerCheckName("underline")
         self._registerCheckName("printCounts")
         self._registerCheckName("emptyLineBeforeSection")

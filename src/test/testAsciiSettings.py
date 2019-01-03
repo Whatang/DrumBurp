@@ -31,11 +31,13 @@ class TestAsciiSettings(unittest.TestCase):
         settings = ASCIISettings.ASCIISettings()
         names = settings.checkNames()
         self.assertEqual(names,
-                         ['metadata', 'kitKey', 'omitEmpty', 'underline',
+                         ['metadata', 'kitKey', 'omitEmpty',
+                          'sectionBrackets', 'underline',
                           'printCounts', 'emptyLineBeforeSection',
                           'emptyLineAfterSection'])
+        false_settings = set(['sectionBrackets'])
         for name in names:
-            self.assertEqual(getattr(settings, name), True,
+            self.assertEqual(getattr(settings, name), name not in false_settings,
                              "Default value for AsciiSettings.'%s' is wrong"
                              % name)
 

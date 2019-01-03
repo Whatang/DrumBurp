@@ -311,6 +311,8 @@ class Exporter(object):
                             self.settings.emptyLineBeforeSection):
                         asciiString.append("")
                     title = self.score.getSectionTitle(sectionIndex)
+                    if self.settings.sectionBrackets:
+                        title = "[" + title + "]"
                     asciiString.append(title)
                     if self.settings.underline:
                         asciiString.append("".join(["~"] * len(title)))

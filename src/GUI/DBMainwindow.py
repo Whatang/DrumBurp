@@ -196,6 +196,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         self.refreshLilypond.clicked.connect(self._lilyScene.preview)
         self.scoreScene.scoreDisplayChanged.connect(self._refreshTextExport)
         self.underlineCheck.clicked.connect(self._refreshTextExport)
+        self.sectionBracketsCheck.clicked.connect(self._refreshTextExport)
         self.emptyLineBeforeSectionCheck.clicked.connect(
             self._refreshTextExport)
         self.emptyLineAfterSectionCheck.clicked.connect(
@@ -683,6 +684,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
         props = self.songProperties
         self._asciiSettings = props.generateAsciiSettings(self._asciiSettings)
         self._asciiSettings.underline = self.underlineCheck.isChecked()
+        self._asciiSettings.sectionBrackets = self.sectionBracketsCheck.isChecked()
         self._asciiSettings.emptyLineBeforeSection = self.emptyLineBeforeSectionCheck.isChecked()
         self._asciiSettings.emptyLineAfterSection = self.emptyLineAfterSectionCheck.isChecked()
         try:
@@ -1219,6 +1221,7 @@ class DrumBurp(QMainWindow, Ui_DrumBurpWindow):
     @pyqtSignature("")
     def on_lilyPngButton_clicked(self):
         self._setLilyFormat(2)
+
 
 class VersionCheckThread(QThread):
     def __init__(self, parent=None):
