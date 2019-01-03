@@ -22,14 +22,14 @@ Created on 8 Jan 2011
 @author: Mike Thomas
 '''
 
-from Data.Counter import CounterRegistry
-from Data.ASCIISettings import ASCIISettings
 from PyQt4.QtCore import QObject, pyqtSignal
 from PyQt4.QtGui import QFontMetrics, QFont
 
+from Data.ASCIISettings import ASCIISettings
+from Data.Counter import CounterRegistry
+
+
 # pylint: disable-msg=R0902
-
-
 class QDisplayProperties(QObject):
     _START_NOTE_WIDTH = 12
     MIN_NOTE_WIDTH = 12
@@ -95,7 +95,7 @@ class QDisplayProperties(QObject):
         self.xSpacingChanged.connect(qScore.xSpacingChanged)
         self.ySpacingChanged.connect(qScore.ySpacingChanged)
         self.lineSpacingChanged.connect(qScore.lineSpacingChanged)
-        self.fontChanged.connect(qScore.update)
+        self.fontChanged.connect(qScore.noteFontChanged)
         self.sectionFontChanged.connect(qScore.sectionFontChanged)
         self.sectionFontSizeChanged.connect(qScore.sectionFontChanged)
         self.metadataFontChanged.connect(qScore.metadataFontChanged)

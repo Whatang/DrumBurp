@@ -399,7 +399,6 @@ class QScore(QtGui.QGraphicsScene):
             if score is not None:
                 self.startUp()
             self._score.setCallBack(self.dataChanged)
-            self._build()
             self._properties.lineSpacing = self._score.systemSpacing - 101
             self.paperSizeChanged.emit(self._score.paperSize)
             self.defaultCountChanged.emit(self._score.defaultCount)
@@ -412,11 +411,12 @@ class QScore(QtGui.QGraphicsScene):
             self._properties.newScore(self)
             self._kitData.setVisible(self._properties.kitDataVisible)
             self._metaData.setVisible(self._properties.metadataVisible)
+            self.widthChanged.emit(self.scoreWidth)
+            self._build()
             DBMidi.setKit(score.drumKit)
             self._undoStack.clear()
             self._undoStack.setClean()
             self._inMacro = False
-            self.widthChanged.emit(self.scoreWidth)
             self.reBuild()
             self.dirty = False
             self._stateMachine = DBStateMachine(Waiting, self)
@@ -588,16 +588,20 @@ class QScore(QtGui.QGraphicsScene):
         self.lineSpacingChanged()
 
     def metadataVisibilityChanged(self):
-        self._metaData.setVisible(self._properties.metadataVisible)
         self.reBuild()
+        self._metaData.setVisible(self._properties.metadataVisible)
 
     def metadataFontChanged(self):
         with self.metaChange():
             self._metaData.fontChanged()
 
+    def noteFontChanged(self):
+        with self.kitDataChange():
+            self._kitData.fontChanged()
+
     def kitDataVisibleChanged(self):
-        self._kitData.setVisible(self._properties.kitDataVisible)
         self.reBuild()
+        self._kitData.setVisible(self._properties.kitDataVisible)
 
     def dataChanged(self, notePosition):
         staff = self._qStaffs[notePosition.staffIndex]
@@ -975,6 +979,9 @@ class QScore(QtGui.QGraphicsScene):
     def metaChange(self):
         return _metaChangeContext(self, self._metaData)
 
+    def kitDataChange(self):
+        return _kitDataChangeContext(self, self._kitData)
+
     def sendFsmEvent(self, event):
         try:
             self._stateMachine.send_event(event)
@@ -1021,5 +1028,21 @@ class _metaChangeContext(object):
     def __exit__(self, excType, excValue, excTraceback):
         self._metaData.update()
         if self._metaData.boundingRect().height() != self._metaSize:
+            self._qScore.placeStaffs()
+        return False
+
+
+class _kitDataChangeContext(object):
+    def __init__(self, qScore, kitData):
+        self._qScore = qScore
+        self._kitData = kitData
+        self._kitDataSize = kitData.boundingRect().height()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, excType, excValue, excTraceback):
+        self._kitData.update()
+        if self._kitData.boundingRect().height() != self._kitDataSize:
             self._qScore.placeStaffs()
         return False
