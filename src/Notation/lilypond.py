@@ -164,16 +164,117 @@ def _getStraightDuration(ticksInFullBeat, ticks):
         raise LilypondProblem("Note duration not recognised")
     return dur
 
+#thank based stackoverflow
+from functools import reduce
 
+def factors(n):    
+    return set(reduce(list.__add__, ([i, n//i] for i in range(1, int(n**0.5) + 1) if n % i == 0)))
+
+#thank some other thing I found online
+#Author: A.Polino
+def is_power2(num):
+	return num != 0 and ((num & (num - 1)) == 0)
+
+def is_divisible_by(num, list):
+    for i in list:
+        if(num % i == 0):
+            return True
+    return False
+
+#beat = current beat (object)
+#ticks = how many ticks until the next note/event in the beat (including the one we're on)
+#tickNum = tick we're on
 def makeLilyDuration(beat, ticks, tickNum):
     dur = None
     ticksInFullBeat = beat.ticksPerBeat
+    
+    oldt = ticks
+    
+    #get all factors (real fast). this tells us what kinds of notes this beat has (triplets, quintuplets, etc.)
+    rawFactors = list(factors(ticksInFullBeat))
+    
+    from collections import OrderedDict
+    sortedFactors = {
+        True: OrderedDict(),
+        False: OrderedDict()
+        }
+    #add all regular notes
+    k = 1
+    while ticksInFullBeat % k == 0:
+        sortedFactors[False][ticksInFullBeat/k] = k * 4
+        k = k * 2
+
+    #If the beat isn't a power of two, it will contain compound notes
+    beatCompound = not (ticksInFullBeat <= 2 or is_power2(ticksInFullBeat))
+
+    #If the beat is compound, add the compound notes (duh)
+    if beatCompound:
+        j = 1
+        noteType = sortedFactors[False].values()[-1] * 2
+        while(j < ticksInFullBeat):
+            sortedFactors[True][j] = noteType
+            noteType = noteType / 2
+            j = j * 2
+
+    #check if the note length could be made up of any combination straight note(s). if it can't, it need to be compound.
+    noteCompound = beatCompound and (not is_divisible_by(ticks, sortedFactors[False].keys()))
+    
+    #find closest note (start at largest note in ticks, down to smallest)
+    note = None
+    for i in sorted(sortedFactors[noteCompound].keys(), reverse=True):
+        if(i <= ticks):
+            note = i
+            break
+    ticks = ticks - note
+    #if the remaining ticks are more than/equal to the next smallest note's ticks...
+    #less than = only rest
+    #equal = only dotted
+    #more than = both
+    dotted = False
+    if(ticks > 0 and ticks >= note / 2):
+        dotted = True
+        ticks = ticks - note / 2
+
+    #find note again but for the rest length
+    restNote = None
+    for i in sorted(sortedFactors[noteCompound].keys(), reverse=True):
+        if(i <= ticks):
+            restNote = i
+            ticks = ticks - restNote
+            break
+    #same but for dotted
+    if not (restNote == None):
+        restDotted = False
+        if(ticks > 0 and ticks >= restNote / 2):
+            restDotted = True
+            #ticks = ticks - note / 2
+    
+    #temp reset
+    ticks = oldt
+    
+    #Setting everything
+    finalNote = str(sortedFactors[noteCompound][note])
+    if(dotted):
+        finalNote = finalNote + "."
+    finalRest = None
+    if not restNote == None:
+        finalRest = str(sortedFactors[noteCompound][restNote])
+        if(restDotted):
+            finalRest = finalRest + "."
+
     if ticks == ticksInFullBeat:
         dur = LilyDuration("4")
     elif ticksInFullBeat % 3 == 0:
         dur = _getCompoundDuration(ticksInFullBeat, ticks, tickNum)
     else:
         dur = _getStraightDuration(ticksInFullBeat, ticks)
+
+    #debug check
+    if(finalNote != dur.duration or finalRest != dur.restTime or noteCompound != dur.isCompound):
+        print(beat)
+        print(finalNote, finalRest, noteCompound)
+        print(dur.duration, dur.restTime, dur.isCompound)
+
     if tickNum == 0:
         dur.isBeatStart = True
     return dur
@@ -261,7 +362,9 @@ class LilyMeasure(object):
         for direction in notes:
             eventTimes = [notePos.noteTime for (notePos, head_) in
                           notes[direction]]
-            noteTimes[direction] = self._calculateEventTimes(eventTimes)
+            #Prevents filling in the list with non existant notes
+            if(len(eventTimes) > 0):
+                noteTimes[direction] = self._calculateEventTimes(eventTimes)
         return noteTimes
 
     def _calculateEventDurations(self, timeList):
