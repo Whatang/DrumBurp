@@ -296,9 +296,7 @@ class LilyMeasure(object):
         for direction in notes:
             eventTimes = [notePos.noteTime for (notePos, head_) in
                           notes[direction]]
-            #Prevents filling in the list with non existant notes
-            if(len(eventTimes) > 0):
-                noteTimes[direction] = self._calculateEventTimes(eventTimes)
+            noteTimes[direction] = self._calculateEventTimes(eventTimes)
         return noteTimes
 
     def _calculateEventDurations(self, timeList):
