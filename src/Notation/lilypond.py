@@ -145,8 +145,8 @@ def makeLilyDuration(beat, ticks, tickNum):
         noteType = sortedFactors[False].values()[-1] * 2
         while(j < ticksInFullBeat):
             sortedFactors[True][j] = noteType
-            noteType = noteType / 2
-            j = j * 2
+            noteType /= 2
+            j *= 2
 
     #check if the note length could be made up of any combination straight note(s). if it can't, it need to be compound.
     noteCompound = beatCompound and (not is_divisible_by(ticks, sortedFactors[False].keys()))
@@ -157,7 +157,7 @@ def makeLilyDuration(beat, ticks, tickNum):
         if(i <= ticks):
             note = i
             break
-    ticks = ticks - note
+    ticks -= note
     #if the remaining ticks are more than/equal to the next smallest note's ticks...
     #less than = only rest
     #equal = only dotted
@@ -165,31 +165,31 @@ def makeLilyDuration(beat, ticks, tickNum):
     dotted = False
     if(ticks > 0 and ticks >= note / 2):
         dotted = True
-        ticks = ticks - note / 2
+        ticks -= note / 2
 
     #find note again but for the rest length
     restNote = None
     for i in sorted(sortedFactors[noteCompound].keys(), reverse=True):
         if(i <= ticks):
             restNote = i
-            ticks = ticks - restNote
+            ticks -= restNote
             break
     #same but for dotted
     if not (restNote == None):
         restDotted = False
         if(ticks > 0 and ticks >= restNote / 2):
             restDotted = True
-            #ticks = ticks - note / 2
+            #ticks -= restNote / 2
     
     #Setting everything
     finalNote = str(sortedFactors[noteCompound][note])
     if(dotted):
-        finalNote = finalNote + "."
+        finalNote += "."
     finalRest = None
     if not restNote == None:
         finalRest = str(sortedFactors[noteCompound][restNote])
         if(restDotted):
-            finalRest = finalRest + "."
+            finalRest += "."
 
     dur = LilyDuration(finalNote,finalRest,noteCompound)
 
