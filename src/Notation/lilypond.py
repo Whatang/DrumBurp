@@ -188,11 +188,6 @@ def makeLilyDuration(beat, ticks, tickNum):
     dur = None
     ticksInFullBeat = beat.ticksPerBeat
     
-    oldt = ticks
-    
-    #get all factors (real fast). this tells us what kinds of notes this beat has (triplets, quintuplets, etc.)
-    rawFactors = list(factors(ticksInFullBeat))
-    
     from collections import OrderedDict
     sortedFactors = {
         True: OrderedDict(),
@@ -249,9 +244,6 @@ def makeLilyDuration(beat, ticks, tickNum):
             restDotted = True
             #ticks = ticks - note / 2
     
-    #temp reset
-    ticks = oldt
-    
     #Setting everything
     finalNote = str(sortedFactors[noteCompound][note])
     if(dotted):
@@ -262,18 +254,7 @@ def makeLilyDuration(beat, ticks, tickNum):
         if(restDotted):
             finalRest = finalRest + "."
 
-    if ticks == ticksInFullBeat:
-        dur = LilyDuration("4")
-    elif ticksInFullBeat % 3 == 0:
-        dur = _getCompoundDuration(ticksInFullBeat, ticks, tickNum)
-    else:
-        dur = _getStraightDuration(ticksInFullBeat, ticks)
-
-    #debug check
-    if(finalNote != dur.duration or finalRest != dur.restTime or noteCompound != dur.isCompound):
-        print(beat)
-        print(finalNote, finalRest, noteCompound)
-        print(dur.duration, dur.restTime, dur.isCompound)
+    dur = LilyDuration(finalNote,finalRest,noteCompound)
 
     if tickNum == 0:
         dur.isBeatStart = True
@@ -298,14 +279,30 @@ class LilyDuration(object):
         self._compoundList.append(dur)
 
     def terminateCompound(self):
-        compLen = len(self._compoundList) + 1
-        if compLen > 6:
-            frac = "8/12"
-        elif compLen > 3:
-            frac = "4/6"
-        else:
-            frac = "2/3"
-        self.compoundStart = r"\times %s {" % frac
+        def calcComponentNotes(note):
+            def calcComponentNotesFromStr(noteName):
+                nums = []
+                nums.append(int(noteName.replace(".","")))
+                if(noteName.endswith(".")):
+                    nums.append(nums[0] * 2)
+                return nums
+            nums = []
+            nums.extend(calcComponentNotesFromStr(note.duration))
+            if not note.restTime == None:
+                nums.extend(calcComponentNotesFromStr(note.restTime))
+            return nums
+
+        noteList = []
+        noteList.extend(calcComponentNotes(self))
+        for i in self._compoundList:
+            noteList.extend(calcComponentNotes(i))
+        
+        baseNote = max(noteList)
+        tupletLength = 0
+        for i in noteList:
+            tupletLength += baseNote / i
+
+        self.compoundStart = r"\tuplet {0}/{1} {{".format(tupletLength,baseNote/4)
 
     def setCompoundEnd(self):
         self._compoundEnd = True
