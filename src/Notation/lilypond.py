@@ -107,69 +107,6 @@ class SevenTwelfthsProblem(BadNoteDuration):
 class ElevenTwelfthsProblem(BadNoteDuration):
     "DrumBurp cannot set notes of length 11/12 beat."
 
-
-def _getCompoundDuration(ticksInFullBeat, ticks, tickNum):
-    if ticks * 12 == ticksInFullBeat:  # 1/12
-        dur = LilyDuration("32", isCompound=True)
-    elif ticks * 6 == ticksInFullBeat:  # 2/12
-        dur = LilyDuration("16", isCompound=True)
-    elif ticks * 4 == ticksInFullBeat:  # 3/12
-        if (tickNum * 4) % ticksInFullBeat == 0:
-            dur = LilyDuration("16")
-        else:
-            dur = LilyDuration("16.", isCompound=True)
-    elif ticks * 3 == ticksInFullBeat:  # 4/12
-        dur = LilyDuration("8", isCompound=True)
-    elif ticks * 12 == 5 * ticksInFullBeat:  # 5/12
-        dur = LilyDuration("8", "32", isCompound=True)
-    elif ticks * 2 == ticksInFullBeat:  # 6/12
-        if (tickNum * 2) % ticksInFullBeat == 0:
-            dur = LilyDuration("8")
-        else:
-            dur = LilyDuration("8.", isCompound=True)
-    elif ticks * 12 == 7 * ticksInFullBeat:  # 7/12
-        dur = LilyDuration("8.", "32", isCompound=True)
-    elif ticks * 3 == 2 * ticksInFullBeat:  # 8/12
-        dur = LilyDuration("4", isCompound=True)
-    elif ticks * 4 == 3 * ticksInFullBeat:  # 9/12
-        if (tickNum * 4) % ticksInFullBeat == 0:
-            dur = LilyDuration("8.")
-        else:
-            dur = LilyDuration("4", "32", isCompound=True)
-    elif ticks * 6 == 5 * ticksInFullBeat:  # 10/12
-        dur = LilyDuration("4", "16", isCompound=True)
-    elif ticks * 12 == 11 * ticksInFullBeat:  # 11/12
-        dur = LilyDuration("4", "16.", isCompound=True)
-    else:
-        raise LilypondProblem("Note duration not recognised")
-    return dur
-
-
-def _getStraightDuration(ticksInFullBeat, ticks):
-    if 2 * ticks == ticksInFullBeat:
-        dur = LilyDuration("8")
-    elif 4 * ticks == ticksInFullBeat:
-        dur = LilyDuration("16")
-    elif 4 * ticks == 3 * ticksInFullBeat:
-        dur = LilyDuration("8.")
-    elif 8 * ticks == ticksInFullBeat:
-        dur = LilyDuration("32")
-    elif 8 * ticks == 3 * ticksInFullBeat:
-        dur = LilyDuration("16.")
-    elif 8 * ticks == 5 * ticksInFullBeat:
-        dur = LilyDuration("8", "32")
-    elif 8 * ticks == 7 * ticksInFullBeat:
-        dur = LilyDuration("8.", "32")
-    else:
-        raise LilypondProblem("Note duration not recognised")
-    return dur
-
-#thank based stackoverflow
-from functools import reduce
-
-def factors(n):    
-    return set(reduce(list.__add__, ([i, n//i] for i in range(1, int(n**0.5) + 1) if n % i == 0)))
-
 #thank some other thing I found online
 #Author: A.Polino
 def is_power2(num):
