@@ -23,8 +23,13 @@ Created on 16 Apr 2011
 
 '''
 
+from collections import OrderedDict
 from Data import DBConstants
 
+#thank some other thing I found online
+#Author: A.Polino
+def is_power2(num):
+	return num != 0 and ((num & (num - 1)) == 0)
 
 class Counter(object):
     '''A Counter represents a way of subdividing a single beat.
@@ -55,6 +60,27 @@ class Counter(object):
             if len(count) != len(counts):
                 raise ValueError("All counts for a Counter must be of the "
                                  "same length.")
+        self.noteDirectory = {
+            True: OrderedDict(),
+            False: OrderedDict()
+            }
+        #add all regular notes
+        i = 1
+        while len(self._counts) % i == 0:
+            self.noteDirectory[False][len(self._counts)/i] = i * 4
+            i *= 2
+
+        #If the counter isn't a power of two, it can contain compound notes
+        self.supportsCompound = not (len(self._counts) <= 2 or is_power2(len(self._counts)))
+
+        #If the beat is compound, add the compound notes (duh)
+        if self.supportsCompound:
+            j = 1
+            noteType = self.noteDirectory[False].values()[-1] * 2
+            while(j < len(self._counts)):
+                self.noteDirectory[True][j] = noteType
+                noteType /= 2
+                j *= 2
 
     def __iter__(self):
         return iter(self._counts)

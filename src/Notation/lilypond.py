@@ -107,11 +107,6 @@ class SevenTwelfthsProblem(BadNoteDuration):
 class ElevenTwelfthsProblem(BadNoteDuration):
     "DrumBurp cannot set notes of length 11/12 beat."
 
-#thank some other thing I found online
-#Author: A.Polino
-def is_power2(num):
-	return num != 0 and ((num & (num - 1)) == 0)
-
 def is_divisible_by(num, list):
     for i in list:
         if(num % i == 0):
@@ -125,35 +120,12 @@ def makeLilyDuration(beat, ticks, tickNum):
     dur = None
     ticksInFullBeat = beat.ticksPerBeat
     
-    from collections import OrderedDict
-    sortedFactors = {
-        True: OrderedDict(),
-        False: OrderedDict()
-        }
-    #add all regular notes
-    k = 1
-    while ticksInFullBeat % k == 0:
-        sortedFactors[False][ticksInFullBeat/k] = k * 4
-        k = k * 2
-
-    #If the beat isn't a power of two, it will contain compound notes
-    beatCompound = not (ticksInFullBeat <= 2 or is_power2(ticksInFullBeat))
-
-    #If the beat is compound, add the compound notes (duh)
-    if beatCompound:
-        j = 1
-        noteType = sortedFactors[False].values()[-1] * 2
-        while(j < ticksInFullBeat):
-            sortedFactors[True][j] = noteType
-            noteType /= 2
-            j *= 2
-
     #check if the note length could be made up of any combination straight note(s). if it can't, it need to be compound.
-    noteCompound = beatCompound and (not is_divisible_by(ticks, sortedFactors[False].keys()))
+    noteCompound = beat.counter.supportsCompound and (not is_divisible_by(ticks, beat.counter.noteDirectory[False].keys()))
     
     #find closest note (start at largest note in ticks, down to smallest)
     note = None
-    for i in sorted(sortedFactors[noteCompound].keys(), reverse=True):
+    for i in sorted(beat.counter.noteDirectory[noteCompound].keys(), reverse=True):
         if(i <= ticks):
             note = i
             break
@@ -169,7 +141,7 @@ def makeLilyDuration(beat, ticks, tickNum):
 
     #find note again but for the rest length
     restNote = None
-    for i in sorted(sortedFactors[noteCompound].keys(), reverse=True):
+    for i in sorted(beat.counter.noteDirectory[noteCompound].keys(), reverse=True):
         if(i <= ticks):
             restNote = i
             ticks -= restNote
@@ -182,12 +154,12 @@ def makeLilyDuration(beat, ticks, tickNum):
             #ticks -= restNote / 2
     
     #Setting everything
-    finalNote = str(sortedFactors[noteCompound][note])
+    finalNote = str(beat.counter.noteDirectory[noteCompound][note])
     if(dotted):
         finalNote += "."
     finalRest = None
     if not restNote == None:
-        finalRest = str(sortedFactors[noteCompound][restNote])
+        finalRest = str(beat.counter.noteDirectory[noteCompound][restNote])
         if(restDotted):
             finalRest += "."
 
