@@ -107,73 +107,64 @@ class SevenTwelfthsProblem(BadNoteDuration):
 class ElevenTwelfthsProblem(BadNoteDuration):
     "DrumBurp cannot set notes of length 11/12 beat."
 
+def is_divisible_by(num, list):
+    for i in list:
+        if(num % i == 0):
+            return True
+    return False
 
-def _getCompoundDuration(ticksInFullBeat, ticks, tickNum):
-    if ticks * 12 == ticksInFullBeat:  # 1/12
-        dur = LilyDuration("32", isCompound=True)
-    elif ticks * 6 == ticksInFullBeat:  # 2/12
-        dur = LilyDuration("16", isCompound=True)
-    elif ticks * 4 == ticksInFullBeat:  # 3/12
-        if (tickNum * 4) % ticksInFullBeat == 0:
-            dur = LilyDuration("16")
-        else:
-            dur = LilyDuration("16.", isCompound=True)
-    elif ticks * 3 == ticksInFullBeat:  # 4/12
-        dur = LilyDuration("8", isCompound=True)
-    elif ticks * 12 == 5 * ticksInFullBeat:  # 5/12
-        dur = LilyDuration("8", "32", isCompound=True)
-    elif ticks * 2 == ticksInFullBeat:  # 6/12
-        if (tickNum * 2) % ticksInFullBeat == 0:
-            dur = LilyDuration("8")
-        else:
-            dur = LilyDuration("8.", isCompound=True)
-    elif ticks * 12 == 7 * ticksInFullBeat:  # 7/12
-        dur = LilyDuration("8.", "32", isCompound=True)
-    elif ticks * 3 == 2 * ticksInFullBeat:  # 8/12
-        dur = LilyDuration("4", isCompound=True)
-    elif ticks * 4 == 3 * ticksInFullBeat:  # 9/12
-        if (tickNum * 4) % ticksInFullBeat == 0:
-            dur = LilyDuration("8.")
-        else:
-            dur = LilyDuration("4", "32", isCompound=True)
-    elif ticks * 6 == 5 * ticksInFullBeat:  # 10/12
-        dur = LilyDuration("4", "16", isCompound=True)
-    elif ticks * 12 == 11 * ticksInFullBeat:  # 11/12
-        dur = LilyDuration("4", "16.", isCompound=True)
-    else:
-        raise LilypondProblem("Note duration not recognised")
-    return dur
-
-
-def _getStraightDuration(ticksInFullBeat, ticks):
-    if 2 * ticks == ticksInFullBeat:
-        dur = LilyDuration("8")
-    elif 4 * ticks == ticksInFullBeat:
-        dur = LilyDuration("16")
-    elif 4 * ticks == 3 * ticksInFullBeat:
-        dur = LilyDuration("8.")
-    elif 8 * ticks == ticksInFullBeat:
-        dur = LilyDuration("32")
-    elif 8 * ticks == 3 * ticksInFullBeat:
-        dur = LilyDuration("16.")
-    elif 8 * ticks == 5 * ticksInFullBeat:
-        dur = LilyDuration("8", "32")
-    elif 8 * ticks == 7 * ticksInFullBeat:
-        dur = LilyDuration("8.", "32")
-    else:
-        raise LilypondProblem("Note duration not recognised")
-    return dur
-
-
+#beat = current beat (object)
+#ticks = how many ticks until the next note/event in the beat (including the one we're on)
+#tickNum = tick we're on
 def makeLilyDuration(beat, ticks, tickNum):
     dur = None
     ticksInFullBeat = beat.ticksPerBeat
-    if ticks == ticksInFullBeat:
-        dur = LilyDuration("4")
-    elif ticksInFullBeat % 3 == 0:
-        dur = _getCompoundDuration(ticksInFullBeat, ticks, tickNum)
-    else:
-        dur = _getStraightDuration(ticksInFullBeat, ticks)
+    
+    #check if the note length could be made up of any combination straight note(s). if it can't, it need to be compound.
+    noteCompound = beat.counter.supportsCompound and (not is_divisible_by(ticks, beat.counter.noteDirectory[False].keys()))
+    
+    #find closest note (start at largest note in ticks, down to smallest)
+    note = None
+    for i in sorted(beat.counter.noteDirectory[noteCompound].keys(), reverse=True):
+        if(i <= ticks):
+            note = i
+            break
+    ticks -= note
+    #if the remaining ticks are more than/equal to the next smallest note's ticks...
+    #less than = only rest
+    #equal = only dotted
+    #more than = both
+    dotted = False
+    if(ticks > 0 and ticks >= note / 2):
+        dotted = True
+        ticks -= note / 2
+
+    #find note again but for the rest length
+    restNote = None
+    for i in sorted(beat.counter.noteDirectory[noteCompound].keys(), reverse=True):
+        if(i <= ticks):
+            restNote = i
+            ticks -= restNote
+            break
+    #same but for dotted
+    if not (restNote == None):
+        restDotted = False
+        if(ticks > 0 and ticks >= restNote / 2):
+            restDotted = True
+            #ticks -= restNote / 2
+    
+    #Setting everything
+    finalNote = str(beat.counter.noteDirectory[noteCompound][note])
+    if(dotted):
+        finalNote += "."
+    finalRest = None
+    if not restNote == None:
+        finalRest = str(beat.counter.noteDirectory[noteCompound][restNote])
+        if(restDotted):
+            finalRest += "."
+
+    dur = LilyDuration(finalNote,finalRest,noteCompound)
+
     if tickNum == 0:
         dur.isBeatStart = True
     return dur
@@ -197,14 +188,33 @@ class LilyDuration(object):
         self._compoundList.append(dur)
 
     def terminateCompound(self):
-        compLen = len(self._compoundList) + 1
-        if compLen > 6:
-            frac = "8/12"
-        elif compLen > 3:
-            frac = "4/6"
-        else:
-            frac = "2/3"
-        self.compoundStart = r"\times %s {" % frac
+        def calcComponentNotes(note):
+            def calcComponentNotesFromStr(noteName):
+                nums = []
+                nums.append(int(noteName.replace(".","")))
+                if(noteName.endswith(".")):
+                    nums.append(nums[0] * 2)
+                return nums
+            nums = []
+            nums.extend(calcComponentNotesFromStr(note.duration))
+            if not note.restTime == None:
+                nums.extend(calcComponentNotesFromStr(note.restTime))
+            return nums
+
+        noteList = []
+        noteList.extend(calcComponentNotes(self))
+        for i in self._compoundList:
+            noteList.extend(calcComponentNotes(i))
+        
+        baseNote = max(noteList)
+        tupletNoteCount = 0
+        for i in noteList:
+            tupletNoteCount += baseNote / i
+        tupletWholeNoteLength = baseNote
+        while(tupletWholeNoteLength > tupletNoteCount):
+            tupletWholeNoteLength /= 2
+
+        self.compoundStart = r"\tuplet {0}/{1} {{".format(tupletNoteCount,tupletWholeNoteLength)
 
     def setCompoundEnd(self):
         self._compoundEnd = True

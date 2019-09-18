@@ -23,8 +23,13 @@ Created on 16 Apr 2011
 
 '''
 
+from collections import OrderedDict
 from Data import DBConstants
 
+#thank some other thing I found online
+#Author: A.Polino
+def is_power2(num):
+	return num != 0 and ((num & (num - 1)) == 0)
 
 class Counter(object):
     '''A Counter represents a way of subdividing a single beat.
@@ -55,6 +60,27 @@ class Counter(object):
             if len(count) != len(counts):
                 raise ValueError("All counts for a Counter must be of the "
                                  "same length.")
+        self.noteDirectory = {
+            True: OrderedDict(),
+            False: OrderedDict()
+            }
+        #add all regular notes
+        i = 1
+        while len(self._counts) % i == 0:
+            self.noteDirectory[False][len(self._counts)/i] = i * 4
+            i *= 2
+
+        #If the counter isn't a power of two, it can contain compound notes
+        self.supportsCompound = not (len(self._counts) <= 2 or is_power2(len(self._counts)))
+
+        #If the beat is compound, add the compound notes (duh)
+        if self.supportsCompound:
+            j = 1
+            noteType = self.noteDirectory[False].values()[-1] * 2
+            while(j < len(self._counts)):
+                self.noteDirectory[True][j] = noteType
+                noteType /= 2
+                j *= 2
 
     def __iter__(self):
         return iter(self._counts)
@@ -71,20 +97,34 @@ class Counter(object):
     def matchesAlternative(self, beatStr):
         return any(beatStr == alt for alt in self._alternatives)
 
-
-_COUNTER_BEAT = Counter("")
+#1/4
+_QUARTER_COUNT = Counter("")
+#1/8
 _EIGHTH_COUNT = Counter("+", "&")
 _TRIPLET_COUNT = Counter("+a", "ea")
-_OLD_TRIPLET_COUNT = Counter("ea")
+_QUINTUPLET_COUNT = Counter("eaea")
+_SEPTUPLET_COUNT = Counter("e+ae+a")
+#1/16
 _SIXTEENTH_COUNT = Counter("e+a")
-_SIXTEENTH_COUNT_SPARSE = Counter(' + ')
-_SIXTEENTH_TRIPLETS = Counter('ea+ea')
-_SIXTEENTH_TRIPLETS_SPARSE = Counter('  +  ')
-_THIRTY_SECONDS_COUNT = Counter('.e.+.a.')
-_THIRTY_SECONDS_COUNT_SPARSE = Counter(' e + a ')
-_THIRTY_SECONDS_TRIPLET_COUNT = Counter('.e.a.+.e.a.')
-_THIRTY_SECONDS_TRIPLET_COUNT_SPARSE = Counter(' e a + e a ')
-
+_SIXTEENTH_COUNT_SPARSE = Counter(" + ")
+_SIXTEENTH_TRIPLETS_COUNT = Counter("ea+ea")
+_SIXTEENTH_TRIPLETS_COUNT_SPARSE = Counter("  +  ")
+_SIXTEENTH_QUINTUPLETS_COUNT = Counter("eaea+eaea")
+_SIXTEENTH_SEPTUPLETS_COUNT = Counter("e+ae+a+e+ae+a")
+#1/32
+_THIRTY_SECONDS_COUNT = Counter(".e.+.a.")
+_THIRTY_SECONDS_COUNT_SPARSE = Counter(" e + a ")
+_THIRTY_SECONDS_TRIPLET_COUNT = Counter(".e.a.+.e.a.")
+_THIRTY_SECONDS_TRIPLET_COUNT_SPARSE = Counter(" e a + e a ")
+_THIRTY_SECONDS_QUINTUPLETS_COUNT = Counter(".e.a.e.a.+.e.a.e.a.")
+_THIRTY_SECONDS_SEPTUPLETS_COUNT = Counter(".e.+.a.e.+.a.+.e.+.a.e.+.a.")
+#1/64
+_SIXTY_FOURTH_COUNT = Counter("'.'e'.'+'.'a'.'")
+_SIXTY_FOURTH_COUNT_SPARSE = Counter("   e   +   a   ")
+_SIXTY_FOURTH_TRIPLET_COUNT = Counter("'.'e'.'a'.'+'.'e'.'a'.'")
+_SIXTY_FOURTH_TRIPLET_COUNT_SPARSE = Counter("   e   a   +   e   a   ")
+_SIXTY_FOURTH_QUINTUPLETS_COUNT = Counter("'.'e'.'a'.'e'.'a'.'+'.'e'.'a'.'e'.'a'.'")
+_SIXTY_FOURTH_SEPTUPLETS_COUNT = Counter("'.'e'.'+'.'a'.'e'.'+'.'a'.'+'.'e'.'+'.'a'.'e'.'+'.'a'.'")
 
 class CounterRegistry(object):
     def __init__(self, defaults=True):
@@ -98,18 +138,34 @@ class CounterRegistry(object):
         self._counts = {}
 
     def restoreDefaults(self):
-        self.register('Quarter Notes', _COUNTER_BEAT)
+        #1/4
+        self.register('Quarter Notes', _QUARTER_COUNT)
+        #1/8
         self.register('8ths', _EIGHTH_COUNT)
         self.register('Triplets', _TRIPLET_COUNT)
+        self.register('Quintuplets', _QUINTUPLET_COUNT)
+        self.register('Septuplets', _SEPTUPLET_COUNT)
+        #1/16
         self.register('16ths', _SIXTEENTH_COUNT)
         self.register('Sparse 16ths', _SIXTEENTH_COUNT_SPARSE)
-        self.register('16th Triplets', _SIXTEENTH_TRIPLETS)
-        self.register('Sparse 16th Triplets', _SIXTEENTH_TRIPLETS_SPARSE)
+        self.register('16th Triplets', _SIXTEENTH_TRIPLETS_COUNT)
+        self.register('Sparse 16th Triplets', _SIXTEENTH_TRIPLETS_COUNT_SPARSE)
+        self.register('16th Quintuplets', _SIXTEENTH_QUINTUPLETS_COUNT)
+        self.register('16th Septuplets', _SIXTEENTH_SEPTUPLETS_COUNT)
+        #1/32
         self.register('32nds', _THIRTY_SECONDS_COUNT)
         self.register('Sparse 32nds', _THIRTY_SECONDS_COUNT_SPARSE)
         self.register('32nd Triplets', _THIRTY_SECONDS_TRIPLET_COUNT)
-        self.register('Sparse 32nd Triplets',
-                      _THIRTY_SECONDS_TRIPLET_COUNT_SPARSE)
+        self.register('Sparse 32nd Triplets', _THIRTY_SECONDS_TRIPLET_COUNT_SPARSE)
+        self.register('32nd Quintuplets', _THIRTY_SECONDS_QUINTUPLETS_COUNT)
+        self.register('32nd Septuplets', _THIRTY_SECONDS_SEPTUPLETS_COUNT)
+        #1/64
+        self.register('64ths', _SIXTY_FOURTH_COUNT)
+        self.register('Sparse 64ths', _SIXTY_FOURTH_COUNT_SPARSE)
+        self.register('64th Triplets', _SIXTY_FOURTH_TRIPLET_COUNT)
+        self.register('Sparse 64th Triplets', _SIXTY_FOURTH_TRIPLET_COUNT_SPARSE)
+        self.register('64th Quintuplets', _SIXTY_FOURTH_QUINTUPLETS_COUNT)
+        self.register('64th Septuplets', _SIXTY_FOURTH_SEPTUPLETS_COUNT)
 
     def register(self, name, count):
         if count in self._counts.values():
