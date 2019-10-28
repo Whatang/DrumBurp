@@ -1,3 +1,5 @@
 [bumpversion]
 current_version = 1.0.0
 
+[bumpversion:file:src/DBVersionNum.py]
+
