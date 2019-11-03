@@ -6,7 +6,8 @@ Set-Item Env:PYTHONIOENCODING UTF-8
 Invoke-WebRequest https://download.microsoft.com/download/d/2/4/d242c3fb-da5a-4542-ad66-f9661d0a8d19/vcredist_x64.exe -OutFile vcredist_x64.exe
 & vcredist_x64.exe /quiet /install
 
-Invoke-WebRequest https://netcologne.dl.sourceforge.net/project/pyqt/PyQt4/PyQt-4.11.3/PyQt4-4.11.3-gpl-Py2.7-Qt4.8.6-x64.exe -OutFile pyqt_installer.exe
+Invoke-WebRequest "https://netcologne.dl.sourceforge.net/project/pyqt/PyQt4/PyQt-4.11.3/PyQt4-4.11.3-gpl-Py2.7-Qt4.8.6-x64.exe" -OutFile pyqt_installer.exe
+dir
 & pyqt_installer.exe /S
 
 # Install NSIS installer tool
