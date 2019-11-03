@@ -6,3 +6,6 @@ Thumbs.db
 .vs
 .vscode
 *.pyo
+build/dist
+build/tmp
+build/output

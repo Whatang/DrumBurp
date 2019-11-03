@@ -1,0 +1,40 @@
+name: Build DrumBurp for Windows
+on:
+  - push
+
+jobs:
+  build:
+    name: Windows
+    runs-on: windows-2019
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Python Setup
+        uses: actions/setup-python@v1
+        with:
+          python-version: "2.7.16"
+          architecture: "x64"
+      - name: Pip modules
+        run: pip install -r build/requirements-windows.txt
+      - name: MSVC 2008
+        run: choco install vcredist2008
+      - name: NSIS
+        run: choco install nsis
+      - name: PyQt4
+        run: build/install_pyqt.ps1
+      - name: Build
+        run: build/build_windows.ps1
+      - name: Upload build
+        uses: actions/upload-artifact@master
+        with:
+          name: build-output
+          path: build/output/
+      - name: Release
+        on:
+          push:
+            tags:
+              - "*.*.*"
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/output/*.exe"
+          token: ${{ secrets.GITHUB_TOKEN }}

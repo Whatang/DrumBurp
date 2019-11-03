@@ -3,3 +3,5 @@ current_version = 1.0.0
 
 [bumpversion:file:src/DBVersionNum.py]
 
+[bumpversion:file:build\DrumBurp.nsi]
+
