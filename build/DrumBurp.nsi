@@ -7,7 +7,7 @@
 !define APP_NAME "DrumBurp"
 !define COMP_NAME "Whatang"
 !define WEB_SITE "http://www.whatang.org"
-!define VERSION "1.0.0.0"
+!define VERSION "1.1.0.0"
 !define COPYRIGHT "Mike Thomas � 2010-2019"
 !define DESCRIPTION "Application"
 !define LICENSE_TXT "COPYING.txt"
