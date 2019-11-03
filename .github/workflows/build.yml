@@ -1,14 +1,14 @@
 name: Build DrumBurp for Windows
 on:
-  - push
+  push:
+    tags:
+      - "*"
 
 jobs:
   build:
     name: Windows
     runs-on: windows-2019
     steps:
-      - name: Get Ref
-        run: echo ${{ github.ref }}
       - name: Checkout
         uses: actions/checkout@master
       - name: Python Setup
@@ -32,7 +32,6 @@ jobs:
           name: build-output
           path: build/output/
       - name: Release
-        if: github.event_name == 'push' && startsWith(github.ref , 'refs/tags/')
         uses: ncipollo/release-action@v1
         with:
           artifacts: "build/output/*.exe"
