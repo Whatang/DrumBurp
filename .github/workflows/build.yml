@@ -30,7 +30,7 @@ jobs:
           name: build-output
           path: build/output/
       - name: Release
-        if: github.event_name == 'push' && startsWith(github.ref , "/refs/tags/")
+        if: github.event_name == 'push' && startsWith(github.ref , '/refs/tags/')
         uses: ncipollo/release-action@v1
         with:
           artifacts: "build/output/*.exe"
