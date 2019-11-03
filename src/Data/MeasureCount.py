@@ -27,20 +27,48 @@ from Data.Beat import Beat
 from Data.Counter import CounterRegistry
 from Data import DBConstants
 
+
 class MeasureCount(object):
     def __init__(self):
         self.beats = []
 
-    def iterTimesMs(self, msPerBeat):
+    def _iterTimeCounter(self, valuePerBeat, swing):
         total = 0
+        swing /= 4
         for beat in self.beats:
             beatTicks = beat.ticksPerBeat
-            startTotal = total
-            for unusedCount in beat.iterTicks():
-                yield total
-                total += msPerBeat / beatTicks
-            total = startTotal + (beat.numTicks * msPerBeat) / beatTicks
+            if not swing or beatTicks % 3 == 0 or beatTicks % swing != 0:
+                startTotal = total
+                perTick = valuePerBeat / beatTicks
+                for unusedCount in beat.iterTicks():
+                    yield total
+                    total += perTick
+                total = startTotal + (beat.numTicks * valuePerBeat) / beatTicks
+            else:
+                ticksPerSwing = beatTicks / swing
+                swingCount = 0
+                isLong = True
+                valuePerLongTick = (valuePerBeat * 2) / (3 * ticksPerSwing)
+                valuePerShortTick = valuePerLongTick / 2
+                for unusedCount in beat.iterTicks():
+                    yield total
+                    if isLong:
+                        total += valuePerLongTick
+                    else:
+                        total += valuePerShortTick
+                    swingCount += 1
+                    if swingCount == ticksPerSwing:
+                        swingCount = 0
+                        isLong = not isLong
         yield total
+
+    def iterTimesMs(self, msPerBeat, swing):
+        for value in self._iterTimeCounter(msPerBeat, swing):
+            yield value
+
+    def iterMidiTicks(self, swing):
+        for value in self._iterTimeCounter(DBConstants.MIDITICKSPERBEAT, swing):
+            yield value
 
     def timeSig(self):
         lastBeat = self.beats[-1]
@@ -66,15 +94,6 @@ class MeasureCount(object):
         for beat in self.beats:
             yield tick
             tick += beat.numTicks
-
-    def iterMidiTicks(self):
-        total = 0
-        for beat in self.beats:
-            midiTicks = DBConstants.MIDITICKSPERBEAT / beat.ticksPerBeat
-            for unused in beat.iterTicks():
-                yield total
-                total += midiTicks
-        yield total
 
     def count(self):
         for beatNum, beat in enumerate(self.beats):
@@ -123,6 +142,7 @@ class MeasureCount(object):
     def numBeats(self):
         return len(self.beats)
 
+
 def counterMaker(beatLength, numTicks):
     # Create a MeasureCount from an 'old style' specification, where
     # all we are given is the number of ticks in a beat and the total number
@@ -134,6 +154,7 @@ def counterMaker(beatLength, numTicks):
     mc = MeasureCount()
     mc.addSimpleBeats(count, numTicks / beatLength)
     return mc
+
 
 def makeSimpleCount(counter, numBeats):
     mc = MeasureCount()

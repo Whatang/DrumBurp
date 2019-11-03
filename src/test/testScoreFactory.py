@@ -20,10 +20,12 @@
 import unittest
 from Data.ScoreFactory import ScoreFactory
 
+
 class TestScoreFactory(unittest.TestCase):
     def testMakeEmptyDefault(self):
         score = ScoreFactory.makeEmptyScore(16, None, None)
         self.assertEqual(score.numMeasures(), 16)
+
 
 if __name__ == "__main__":
     unittest.main()

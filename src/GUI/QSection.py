@@ -27,10 +27,12 @@ from PyQt4.QtGui import QGraphicsTextItem, QTextCursor
 from PyQt4.QtCore import Qt
 from GUI.DBCommands import SetSectionTitleCommand
 
+
 class QSection(QGraphicsTextItem):
-    def __init__(self, title, qScore = None, parent = None):
-        super(QSection, self).__init__(parent = parent, scene = qScore)
-        self.setDefaultTextColor(qScore.parent().colourScheme.text.borderColour)
+    def __init__(self, title, qScore=None, parent=None):
+        super(QSection, self).__init__(parent=parent, scene=qScore)
+        self.setDefaultTextColor(
+            qScore.parent().colourScheme.text.borderColour)
         font = qScore.displayProperties.sectionFont
         if font is None:
             font = self.font()
@@ -47,12 +49,13 @@ class QSection(QGraphicsTextItem):
     def setIndex(self, index):
         self._index = index
 
-    _keyMoves = {Qt.Key_Left:QTextCursor.Left,
-                 Qt.Key_Right:QTextCursor.Right,
-                 Qt.Key_Home:QTextCursor.Start,
-                 Qt.Key_End:QTextCursor.End,
-                 Qt.Key_Up:QTextCursor.NoMove,
-                 Qt.Key_Down:QTextCursor.NoMove}
+    _keyMoves = {Qt.Key_Left: QTextCursor.Left,
+                 Qt.Key_Right: QTextCursor.Right,
+                 Qt.Key_Home: QTextCursor.Start,
+                 Qt.Key_End: QTextCursor.End,
+                 Qt.Key_Up: QTextCursor.NoMove,
+                 Qt.Key_Down: QTextCursor.NoMove}
+
     def keyPressEvent(self, event):
         if event.key() in (Qt.Key_Return, Qt.Key_Enter):
             event.ignore()

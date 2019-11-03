@@ -26,8 +26,10 @@ from Data import Counter
 
 # pylint: disable-msg=R0904
 
+
 class TestCounter(unittest.TestCase):
     counter = Counter.Counter("^bcd", "^fgh", "^jkl")
+
     def testLength(self):
         self.assertEqual(len(self.counter), 4)
 
@@ -52,6 +54,7 @@ class TestCounter(unittest.TestCase):
         self.assert_(self.counter.matchesAlternative("^jkl"))
         self.assertFalse(self.counter.matchesAlternative("^xyz"))
 
+
 class TestCounterRegistryInit(unittest.TestCase):
     def testRegisterIterAndClear(self):
         reg = Counter.CounterRegistry(False)
@@ -68,6 +71,7 @@ class TestCounterRegistryInit(unittest.TestCase):
         reg.clear()
         counts = list(reg)
         self.assertEqual(counts, [])
+
 
 class TestCounterRegistryLookups(unittest.TestCase):
     def setUp(self):
@@ -114,6 +118,7 @@ class TestCounterRegistryLookups(unittest.TestCase):
         self.assertEqual(self.reg.findMaster("^fgh"), self.counter3)
         self.assertRaises(KeyError, self.reg.findMaster, "^jkl")
 
+
 class TestDefaultRegistry(unittest.TestCase):
     reg = Counter.CounterRegistry()
 
@@ -159,6 +164,7 @@ class TestDefaultRegistry(unittest.TestCase):
         self.assertEqual(names, ["32nd Triplets", "Sparse 32nd Triplets"])
         self.assertEqual(len(self.reg.findMaster("^.e.a.+.e.a.")), 12)
         self.assertEqual(len(self.reg.findMaster("^ e a + e a ")), 12)
+
 
 if __name__ == "__main__":
     unittest.main()

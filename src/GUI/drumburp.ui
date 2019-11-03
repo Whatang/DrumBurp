@@ -43,7 +43,7 @@
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <property name="iconSize">
        <size>
@@ -772,7 +772,7 @@ p, li { white-space: pre-wrap; }
           <layout class="QVBoxLayout" name="verticalLayout_6">
            <item>
             <layout class="QGridLayout" name="gridLayout_2">
-             <item row="0" column="3">
+             <item row="0" column="4">
               <widget class="QPushButton" name="textExportButton">
                <property name="toolTip">
                 <string>Export to file</string>
@@ -792,7 +792,26 @@ p, li { white-space: pre-wrap; }
                </property>
               </widget>
              </item>
-             <item row="0" column="1">
+             <item row="0" column="3">
+              <widget class="QCheckBox" name="emptyLineAfterSectionCheck">
+               <property name="toolTip">
+                <string>Include a blank line after each section title</string>
+               </property>
+               <property name="statusTip">
+                <string>Include a blank line after each section title</string>
+               </property>
+               <property name="whatsThis">
+                <string>Include a blank line after each section title</string>
+               </property>
+               <property name="text">
+                <string>Empty line after section title</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
               <widget class="QCheckBox" name="emptyLineBeforeSectionCheck">
                <property name="toolTip">
                 <string>Include a blank line before each section title</string>
@@ -830,22 +849,22 @@ p, li { white-space: pre-wrap; }
                </property>
               </widget>
              </item>
-             <item row="0" column="2">
-              <widget class="QCheckBox" name="emptyLineAfterSectionCheck">
+             <item row="0" column="1">
+              <widget class="QCheckBox" name="sectionBracketsCheck">
                <property name="toolTip">
-                <string>Include a blank line after each section title</string>
+                <string>Add square brackets around each section title</string>
                </property>
                <property name="statusTip">
-                <string>Include a blank line after each section title</string>
+                <string>Add square brackets around each section title</string>
                </property>
                <property name="whatsThis">
-                <string>Include a blank line after each section title</string>
+                <string>Add square brackets around each section title</string>
                </property>
                <property name="text">
-                <string>Empty line after section title</string>
+                <string>Surround section titles with brackets</string>
                </property>
-               <property name="checked">
-                <bool>true</bool>
+               <property name="tristate">
+                <bool>false</bool>
                </property>
               </widget>
              </item>
@@ -896,7 +915,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>1268</width>
-     <height>31</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -2206,10 +2225,40 @@ p, li { white-space: pre-wrap; }
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>FitWindowButton</tabstop>
+  <tabstop>FitPageButton</tabstop>
+  <tabstop>PrintScoreButton</tabstop>
+  <tabstop>PrintPdfButton</tabstop>
+  <tabstop>sectionNavigator</tabstop>
+  <tabstop>paperBox</tabstop>
+  <tabstop>widthSpinBox</tabstop>
+  <tabstop>lineSpaceSlider</tabstop>
+  <tabstop>defaultMeasureButton</tabstop>
   <tabstop>fontsButton</tabstop>
-  <tabstop>noteSizeSpinBox</tabstop>
-  <tabstop>sectionFontSizeSpinbox</tabstop>
-  <tabstop>metadataFontSizeSpinbox</tabstop>
+  <tabstop>lilyPagesBox</tabstop>
+  <tabstop>lilypondSize</tabstop>
+  <tabstop>lilyFillButton</tabstop>
+  <tabstop>lilyPdfButton</tabstop>
+  <tabstop>lilyPsButton</tabstop>
+  <tabstop>lilyPngButton</tabstop>
+  <tabstop>lilypondPathButton</tabstop>
+  <tabstop>exportLilypondButton</tabstop>
+  <tabstop>lilyPreview</tabstop>
+  <tabstop>firstLilyPage</tabstop>
+  <tabstop>prevLilyPage</tabstop>
+  <tabstop>refreshLilypond</tabstop>
+  <tabstop>nextLilyPage</tabstop>
+  <tabstop>lastLilyPage</tabstop>
+  <tabstop>underlineCheck</tabstop>
+  <tabstop>sectionBracketsCheck</tabstop>
+  <tabstop>emptyLineBeforeSectionCheck</tabstop>
+  <tabstop>emptyLineAfterSectionCheck</tabstop>
+  <tabstop>textExportButton</tabstop>
+  <tabstop>textExportPreview</tabstop>
+  <tabstop>noteFontComboBox</tabstop>
+  <tabstop>sectionFontCombo</tabstop>
+  <tabstop>metadataFontCombo</tabstop>
  </tabstops>
  <resources>
   <include location="DrumBurp.qrc"/>

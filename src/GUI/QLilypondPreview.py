@@ -32,13 +32,14 @@ import glob
 from Notation.lilypond import LilypondScore, LilypondProblem
 from GUI.LilypondExporter import LilypondExporter
 
+
 class QLilypondPreview(QGraphicsScene):
     buildCompleted = pyqtSignal()
 
     def __init__(self, parent):
-        super(QLilypondPreview, self).__init__(parent = parent)
+        super(QLilypondPreview, self).__init__(parent=parent)
         self.mainWindow = parent
-        self._tempdir = tempfile.mkdtemp(prefix = "DrumBurpLilypondPreviewTemp_")
+        self._tempdir = tempfile.mkdtemp(prefix="DrumBurpLilypondPreviewTemp_")
         self._exporter = None
         self.buildCompleted.connect(self._built)
         self._pageIndex = None

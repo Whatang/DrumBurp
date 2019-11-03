@@ -30,6 +30,7 @@ from GUI.DBCommands import (ChangeMeasureCountCommand,
 from Data.MeasureCount import makeSimpleCount
 from GUI.DBFSMEvents import EditMeasureProperties
 
+
 class QCountContextMenu(QMenuIgnoreCancelClick):
     def __init__(self, qScore, np, qmeasure):
         super(QCountContextMenu, self).__init__(qScore)
@@ -48,13 +49,13 @@ class QCountContextMenu(QMenuIgnoreCancelClick):
             self.addSeparator()
             contractAction = self.addAction("Contract Count",
                                             self._contractCount)
-            contractAction.setEnabled(self._measure.getSmallestSimpleCount() != None)
+            contractAction.setEnabled(
+                self._measure.getSmallestSimpleCount() != None)
         self.addAction("Contract All Counts", self._contractAllCounts)
-
 
     def _addCountActions(self, menu, countFunction):
         for name, counter in self._qScore.displayProperties.counterRegistry:
-            menu.addAction(name, lambda beat = counter: countFunction(beat))
+            menu.addAction(name, lambda beat=counter: countFunction(beat))
 
     @QMenuIgnoreCancelClick.menuSelection
     def _setMeasureCount(self, newCounter):
@@ -81,4 +82,3 @@ class QCountContextMenu(QMenuIgnoreCancelClick):
                                          self._props.counterRegistry,
                                          self._np)
         self._qScore.sendFsmEvent(fsmEvent)
-

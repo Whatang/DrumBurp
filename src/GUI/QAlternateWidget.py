@@ -25,8 +25,9 @@ Created on Feb 25, 2012
 from GUI.ui_alternateRepeatWidget import Ui_AlternateWidget
 from PyQt4.QtGui import QWidget
 
+
 class QAlternateWidget(QWidget, Ui_AlternateWidget):
-    def __init__(self, startVal, endVal, isRange, parent = None):
+    def __init__(self, startVal, endVal, isRange, parent=None):
         super(QAlternateWidget, self).__init__(parent)
         self.setupUi(self)
         self.startBox.setValue(startVal)

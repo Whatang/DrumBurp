@@ -25,9 +25,10 @@ Created on 14 Dec 2010
 from Data.DBErrors import BadNoteSpecification
 import copy
 
+
 class NotePosition(object):
-    def __init__(self, staffIndex = None, measureIndex = None,
-                 noteTime = None, drumIndex = None):
+    def __init__(self, staffIndex=None, measureIndex=None,
+                 noteTime=None, drumIndex=None):
         if [noteTime, drumIndex].count(None) == 1:
             raise BadNoteSpecification(staffIndex, measureIndex,
                                        noteTime, drumIndex)

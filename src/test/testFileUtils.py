@@ -27,6 +27,7 @@ from Data import fileUtils
 
 # pylint: disable-msg=R0904
 
+
 class TestDbFileIterator(unittest.TestCase):
     def testIterate(self):
         mockfile = """firstline

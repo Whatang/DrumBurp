@@ -27,8 +27,9 @@ from PyQt4.QtCore import pyqtSignature
 from GUI.ui_dbInfo import Ui_InfoDialog
 from GUI.DBLicense import DBLicenseDialog
 
+
 class DBInfoDialog(QDialog, Ui_InfoDialog):
-    def __init__(self, version, parent = None):
+    def __init__(self, version, parent=None):
         super(DBInfoDialog, self).__init__(parent)
         self.setupUi(self)
         self.setWindowTitle("DrumBurp v%s Information" % version)

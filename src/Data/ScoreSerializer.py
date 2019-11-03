@@ -24,13 +24,16 @@ Created on Jun 20, 2015
 
 import itertools
 from cStringIO import StringIO
-from Data.fileStructures import dbfsv0, dbfsv1
-from Data.DBErrors import DBVersionError
+import codecs
+from Data.fileStructures import dbfsv0, dbfsv1, dbfsv2
+from Data.DBErrors import DBVersionError, NoContent
 from Data import DBConstants
 import Data.fileUtils as fileUtils
 
 _FS_MAP = {DBConstants.DBFF_0: dbfsv0.ScoreStructureV0,
-           DBConstants.DBFF_1: dbfsv1.ScoreStructureV1}
+           DBConstants.DBFF_1: dbfsv1.ScoreStructureV1,
+           DBConstants.DBFF_2: dbfsv2.ScoreStructureV2}
+
 
 class ScoreSerializer(object):
     @classmethod
@@ -43,7 +46,10 @@ class ScoreSerializer(object):
     def read(handle):
         # Check the file format version
         handle, handleCopy = itertools.tee(handle)
-        firstline = handleCopy.next()
+        try:
+            firstline = handleCopy.next()
+        except StopIteration:
+            raise NoContent()
         del handleCopy
         scoreIterator = fileUtils.dbFileIterator(handle)
         if firstline.startswith(DBConstants.DB_FILE_FORMAT_STR):
@@ -64,19 +70,20 @@ class ScoreSerializer(object):
         return score
 
     @staticmethod
-    def write(score, handle, version = DBConstants.CURRENT_FILE_FORMAT):
+    def write(score, handle, version=DBConstants.CURRENT_FILE_FORMAT):
         scoreBuffer = StringIO()
-        indenter = fileUtils.Indenter(scoreBuffer)
+        scoreWriter = codecs.getwriter("utf-8")(scoreBuffer)
+        indenter = fileUtils.Indenter(scoreWriter)
         indenter(DBConstants.DB_FILE_FORMAT_STR, version)
         fileStructure = _FS_MAP.get(version,
                                     _FS_MAP[DBConstants.CURRENT_FILE_FORMAT])()
         fileStructure.write(score, indenter)
-        handle.write(scoreBuffer.getvalue())
+        handle.write(scoreBuffer.getvalue().decode("utf-8"))
 
     @classmethod
     def saveScore(cls, score, filename,
-                  version = DBConstants.CURRENT_FILE_FORMAT,
-                  compressed = True):
+                  version=DBConstants.CURRENT_FILE_FORMAT,
+                  compressed=True):
         with fileUtils.DataWriter(filename, compressed) as writer:
             score.fileFormat = version
             cls.write(score, writer, version)

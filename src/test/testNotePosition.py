@@ -29,25 +29,24 @@ from Data.DBErrors import BadNoteSpecification
 # pylint: disable-msg=R0904
 
 
-
 class TestNotePosition(unittest.TestCase):
     def testBadNoteSpecification(self):
         self.assertRaises(BadNoteSpecification, NotePosition,
-                          staffIndex = 1, measureIndex = 2, noteTime = 3)
+                          staffIndex=1, measureIndex=2, noteTime=3)
         self.assertRaises(BadNoteSpecification, NotePosition,
-                          staffIndex = 1, measureIndex = 2, drumIndex = 4)
+                          staffIndex=1, measureIndex=2, drumIndex=4)
         self.assertRaises(BadNoteSpecification, NotePosition,
-                          measureIndex = 1, drumIndex = 3)
+                          measureIndex=1, drumIndex=3)
         self.assertRaises(BadNoteSpecification, NotePosition,
-                          measureIndex = 1, noteTime = 2)
+                          measureIndex=1, noteTime=2)
         self.assertRaises(BadNoteSpecification, NotePosition,
-                          staffIndex = 1, drumIndex = 3)
+                          staffIndex=1, drumIndex=3)
         self.assertRaises(BadNoteSpecification, NotePosition,
-                          staffIndex = 1, noteTime = 2)
+                          staffIndex=1, noteTime=2)
         self.assertRaises(BadNoteSpecification, NotePosition,
-                          drumIndex = 3)
+                          drumIndex=3)
         self.assertRaises(BadNoteSpecification, NotePosition,
-                          noteTime = 2)
+                          noteTime=2)
 
     def testInitAll(self):
         np = NotePosition(1, 2, 3, 4)
@@ -57,22 +56,22 @@ class TestNotePosition(unittest.TestCase):
         self.assertEqual(np.drumIndex, 4)
 
     def testInitAllByName(self):
-        np = NotePosition(staffIndex = 1, measureIndex = 2,
-                          noteTime = 3, drumIndex = 4)
+        np = NotePosition(staffIndex=1, measureIndex=2,
+                          noteTime=3, drumIndex=4)
         self.assertEqual(np.staffIndex, 1)
         self.assertEqual(np.measureIndex, 2)
         self.assertEqual(np.noteTime, 3)
         self.assertEqual(np.drumIndex, 4)
 
     def testOnlyNote(self):
-        np = NotePosition(noteTime = 2, drumIndex = 3)
+        np = NotePosition(noteTime=2, drumIndex=3)
         self.assertEqual(np.staffIndex, None)
         self.assertEqual(np.measureIndex, None)
         self.assertEqual(np.noteTime, 2)
         self.assertEqual(np.drumIndex, 3)
 
     def testMeasureAndNote(self):
-        np = NotePosition(measureIndex = 1, noteTime = 2, drumIndex = 3)
+        np = NotePosition(measureIndex=1, noteTime=2, drumIndex=3)
         self.assertEqual(np.staffIndex, None)
         self.assertEqual(np.measureIndex, 1)
         self.assertEqual(np.noteTime, 2)
@@ -86,14 +85,14 @@ class TestNotePosition(unittest.TestCase):
         self.assertEqual(np.drumIndex, None)
 
     def testOnlyMeasure(self):
-        np = NotePosition(measureIndex = 1)
+        np = NotePosition(measureIndex=1)
         self.assertEqual(np.staffIndex, None)
         self.assertEqual(np.measureIndex, 1)
         self.assertEqual(np.noteTime, None)
         self.assertEqual(np.drumIndex, None)
 
     def testStaffAndNote(self):
-        np = NotePosition(staffIndex = 1, noteTime = 2, drumIndex = 3)
+        np = NotePosition(staffIndex=1, noteTime=2, drumIndex=3)
         self.assertEqual(np.staffIndex, 1)
         self.assertEqual(np.measureIndex, None)
         self.assertEqual(np.noteTime, 2)
@@ -174,9 +173,6 @@ class TestNotePosition(unittest.TestCase):
         np2 = NotePosition(2, 1, 3, 4)
         self.assert_(np1 < np2)
         self.assertFalse(np2 <= np1)
-
-
-
 
 
 if __name__ == "__main__":

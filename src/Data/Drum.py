@@ -27,16 +27,17 @@ import copy
 from Data import DBConstants
 import Data.DefaultKits as DefaultKits
 
+
 class HeadData(object):
     def __init__(self,  # IGNORE:too-many-arguments
-                 midiNote = DefaultKits.DEFAULT_NOTE,
-                 midiVolume = DefaultKits.DEFAULT_VOLUME,
-                 effect = "normal",
-                 notationHead = "default",
-                 notationLine = 0,
-                 notationEffect = "none",
-                 stemDirection = DefaultKits.STEM_UP,
-                 shortcut = ""):
+                 midiNote=DefaultKits.DEFAULT_NOTE,
+                 midiVolume=DefaultKits.DEFAULT_VOLUME,
+                 effect="normal",
+                 notationHead="default",
+                 notationLine=0,
+                 notationEffect="none",
+                 stemDirection=DefaultKits.STEM_UP,
+                 shortcut=""):
         self.midiNote = midiNote
         self.midiVolume = midiVolume
         self.effect = effect
@@ -46,8 +47,9 @@ class HeadData(object):
         self.stemDirection = stemDirection
         self.shortcut = shortcut
 
+
 class Drum(object):
-    def __init__(self, name, abbr, head, locked = False):
+    def __init__(self, name, abbr, head, locked=False):
         self.name = name
         self.abbr = abbr
         self._head = head
@@ -65,9 +67,9 @@ class Drum(object):
         notationHead = "default"
         notationLine = 0
         stemDir = DefaultKits.STEM_UP
-        headData = HeadData(midiNote, notationHead = notationHead,
-                            notationLine = notationLine,
-                            stemDirection = stemDir)
+        headData = HeadData(midiNote, notationHead=notationHead,
+                            notationLine=notationLine,
+                            stemDirection=stemDir)
         drum.addNoteHead(drum.head, headData)
         guessEffect(drum, drum.head)
         drum.checkShortcuts()
@@ -117,7 +119,7 @@ class Drum(object):
         if self._head == oldHead:
             self._head = head
 
-    def addNoteHead(self, head, headData = None):
+    def addNoteHead(self, head, headData=None):
         if head not in self._noteHeads:
             self._noteHeads.append(head)
         if head in self._headData:
@@ -177,17 +179,19 @@ class Drum(object):
             shortcuts.append((unicode(shortcut), head))
         return shortcuts
 
-_DEFAULTEFFECT = {"x":"normal",
-                  "X":"accent",
-                  "o":"normal",
-                  "O":"accent",
-                  "g":"ghost",
-                  "f":"flam",
-                  "d":"drag",
-                  "+":"choke",
-                  "#":"choke",
-                  "b":"normal"}
+
+_DEFAULTEFFECT = {"x": "normal",
+                  "X": "accent",
+                  "o": "normal",
+                  "O": "accent",
+                  "g": "ghost",
+                  "f": "flam",
+                  "d": "drag",
+                  "+": "choke",
+                  "#": "choke",
+                  "b": "normal"}
+
+
 def guessEffect(drum, head):
     assert drum.isAllowedHead(head)
     drum.headData(head).effect = _DEFAULTEFFECT.get(head, "normal")
-

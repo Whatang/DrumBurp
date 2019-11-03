@@ -30,8 +30,9 @@ from Data import DefaultKits, DrumKitFactory, DrumKitSerializer
 
 _IS_USER_KIT = QtCore.Qt.UserRole
 
+
 class QDefaultKitManager(Ui_DefaulKitManager, QtGui.QDialog):
-    def __init__(self, currentKit, parent = None):
+    def __init__(self, currentKit, parent=None):
         super(QDefaultKitManager, self).__init__(parent)
         self.setupUi(self)
         self._currentKit = currentKit
@@ -68,7 +69,6 @@ class QDefaultKitManager(Ui_DefaulKitManager, QtGui.QDialog):
             self.overwriteButton.setEnabled(False)
             self.deleteButton.setEnabled(False)
 
-
     @QtCore.pyqtSignature("")
     def on_deleteButton_clicked(self):
         item = self.defaultKitList.currentItem()
@@ -94,7 +94,7 @@ class QDefaultKitManager(Ui_DefaulKitManager, QtGui.QDialog):
         name, ok = QtGui.QInputDialog.getText(self, "Kit name",
                                               "Enter a name for the "
                                               "new default kit",
-                                              text = "New kit")
+                                              text="New kit")
         if not ok:
             return
         if self._settings.contains(name):
@@ -146,6 +146,7 @@ def main():
     app.exec_()
     if dialog.result():
         print dialog.getKit()
+
 
 if __name__ == "__main__":
     main()

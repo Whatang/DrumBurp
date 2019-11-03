@@ -30,6 +30,7 @@ from Data.NotePosition import NotePosition
 
 # pylint:disable=too-many-lines
 
+
 class TestMeasureControl(unittest.TestCase):
     def setUp(self):
         self.score = Score()
@@ -181,11 +182,13 @@ class TestMeasureControl(unittest.TestCase):
         self.assertEqual(len(self.score.getMeasureByIndex(0)), 16)
 
     def testInsertMeasure_BadIndex(self):
-        self.assertRaises(BadTimeError, self.score.insertMeasureByIndex, 16, -1)
+        self.assertRaises(
+            BadTimeError, self.score.insertMeasureByIndex, 16, -1)
         self.score.insertMeasureByIndex(16)
         self.score.insertMeasureByIndex(16)
         self.score.insertMeasureByIndex(16)
-        self.assertRaises(BadTimeError, self.score.insertMeasureByIndex, 16, -1)
+        self.assertRaises(
+            BadTimeError, self.score.insertMeasureByIndex, 16, -1)
         self.assertRaises(BadTimeError, self.score.insertMeasureByIndex, 16, 4)
 
     def testInsertMeasureByPosition(self):
@@ -218,6 +221,7 @@ class TestMeasureControl(unittest.TestCase):
         self.assertRaises(BadTimeError, self.score.insertMeasureByPosition,
                           16, NotePosition(0, 4))
 
+
 class TestNoteControl(unittest.TestCase):
     def setUp(self):
         self.score = Score()
@@ -225,7 +229,6 @@ class TestNoteControl(unittest.TestCase):
         for dummy in range(0, 12):
             self.score.insertMeasureByIndex(16)
         self.score.formatScore(80)
-
 
     def testGetMeasureByPosition(self):
         self.assertEqual(self.score.getMeasureByPosition(NotePosition(0, 0)),
@@ -360,6 +363,7 @@ class TestNoteControl(unittest.TestCase):
         self.score.toggleNote(NotePosition(0, 0, 0, 0))
         self.assertEqual(measure.getNote(np), EMPTY_NOTE)
 
+
 class TestFormatScore(unittest.TestCase):
     def setUp(self):
         self.score = Score()
@@ -420,7 +424,7 @@ class TestFormatScore(unittest.TestCase):
         self.score.insertMeasureByIndex(80)
         for dummy in range(0, 12):
             self.score.insertMeasureByIndex(16)
-        self.score.formatScore(80, ignoreErrors = True)
+        self.score.formatScore(80, ignoreErrors=True)
         self.assertEqual(self.score.numStaffs(), 7)
 
     def testFormatScoreWithOverSizeBar_DontIgnoreErrors(self):
@@ -430,7 +434,7 @@ class TestFormatScore(unittest.TestCase):
         for dummy in range(0, 12):
             self.score.insertMeasureByIndex(16)
         self.assertRaises(OverSizeMeasure, self.score.formatScore, 80,
-                          ignoreErrors = False)
+                          ignoreErrors=False)
 
     def testFormatScore_FewerStaffsAfterDelete(self):
         for dummy in range(0, 9):
@@ -475,14 +479,22 @@ class TestFormatScore(unittest.TestCase):
         for dummy in range(0, 8):
             self.score.insertMeasureByIndex(16)
         self.score.formatScore(40)
-        self.assertEqual(self.score.measurePositionToIndex(NotePosition(0, 0)), 0)
-        self.assertEqual(self.score.measurePositionToIndex(NotePosition(0, 1)), 1)
-        self.assertEqual(self.score.measurePositionToIndex(NotePosition(1, 0)), 2)
-        self.assertEqual(self.score.measurePositionToIndex(NotePosition(1, 1)), 3)
-        self.assertEqual(self.score.measurePositionToIndex(NotePosition(2, 0)), 4)
-        self.assertEqual(self.score.measurePositionToIndex(NotePosition(2, 1)), 5)
-        self.assertEqual(self.score.measurePositionToIndex(NotePosition(3, 0)), 6)
-        self.assertEqual(self.score.measurePositionToIndex(NotePosition(3, 1)), 7)
+        self.assertEqual(
+            self.score.measurePositionToIndex(NotePosition(0, 0)), 0)
+        self.assertEqual(
+            self.score.measurePositionToIndex(NotePosition(0, 1)), 1)
+        self.assertEqual(
+            self.score.measurePositionToIndex(NotePosition(1, 0)), 2)
+        self.assertEqual(
+            self.score.measurePositionToIndex(NotePosition(1, 1)), 3)
+        self.assertEqual(
+            self.score.measurePositionToIndex(NotePosition(2, 0)), 4)
+        self.assertEqual(
+            self.score.measurePositionToIndex(NotePosition(2, 1)), 5)
+        self.assertEqual(
+            self.score.measurePositionToIndex(NotePosition(3, 0)), 6)
+        self.assertEqual(
+            self.score.measurePositionToIndex(NotePosition(3, 1)), 7)
         self.assertRaises(BadTimeError,
                           self.score.measurePositionToIndex, NotePosition(4, 4))
 
@@ -506,6 +518,7 @@ class TestFormatScore(unittest.TestCase):
                          [self.score.measureIndexToPosition(i)
                           for i in xrange(7, 0, -1)])
 
+
 class TestCopyPaste(unittest.TestCase):
     def setUp(self):
         self.score = Score()
@@ -517,12 +530,14 @@ class TestCopyPaste(unittest.TestCase):
     def testCopyPasteByPosition(self):
         copied = self.score.copyMeasure(NotePosition(0, 0))
         self.score.pasteMeasure(NotePosition(0, 2), copied)
-        self.assertEqual(len(self.score.getMeasureByPosition(NotePosition(0, 2))), 8)
+        self.assertEqual(
+            len(self.score.getMeasureByPosition(NotePosition(0, 2))), 8)
 
     def testCopyPasteByIndex(self):
         copied = self.score.copyMeasure(NotePosition(0, 0))
         self.score.pasteMeasureByIndex(2, copied)
-        self.assertEqual(len(self.score.getMeasureByPosition(NotePosition(0, 2))), 8)
+        self.assertEqual(
+            len(self.score.getMeasureByPosition(NotePosition(0, 2))), 8)
 
 
 class TestIteration(unittest.TestCase):
@@ -532,7 +547,7 @@ class TestIteration(unittest.TestCase):
         for index in range(0, 26):
             self.score.insertMeasureByIndex(16)
             measure = self.score.getMeasureByIndex(index)
-            measure.addNote(NotePosition(noteTime = 0, drumIndex = 0),
+            measure.addNote(NotePosition(noteTime=0, drumIndex=0),
                             chr(ord("a") + index))
         self.score.formatScore(80)
 
@@ -641,7 +656,7 @@ class TestSections(unittest.TestCase):
         for index in range(0, 26):
             self.score.insertMeasureByIndex(16)
             measure = self.score.getMeasureByIndex(index)
-            measure.addNote(NotePosition(noteTime = 0, drumIndex = 0),
+            measure.addNote(NotePosition(noteTime=0, drumIndex=0),
                             chr(ord("a") + index))
         self.score.formatScore(80)
 
@@ -786,6 +801,7 @@ class TestSections(unittest.TestCase):
         self.score.deleteSection(NotePosition(6, 0))
         self.assertEqual(self.score.numSections(), 3)
 
+
 class TestRelativePositions(unittest.TestCase):
     def setUp(self):
         self.score = Score()
@@ -793,7 +809,7 @@ class TestRelativePositions(unittest.TestCase):
         for index in range(0, 26):
             self.score.insertMeasureByIndex(16)
             measure = self.score.getMeasureByIndex(index)
-            measure.addNote(NotePosition(noteTime = 0, drumIndex = 0),
+            measure.addNote(NotePosition(noteTime=0, drumIndex=0),
                             chr(ord("a") + index))
         self.score.formatScore(80)
 
@@ -853,6 +869,7 @@ class TestRelativePositions(unittest.TestCase):
                           NotePosition(6, 2))
         self.assertRaises(BadTimeError, self.score.nextMeasure,
                           NotePosition(8, 3))
+
 
 class TestVisibleLines(unittest.TestCase):
     def setUp(self):
@@ -1024,6 +1041,7 @@ class TestVisibleLines(unittest.TestCase):
                           self.score.drumKit[3],
                           self.score.drumKit[4]])
 
+
 class TestCallBack(unittest.TestCase):
     def setUp(self):
         self.score = Score()
@@ -1032,6 +1050,7 @@ class TestCallBack(unittest.TestCase):
             self.score.insertMeasureByIndex(16)
         self.score.formatScore(80)
         self.calls = []
+
         def myCallBack(position):
             self.calls.append((position.staffIndex,
                                position.measureIndex,
@@ -1078,10 +1097,10 @@ class TestCallBack(unittest.TestCase):
 
     def testClearCallBack(self):
         self.score.clearCallBack()
-        self.score.addNote(NotePosition(staffIndex = 0,
-                                        measureIndex = 0,
-                                        noteTime = 0,
-                                        drumIndex = 0), "x")
+        self.score.addNote(NotePosition(staffIndex=0,
+                                        measureIndex=0,
+                                        noteTime=0,
+                                        drumIndex=0), "x")
         self.assertEqual(len(self.calls), 0)
 
     def testTurnOnOff(self):
@@ -1097,6 +1116,7 @@ class TestCallBack(unittest.TestCase):
         self.score.toggleNote(np, "x")
         self.assertEqual(len(self.calls), 2)
 
+
 class TestHash(unittest.TestCase):
     def setUp(self):
         self.score = Score()
@@ -1108,6 +1128,7 @@ class TestHash(unittest.TestCase):
         hashVal = self.score.hashScore()
         self.assertEqual(hashVal.encode("hex"),
                          "95b319c82f934d9abfce950b58a7c3bd")
+
 
 if __name__ == "__main__":
     unittest.main()

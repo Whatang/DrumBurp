@@ -26,6 +26,7 @@ Created on 12 Dec 2010
 # from Data.DefaultKits import STEM_DOWN, STEM_UP
 from Data.DBErrors import DuplicateDrumError, NoSuchDrumError
 
+
 class DrumKit(object):
     def __init__(self):
         self._drums = []
@@ -45,7 +46,7 @@ class DrumKit(object):
             raise DuplicateDrumError(drum.name, drum.abbr)
         self._drums.append(drum)
 
-    def deleteDrum(self, name = None, index = None):
+    def deleteDrum(self, name=None, index=None):
         assert not(index is None and name is None)
         assert not(index is not None and name is not None)
         if name is not None:
@@ -67,5 +68,3 @@ class DrumKit(object):
 
     def getDefaultHead(self, index):
         return self[index].head
-
-

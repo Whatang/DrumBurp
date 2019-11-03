@@ -24,6 +24,7 @@ Created on 5 Dec 2010
 '''
 from PyQt4 import QtGui, QtCore
 
+
 class SmoothScroller(object):
     NUM_STEPS = 100
 
@@ -36,7 +37,7 @@ class SmoothScroller(object):
         self._yEnd = None
         self._mutex = QtCore.QMutex()
 
-    def scrollTo(self, xEnd, yEnd, timeInMs = 250):
+    def scrollTo(self, xEnd, yEnd, timeInMs=250):
         if not timeInMs:
             self.view.horizontalScrollBar().setValue(xEnd)
             self.view.verticalScrollBar().setValue(yEnd)
@@ -45,7 +46,7 @@ class SmoothScroller(object):
         self._yStart = self.view.verticalScrollBar().value()
         self._xEnd = xEnd
         self._yEnd = yEnd
-        self._timeline = QtCore.QTimeLine(duration = timeInMs)
+        self._timeline = QtCore.QTimeLine(duration=timeInMs)
         self._timeline.setFrameRange(0, self.NUM_STEPS)
         self._timeline.frameChanged.connect(self._frame)
         self._timeline.finished.connect(self._finished)
@@ -61,8 +62,9 @@ class SmoothScroller(object):
         del self._timeline
         self._timeline = None
 
+
 class ScoreView(QtGui.QGraphicsView):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         super(ScoreView, self).__init__(parent)
         self._props = None
         self._scroller = SmoothScroller(self)
@@ -151,18 +153,18 @@ class ScoreView(QtGui.QGraphicsView):
         section = self.scene().getQSection(sectionIndex)
         self.showItemAtTop(section)
 
-    def setTopLeft(self, left, top, timeInMs = 250):
+    def setTopLeft(self, left, top, timeInMs=250):
         self._scroller.scrollTo(left, top, timeInMs)
 
     @QtCore.pyqtSlot(QtGui.QGraphicsItem)
-    def showItemAtTop(self, item, timeInMs = 250, margins = 20):
+    def showItemAtTop(self, item, timeInMs=250, margins=20):
         itemRect = item.sceneBoundingRect()
         left = max(0, itemRect.right() + margins - self.viewport().width())
         top = max(0, itemRect.top() - margins)
         self.setTopLeft(left, top, timeInMs)
 
     @QtCore.pyqtSlot(QtGui.QGraphicsItem, QtGui.QGraphicsItem)
-    def showTwoItems(self, primary, secondary, timeInMs = 250, margins = 20):
+    def showTwoItems(self, primary, secondary, timeInMs=250, margins=20):
         primRect = primary.sceneBoundingRect()
         secRect = secondary.sceneBoundingRect()
         top = min(primRect.top(), secRect.top())

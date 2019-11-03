@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'C:\Users\mike_000\workspace\DrumBurp\src\GUI\dbStartup.ui'
 #
-# Created: Sun Feb 22 13:48:02 2015
-#      by: PyQt4 UI code generator 4.10.2
+# Created: Wed Jun 01 21:41:09 2016
+#      by: PyQt4 UI code generator 4.11
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -48,5 +48,5 @@ class Ui_dbStartup(object):
 
     def retranslateUi(self, dbStartup):
         dbStartup.setWindowTitle(_translate("dbStartup", "Welcome to DrumBurp", None))
-        self.label.setText(_translate("dbStartup", "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600; font-style:italic;\">DrumBurp Copyright (C) 2011-15 Michael Thomas</span></p><p><br/></p><p>This program comes with ABSOLUTELY NO WARRANTY; for details see the <span style=\" font-weight:600;\">Help&gt;About DrumBurp</span> menu item. This is free software, and you are welcome to redistribute it under certain conditions; see the licensing information in <span style=\" font-weight:600;\">Help&gt;About DrumBurp</span> for details.</p><p><br/></p><p>Support and further licensing information is available at <a href=\"http://www.whatang.org\"><span style=\" text-decoration: underline; color:#0000ff;\">www.whatang.org</span></a></p></body></html>", None))
+        self.label.setText(_translate("dbStartup", "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600; font-style:italic;\">DrumBurp Copyright (C) 2011-16 Michael Thomas</span></p><p><br/></p><p>This program comes with ABSOLUTELY NO WARRANTY; for details see the <span style=\" font-weight:600;\">Help&gt;About DrumBurp</span> menu item. This is free software, and you are welcome to redistribute it under certain conditions; see the licensing information in <span style=\" font-weight:600;\">Help&gt;About DrumBurp</span> for details.</p><p><br/></p><p>Support and further licensing information is available at <a href=\"http://www.whatang.org\"><span style=\" text-decoration: underline; color:#0000ff;\">www.whatang.org</span></a></p></body></html>", None))
 

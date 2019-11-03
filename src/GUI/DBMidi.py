@@ -75,6 +75,7 @@ try:
 
 except ImportError:
     _HAS_PYGAME = False
+
     def getDefaultId():
         return -1
 
@@ -87,6 +88,7 @@ except ImportError:
     def cleanup():
         if _PLAYER is not None:
             _PLAYER.cleanup()
+
 
 class MidiDevice(object):
     def __init__(self, deviceId):
@@ -103,7 +105,10 @@ class MidiDevice(object):
     def isOpen(self):
         return getDeviceInfo(self.deviceId)[3]
 
+
 _OUTPUT_DEVICES = []
+
+
 def refreshOutputDevices():
     while _OUTPUT_DEVICES:
         _OUTPUT_DEVICES.pop()
@@ -112,12 +117,14 @@ def refreshOutputDevices():
         if device.isOutput():
             _OUTPUT_DEVICES.append(device)
 
+
 def iterMidiDevices():
     return iter(_OUTPUT_DEVICES)
 
 
 from PyQt4.QtCore import QTimer, pyqtSignal, QObject
 from Data.DBConstants import MIDITICKSPERBEAT
+
 
 class _midi(QObject):
     def __init__(self):
@@ -171,7 +178,7 @@ class _midi(QObject):
         headData = self.kit[drumIndex].headData(head)
         self.playHeadData(headData)
 
-    def playHeadData(self, headData, when = None):
+    def playHeadData(self, headData, when=None):
         if not self._midiOut:
             return
         if when is None:
@@ -188,7 +195,7 @@ class _midi(QObject):
         elif headData.effect == "drag":
             self._midiOut.write([[[_PERCUSSION_NOTE_ON,
                                    headData.midiNote,
-                                   headData.midiVolume ],
+                                   headData.midiVolume],
                                   when]])
             self._midiOut.write([[[_PERCUSSION_NOTE_ON,
                                    headData.midiNote,
@@ -197,7 +204,7 @@ class _midi(QObject):
         elif headData.effect == "choke":
             self._midiOut.write([[[_PERCUSSION_NOTE_ON,
                                    headData.midiNote,
-                                   headData.midiVolume ],
+                                   headData.midiVolume],
                                   when]])
             self._midiOut.write([[[_PERCUSSION_CHOKE,
                                    _CHOKE_MSG,
@@ -218,6 +225,7 @@ class _midi(QObject):
             return
         baseTime = 0
         bpm = score.scoreData.bpm
+        swing = score.scoreData.swing
         msPerBeat = 60000.0 / bpm
         self._measureDetails = []
         lastMeasureIndex = None
@@ -231,7 +239,7 @@ class _midi(QObject):
                     bpm = 120
                 lastMeasureIndex = measureIndex
                 msPerBeat = 60000.0 / bpm
-                times = list(measure.counter.iterTimesMs(msPerBeat))
+                times = list(measure.counter.iterTimesMs(msPerBeat, swing))
                 baseTime += times[-1]
                 self._measureDetails.append((measureIndex, baseTime))
             self._measureDetails.reverse()
@@ -250,7 +258,7 @@ class _midi(QObject):
         self.timer.start(baseTime + 500)
         self._measureTimer.start(0)
 
-    def loopBars(self, measureIterator, score, loopCount = 100):
+    def loopBars(self, measureIterator, score, loopCount=100):
         measureList = [(measure, measureIndex) for
                        (measure, measureIndex, unused)
                        in measureIterator] * loopCount
@@ -300,29 +308,38 @@ _PLAYER = _midi()
 SONGEND_SIGNAL = _PLAYER.timer.timeout
 HIGHLIGHT_SIGNAL = _PLAYER.highlightMeasure
 
+
 def setKit(drumKit):
     _PLAYER.kit = drumKit
+
 
 def playNote(drumIndex, head):
     _PLAYER.playNote(drumIndex, head)
 
+
 def playHeadData(headData):
     _PLAYER.playHeadData(headData)
+
 
 def playScore(score):
     _PLAYER.playScore(score)
 
-def loopBars(measureIterator, score, loopCount = 100):
+
+def loopBars(measureIterator, score, loopCount=100):
     _PLAYER.loopBars(measureIterator, score, loopCount)
+
 
 def shutUp():
     _PLAYER.shutUp()
 
+
 def setMute(onOff):
     _PLAYER.setMute(onOff)
 
+
 def isMuted():
     return _PLAYER.isMuted()
+
 
 def encodeSevenBitDelta(delta, midiData):
     values = []
@@ -341,12 +358,14 @@ def encodeSevenBitDelta(delta, midiData):
     values.reverse()
     midiData.extend(values)
 
+
 def _makeMidiStart(score):
     signature = "Created with DrumBurp"
     midiData = []
     midiData.extend([0, 0xff, 0x1, len(signature)])
     midiData.extend([ord(ch) for ch in signature])
     return midiData
+
 
 def _writeMidiNotes(midiObjects, baseTime):
     lastNoteTime = 0
@@ -365,10 +384,12 @@ def _writeMidiNotes(midiObjects, baseTime):
     midiData.extend([0xFF, 0x2F, 0])
     return midiData
 
+
 def _finishMidiData(midiData):
     numBytes = len(midiData)
     lenBytes = [((numBytes >> i) & 0xff) for i in xrange(24, -8, -8)]
     return lenBytes + midiData
+
 
 class MidiObject(object):
     def __init__(self, eventTime):
@@ -380,6 +401,7 @@ class MidiObject(object):
     def write(self):
         raise NotImplementedError()
 
+
 class MidiTempoChange(MidiObject):
     def __init__(self, eventTime, bpm):
         super(MidiTempoChange, self).__init__(eventTime)
@@ -390,6 +412,7 @@ class MidiTempoChange(MidiObject):
         return [0xff, 0x51, 03, (msPerBeat >> 16) & 0xff,
                 (msPerBeat >> 8) & 0xff, msPerBeat & 0xff]
 
+
 class MidiNote(MidiObject):
     def __init__(self, noteTime, headData):
         super(MidiNote, self).__init__(noteTime)
@@ -399,18 +422,21 @@ class MidiNote(MidiObject):
         return [_PERCUSSION_NOTE_ON, self.headData.midiNote,
                 self.headData.midiVolume]
 
+
 class MidiChoke(MidiObject):
     def write(self):
         return [_PERCUSSION_CHOKE, _CHOKE_MSG, _CHOKE_VELOCITY]
+
 
 def _calculateMidiTimes(measureIterator, score):
     notes = []
     baseTime = 1
     lastBpm = None
     lastMeasureIndex = None
+    swing = score.scoreData.swing
     for measure, measureIndex in measureIterator:
         measureNotes = []
-        times = list(measure.counter.iterMidiTicks())
+        times = list(measure.counter.iterMidiTicks(swing))
         if lastMeasureIndex is None or measureIndex != lastMeasureIndex + 1:
             bpm = score.bpmAtMeasureByIndex(measureIndex)
         elif measure.newBpm > 0 and bpm != measure.newBpm:
@@ -426,20 +452,25 @@ def _calculateMidiTimes(measureIterator, score):
             headData = drumData.headData(head)
             if headData is not None:
                 noteTime = baseTime + times[notePos.noteTime]
-                divisionTicks = times[notePos.noteTime + 1] - times[notePos.noteTime]
+                divisionTicks = times[notePos.noteTime +
+                                      1] - times[notePos.noteTime]
                 if headData.effect == "flam":
                     headCopy = copy.copy(headData)
                     headCopy.midiVolume = headData.midiVolume / FLAM_VOLUME_CONSTANT
-                    measureNotes.append(MidiNote(noteTime - (MIDITICKSPERBEAT / FLAM_TIME_CONSTANT), headCopy))
+                    measureNotes.append(
+                        MidiNote(noteTime - (MIDITICKSPERBEAT / FLAM_TIME_CONSTANT), headCopy))
                 elif headData.effect == "drag":
-                    measureNotes.append(MidiNote(noteTime + divisionTicks / 2, headData))
+                    measureNotes.append(
+                        MidiNote(noteTime + divisionTicks / 2, headData))
                 elif headData.effect == "choke":
-                    measureNotes.append(MidiChoke(noteTime + divisionTicks / 2))
+                    measureNotes.append(
+                        MidiChoke(noteTime + divisionTicks / 2))
                 measureNotes.append(MidiNote(noteTime, headData))
         baseTime += times[-1]
         measureNotes.sort()
         notes.extend(measureNotes)
     return notes, baseTime
+
 
 def exportMidi(measureIterator, score, handle):
     handle.write("MThd\x00\x00\x00\x06\x00\x00\x00\x01")
@@ -453,16 +484,19 @@ def exportMidi(measureIterator, score, handle):
     for byte in midiData:
         handle.write("%c" % byte)
 
+
 def selectMidiDevice(dev):
     _PLAYER.cleanup()
     _PLAYER.setPort(dev.deviceId)
     return _PLAYER.isGood()
+
 
 def currentDevice():
     for dev in _OUTPUT_DEVICES:
         if dev.deviceId == _PLAYER.port():
             return dev
     return None
+
 
 def _initialize():
     global HAS_MIDI, _MIDI_INITIALIZED
@@ -478,15 +512,18 @@ def _initialize():
     atexit.register(cleanup)
     HAS_MIDI = _HAS_PYGAME and _PLAYER.isGood()
 
+
 class MidiInit(QThread):
     def run(self):  # IGNORE:no-self-use
         _initialize()
+
 
 def main():
     _initialize()
     refreshOutputDevices()
     for device in iterMidiDevices():
         print device.name
+
 
 if __name__ == "__main__":
     main()

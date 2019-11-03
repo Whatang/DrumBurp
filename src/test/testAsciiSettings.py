@@ -25,16 +25,19 @@ import unittest
 import Data.ASCIISettings as ASCIISettings
 # pylint: disable-msg=R0904
 
+
 class TestAsciiSettings(unittest.TestCase):
     def testNames(self):
         settings = ASCIISettings.ASCIISettings()
         names = settings.checkNames()
         self.assertEqual(names,
-                         ['metadata', 'kitKey', 'omitEmpty', 'underline',
+                         ['metadata', 'kitKey', 'omitEmpty',
+                          'sectionBrackets', 'underline',
                           'printCounts', 'emptyLineBeforeSection',
                           'emptyLineAfterSection'])
+        false_settings = set(['sectionBrackets'])
         for name in names:
-            self.assertEqual(getattr(settings, name), True,
+            self.assertEqual(getattr(settings, name), name not in false_settings,
                              "Default value for AsciiSettings.'%s' is wrong"
                              % name)
 

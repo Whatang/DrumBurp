@@ -54,6 +54,7 @@ class TestFullBeat(unittest.TestCase):
         count = list(self.beat.count(2))
         self.assertEqual(count, ["2", "e", "+", "a"])
 
+
 class TestPartialBeat(unittest.TestCase):
     beat = Beat.Beat(Counter.Counter("e+a"), 2)
 
@@ -80,6 +81,7 @@ class TestPartialBeat(unittest.TestCase):
     def testCount(self):
         count = list(self.beat.count(2))
         self.assertEqual(count, ["2", "e"])
+
 
 if __name__ == "__main__":
     unittest.main()

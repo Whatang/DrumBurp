@@ -26,6 +26,7 @@ Created on 16 Apr 2011
 import itertools
 from Data import DBConstants
 
+
 class Beat(object):
     '''A Beat is a measured instance of a Counter.
 
@@ -33,7 +34,8 @@ class Beat(object):
     reflect partial beats at the end of a Measure. A sequence of Beats makes
     up a MeasureCount.
     '''
-    def __init__(self, counter, numTicks = None):
+
+    def __init__(self, counter, numTicks=None):
         self.counter = counter
         if numTicks is None:
             numTicks = self.ticksPerBeat

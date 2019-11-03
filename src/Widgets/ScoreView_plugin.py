@@ -24,10 +24,11 @@ Created on 5 Dec 2010
 from PyQt4.QtDesigner import QPyDesignerCustomWidgetPlugin
 from .ScoreView import ScoreView
 
-#pylint: disable-msg=R0923
+# pylint: disable-msg=R0923
+
 
 class ScoreViewPlugin(QPyDesignerCustomWidgetPlugin):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         super(ScoreViewPlugin, self).__init__(parent)
         self.initialized = False
 

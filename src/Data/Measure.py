@@ -31,6 +31,7 @@ from Data import MeasureCount
 from Data import Counter
 import copy
 
+
 class _NoteDictionary(object):
     def __init__(self):
         self._notes = defaultdict(defaultdict)
@@ -48,16 +49,16 @@ class _NoteDictionary(object):
 
     def iterNotesAtTime(self, noteTime):
         for index, head in self._notes[noteTime].iteritems():
-            yield (NotePosition(noteTime = noteTime,
-                                drumIndex = index),
-                       head)
+            yield (NotePosition(noteTime=noteTime,
+                                drumIndex=index),
+                   head)
 
     def iterNotesAndHeads(self):
         for noteTime in self.iterTimes():
             drumDict = self._notes[noteTime]
             for drumIndex, drumHead in drumDict.iteritems():
-                yield (NotePosition(noteTime = noteTime,
-                                   drumIndex = drumIndex),
+                yield (NotePosition(noteTime=noteTime,
+                                    drumIndex=drumIndex),
                        drumHead)
 
     def __contains__(self, noteTime):
@@ -105,6 +106,7 @@ class _NoteDictionary(object):
         self._noteTimes = []
         self._notesOnLine.clear()
 
+
 class MeasureInfo(object):
     def __init__(self):
         self.isRepeatEnd = False
@@ -115,7 +117,7 @@ class MeasureInfo(object):
 
 
 class Measure(object):
-    def __init__(self, width = 0):
+    def __init__(self, width=0):
         self._width = width
         self._notes = _NoteDictionary()
         self._callBack = None
@@ -348,7 +350,7 @@ class Measure(object):
         else:
             return list(self.counter.count())
 
-    def pasteMeasure(self, other, copyMeasureDecorations = False):
+    def pasteMeasure(self, other, copyMeasureDecorations=False):
         oldMeasure = self.copyMeasure()
         self.clear()
         if other.counter is None:
@@ -370,7 +372,6 @@ class Measure(object):
             self.showAbove = other.showAbove
             self.showBelow = other.showBelow
         return oldMeasure
-
 
     def changeKit(self, newKit, changes):
         transposed = defaultdict(lambda: defaultdict(dict))

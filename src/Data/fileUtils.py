@@ -27,9 +27,10 @@ import codecs
 import binascii
 import Data.DBErrors as DBErrors
 
+
 class dbFileIterator(object):
     class _Section(object):
-        def __init__(self, iterator, startLine, endLine, convertNone = None, readLines = None):
+        def __init__(self, iterator, startLine, endLine, convertNone=None, readLines=None):
             self._iterator = iterator
             self._startLine = startLine
             self._endLine = endLine
@@ -86,7 +87,7 @@ class dbFileIterator(object):
     def next(self):
         return self._handle.next()
 
-    def section(self, startLine, endLine, convertNone = None, readLines = None):
+    def section(self, startLine, endLine, convertNone=None, readLines=None):
         return self._Section(self, startLine, endLine, convertNone, readLines)
 
 
@@ -110,7 +111,7 @@ class Indenter(object):
                 self.indenter(self.end)
             return False
 
-    def __init__(self, handle, indent = "  "):
+    def __init__(self, handle, indent="  "):
         self._indent = indent
         self._handle = handle
         self._level = 0
@@ -139,6 +140,7 @@ class Indenter(object):
     def section(self, sectionStart, sectionEnd):
         return self.Section(self, sectionStart, sectionEnd)
 
+
 class DataReader(object):
     def __init__(self, filename):
         self.filename = filename
@@ -162,6 +164,7 @@ class DataReader(object):
         if self._gzHandle is not None:
             self._gzHandle.close()
 
+
 class DataWriter(object):
     def __init__(self, filename, compressed):
         self.filename = filename
@@ -183,6 +186,7 @@ class DataWriter(object):
         if self._gzHandle is not None:
             self._gzHandle.close()
 
+
 class _IDMaker(object):
     _next_id = 0
 
@@ -192,8 +196,9 @@ class _IDMaker(object):
         cls._next_id += 1
         return nextId
 
+
 class AbstractFileStructureElement(object):
-    def __init__(self, attributeName = None, singleton = True, getter = None):
+    def __init__(self, attributeName=None, singleton=True, getter=None):
         self.attributeName = attributeName
         self.singleton = singleton
         self.getter = getter
@@ -208,9 +213,10 @@ class AbstractFileStructureElement(object):
     def write_all(self, src, indenter):
         raise NotImplementedError()
 
+
 class Field(AbstractFileStructureElement):
-    def __init__(self, title, attributeName = None, singleton = True,
-                 getter = None):
+    def __init__(self, title, attributeName=None, singleton=True,
+                 getter=None):
         super(Field, self).__init__(attributeName, singleton, getter)
         self.title = title.upper()
 
@@ -233,19 +239,22 @@ class Field(AbstractFileStructureElement):
     def format(self, outdata):
         return "%s %s" % (self.title, outdata)
 
+
 def conditionalWriteField(field, predicate):
     getter = field.getValue
+
     def getterWrapper(source):
         if predicate(source):
             return getter(source)
     field.getValue = getterWrapper
     return field
 
+
 class SimpleReadField(Field):
-    def __init__(self, title, attributeName = None, singleton = True,
-                 getter = None):
+    def __init__(self, title, attributeName=None, singleton=True,
+                 getter=None):
         super(SimpleReadField, self).__init__(title, attributeName, singleton,
-                                               getter)
+                                              getter)
 
     def read(self, target, data):
         data = self._processData(data)
@@ -267,9 +276,10 @@ class SimpleReadField(Field):
     def _processData(self, data):
         raise NotImplementedError()
 
+
 class SimpleWriteField(Field):
-    def __init__(self, title, attributeName = None, singleton = True,
-                 getter = None):
+    def __init__(self, title, attributeName=None, singleton=True,
+                 getter=None):
         super(SimpleWriteField, self).__init__(title, attributeName, singleton,
                                                getter)
 
@@ -281,26 +291,30 @@ class SimpleWriteField(Field):
     def _toString(self, value):
         raise NotImplementedError()
 
+
 class SimpleValueField(SimpleReadField, SimpleWriteField):  # IGNORE:abstract-method
     pass
 
+
 class NoReadField(Field):  # IGNORE:abstract-method
-    def __init__(self, title, attributeName = None, singleton = True,
-                 getter = None):
+    def __init__(self, title, attributeName=None, singleton=True,
+                 getter=None):
         super(NoReadField, self).__init__(title, attributeName, singleton,
                                           getter)
 
     def read(self, target, data):
         pass
 
+
 class NoWriteField(Field):  # IGNORE:abstract-method
-    def __init__(self, title, attributeName = None, singleton = True,
-                 getter = None):
+    def __init__(self, title, attributeName=None, singleton=True,
+                 getter=None):
         super(NoWriteField, self).__init__(title, attributeName, singleton,
-                                           getter = lambda _:None)
+                                           getter=lambda _: None)
 
     def write(self, src):
         pass
+
 
 class StringField(SimpleValueField):
     def _processData(self, data):
@@ -308,6 +322,7 @@ class StringField(SimpleValueField):
 
     def _toString(self, value):
         return unicode(value)
+
 
 class Base64StringField(SimpleValueField):
     def _processData(self, data):
@@ -322,6 +337,7 @@ class Base64StringField(SimpleValueField):
     def _toString(self, value):
         return value.encode('utf8').encode('base64').strip()
 
+
 class IntegerField(SimpleValueField):
     def _processData(self, data):
         try:
@@ -333,6 +349,7 @@ class IntegerField(SimpleValueField):
     def _toString(self, value):
         return "%d" % value
 
+
 class NonNegativeIntegerField(IntegerField):
     def _processData(self, data):
         data = IntegerField._processData(self, data)
@@ -340,12 +357,14 @@ class NonNegativeIntegerField(IntegerField):
             raise DBErrors.InvalidNonNegativeInteger()
         return data
 
+
 class PositiveIntegerField(IntegerField):
     def _processData(self, data):
         data = IntegerField._processData(self, data)
         if data <= 0:
             raise DBErrors.InvalidPositiveInteger()
         return data
+
 
 class BooleanField(SimpleValueField):
     def _processData(self, data):
@@ -358,6 +377,7 @@ class BooleanField(SimpleValueField):
         else:
             return "False"
 
+
 class YesNoField(BooleanField):
     def _toString(self, value):
         if value:
@@ -365,14 +385,16 @@ class YesNoField(BooleanField):
         else:
             return "NO"
 
+
 class CallbackField(Field):
-    def __init__(self, title, readCallback, writeCallback, attributeName = None,
-                 singleton = None):
+    def __init__(self, title, readCallback, writeCallback, attributeName=None,
+                 singleton=None):
         super(CallbackField, self).__init__(title,
-                                            attributeName = attributeName,
-                                            singleton = singleton)
+                                            attributeName=attributeName,
+                                            singleton=singleton)
         self.readCallback = readCallback
         self.writeCallback = writeCallback
+
 
 class FileStructureMetaClass(type):
     def __init__(cls, name, bases, dct):
@@ -410,9 +432,9 @@ class FileStructure(AbstractFileStructureElement):
     _structures = []
     _orderedData = []
 
-    def __init__(self, attributeName = None, singleton = True,
-                 startTag = None, endTag = None, getter = None,
-                 setter = None):
+    def __init__(self, attributeName=None, singleton=True,
+                 startTag=None, endTag=None, getter=None,
+                 setter=None):
         super(FileStructure, self).__init__(attributeName, singleton, getter)
         self.setter = setter
         if startTag is not None:
@@ -438,7 +460,7 @@ class FileStructure(AbstractFileStructureElement):
                     setattr(instance, self.attributeName, [])
                 getattr(instance, self.attributeName).append(subInstance)
 
-    def read(self, fileIterator, startData = None, debug = False):
+    def read(self, fileIterator, startData=None, debug=False):
         instance = None
         if self.autoMake:
             instance = self.makeObject(None)

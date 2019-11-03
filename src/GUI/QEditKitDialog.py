@@ -42,8 +42,27 @@ _KIT_FILTER = "DrumBurp kits (*%s)" % _KIT_FILE_EXT
 _BAD_ABBR_COLOR = QColor("red")
 _GOOD_ABBR_COLOR = QColor("black")
 
+
+def noSounds(method):
+    def wrapper(self, *args, **kwargs):
+        blocked = self.kitTable.blockSignals(True)
+        self.noteHeadTable.blockSignals(True)
+        self.midiNoteCombo.blockSignals(True)
+        for effect in self.effectsGroup.children():
+            effect.blockSignals(True)
+        try:
+            return method(self, *args, **kwargs)
+        finally:
+            self.kitTable.blockSignals(blocked)
+            self.noteHeadTable.blockSignals(blocked)
+            self.midiNoteCombo.blockSignals(blocked)
+            for effect in self.effectsGroup.children():
+                effect.blockSignals(blocked)
+    return wrapper
+
+
 class QEditKitDialog(QDialog, Ui_editKitDialog):
-    def __init__(self, kit, emptyDrums = None, parent = None, directory = None):
+    def __init__(self, kit, emptyDrums=None, parent=None, directory=None):
         super(QEditKitDialog, self).__init__(parent)
         self.setupUi(self)
         self.muteButton.setChecked(DBMidi.isMuted())
@@ -95,22 +114,21 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.noteView.centerOn(*self._notationScene.getCenter())
         self._populate()
 
-
     def _initialize(self):
-        self.oldDrum.addItem("None", userData = QVariant(-1))
+        self.oldDrum.addItem("None", userData=QVariant(-1))
         for drumIndex, drum in enumerate(reversed(self._initialKit)):
             drum = copy.deepcopy(drum)
             self._currentKit.append(drum)
-            self.oldDrum.addItem(drum.name, userData = QVariant(drumIndex))
+            self.oldDrum.addItem(drum.name, userData=QVariant(drumIndex))
             self._oldLines[drum] = drumIndex
 
+    @noSounds
     def _populate(self):
-        self.kitTable.blockSignals(True)
         self.kitTable.clear()
         for drum in self._currentKit:
             self.kitTable.addItem(drum.name)
-        self.kitTable.blockSignals(False)
         self.kitTable.setCurrentRow(0)
+        self._setDrumInfo()
         self._checkAbbrs()
 
     @property
@@ -128,15 +146,20 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.upButton.setEnabled(index > 0)
         self.downButton.setEnabled(index < len(self._currentKit) - 1)
 
-    def _drumChanged(self):
+    def _setDrumInfo(self):
         drum = self._currentDrum
         self.drumName.setText(drum.name)
         self.drumAbbr.setText(drum.abbr)
         self.oldDrum.setCurrentIndex(self._oldLines[drum] + 1)
         self.lockedCheckBox.setChecked(drum.locked)
         self._populateHeadTable()
+        self._setNoteHeadInfo()
         self._checkDrumButtons()
 
+    def _drumChanged(self):
+        self._setDrumInfo()
+        if not self.muteButton.isChecked():
+            DBMidi.playHeadData(self._currentHeadData)
 
     def _addDrum(self):
         drum = Drum.makeSimple("New drum", "XX", "o")
@@ -163,7 +186,8 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self._checkDrumButtons()
         self._checkAbbrs()
 
-    def _moveDrumUp(self):
+    @noSounds
+    def _moveDrumUp(self, unusedClickInfo):
         idx = self._currentDrumIndex
         druma, drumb = self._currentKit[idx - 1], self._currentKit[idx]
         self._currentKit[idx - 1], self._currentKit[idx] = drumb, druma
@@ -171,7 +195,8 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.kitTable.item(idx - 1).setText(self._currentKit[idx - 1].name)
         self.kitTable.setCurrentRow(idx - 1)
 
-    def _moveDrumDown(self):
+    @noSounds
+    def _moveDrumDown(self, unusedClickInfo):
         idx = self._currentDrumIndex
         druma, drumb = self._currentKit[idx], self._currentKit[idx + 1]
         self._currentKit[idx], self._currentKit[idx + 1] = drumb, druma
@@ -220,10 +245,10 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         if directory is None:
             home = QDesktopServices.HomeLocation
             directory = unicode(QDesktopServices.storageLocation(home))
-        fname = QFileDialog.getOpenFileName(parent = self,
-                                            caption = "Load DrumBurp kit",
-                                            directory = directory,
-                                            filter = _KIT_FILTER)
+        fname = QFileDialog.getOpenFileName(parent=self,
+                                            caption="Load DrumBurp kit",
+                                            directory=directory,
+                                            filter=_KIT_FILTER)
         if len(fname) == 0:
             return
         newKit = DrumKitSerializer.DrumKitSerializer.loadKit(fname)
@@ -249,16 +274,17 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         if directory is None:
             home = QDesktopServices.HomeLocation
             directory = unicode(QDesktopServices.storageLocation(home))
-        fname = QFileDialog.getSaveFileName(parent = self,
-                                            caption = "Save DrumBurp kit",
-                                            directory = directory,
-                                            filter = _KIT_FILTER)
+        fname = QFileDialog.getSaveFileName(parent=self,
+                                            caption="Save DrumBurp kit",
+                                            directory=directory,
+                                            filter=_KIT_FILTER)
         if len(fname) == 0:
             return
         fname = unicode(fname)
         newKit, unused = self.getNewKit()
         DrumKitSerializer.DrumKitSerializer.saveKit(newKit, fname)
-        QMessageBox.information(self, "Kit saved", "Successfully saved drumkit")
+        QMessageBox.information(
+            self, "Kit saved", "Successfully saved drumkit")
 
     def _drumNameEdited(self):
         self._currentDrum.name = unicode(self.drumName.text())
@@ -291,15 +317,14 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.saveButton.setEnabled(ok)
         return ok
 
-
     def _oldDrumChanged(self):
         drum = self._currentDrum
         newOldDrumIndex = self.oldDrum.currentIndex()
         newOldDrumIndex = self.oldDrum.itemData(newOldDrumIndex).toInt()[0]
         self._oldLines[drum] = newOldDrumIndex
 
+    @noSounds
     def _populateHeadTable(self):
-        self.noteHeadTable.blockSignals(True)
         drum = self._currentDrum
         self.noteHeadTable.clear()
         for head in drum:
@@ -308,9 +333,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
                 headString += " (Default)"
             self.noteHeadTable.addItem(headString)
         self.noteHeadTable.setCurrentRow(-1)
-        self.noteHeadTable.blockSignals(False)
         self.noteHeadTable.setCurrentRow(0)
-
 
     @property
     def _currentHead(self):
@@ -338,17 +361,21 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self.noteHeadTable.item(row).setText(headString)
         self._populateCurrentNoteHead()
 
-    def _noteHeadChanged(self):
+    def _setNoteHeadInfo(self):
         self._populateCurrentNoteHead()
         headData = self._currentHeadData
         self.volumeSlider.setValue(headData.midiVolume)
         midiIndex = self.midiNoteCombo.findData(QVariant(headData.midiNote))
         self.midiNoteCombo.setCurrentIndex(midiIndex)
+        self._setMidiNote()
         self._setEffect(headData.effect)
-        if not self.muteButton.isChecked():
-            DBMidi.playHeadData(self._currentHeadData)
         self._checkHeadButtons()
         self._setNotation()
+
+    def _noteHeadChanged(self):
+        self._setNoteHeadInfo()
+        if not self.muteButton.isChecked():
+            DBMidi.playHeadData(self._currentHeadData)
 
     def _shortcutEdited(self):
         shortcut = str(self.shortcutCombo.currentText())
@@ -422,30 +449,35 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
             self.headDownButton.setEnabled(index <
                                            len(self._currentDrum) - 1)
 
-    def _moveNoteHeadUp(self):
+    @noSounds
+    def _moveNoteHeadUp(self, unusedClickInfo):
         index = self.noteHeadTable.currentRow()
         self._currentDrum.moveHeadUp(self._currentHead)
         self._populateHeadTable()
         self.noteHeadTable.setCurrentRow(index - 1)
+        self._checkHeadButtons()
 
-    def _moveNoteHeadDown(self):
+    @noSounds
+    def _moveNoteHeadDown(self, unusedClickInfo):
         index = self.noteHeadTable.currentRow()
         self._currentDrum.moveHeadDown(self._currentHead)
         self._populateHeadTable()
         self.noteHeadTable.setCurrentRow(index + 1)
+        self._checkHeadButtons()
 
-    def _setDefaultHead(self):
-        self.noteHeadTable.blockSignals(True)
+    @noSounds
+    def _setDefaultHead(self, unusedClickInfo):
         self._currentDrum.setDefaultHead(self._currentHead)
         self._populateHeadTable()
-        self.noteHeadTable.blockSignals(False)
         self.noteHeadTable.setCurrentRow(0)
 
-
-    def _midiNoteChanged(self):
+    def _setMidiNote(self):
         midiNote = self.midiNoteCombo.currentIndex()
         midiNote = self.midiNoteCombo.itemData(midiNote).toInt()[0]
         self._currentHeadData.midiNote = midiNote
+
+    def _midiNoteChanged(self):
+        self._setMidiNote()
         if not self.muteButton.isChecked():
             DBMidi.playHeadData(self._currentHeadData)
 
@@ -453,12 +485,12 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self._currentHeadData.midiVolume = self.volumeSlider.value()
 
     def _setEffect(self, effect):
-        effectMap = {"normal":self.normalEffect,
-                     "accent":self.accentEffect,
-                     "ghost":self.ghostEffect,
-                     "flam":self.flamEffect,
-                     "choke":self.chokeEffect,
-                     "drag":self.dragEffect}
+        effectMap = {"normal": self.normalEffect,
+                     "accent": self.accentEffect,
+                     "ghost": self.ghostEffect,
+                     "flam": self.flamEffect,
+                     "choke": self.chokeEffect,
+                     "drag": self.dragEffect}
         effect = effectMap[effect]
         effect.setChecked(True)
 
@@ -477,14 +509,13 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
 
     def _populateMidiCombo(self):
         for midiNote, midiName in _MIDIDATA:
-            self.midiNoteCombo.addItem(midiName, userData = QVariant(midiNote))
+            self.midiNoteCombo.addItem(midiName, userData=QVariant(midiNote))
 
     def _checkNotationButtons(self):
         headData = self._currentHeadData
         line = headData.notationLine
         self.noteUpButton.setDisabled(line >= 9)
         self.noteDownButton.setDisabled(line <= -7)
-
 
     def _setNotation(self):
         headData = self._currentHeadData
@@ -498,11 +529,13 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         self._checkNotationButtons()
 
     def _notationEffectChanged(self):
-        self._currentHeadData.notationEffect = str(self.effectBox.currentText())
+        self._currentHeadData.notationEffect = str(
+            self.effectBox.currentText())
         self._notationScene.setHeadData(self._currentHeadData)
 
     def _notationHeadChanged(self):
-        self._currentHeadData.notationHead = str(self.noteHeadBox.currentText())
+        self._currentHeadData.notationHead = str(
+            self.noteHeadBox.currentText())
         self._notationScene.setHeadData(self._currentHeadData)
 
     def _stemDirectionChanged(self):
@@ -531,8 +564,8 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
                      "all notes currently in the score. Are you "
                      "sure you want to proceed?")
             question = QMessageBox.question(self.parent(), qtext,
-                                            buttons = (QMessageBox.Yes
-                                                       | QMessageBox.No))
+                                            buttons=(QMessageBox.Yes
+                                                     | QMessageBox.No))
             if question == QMessageBox.No:
                 return
         super(QEditKitDialog, self).accept()
@@ -548,6 +581,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
                 oldLines.append(len(self._initialKit)
                                 - self._oldLines[drum] - 1)
         return newKit, oldLines
+
 
 _MIDIDATA = [(35, "Acoustic Bass Drum"),
              (36, "Bass Drum 1"),
@@ -598,7 +632,6 @@ _MIDIDATA = [(35, "Acoustic Bass Drum"),
              (81, "Open Triangle")]
 
 
-
 def main():
     from PyQt4.QtGui import QApplication
     import sys
@@ -635,7 +668,7 @@ def main():
         indent = '%s_HEADS = {' % kitvar
         lines = []
         volumeSymbols = {GHOST_VOLUME: "GHOST_VOLUME",
-                         ACCENT_VOLUME:"ACCENT_VOLUME"}
+                         ACCENT_VOLUME: "ACCENT_VOLUME"}
         for drum in newKit:
             headLines = []
             headIndent = indent + '"%s" : [' % drum.abbr
@@ -650,7 +683,7 @@ def main():
                           else str(data.midiNote),
                           "None" if data.midiVolume == defaultData.midiVolume
                           else volumeSymbols.get(data.midiVolume,
-                                                str(data.midiVolume)),
+                                                 str(data.midiVolume)),
                           data.effect, data.notationHead,
                           data.notationEffect, data.shortcut)
                 line += '("%s", %s, %s, "%s", "%s", "%s", "%s")' % values

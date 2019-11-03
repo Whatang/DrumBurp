@@ -27,6 +27,7 @@ from GUI.DBCommands import (SetSectionEndCommand, SetLineBreakCommand,
                             SetRepeatEndCommand, SetRepeatStartCommand)
 from GUI.DBFSMEvents import MenuSelect, ChangeRepeatCount
 
+
 class QMeasureLineContextMenu(QMenuIgnoreCancelClick):
     def __init__(self, qScore, lastMeasure, nextMeasure,
                  endNotePosition, startNotePosition):
@@ -37,7 +38,7 @@ class QMeasureLineContextMenu(QMenuIgnoreCancelClick):
         # Repeat Start
         if nextMeasure is not None:
             onOff = nextMeasure.isRepeatStart()
-            setIt = lambda v = onOff : self._setRepeatStart(not v)
+            setIt = lambda v = onOff: self._setRepeatStart(not v)
             repeatStartAction = self.addAction("Repeat Start",
                                                setIt)
             repeatStartAction.setCheckable(True)
@@ -47,21 +48,21 @@ class QMeasureLineContextMenu(QMenuIgnoreCancelClick):
         if lastMeasure is not None:
             # Repeat End
             onOff = lastMeasure.isRepeatEnd()
-            setIt = lambda v = onOff:self._setRepeatEnd(not v)
+            setIt = lambda v = onOff: self._setRepeatEnd(not v)
             repeatEndAction = self.addAction("Repeat End",
                                              setIt)
             repeatEndAction.setCheckable(True)
             repeatEndAction.setChecked(onOff)
             # Section Ending
             onOff = lastMeasure.isSectionEnd()
-            setIt = lambda v = onOff:self._setSectionEnd(not v)
+            setIt = lambda v = onOff: self._setSectionEnd(not v)
             sectionEndAction = self.addAction("Section End",
                                               setIt)
             sectionEndAction.setCheckable(True)
             sectionEndAction.setChecked(onOff)
             # Line break
             onOff = lastMeasure.isLineBreak()
-            setIt = lambda v = onOff:self._setLineBreak(not v)
+            setIt = lambda v = onOff: self._setLineBreak(not v)
             lineBreakAction = self.addAction("Line Break",
                                              setIt)
             lineBreakAction.setCheckable(True)
@@ -100,7 +101,6 @@ class QMeasureLineContextMenu(QMenuIgnoreCancelClick):
         self._qScore.clearDragSelection()
         self._qScore.addCommand(command)
         self._qScore.sendFsmEvent(MenuSelect())
-
 
     def _setRepeatStart(self, onOff):
         command = SetRepeatStartCommand(self._qScore,

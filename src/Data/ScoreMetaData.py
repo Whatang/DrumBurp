@@ -23,6 +23,7 @@ Created on 23 Jan 2011
 
 '''
 
+
 class ScoreMetaData(object):
     def __init__(self):
         self.title = ""
@@ -38,6 +39,7 @@ class ScoreMetaData(object):
         self.beatCountVisible = True
         self.emptyLinesVisible = True
         self.measureCountsVisible = False
+        self.swing = 0
 
     def makeEmpty(self):
         self.title = "Untitled"

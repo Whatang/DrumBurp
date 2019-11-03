@@ -27,6 +27,7 @@ from PyQt4.QtGui import QMenu
 from functools import wraps
 from GUI.DBFSMEvents import MenuCancel, MenuSelect
 
+
 class QMenuIgnoreCancelClick(QMenu):
     @staticmethod
     def menuSelection(method):
@@ -37,8 +38,7 @@ class QMenuIgnoreCancelClick(QMenu):
             return val
         return wrapper
 
-
-    def __init__(self, qScore, parent = None):
+    def __init__(self, qScore, parent=None):
         super(QMenuIgnoreCancelClick, self).__init__(parent)
         self._qScore = qScore
         self._props = self._qScore.displayProperties
@@ -48,4 +48,3 @@ class QMenuIgnoreCancelClick(QMenu):
         if self.activeAction() == None:
             self._qScore.ignoreNextClick()
             self._qScore.sendFsmEvent(MenuCancel())
-

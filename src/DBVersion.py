@@ -22,19 +22,27 @@ Created on 18 Mar 2012
 @author: Mike Thomas
 '''
 import re
-from DBVersionNum import DB_VERSION_STRING
+import versionflow
+import DBVersionNum
 APPNAME = "DrumBurp"
-_ALPHA_STRING = "a"
 
 DB_VERSION_FILE = 'DBVersionNum.py'
 
+DB_VERSION_STRING = versionflow.get_current_version(
+    DBVersionNum, "DB_VERSION_STRING")
+
+
 def versionStringToTuple(vstr):
-    vstr = vstr.rstrip(_ALPHA_STRING)
     try:
-        versionInfo = tuple(int(x) for x in vstr.split("."))
-        return versionInfo[:2]
+        if '+' in vstr:
+            vstr = vstr[:vstr.index('+')]
+        versionInfo = list(int(x) for x in vstr.split("."))
+        v = versionInfo[:3]
+        while len(v) < 3:
+            v.append(0)
     except (ValueError, TypeError):
-        return (0, 0)
+        v = [0, 0, 0]
+    return tuple(v)
 
 
 def readVersion(text):
@@ -45,32 +53,38 @@ def readVersion(text):
         if match:
             versionText = match.groups(1)
             return versionStringToTuple(versionText[0])
-    return (0, 0)
+    return (0, 0, 0)
+
 
 def getLatestVersion():
     import urllib2
     try:
         versionUrl = urllib2.urlopen('http://github.com/Whatang/DrumBurp/raw/master/src/' + DB_VERSION_FILE,
-                                     timeout = 10)
+                                     timeout=10)
         versionText = versionUrl.read()
         return readVersion(versionText)
     except urllib2.HTTPError:
-        return (0, 0)
+        return (0, 0, 0)
+
 
 def doesNewerVersionExist():
     currentVersion = versionStringToTuple(DB_VERSION)
     newVersion = getLatestVersion()
     if currentVersion < newVersion:
-        return newVersion
+        return "v" + ".".join(newVersion)
     else:
         return ""
 
+
+def _is_full_release(vstr):
+    return not '+' in vstr
+
+
 DB_VERSION, FULL_RELEASE = (DB_VERSION_STRING,
-                            not DB_VERSION_STRING.endswith(_ALPHA_STRING))
+                            _is_full_release(DB_VERSION_STRING))
 
 if __name__ == "__main__":
     print DB_VERSION, FULL_RELEASE
     print getLatestVersion()
-    print readVersion(open(DB_VERSION_FILE, 'rU').read())
+    print versionStringToTuple(DB_VERSION)
     print "'%s'" % str(doesNewerVersionExist())
-

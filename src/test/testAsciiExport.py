@@ -11,8 +11,10 @@ from Data.Score import Score
 from Data.NotePosition import NotePosition
 from Notation.AsciiExport import Exporter, getExportDate
 
+
 class TestExport(unittest.TestCase):
     exportDate = getExportDate()
+
     @staticmethod
     def getOutput(score, settings):
         handle = StringIO()
@@ -64,7 +66,7 @@ class TestExport(unittest.TestCase):
         score.drumKit.addDrum(Drum.Drum("HiHat", "Hh", "x"))
         score.drumKit.addDrum(Drum.Drum("Crash", "Cr", "x"))
         counter = MeasureCount.counterMaker(4, 16)
-        score.insertMeasureByIndex(16, counter = counter)
+        score.insertMeasureByIndex(16, counter=counter)
         output = self.getOutput(score, settings)
         self.assertEqual(output,
                          ['Tabbed with DrumBurp, a drum tab editor from www.whatang.org',
@@ -92,9 +94,9 @@ class TestExport(unittest.TestCase):
         score.drumKit.addDrum(Drum.Drum("HiHat", "Hh", "x"))
         score.drumKit.addDrum(Drum.Drum("Crash", "Cr", "x"))
         counter = MeasureCount.counterMaker(4, 16)
-        score.insertMeasureByIndex(16, counter = counter)
-        score.insertMeasureByIndex(16, counter = counter)
-        score.insertMeasureByIndex(16, counter = counter)
+        score.insertMeasureByIndex(16, counter=counter)
+        score.insertMeasureByIndex(16, counter=counter)
+        score.insertMeasureByIndex(16, counter=counter)
         score.addNote(NotePosition(0, 0, 0, 0), "x")
         score.addNote(NotePosition(0, 1, 0, 0), "y")
         score.addNote(NotePosition(0, 2, 0, 0), "z")
@@ -125,9 +127,9 @@ class TestExport(unittest.TestCase):
         score.drumKit.addDrum(Drum.Drum("HiHat", "Hh", "x"))
         score.drumKit.addDrum(Drum.Drum("Crash", "Cr", "x"))
         counter = MeasureCount.counterMaker(4, 16)
-        score.insertMeasureByIndex(16, counter = counter)
-        score.insertMeasureByIndex(16, counter = counter)
-        score.insertMeasureByIndex(16, counter = counter)
+        score.insertMeasureByIndex(16, counter=counter)
+        score.insertMeasureByIndex(16, counter=counter)
+        score.insertMeasureByIndex(16, counter=counter)
         score.addNote(NotePosition(0, 0, 0, 0), "x")
         score.addNote(NotePosition(0, 1, 0, 0), "y")
         score.addNote(NotePosition(0, 2, 0, 0), "z")
@@ -163,9 +165,9 @@ class TestExport(unittest.TestCase):
         score.drumKit.addDrum(Drum.Drum("HiHat", "Hh", "x"))
         score.drumKit.addDrum(Drum.Drum("Crash", "Cr", "x"))
         counter = MeasureCount.counterMaker(4, 16)
-        score.insertMeasureByIndex(16, counter = counter)
-        score.insertMeasureByIndex(16, counter = counter)
-        score.insertMeasureByIndex(16, counter = counter)
+        score.insertMeasureByIndex(16, counter=counter)
+        score.insertMeasureByIndex(16, counter=counter)
+        score.insertMeasureByIndex(16, counter=counter)
         score.addNote(NotePosition(0, 0, 0, 0), "x")
         score.addNote(NotePosition(0, 1, 0, 0), "y")
         score.addNote(NotePosition(0, 2, 0, 0), "z")
@@ -212,9 +214,9 @@ class TestExport(unittest.TestCase):
         score.drumKit.addDrum(Drum.Drum("HiHat", "Hh", "x"))
         score.drumKit.addDrum(Drum.Drum("Crash", "Cr", "x"))
         counter = MeasureCount.counterMaker(4, 16)
-        score.insertMeasureByIndex(16, counter = counter)
-        score.insertMeasureByIndex(16, counter = counter)
-        score.insertMeasureByIndex(16, counter = counter)
+        score.insertMeasureByIndex(16, counter=counter)
+        score.insertMeasureByIndex(16, counter=counter)
+        score.insertMeasureByIndex(16, counter=counter)
         score.addNote(NotePosition(0, 0, 0, 0), "x")
         score.addNote(NotePosition(0, 1, 0, 0), "y")
         score.addNote(NotePosition(0, 2, 0, 0), "z")
@@ -253,9 +255,9 @@ class TestExport(unittest.TestCase):
         score.drumKit.addDrum(Drum.Drum("HiHat", "Hh", "x"))
         score.drumKit.addDrum(Drum.Drum("Crash", "Cr", "x"))
         counter = MeasureCount.counterMaker(4, 16)
-        score.insertMeasureByIndex(16, counter = counter)
-        score.insertMeasureByIndex(16, counter = counter)
-        score.insertMeasureByIndex(16, counter = counter)
+        score.insertMeasureByIndex(16, counter=counter)
+        score.insertMeasureByIndex(16, counter=counter)
+        score.insertMeasureByIndex(16, counter=counter)
         score.addNote(NotePosition(0, 0, 0, 0), "x")
         score.addNote(NotePosition(0, 1, 0, 0), "y")
         score.addNote(NotePosition(0, 2, 0, 0), "z")
@@ -297,9 +299,9 @@ class TestExport(unittest.TestCase):
         score.drumKit.addDrum(Drum.Drum("HiHat", "Hh", "x"))
         score.drumKit.addDrum(Drum.Drum("Crash", "Cr", "x"))
         counter = MeasureCount.counterMaker(4, 16)
-        score.insertMeasureByIndex(16, counter = counter)
-        score.insertMeasureByIndex(16, counter = counter)
-        score.insertMeasureByIndex(16, counter = counter)
+        score.insertMeasureByIndex(16, counter=counter)
+        score.insertMeasureByIndex(16, counter=counter)
+        score.insertMeasureByIndex(16, counter=counter)
         score.addNote(NotePosition(0, 0, 0, 0), "x")
         score.addNote(NotePosition(0, 1, 0, 0), "y")
         score.addNote(NotePosition(0, 2, 0, 0), "z")
@@ -341,9 +343,9 @@ class TestExport(unittest.TestCase):
         score.drumKit.addDrum(Drum.Drum("HiHat", "Hh", "x"))
         score.drumKit.addDrum(Drum.Drum("Crash", "Cr", "x"))
         counter = MeasureCount.counterMaker(4, 16)
-        score.insertMeasureByIndex(16, counter = counter)
-        score.insertMeasureByIndex(16, counter = counter)
-        score.insertMeasureByIndex(16, counter = counter)
+        score.insertMeasureByIndex(16, counter=counter)
+        score.insertMeasureByIndex(16, counter=counter)
+        score.insertMeasureByIndex(16, counter=counter)
         score.addNote(NotePosition(0, 0, 0, 0), "x")
         score.addNote(NotePosition(0, 1, 0, 0), "y")
         score.addNote(NotePosition(0, 2, 0, 0), "z")
@@ -374,8 +376,6 @@ class TestExport(unittest.TestCase):
                           '   1e+a2e+a3e+a4e+a ',
                           '',
                           'Tabbed with DrumBurp, a drum tab editor from www.whatang.org'])
-
-
 
 
 if __name__ == "__main__":

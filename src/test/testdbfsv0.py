@@ -28,18 +28,20 @@ from Data.NotePosition import NotePosition
 
 from Data.fileStructures import dbfsv0
 
+
 class TestCounter(unittest.TestCase):
     def testWrite(self):
         counter = Counter.Counter("^bcd", "^fgh", "^jkl")
         handle = StringIO()
         indenter = fileUtils.Indenter(handle)
         dbfsv0.CounterFieldV0("COUNT",
-                              getter = lambda _:counter).write_all(self, indenter)
+                              getter=lambda _: counter).write_all(self, indenter)
         self.assertEqual(handle.getvalue(), "COUNT |^bcd|\n")
 
     def testRead(self):
         target = {}
-        dbfsv0.CounterFieldV0("COUNT", attributeName = "counter").read(target, "|^e+a|")
+        dbfsv0.CounterFieldV0(
+            "COUNT", attributeName="counter").read(target, "|^e+a|")
         counter = target["counter"]
         self.assertEqual(str(counter), "^e+a")
 
@@ -55,7 +57,6 @@ class TestBeat(unittest.TestCase):
                          ["BEAT_START",
                           "  COUNT |^e+a|",
                           "BEAT_END"])
-
 
     def testWritePartialBeat(self):
         beat = Beat.Beat(Counter.Counter("e+a"), 2)
@@ -121,6 +122,7 @@ class TestBeat(unittest.TestCase):
         iterator = fileUtils.dbFileIterator(handle)
         self.assertRaises(DBErrors.UnrecognisedLine,
                           dbfsv0.BeatStructureV0().read, iterator)
+
 
 class TestMeasureCount(unittest.TestCase):
     def testSimpleWrite(self):
@@ -192,11 +194,11 @@ class TestMeasureCount(unittest.TestCase):
                   COUNT_INFO_END"""
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
-        count = dbfsv0.MeasureCountStructureV0(startTag = "DEFAULT_COUNT_INFO_START").read(iterator)
+        count = dbfsv0.MeasureCountStructureV0(
+            startTag="DEFAULT_COUNT_INFO_START").read(iterator)
         self.assert_(count.isSimpleCount())
         self.assertEqual(len(count), 16)
         self.assertEqual(count.countString(), "1e+a2e+a3e+a4e+a")
-
 
     def testReadComplex(self):
         data = """COUNT_INFO_START
@@ -260,6 +262,7 @@ class TestMeasureCount(unittest.TestCase):
         iterator = fileUtils.dbFileIterator(handle)
         self.assertRaises(DBErrors.InvalidPositiveInteger,
                           dbfsv0.MeasureCountStructureV0().read, iterator)
+
 
 class TestReadMeasure(unittest.TestCase):
     def testReadMeasure(self):
@@ -460,6 +463,7 @@ class TestReadMeasure(unittest.TestCase):
         self.assertEqual(measure.alternateText, None)
         self.assertEqual(measure.repeatCount, 1)
 
+
 class TestWriteMeasure(unittest.TestCase):
     reg = CounterRegistry()
 
@@ -491,22 +495,22 @@ class TestWriteMeasure(unittest.TestCase):
                           'END_BAR'])
 
     def testWriteSimple(self):
-        self.measure.addNote(NotePosition(noteTime = 0, drumIndex = 0), "a")
-        self.measure.addNote(NotePosition(noteTime = 1, drumIndex = 1), "b")
-        self.measure.addNote(NotePosition(noteTime = 2, drumIndex = 0), "c")
-        self.measure.addNote(NotePosition(noteTime = 3, drumIndex = 1), "d")
-        self.measure.addNote(NotePosition(noteTime = 4, drumIndex = 0), "e")
-        self.measure.addNote(NotePosition(noteTime = 5, drumIndex = 1), "f")
-        self.measure.addNote(NotePosition(noteTime = 6, drumIndex = 0), "g")
-        self.measure.addNote(NotePosition(noteTime = 7, drumIndex = 1), "h")
-        self.measure.addNote(NotePosition(noteTime = 8, drumIndex = 0), "i")
-        self.measure.addNote(NotePosition(noteTime = 9, drumIndex = 1), "j")
-        self.measure.addNote(NotePosition(noteTime = 10, drumIndex = 0), "k")
-        self.measure.addNote(NotePosition(noteTime = 11, drumIndex = 1), "l")
-        self.measure.addNote(NotePosition(noteTime = 12, drumIndex = 0), "m")
-        self.measure.addNote(NotePosition(noteTime = 13, drumIndex = 1), "n")
-        self.measure.addNote(NotePosition(noteTime = 14, drumIndex = 0), "o")
-        self.measure.addNote(NotePosition(noteTime = 15, drumIndex = 1), "p")
+        self.measure.addNote(NotePosition(noteTime=0, drumIndex=0), "a")
+        self.measure.addNote(NotePosition(noteTime=1, drumIndex=1), "b")
+        self.measure.addNote(NotePosition(noteTime=2, drumIndex=0), "c")
+        self.measure.addNote(NotePosition(noteTime=3, drumIndex=1), "d")
+        self.measure.addNote(NotePosition(noteTime=4, drumIndex=0), "e")
+        self.measure.addNote(NotePosition(noteTime=5, drumIndex=1), "f")
+        self.measure.addNote(NotePosition(noteTime=6, drumIndex=0), "g")
+        self.measure.addNote(NotePosition(noteTime=7, drumIndex=1), "h")
+        self.measure.addNote(NotePosition(noteTime=8, drumIndex=0), "i")
+        self.measure.addNote(NotePosition(noteTime=9, drumIndex=1), "j")
+        self.measure.addNote(NotePosition(noteTime=10, drumIndex=0), "k")
+        self.measure.addNote(NotePosition(noteTime=11, drumIndex=1), "l")
+        self.measure.addNote(NotePosition(noteTime=12, drumIndex=0), "m")
+        self.measure.addNote(NotePosition(noteTime=13, drumIndex=1), "n")
+        self.measure.addNote(NotePosition(noteTime=14, drumIndex=0), "o")
+        self.measure.addNote(NotePosition(noteTime=15, drumIndex=1), "p")
         output = self.get_output()
         self.assertEqual(output,
                          ['START_BAR 16',
@@ -564,8 +568,6 @@ class TestWriteMeasure(unittest.TestCase):
                           'END_BAR'])
 
 
-
-
 class TestHeadDataRead(unittest.TestCase):
     def testRead_New(self):
         dataString = "x 72,100,ghost,cross,1,choke,1,c"
@@ -606,6 +608,7 @@ class TestHeadDataRead(unittest.TestCase):
         self.assertEqual(data.stemDirection, 0)
         self.assertEqual(data.shortcut, "")
 
+
 class TestNoteHeads(unittest.TestCase):
     def testReadHead(self):
         dataString = "x 72,100,ghost,cross,1,choke,1,c"
@@ -643,7 +646,7 @@ class TestDrum(unittest.TestCase):
     @staticmethod
     def makeDrum():
         drum = Drum("test", "td", "x")
-        defaultHead = HeadData(shortcut = "y")
+        defaultHead = HeadData(shortcut="y")
         drum.addNoteHead("x", defaultHead)
         newHead = HeadData(100)
         drum.addNoteHead("y", newHead)
@@ -657,7 +660,8 @@ class TestDrum(unittest.TestCase):
         second_.shortcut = "a"
         outstring = StringIO()
         indenter = fileUtils.Indenter(outstring)
-        dbfsv0.DrumFieldV0("DRUM", getter = lambda _:drum).write_all(self, indenter)
+        dbfsv0.DrumFieldV0(
+            "DRUM", getter=lambda _: drum).write_all(self, indenter)
         outlines = outstring.getvalue().splitlines()
         self.assertEqual(len(outlines), 4)
         self.assertEqual(outlines[0], "DRUM test,td,x,False")
@@ -759,21 +763,22 @@ class TestDrumKit(unittest.TestCase):
         self.assertEqual(kit.getDefaultHead(1), "o")
         self.assertEqual(kit.allowedNoteHeads(0),
                          ["x", "g"])
-        self.assertEqual(kit.shortcutsAndNoteHeads(0), [("x", "x"), ("g", "g")])
+        self.assertEqual(kit.shortcutsAndNoteHeads(0),
+                         [("x", "x"), ("g", "g")])
 
     def testWrite(self):
         kit = DrumKit.DrumKit()
         drum = Drum("One", "d1", "x", True)
         drum.addNoteHead("x", HeadData())
         drum.addNoteHead("g",
-                         HeadData(effect = "ghost", notationEffect = "ghost"))
+                         HeadData(effect="ghost", notationEffect="ghost"))
         drum.checkShortcuts()
         kit.addDrum(drum)
         drum = Drum("Two", "d2", "o")
-        drum.addNoteHead("o", HeadData(notationLine = -5, stemDirection = 1))
-        drum.addNoteHead("O", HeadData(effect = "accent",
-                                       notationEffect = "accent",
-                                       notationLine = -5, stemDirection = 1))
+        drum.addNoteHead("o", HeadData(notationLine=-5, stemDirection=1))
+        drum.addNoteHead("O", HeadData(effect="accent",
+                                       notationEffect="accent",
+                                       notationLine=-5, stemDirection=1))
         drum.checkShortcuts()
         kit.addDrum(drum)
         handle = StringIO()
@@ -789,6 +794,7 @@ class TestDrumKit(unittest.TestCase):
                           "    NOTEHEAD o 71,96,normal,default,-5,none,1,o",
                           "    NOTEHEAD O 71,96,accent,default,-5,accent,1,a",
                           "KIT_END"])
+
 
 class TestFontOptions(unittest.TestCase):
     def testWrite(self):
@@ -825,6 +831,7 @@ class TestFontOptions(unittest.TestCase):
         self.assertEqual(options.sectionFontSize, 12)
         self.assertEqual(options.metadataFont, "metafont")
         self.assertEqual(options.metadataFontSize, 14)
+
 
 class TestMetaData(unittest.TestCase):
     def testWrite(self):
@@ -983,8 +990,7 @@ class TestMetaData(unittest.TestCase):
         handle = StringIO(data)
         iterator = fileUtils.dbFileIterator(handle)
         self.assertRaises(DBErrors.InvalidPositiveInteger,
-                         dbfsv0.MetadataStructureV0().read, iterator)
-
+                          dbfsv0.MetadataStructureV0().read, iterator)
 
 
 if __name__ == "__main__":

@@ -34,6 +34,7 @@ from GUI.QInsertMeasuresDialog import QInsertMeasuresDialog
 from GUI.DBFSMEvents import RepeatNotes
 from Data import DBConstants
 
+
 class QMeasureContextMenu(QMenuIgnoreCancelClick):
     def __init__(self, qScore, qmeasure, firstNote, alternateText):
         super(QMeasureContextMenu, self).__init__(qScore)
@@ -78,13 +79,13 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                 self.addAction("Remove simile marks",
                                self._toggleSimile)
             elif (not any(measure.isSectionEnd() or measure.isRepeatEnd()
-                         or measure.isLineBreak()
-                         for measure, unusedIndex, unusedPos
-                         in self._draggedMeasures[:-1])
+                          or measure.isLineBreak()
+                          for measure, unusedIndex, unusedPos
+                          in self._draggedMeasures[:-1])
                   and
                   not any(measure.isRepeatStart()
-                         for measure, unusedIndex, unusedPos
-                         in self._draggedMeasures[1:])):
+                          for measure, unusedIndex, unusedPos
+                          in self._draggedMeasures[1:])):
                 self.addAction("Add %d bar simile mark"
                                % len(self._draggedMeasures),
                                self._toggleSimile)
@@ -108,8 +109,8 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
                                          "Paste Over Selected Measures",
                                          self._pasteMeasuresOver)
             fillAction = self.addAction(DBIcons.getIcon("paste"),
-                                         "Fill Paste Selected Measures",
-                                         self._fillPaste)
+                                        "Fill Paste Selected Measures",
+                                        self._fillPaste)
             fillAction.setEnabled(len(self._qScore.measureClipboard) > 0)
         else:
             self.addAction(DBIcons.getIcon("copy"), "Copy Measure",
@@ -131,7 +132,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         sectionCopyMenu = insertMenu.addMenu("Section Copy")
         sectionCopyMenu.setEnabled(self._score.numSections() > 0)
         for si, sectionTitle in enumerate(self._score.iterSections()):
-            copyIt = lambda i = si:self._copySection(i)
+            copyIt = lambda i = si: self._copySection(i)
             sectionCopyMenu.addAction(sectionTitle, copyIt)
         self.addSeparator()
 
@@ -166,14 +167,16 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
     def _setupStickingSection(self):
         self.addSeparator()
         action = QtGui.QAction("Show Sticking Above", self,
-                               checkable = True)
+                               checkable=True)
         action.setChecked(self._measure.showAbove)
-        action.triggered.connect(lambda : self._showSticking(True, not self._measure.showAbove))
+        action.triggered.connect(lambda: self._showSticking(
+            True, not self._measure.showAbove))
         self.addAction(action)
         action = QtGui.QAction("Show Sticking Below", self,
-                               checkable = True)
+                               checkable=True)
         action.setChecked(self._measure.showBelow)
-        action.triggered.connect(lambda : self._showSticking(False, not self._measure.showBelow))
+        action.triggered.connect(lambda: self._showSticking(
+            False, not self._measure.showBelow))
         self.addAction(action)
 
     def _setupBpmSection(self):
@@ -187,7 +190,7 @@ class QMeasureContextMenu(QMenuIgnoreCancelClick):
         self._qScore.sendFsmEvent(RepeatNotes(self._np))
 
     @QMenuIgnoreCancelClick.menuSelection
-    def _insertDefaultMeasure(self, np, preserveSectionEnd = False):
+    def _insertDefaultMeasure(self, np, preserveSectionEnd=False):
         mc = self._qScore.defaultCount
         command = InsertMeasuresCommand(self._qScore, np, 1,
                                         mc, preserveSectionEnd)

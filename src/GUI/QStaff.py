@@ -30,9 +30,10 @@ from GUI.QMeasureLine import QMeasureLine
 from GUI.QLineLabel import QLineLabel
 from Data.NotePosition import NotePosition
 
+
 class QStaff(QtGui.QGraphicsItemGroup):
-    def __init__(self, staff, index, scene, qScore = None):
-        super(QStaff, self).__init__(scene = scene)
+    def __init__(self, staff, index, scene, qScore=None):
+        super(QStaff, self).__init__(scene=scene)
         self._qScore = qScore if qScore is not None else scene
         self._props = self._qScore.displayProperties
         self._staff = None
@@ -109,7 +110,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
     def _addMeasure(self, measure):
         qMeasure = QMeasure(self.numMeasures(), self._qScore,
                             measure,
-                            parent = self)
+                            parent=self)
         self._measures.append(qMeasure)
         self.addToGroup(qMeasure)
 
@@ -118,7 +119,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
                                     lastMeasure, nextMeasure,
                                     len(self._measureLines),
                                     self._index,
-                                    parent = self)
+                                    parent=self)
         self._measureLines.append(qMeasureLine)
         self.addToGroup(qMeasureLine)
 
@@ -213,7 +214,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
             self._build()
 
     def _makeNotePosition(self):
-        np = NotePosition(staffIndex = self._index)
+        np = NotePosition(staffIndex=self._index)
         return np
 
     def augmentNotePosition(self, np):
@@ -248,7 +249,7 @@ class QStaff(QtGui.QGraphicsItemGroup):
         newAlternate = False
         for measure in self._staff:
             if (measure.alternateText or
-                (measure.isRepeatEnd() and measure.repeatCount > 2)):
+                    (measure.isRepeatEnd() and measure.repeatCount > 2)):
                 newAlternate = True
                 break
         return self._hasAlternate != newAlternate

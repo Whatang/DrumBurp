@@ -22,18 +22,20 @@ Created on Jan 30, 2011
 @author: Mike
 '''
 
+
 class ASCIISettings(object):
     def __init__(self):
         self._checkNames = []
         self._registerCheckName("metadata")
         self._registerCheckName("kitKey")
         self._registerCheckName("omitEmpty")
+        self._registerCheckName("sectionBrackets", False)
         self._registerCheckName("underline")
         self._registerCheckName("printCounts")
         self._registerCheckName("emptyLineBeforeSection")
         self._registerCheckName("emptyLineAfterSection")
 
-    def _registerCheckName(self, name, defaultValue = True):
+    def _registerCheckName(self, name, defaultValue=True):
         setattr(self, name, defaultValue)
         self._checkNames.append(name)
 
