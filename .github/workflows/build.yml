@@ -1,0 +1,25 @@
+name: Build DrumBurp for Windows
+on:
+  - push
+
+jobs:
+  build:
+    name: Windows
+    runs-on: windows-2019
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Install
+        run: build/install_windows.ps1
+      - name: Build
+        run: build/build_windows.ps1
+      - name: Upload build
+        uses: actions/upload-artifact@master
+        with:
+          name: build-output
+          path: build/output/
+      #- name: Release
+      #  uses: ncipollo/release-action@v1
+      #  with:
+      #    artifacts: "build/*.zip"
+      #    token: ${{ secrets.GITHUB_TOKEN }}
