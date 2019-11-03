@@ -29,8 +29,12 @@ jobs:
         with:
           name: build-output
           path: build/output/
-      #- name: Release
-      #  uses: ncipollo/release-action@v1
-      #  with:
-      #    artifacts: "build/*.zip"
-      #    token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Release
+        on:
+          push:
+            tags:
+              - "*.*.*"
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/output/*.exe"
+          token: ${{ secrets.GITHUB_TOKEN }}
