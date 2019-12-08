@@ -2,4 +2,4 @@ pyinstaller
 pygame==1.9.2
 pylint
 pywin32==222
-versionflow>=0.3.6
+

@@ -1,27 +1,46 @@
 name: Build DrumBurp for Windows
-on:
-  push:
-    tags:
-      - "*"
+on: push
 
 jobs:
   build:
     name: Windows
-    runs-on: windows-2019
+    runs-on: windows-latest
     steps:
+      - name: Show Tag
+        run: echo ${{ github.ref }}
       - name: Checkout
         uses: actions/checkout@master
+      - name: Cache NuGet
+        uses: actions/cache@v1
+        with:
+          path: ~\AppData\Local\NuGet\Cache
+          key: ${{ runner.os }}-nuget
+      - name: Cache choco
+        uses: actions/cache@v1
+        with:
+          path: ~\AppData\Local\Temp\chocolatey\vcredist2008
+          key: ${{ runner.os }}-vcredist2008
+      - name: MSVC 2008
+        run: choco install vcredist2008
       - name: Python Setup
         uses: actions/setup-python@v1
         with:
           python-version: "2.7.16"
           architecture: "x64"
+      - name: Cache Pip modules
+        uses: actions/cache@v1
+        with:
+          path: ~\AppData\Local\pip\cache
+          key: ${{ runner.os }}-pip-${{ hashFiles('build/requirements-windows.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
       - name: Pip modules
         run: pip install -r build/requirements-windows.txt
-      - name: MSVC 2008
-        run: choco install vcredist2008
-      - name: NSIS
-        run: choco install nsis
+      - name: Cache PyQt4
+        uses: actions/cache@v1
+        with:
+          path: pyqt_installer.exe
+          key: ${{ runner.os }}-pyqt-${{ hashFiles('build/install_pyqt.ps1') }}
       - name: PyQt4
         run: build/install_pyqt.ps1
       - name: Build
@@ -33,6 +52,7 @@ jobs:
           path: build/output/
       - name: Release
         uses: ncipollo/release-action@v1
+        if: startswith(github.ref, 'refs/tags/')
         with:
           artifacts: "build/output/*.exe"
           token: ${{ secrets.GITHUB_TOKEN }}
