@@ -24,11 +24,18 @@ jobs:
             ${{ runner.os }}-pip-
       - name: Pip modules
         run: pip install -r build/requirements-windows.txt
-      - name: Cache MSVC2008
+      - name: Configure choco cache
+        run: choco config set cacheLocation ~\AppData\Local\Temp\chocolatey
+      - name: Cache NuGet
+        uses: actions/cache@v1
+        with:
+          path: ~\AppData\NuGet\Cache
+          key: ${{ runner.os }}-nuget
+      - name: Cache choco
         uses: actions/cache@v1
         with:
           path: ~\AppData\Local\Temp\chocolatey
-          key: ${{ runner.os }}-msvc2008
+          key: ${{ runner.os }}-choco
       - name: MSVC 2008
         run: choco install vcredist2008
       - name: NSIS
