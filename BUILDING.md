@@ -32,8 +32,9 @@ DrumBurp uses semantic versioning to keep track of its version numbers. Version 
 * `DBVersionNum.py` - used by DrumBuro to know what the current version is.
 * `build\DrumBurp.nsi` - used by the Windows build script to appropriately label built executables.
 * `.versionflow` - the configuration file for the version handling utility.
+* `VERSION` - a flat text file containing only the version number, used by the build system to understand the current number.
 * In the tag on the master branch which labels the commit for the corresponding release.
 
 There is no need to ever update these by hand: [versionflow](https://pypi.org/project/versionflow/) takes care of this to keep them consistent, as long as you always use it when creating a release.
 
-DrumBurp also uses `versionflow`'s features to understand development versions: when running from a dev repo, `versionflow` will adjust the version number DrumBurp gets to indicate the commit that is running.
+DrumBurp also uses `versionflow`'s features to understand development versions: when running from a dev repo using a Python interpreter with the `versionflow` package installed, `versionflow` will adjust the version number DrumBurp uses to indicate the precise commit that is running.

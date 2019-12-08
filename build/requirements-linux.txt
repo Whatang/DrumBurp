@@ -1,4 +1,3 @@
 pyinstaller
 pygame==1.9.2
 pylint
-versionflow>=0.3.6

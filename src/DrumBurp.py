@@ -35,7 +35,15 @@ def main():
     import ctypes
     parser = optparse.OptionParser()
     parser.add_option('--virgin', action='store_true')
+    parser.add_option('--pyinstaller-test', action='store_true')
     opts, args = parser.parse_args()
+    if opts.pyinstaller_test:
+        # This is just to test that the program can start properly after
+        # being frozen with PyInstaller. If PyInstaller has got something
+        # wrong then DB won't even get this far. This enables automated
+        # testing of the PyInstaller results. There is no need to ever
+        # run this manually.
+        sys.exit(0)
     filename = None
     if len(args) > 0:
         filename = args[0]
