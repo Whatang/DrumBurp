@@ -15,8 +15,20 @@ jobs:
         with:
           python-version: "2.7.16"
           architecture: "x64"
+      - name: Cache Pip modules
+        uses: actions/cache@v1
+        with:
+          path: ~\AppData\Local\pip\cache
+          key: ${{ runner.os}}-pip-${{ hashFiles('build/requirements-windows.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
       - name: Pip modules
         run: pip install -r build/requirements-windows.txt
+      - name: Cache MSVC2008
+        uses: actions/cache@v1
+        with:
+          path: ~\AppData\Local\Temp\chocolatey
+          key: ${{ runner.os }}-msvc2008
       - name: MSVC 2008
         run: choco install vcredist2008
       - name: NSIS
