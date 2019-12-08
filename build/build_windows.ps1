@@ -1,3 +1,13 @@
+# This file builds DrumBurp for Windows
+# 
+# It has two stages:
+# 1. Use pyinstaller to create a "one- directory" version of DrumBurp, including
+#    a .exe file/
+# 2. Use NSIS to create an installer for this packaged version.
+#
+# It expects that the environment has been previously set up by the install_windows.ps1
+# script.
+
 Set-Item Env:PYTHONIOENCODING UTF-8
 
 $workspace_root = Split-Path -Parent "$PSScriptRoot"
