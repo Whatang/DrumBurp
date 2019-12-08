@@ -11,7 +11,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@master
       - name: Configure choco cache
-        run: mkdir chocolatey_cache
         run: choco -y -f config set cacheLocation chocolatey_cache
       - name: Cache NuGet
         uses: actions/cache@v1
