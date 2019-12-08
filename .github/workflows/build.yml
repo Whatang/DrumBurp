@@ -10,6 +10,21 @@ jobs:
         run: echo ${{ github.ref }}
       - name: Checkout
         uses: actions/checkout@master
+      - name: Configure choco cache
+        run: mkdir chocolatey_cache
+        run: choco -y -f config set cacheLocation chocolatey_cache
+      - name: Cache NuGet
+        uses: actions/cache@v1
+        with:
+          path: ~\AppData\NuGet\Cache
+          key: ${{ runner.os }}-nuget
+      - name: Cache choco
+        uses: actions/cache@v1
+        with:
+          path: chocolatey_cache
+          key: ${{ runner.os }}-choco
+      - name: MSVC 2008
+        run: choco install vcredist2008
       - name: Python Setup
         uses: actions/setup-python@v1
         with:
@@ -19,25 +34,11 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~\AppData\Local\pip\cache
-          key: ${{ runner.os}}-pip-${{ hashFiles('build/requirements-windows.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('build/requirements-windows.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Pip modules
         run: pip install -r build/requirements-windows.txt
-      - name: Configure choco cache
-        run: choco config set cacheLocation ~\AppData\Local\Temp\chocolatey
-      - name: Cache NuGet
-        uses: actions/cache@v1
-        with:
-          path: ~\AppData\NuGet\Cache
-          key: ${{ runner.os }}-nuget
-      - name: Cache choco
-        uses: actions/cache@v1
-        with:
-          path: ~\AppData\Local\Temp\chocolatey
-          key: ${{ runner.os }}-choco
-      - name: MSVC 2008
-        run: choco install vcredist2008
       - name: NSIS
         run: choco install nsis
       - name: Cache PyQt4
