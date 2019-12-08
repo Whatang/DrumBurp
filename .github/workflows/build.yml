@@ -33,6 +33,11 @@ jobs:
         run: choco install vcredist2008
       - name: NSIS
         run: choco install nsis
+      - name: Cache PyQt4
+        uses: actions/cache@v1
+        with:
+          path: pyqt_installer.exe
+          key: ${{ runner.os }}-pyqt-${{ hashFiles('install_pyqt.ps1') }}
       - name: PyQt4
         run: build/install_pyqt.ps1
       - name: Build
