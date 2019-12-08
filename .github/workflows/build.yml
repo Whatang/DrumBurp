@@ -1,8 +1,5 @@
 name: Build DrumBurp for Windows
-on:
-  push:
-    tags:
-      - "*"
+on: push
 
 jobs:
   build:
@@ -33,6 +30,7 @@ jobs:
           path: build/output/
       - name: Release
         uses: ncipollo/release-action@v1
+        if: startswith(github.ref, "refs/tags/")
         with:
           artifacts: "build/output/*.exe"
           token: ${{ secrets.GITHUB_TOKEN }}
