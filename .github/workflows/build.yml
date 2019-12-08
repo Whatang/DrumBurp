@@ -10,17 +10,15 @@ jobs:
         run: echo ${{ github.ref }}
       - name: Checkout
         uses: actions/checkout@master
-      - name: Configure choco cache
-        run: choco -y -f config set cacheLocation chocolatey_cache
       - name: Cache NuGet
         uses: actions/cache@v1
         with:
-          path: ~\AppData\NuGet\Cache
+          path: ~\AppData\Local\NuGet\Cache
           key: ${{ runner.os }}-nuget
       - name: Cache choco
         uses: actions/cache@v1
         with:
-          path: chocolatey_cache
+          path: ~\AppData\Local\Temp
           key: ${{ runner.os }}-choco
       - name: MSVC 2008
         run: choco install vcredist2008
