@@ -22,14 +22,26 @@ Created on 18 Mar 2012
 @author: Mike Thomas
 '''
 import re
-import versionflow
+import os
 import DBVersionNum
+
+_HAVE_VF = False
+if os.path.exists(os.path.join(os.path.dirname(__file__), "..", ".git")):
+    try:
+        import versionflow
+        _HAVE_VF = True
+    except ImportError:
+        pass
+
 APPNAME = "DrumBurp"
 
 DB_VERSION_FILE = 'DBVersionNum.py'
 
-DB_VERSION_STRING = versionflow.get_current_version(
-    DBVersionNum, "DB_VERSION_STRING")
+if _HAVE_VF:
+    DB_VERSION_STRING = versionflow.get_current_version(
+        DBVersionNum, "DB_VERSION_STRING")
+else:
+    DB_VERSION_STRING = DBVersionNum.DB_VERSION_STRING
 
 
 def versionStringToTuple(vstr):
