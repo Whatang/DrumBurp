@@ -36,8 +36,6 @@ jobs:
             ${{ runner.os }}-pip-
       - name: Pip modules
         run: pip install -r build/requirements-windows.txt
-      - name: NSIS
-        run: choco install nsis
       - name: Cache PyQt4
         uses: actions/cache@v1
         with:
