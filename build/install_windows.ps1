@@ -1,3 +1,8 @@
+# This file scripts the installation of packages into a Windows environment 
+# able to build DrumBurp. It requires that the choco package manager for
+# Windows is pre-installed, and that Python 2.7 is available and its
+# Scripts directory is on the PATH.
+
 Set-PSDebug -Trace 1
 Set-Item Env:PYTHONIOENCODING UTF-8
 
