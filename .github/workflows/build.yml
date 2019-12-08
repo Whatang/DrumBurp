@@ -18,8 +18,8 @@ jobs:
       - name: Cache choco
         uses: actions/cache@v1
         with:
-          path: ~\AppData\Local\Temp
-          key: ${{ runner.os }}-choco
+          path: ~\AppData\Local\Temp\chocolatey\vcredist2008
+          key: ${{ runner.os }}-vcredist2008
       - name: MSVC 2008
         run: choco install vcredist2008
       - name: Python Setup
