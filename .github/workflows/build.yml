@@ -15,6 +15,13 @@ jobs:
         with:
           python-version: "2.7.16"
           architecture: "x64"
+      - name: Cache PyQt4
+        uses: actions/cache@v1
+        with:
+          path: pyqt_installer/
+          key: ${{ runner.os }}-pyqt-${{ hashFiles('build/install_pyqt.ps1') }}
+      - name: PyQt4
+        run: build/install_pyqt.ps1
       - name: Cache choco
         uses: actions/cache@v1
         with:
@@ -31,13 +38,6 @@ jobs:
             ${{ runner.os }}-pip-
       - name: Pip modules
         run: pip install -r build/requirements-windows.txt
-      - name: Cache PyQt4
-        uses: actions/cache@v1
-        with:
-          path: pyqt_installer.exe
-          key: ${{ runner.os }}-pyqt-${{ hashFiles('build/install_pyqt.ps1') }}
-      - name: PyQt4
-        run: build/install_pyqt.ps1
       - name: Build
         run: build/build_windows.ps1
       - name: Store Windows installer
@@ -60,11 +60,12 @@ jobs:
         with:
           name: db_windows
       - name: Install Windows exe
-        run: db_windows/DrumBurp-${{ env.DB_VERSION }}.0-setup.exe /S
+        run: .\db_windows\DrumBurp-${{ env.DB_VERSION }}.0-setup.exe /S /D=%GITHUB_WORKSPACE%\installed
+        shell: cmd
       - name: Test Windows exe
         # This doesn't run any tests, it just checks to make sure that the
         # pyinstaller frozen version of DB will start correctly
-        run: dir "C:/Program Files (x86)" && cd "C:/Program Files (x86)/DrumBurp/DrumBurp/" && dir && .\DrumBurp.exe --pyinstaller-test
+        run: cd %GITHUB_WORKSPACE%\installed\DrumBurp\ && .\DrumBurp.exe --pyinstaller-test
         shell: cmd
 
   build_linux:
@@ -73,20 +74,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@master
-      - name: Python Setup
-        uses: actions/setup-python@v1
-        with:
-          python-version: "2.7.16"
-          architecture: "x64"
-      - name: Cache Pip modules
-        uses: actions/cache@v1
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('build/requirements-linux.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-      - name: PyQt4
-        run: sudo apt install python-qt4
+      - name: "Get version number"
+        run: echo "::set-env name=DB_VERSION::$(cat VERSION)"
+      - name: Add local bin to path
+        run: echo "::set-env name=PATH::$PATH:$HOME/.local/bin"
+      - name: Show PATH
+        run: echo $PATH
+      - name: Install Python
+        run: sudo apt install python2.7
+      - name: Install wheel
+        run: pip install wheel
+      - name: Install PyQt4
+        run: sudo apt update && sudo apt install python-qt4
+      - name: Import PyQt4
+        run: python -c 'import sys;print sys.path;import PyQt4'
       - name: Pip modules
         run: pip install -r build/requirements-linux.txt
       - name: Build
