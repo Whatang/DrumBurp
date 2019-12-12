@@ -5,3 +5,5 @@ current_version = 1.1.1
 
 [bumpversion:file:build\DrumBurp.nsi]
 
+[bumpversion:file:VERSION]
+

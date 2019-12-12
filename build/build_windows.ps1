@@ -19,7 +19,7 @@ if (!(Test-Path "$workspace_root\build\output" -PathType Container)) {
     New-Item -ItemType Directory -Force -Path "$workspace_root\build\output"
 }
 
-& pyinstaller -w -D -y --hidden-import=configparser --distpath "$workspace_root\build\dist" --specpath "$workspace_root\build\tmp" --workpath "$workspace_root\build\tmp" -i "$workspace_root\src\GUI\Icons\drumburp.ico" "$workspace_root\src\DrumBurp.py"
+& pyinstaller -w -D -y --distpath "$workspace_root\build\dist" --specpath "$workspace_root\build\tmp" --workpath "$workspace_root\build\tmp" -i "$workspace_root\src\GUI\Icons\drumburp.ico" "$workspace_root\src\DrumBurp.py"
 Copy-Item "$workspace_root\COPYING.txt" "$workspace_root\build\dist"
 Copy-Item "$workspace_root\build\DrumBurp.nsi" "$workspace_root\build\dist\"
 Set-Location "$workspace_root\build\dist"
