@@ -32,6 +32,7 @@ import sys
 import os
 import subprocess
 import platform
+from math import log
 
 
 class LilyIndenter(object):
@@ -201,19 +202,19 @@ class LilyDuration(object):
                 nums.extend(calcComponentNotesFromStr(note.restTime))
             return nums
 
-        noteList = []
-        noteList.extend(calcComponentNotes(self))
+        notesInTuplet = []
+        notesInTuplet.extend(calcComponentNotes(self))
         for i in self._compoundList:
-            noteList.extend(calcComponentNotes(i))
+            notesInTuplet.extend(calcComponentNotes(i))
         
-        baseNote = max(noteList)
+        baseNote = max(notesInTuplet)
         tupletNoteCount = 0
-        for i in noteList:
+        for i in notesInTuplet:
             tupletNoteCount += baseNote / i
-        tupletWholeNoteLength = baseNote
-        while(tupletWholeNoteLength > tupletNoteCount):
-            tupletWholeNoteLength /= 2
-
+        
+        #nearest power of 2 (rounding down)
+        tupletWholeNoteLength = 1<<int(log(tupletNoteCount,2)) 
+            
         self.compoundStart = r"\tuplet {0}/{1} {{".format(tupletNoteCount,tupletWholeNoteLength)
 
     def setCompoundEnd(self):
