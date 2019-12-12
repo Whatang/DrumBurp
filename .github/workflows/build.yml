@@ -1,38 +1,157 @@
-name: Build DrumBurp for Windows
-on:
-  push:
-    tags:
-      - "*"
+name: Build DrumBurp
+on: push
 
 jobs:
-  build:
-    name: Windows
-    runs-on: windows-2019
+  build_windows:
+    name: Windows Build
+    runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@master
+      - name: "Get version number"
+        run: echo "::set-env name=DB_VERSION::$(cat VERSION)"
       - name: Python Setup
         uses: actions/setup-python@v1
         with:
           python-version: "2.7.16"
           architecture: "x64"
-      - name: Pip modules
-        run: pip install -r build/requirements-windows.txt
-      - name: MSVC 2008
-        run: choco install vcredist2008
-      - name: NSIS
-        run: choco install nsis
+      - name: Cache PyQt4
+        uses: actions/cache@v1
+        with:
+          path: pyqt_installer/
+          key: ${{ runner.os }}-pyqt-${{ hashFiles('build/install_pyqt.ps1') }}
       - name: PyQt4
         run: build/install_pyqt.ps1
+      - name: Cache choco
+        uses: actions/cache@v1
+        with:
+          path: ~\AppData\Local\Temp\chocolatey\vcredist2008
+          key: ${{ runner.os }}-vcredist2008
+      - name: MSVC 2008
+        run: choco install vcredist2008
+      - name: Cache Pip modules
+        uses: actions/cache@v1
+        with:
+          path: ~\AppData\Local\pip\cache
+          key: ${{ runner.os }}-pip-${{ hashFiles('build/requirements-windows.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Pip modules
+        run: pip install -r build/requirements-windows.txt
       - name: Build
         run: build/build_windows.ps1
-      - name: Upload build
-        uses: actions/upload-artifact@master
+      - name: Store Windows installer
+        uses: actions/upload-artifact@v1
         with:
-          name: build-output
-          path: build/output/
-      - name: Release
-        uses: ncipollo/release-action@v1
+          name: db_windows
+          path: "build/output/DrumBurp-${{ env.DB_VERSION }}.0-setup.exe"
+
+  test_windows:
+    needs: build_windows
+    name: Windows Test
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: "Get version number"
+        run: echo "::set-env name=DB_VERSION::$(cat VERSION)"
+      - name: Get installer
+        uses: actions/download-artifact@v1
         with:
-          artifacts: "build/output/*.exe"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          name: db_windows
+      - name: Install Windows exe
+        run: .\db_windows\DrumBurp-${{ env.DB_VERSION }}.0-setup.exe /S /D=%GITHUB_WORKSPACE%\installed
+        shell: cmd
+      - name: Test Windows exe
+        # This doesn't run any tests, it just checks to make sure that the
+        # pyinstaller frozen version of DB will start correctly
+        run: cd %GITHUB_WORKSPACE%\installed\DrumBurp\ && .\DrumBurp.exe --pyinstaller-test
+        shell: cmd
+
+  build_linux:
+    name: Linux Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: "Get version number"
+        run: echo "::set-env name=DB_VERSION::$(cat VERSION)"
+      - name: Add local bin to path
+        run: echo "::set-env name=PATH::$PATH:$HOME/.local/bin"
+      - name: Show PATH
+        run: echo $PATH
+      - name: Install Python
+        run: sudo apt install python2.7
+      - name: Install wheel
+        run: pip install wheel
+      - name: Install PyQt4
+        run: sudo apt update && sudo apt install python-qt4
+      - name: Import PyQt4
+        run: python -c 'import sys;print sys.path;import PyQt4'
+      - name: Pip modules
+        run: pip install -r build/requirements-linux.txt
+      - name: Build
+        run: bash build/build_linux.sh
+      - name: Store Linux binary
+        uses: actions/upload-artifact@v1
+        with:
+          name: db_linux
+          path: "build/dist/DrumBurp"
+  test_linux:
+    needs: build_linux
+    name: Linux Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Linux binary
+        uses: actions/download-artifact@v1
+        with:
+          name: db_linux
+      - name: Test Linux binary
+        run: ls db_linux && chmod 770 db_linux/DrumBurp && db_linux/DrumBurp --pyinstaller-test
+
+  release:
+    needs: [test_windows, test_linux]
+    name: Release
+    runs-on: ubuntu-latest
+    if: startswith(github.ref, 'refs/tags/')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: "Get version number"
+        run: echo "::set-env name=DB_VERSION::$(cat VERSION)"
+      - name: Create Release
+        id: this-release
+        uses: actions/create-release@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Get Windows installer
+        uses: actions/download-artifact@v1
+        with:
+          name: db_windows
+      - name: Release Windows
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.this-release.outputs.upload_url }}
+          asset_path: "db_windows/DrumBurp-${{ env.DB_VERSION }}.0-setup.exe"
+          asset_name: "DrumBurp-${{ env.DB_VERSION }}-setup.exe"
+          asset_content_type: application/octet-stream
+      - name: Get Linux binary
+        uses: actions/download-artifact@v1
+        with:
+          name: db_linux
+      - name: Release Linux
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.this-release.outputs.upload_url }}
+          asset_path: db_linux/DrumBurp
+          asset_name: DrumBurp-${{ env.DB_VERSION }}
+          asset_content_type: application/octet-stream

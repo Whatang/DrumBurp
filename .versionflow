@@ -1,7 +1,9 @@
 [bumpversion]
-current_version = 1.1.1
+current_version = 1.1.2
 
 [bumpversion:file:src/DBVersionNum.py]
 
 [bumpversion:file:build\DrumBurp.nsi]
+
+[bumpversion:file:VERSION]
 
