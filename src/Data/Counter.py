@@ -25,6 +25,7 @@ Created on 16 Apr 2011
 
 from collections import OrderedDict
 from Data import DBConstants
+from math import log
 
 #thank some other thing I found online
 #Author: A.Polino
@@ -76,7 +77,8 @@ class Counter(object):
         #If the beat is compound, add the compound notes (duh)
         if self.supportsCompound:
             j = 1
-            noteType = self.noteDirectory[False].values()[-1] * 2
+            #nearest power of 2 (rounding down)
+            noteType = (1<<int(log(len(self._counts),2))) * 4
             while(j < len(self._counts)):
                 self.noteDirectory[True][j] = noteType
                 noteType /= 2
