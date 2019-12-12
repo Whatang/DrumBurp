@@ -139,7 +139,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.this-release.outputs.upload_url }}
-          asset_path: "DrumBurp-${{ env.DB_VERSION }}.0-setup.exe"
+          asset_path: "db_windows/DrumBurp-${{ env.DB_VERSION }}.0-setup.exe"
           asset_name: "DrumBurp-${{ env.DB_VERSION }}-setup.exe"
           asset_content_type: application/octet-stream
       - name: Get Linux binary
