@@ -5,6 +5,7 @@ jobs:
   build_windows:
     name: Windows Build
     runs-on: windows-latest
+    if: github.ref != 'refs/heads/master'
     steps:
       - name: Checkout
         uses: actions/checkout@master
@@ -50,6 +51,7 @@ jobs:
     needs: build_windows
     name: Windows Test
     runs-on: windows-latest
+    if: github.ref != 'refs/heads/master'
     steps:
       - name: Checkout
         uses: actions/checkout@master
@@ -71,6 +73,7 @@ jobs:
   build_linux:
     name: Linux Build
     runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/master'
     steps:
       - name: Checkout
         uses: actions/checkout@master
@@ -101,6 +104,7 @@ jobs:
     needs: build_linux
     name: Linux Test
     runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/master'
     steps:
       - name: Get Linux binary
         uses: actions/download-artifact@v1
