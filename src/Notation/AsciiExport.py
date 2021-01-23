@@ -22,7 +22,7 @@ Created on Dec 15, 2012
 @author: Mike Thomas
 '''
 
-from StringIO import StringIO
+from io import StringIO
 import time
 
 from Data.DBConstants import (REPEAT_EXTENDER, BARLINE, DRUM_ABBR_WIDTH,
@@ -94,7 +94,7 @@ class Exporter(object):
                     simText = left + simText + right
                 lineString += simText[:displayCols]
             else:
-                for noteTime in xrange(len(measure)):
+                for noteTime in range(len(measure)):
                     position.noteTime = noteTime
                     note = measure.getNote(position)
                     lineString += note
@@ -124,7 +124,7 @@ class Exporter(object):
                     self.score.measurePositionToIndex(position))
                 displayCols = referredMeasure.counter.numBeats()
                 measureCountString = "".join("%d" % (beat + 1)
-                                             for beat in xrange(displayCols))
+                                             for beat in range(displayCols))
             else:
                 measureCountString = "".join(measure.count())
             countString += " " * len(barString)
@@ -255,8 +255,7 @@ class Exporter(object):
     def _exportStaff(self, staff, staffIndex):
         kit = self.score.drumKit
         kitSize = len(kit)
-        indices = range(0, kitSize)
-        indices.reverse()
+        indices = reversed(range(0, kitSize))
         position = NotePosition(staffIndex=staffIndex)
         staffString = []
         bpmString = self._getBpmChanges(staff, position)
@@ -333,25 +332,25 @@ class Exporter(object):
         asciiString = self._exportMusic(asciiString)
         kitString = self._exportKit()
         handle = StringIO()
-        print >> handle, ("Tabbed with DrumBurp, "
-                          "a drum tab editor from www.whatang.org")
-        print >> handle, ""
+        print(("Tabbed with DrumBurp, "
+                          "a drum tab editor from www.whatang.org"), file=handle)
+        print("", file=handle)
         if self.settings.metadata:
             for mString in metadataString:
-                print >> handle, unicode(mString)
-            print >> handle, ""
+                print(str(mString), file=handle)
+            print("", file=handle)
         if self.settings.kitKey:
             for iString in kitString:
-                print >> handle, unicode(iString)
-            print >> handle, ""
+                print(str(iString), file=handle)
+            print("", file=handle)
         for sString in asciiString:
-            print >> handle, unicode(sString)
-        print >> handle, ""
-        print >> handle, ("Tabbed with DrumBurp, "
-                          "a drum tab editor from www.whatang.org")
+            print(str(sString), file=handle)
+        print("", file=handle)
+        print(("Tabbed with DrumBurp, "
+                   "a drum tab editor from www.whatang.org"), file=handle)
         lines = handle.getvalue().splitlines()
         lastBlank = False
         for line in lines:
             if line or not lastBlank:
-                print >> outHandle, line
+                print(line, outHandle)
             lastBlank = (len(line) == 0)

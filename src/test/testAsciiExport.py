@@ -4,7 +4,7 @@ Created on Dec 15, 2012
 @author: Mike
 '''
 import unittest
-from cStringIO import StringIO
+from io import BytesIO
 from Data.ASCIISettings import ASCIISettings
 from Data import DrumKit, Drum, MeasureCount
 from Data.Score import Score

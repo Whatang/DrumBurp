@@ -32,7 +32,7 @@ class QMetaData(QGraphicsListData):
     _editName = "score information."
 
     def _iterData(self):
-        line = unicode(self._qScore.title)
+        line = str(self._qScore.title)
         if self._qScore.artistVisible and self._qScore.artist:
             if line:
                 line += ", by " + self._qScore.artist

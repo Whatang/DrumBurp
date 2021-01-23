@@ -33,7 +33,7 @@ class DBInfoDialog(QDialog, Ui_InfoDialog):
         super(DBInfoDialog, self).__init__(parent)
         self.setupUi(self)
         self.setWindowTitle("DrumBurp v%s Information" % version)
-        text = unicode(self.copyrightLabel.text())
+        text = str(self.copyrightLabel.text())
         text += ' This is version %s.' % version
         self.copyrightLabel.setText(text)
 

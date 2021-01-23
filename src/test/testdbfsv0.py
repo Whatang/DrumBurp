@@ -18,7 +18,7 @@
 # along with DrumBurp.  If not, see <http://www.gnu.org/licenses/>
 
 import unittest
-from cStringIO import StringIO
+from io import BytesIO
 from Data import Beat, Counter, fileUtils, DBErrors, DrumKit, FontOptions, DefaultKits
 from Data.Drum import Drum, HeadData
 from Data.Counter import CounterRegistry

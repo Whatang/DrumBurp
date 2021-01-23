@@ -244,7 +244,7 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         directory = self._scoreDirectory
         if directory is None:
             home = QDesktopServices.HomeLocation
-            directory = unicode(QDesktopServices.storageLocation(home))
+            directory = str(QDesktopServices.storageLocation(home))
         fname = QFileDialog.getOpenFileName(parent=self,
                                             caption="Load DrumBurp kit",
                                             directory=directory,
@@ -273,26 +273,26 @@ class QEditKitDialog(QDialog, Ui_editKitDialog):
         directory = self._scoreDirectory
         if directory is None:
             home = QDesktopServices.HomeLocation
-            directory = unicode(QDesktopServices.storageLocation(home))
+            directory = str(QDesktopServices.storageLocation(home))
         fname = QFileDialog.getSaveFileName(parent=self,
                                             caption="Save DrumBurp kit",
                                             directory=directory,
                                             filter=_KIT_FILTER)
         if len(fname) == 0:
             return
-        fname = unicode(fname)
+        fname = str(fname)
         newKit, unused = self.getNewKit()
         DrumKitSerializer.DrumKitSerializer.saveKit(newKit, fname)
         QMessageBox.information(
             self, "Kit saved", "Successfully saved drumkit")
 
     def _drumNameEdited(self):
-        self._currentDrum.name = unicode(self.drumName.text())
+        self._currentDrum.name = str(self.drumName.text())
         drumIndex = self._currentDrumIndex
         self.kitTable.item(drumIndex).setText(self._currentDrum.name)
 
     def _drumAbbrEdited(self):
-        self._currentDrum.abbr = unicode(self.drumAbbr.text())
+        self._currentDrum.abbr = str(self.drumAbbr.text())
         self._checkAbbrs()
 
     def _checkAbbrs(self):
@@ -645,7 +645,7 @@ def main():
                                            "Kit name")
         if not ok:
             return
-        kitname = unicode(kitname)
+        kitname = str(kitname)
         kitvar = kitname.upper()
         kitvar = "".join([ch if ch.isalnum() else "_" for ch in kitvar])
         kitvar = "_" + kitvar
@@ -664,7 +664,7 @@ def main():
             lines.append(line)
             indent = " " * len(indent)
         lines = ("," + os.linesep).join(lines) + "]"
-        print lines
+        print (lines)
         indent = '%s_HEADS = {' % kitvar
         lines = []
         volumeSymbols = {GHOST_VOLUME: "GHOST_VOLUME",
@@ -697,11 +697,11 @@ def main():
             lines = ("," + os.linesep).join(lines) + "}"
         else:
             lines = '%s_HEADS = {}' % kitvar
-        print lines
+        print (lines)
         print ('%s_KIT = {"drums":%s_DRUMS, "heads":%s_HEADS}'
                % (kitvar, kitvar, kitvar))
-        print 'NAMED_DEFAULTS["%s"] = %s_KIT' % (kitname, kitvar)
-        print 'DEFAULT_KIT_NAMES.append("%s")' % kitname
+        print ('NAMED_DEFAULTS["%s"] = %s_KIT' % (kitname, kitvar))
+        print ('DEFAULT_KIT_NAMES.append("%s")' % kitname)
 
 
 if __name__ == "__main__":

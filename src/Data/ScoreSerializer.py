@@ -23,7 +23,7 @@ Created on Jun 20, 2015
 '''
 
 import itertools
-from cStringIO import StringIO
+from io import BytesIO
 import codecs
 from Data.fileStructures import dbfsv0, dbfsv1, dbfsv2
 from Data.DBErrors import DBVersionError, NoContent

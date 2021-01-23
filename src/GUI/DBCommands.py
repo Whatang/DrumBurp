@@ -81,7 +81,7 @@ class CheckUndo(ScoreCommand):
     else:
         def _undo(self):
             newHash = self._score.hashScore()
-            print newHash.encode('hex'), self._hash.encode('hex')
+            print (newHash.encode('hex'), self._hash.encode('hex'))
             assert newHash == self._hash
 
         def _redo(self):
@@ -96,7 +96,7 @@ class DebugScoreCommand(ScoreCommand):  # IGNORE:abstract-method
     def undo(self):
         super(DebugScoreCommand, self).undo()
         newHash = self._score.hashScore()
-        print newHash.encode('hex'), self._hash.encode('hex')
+        print (newHash.encode('hex'), self._hash.encode('hex'))
         assert newHash == self._hash
 
 
@@ -338,7 +338,7 @@ class RepeatNoteCommand(ScoreCommand):
         self._head = measure.getNote(firstNote)
         note = firstNote.makeCopy()
         self._oldNotes = [(note.makeCopy(), self._head)]
-        for dummyIndex in xrange(nRepeats):
+        for dummyIndex in range(nRepeats):
             note = self._score.notePlus(note, repInterval)
             measure = self._score.getMeasureByPosition(note)
             self._oldNotes.append((note.makeCopy(), measure.getNote(note)))
@@ -373,7 +373,7 @@ class InsertMeasuresCommand(ScoreCommand):
             moveEnd = measure.isSectionEnd()
             if moveEnd:
                 measure.setSectionEnd(False)
-        for dummyMeasureIndex in xrange(self._numMeasures):
+        for dummyMeasureIndex in range(self._numMeasures):
             self._score.insertMeasureByIndex(self._width, self._index,
                                              counter=self._counter)
         if moveEnd:
@@ -389,7 +389,7 @@ class InsertMeasuresCommand(ScoreCommand):
                 measure.setSectionEnd(False)
                 measure = self._score.getMeasureByIndex(self._index - 1)
                 measure.setSectionEnd(True)
-        for dummyMeasureIndex in xrange(self._numMeasures):
+        for dummyMeasureIndex in range(self._numMeasures):
             self._score.deleteMeasureByIndex(self._index)
 
 

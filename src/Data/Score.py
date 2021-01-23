@@ -38,7 +38,7 @@ import Data.ASCIISettings as ASCIISettings
 from Notation import AsciiExport
 import bisect
 import hashlib
-from StringIO import StringIO
+from io import StringIO
 
 
 class Score(object):
@@ -137,7 +137,7 @@ class Score(object):
         for aText in alternates:
             if "-" in aText:
                 aStart, aEnd = aText.split("-")
-                for aVal in xrange(int(aStart), int(aEnd.rstrip(".")) + 1):
+                for aVal in range(int(aStart), int(aEnd.rstrip(".")) + 1):
                     theseAlternates.add(aVal)
             else:
                 theseAlternates.add(int(aText.rstrip(".")))
@@ -160,7 +160,7 @@ class Score(object):
                         not measures[index + 1].alternateText
                         or measures[index + 1].isRepeatStart()
                             or measure.isSectionEnd()):
-                        if alternates != set(xrange(1, numRepeats + 1)):
+                        if alternates != set(range(1, numRepeats + 1)):
                             raise DBErrors.InconsistentRepeats(start, index)
                         return index + 1, numRepeats
                 else:
@@ -296,7 +296,7 @@ class Score(object):
     def measurePositionToIndex(self, position):
         self._checkStaffIndex(position.staffIndex)
         index = 0
-        for staffIndex in xrange(0, position.staffIndex):
+        for staffIndex in range(0, position.staffIndex):
             index += self.getStaffByIndex(staffIndex).numMeasures()
         index += position.measureIndex
         return index
@@ -366,7 +366,7 @@ class Score(object):
     def deleteMeasuresAtPosition(self, position, numToDelete):
         position = position.makeMeasurePosition()
         staff = self.getStaffByIndex(position.staffIndex)
-        for dummyIndex in xrange(numToDelete):
+        for dummyIndex in range(numToDelete):
             if position.measureIndex == staff.numMeasures():
                 if staff.numMeasures() == 0:
                     self._deleteStaffByIndex(position.staffIndex)

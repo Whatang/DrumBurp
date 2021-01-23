@@ -4,7 +4,7 @@ Created on Apr 9, 2016
 @author: mike_000
 '''
 import unittest
-import StringIO
+from io import StringIO
 from Notation import lilypond
 from Data.DrumKitFactory import DrumKitFactory
 from Data.Counter import CounterRegistry

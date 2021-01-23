@@ -41,7 +41,7 @@ class LilypondExporter(QThread):
         self._outputPath = outputPath
         self._processedPath = self._calcProcessedPath(self._outputPath)
         self._onFinish = onFinish
-        self._lilypondPath = unicode(lilypondPath)
+        self._lilypondPath = str(lilypondPath)
         self._format = self._toFormatString(lilyFormat)
         self._status = self.NOT_STARTED
         self.returnCode = 0
@@ -61,7 +61,7 @@ class LilypondExporter(QThread):
             if lilyFormat < 0 or lilyFormat > 2:
                 lilyFormat = 0
             lilyFormat = ["pdf", "ps", "png"][lilyFormat]
-        return unicode(lilyFormat)
+        return str(lilyFormat)
 
     def run(self):
         try:

@@ -89,7 +89,7 @@ class Staff(object):
         self._isValidPosition(position, True)
         self._measures.insert(position.measureIndex, measure)
         self._visibleLines = {}
-        for index in xrange(position.measureIndex, self.numMeasures()):
+        for index in range(position.measureIndex, self.numMeasures()):
             nextMeasure = self[index]
             self._setMeasureCallBack(nextMeasure, index)
 

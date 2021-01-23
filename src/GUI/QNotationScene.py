@@ -51,16 +51,16 @@ class QNotationScene(QGraphicsScene):
         self._linesBelow = []
         self._stem = self.addRect(0, 0, STEM_WIDTH, STEM_LENGTH)
 
-        for i in xrange(NUM_LINES):
+        for i in range(NUM_LINES):
             self.addLine(LEFT, TOP_LINE + i * PIXELS_PER_LINE,
                          LEFT + WIDTH, TOP_LINE + i * PIXELS_PER_LINE)
-        for i in xrange(LINES_ABOVE):
+        for i in range(LINES_ABOVE):
             lineHeight = TOP_LINE - (i + 1) * PIXELS_PER_LINE
             line = self.addLine(LEFT + (WIDTH - EXT_WIDTH) / 2, lineHeight,
                                 LEFT + (WIDTH + EXT_WIDTH) / 2, lineHeight)
             line.setVisible(False)
             self._linesAbove.append(line)
-        for i in xrange(LINES_BELOW):
+        for i in range(LINES_BELOW):
             lineHeight = TOP_LINE + (NUM_LINES + i) * PIXELS_PER_LINE
             line = self.addLine(LEFT + (WIDTH - EXT_WIDTH) / 2, lineHeight,
                                 LEFT + (WIDTH + EXT_WIDTH) / 2, lineHeight)
@@ -142,16 +142,16 @@ class QNotationScene(QGraphicsScene):
         invisibleStart = 0
         if offset > 0:
             invisibleStart = offset / 2
-            for i in xrange(invisibleStart):
+            for i in range(invisibleStart):
                 self._linesAbove[i].setVisible(True)
-        for i in xrange(invisibleStart, LINES_ABOVE):
+        for i in range(invisibleStart, LINES_ABOVE):
             self._linesAbove[i].setVisible(False)
         invisibleStart = 0
         if offset <= -2 * NUM_LINES:
             invisibleStart = (-offset) / 2 - NUM_LINES + 1
-            for i in xrange(invisibleStart):
+            for i in range(invisibleStart):
                 self._linesBelow[i].setVisible(True)
-        for i in xrange(invisibleStart, LINES_BELOW):
+        for i in range(invisibleStart, LINES_BELOW):
             self._linesBelow[i].setVisible(False)
         if headData.stemDirection == STEM_DOWN:
             stemLeft = left

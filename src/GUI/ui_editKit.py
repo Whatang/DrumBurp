@@ -844,4 +844,4 @@ class Ui_editKitDialog(object):
         self.label.setText(_translate("editKitDialog", "The line for this drum will always be displayed, even if it contains no notes.", None))
 
 import buttons_rc
-import DrumBurp_rc
+from . import DrumBurp_rc

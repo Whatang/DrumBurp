@@ -23,27 +23,27 @@ Created on 12 Dec 2010
 '''
 
 
-class BadTimeError(StandardError):
+class BadTimeError(Exception):
     "The given note position is invalid."
 
 
-class BadNoteSpecification(StandardError):
+class BadNoteSpecification(Exception):
     "The given note index is not valid for this DrumKit."
 
 
-class DuplicateDrumError(StandardError):
+class DuplicateDrumError(Exception):
     "This drum already appears in this drum kit."
 
 
-class NoSuchDrumError(StandardError):
+class NoSuchDrumError(Exception):
     "The specified drum was not found."
 
 
-class OverSizeMeasure(StandardError):
+class OverSizeMeasure(Exception):
     "The Score contains a Measure which is too large to format for this width."
 
 
-class DbReadError(StandardError):
+class DbReadError(Exception):
     "There was an error reading the score."
 
     def __init__(self, scoreIterator=None):
@@ -107,5 +107,5 @@ class DBVersionError(DbReadError):
         return self.__doc__
 
 
-class InconsistentRepeats(StandardError):
+class InconsistentRepeats(Exception):
     "Bad repeat data"

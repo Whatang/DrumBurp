@@ -1074,7 +1074,7 @@ def findLilyPath():
 
 
 def _findWindowsLilyPath():
-    for drive in map(chr, xrange(0x41, 0x5a)):
+    for drive in map(chr, range(0x41, 0x5a)):
         if not os.path.exists(drive + ":"):
             continue
         for basepath in (drive + r":\Program Files\Lilypond",

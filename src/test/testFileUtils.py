@@ -22,7 +22,7 @@ Created on 12 Dec 2012
 @author: Mike Thomas
 '''
 import unittest
-from cStringIO import StringIO
+from io import BytesIO
 from Data import fileUtils
 
 # pylint: disable-msg=R0904

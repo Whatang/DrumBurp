@@ -39,12 +39,12 @@ class FontOptions(object):
 
     @classmethod
     def addFont(cls, fontName, font):
-        cls._ALLOWED_FONTS[unicode(fontName)] = font
+        cls._ALLOWED_FONTS[str(fontName)] = font
 
     @classmethod
     def iterAllowedFonts(cls):
-        return cls._ALLOWED_FONTS.iteritems()
+        return iter(cls._ALLOWED_FONTS.items())
 
     @classmethod
     def isAllowedFont(cls, fontName):
-        return unicode(fontName) in cls._ALLOWED_FONTS
+        return str(fontName) in cls._ALLOWED_FONTS
