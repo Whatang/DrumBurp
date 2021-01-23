@@ -72,7 +72,7 @@ class QSection(QGraphicsTextItem):
             super(QSection, self).keyPressEvent(event)
 
     def focusOutEvent(self, event):
-        text = unicode(self.document().toPlainText())
+        text = str(self.document().toPlainText())
         if text != self._title:
             self._title = text
             command = SetSectionTitleCommand(self.scene(),

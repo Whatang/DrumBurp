@@ -5,6 +5,7 @@ jobs:
   build_windows:
     name: Windows Build
     runs-on: windows-latest
+    if: github.ref != 'refs/heads/master'
     steps:
       - name: Checkout
         uses: actions/checkout@master
@@ -50,6 +51,7 @@ jobs:
     needs: build_windows
     name: Windows Test
     runs-on: windows-latest
+    if: github.ref != 'refs/heads/master'
     steps:
       - name: Checkout
         uses: actions/checkout@master
@@ -71,6 +73,7 @@ jobs:
   build_linux:
     name: Linux Build
     runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/master'
     steps:
       - name: Checkout
         uses: actions/checkout@master
@@ -101,6 +104,7 @@ jobs:
     needs: build_linux
     name: Linux Test
     runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/master'
     steps:
       - name: Get Linux binary
         uses: actions/download-artifact@v1
@@ -140,7 +144,7 @@ jobs:
         with:
           upload_url: ${{ steps.this-release.outputs.upload_url }}
           asset_path: "db_windows/DrumBurp-${{ env.DB_VERSION }}.0-setup.exe"
-          asset_name: "DrumBurp-${{ env.DB_VERSION }}-setup.exe"
+          asset_name: "DrumBurp-${{ env.DB_VERSION }}-Windows-setup.exe"
           asset_content_type: application/octet-stream
       - name: Get Linux binary
         uses: actions/download-artifact@v1
@@ -153,5 +157,5 @@ jobs:
         with:
           upload_url: ${{ steps.this-release.outputs.upload_url }}
           asset_path: db_linux/DrumBurp
-          asset_name: DrumBurp-${{ env.DB_VERSION }}
+          asset_name: DrumBurp-${{ env.DB_VERSION }}-Linux-x64
           asset_content_type: application/octet-stream

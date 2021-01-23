@@ -161,10 +161,10 @@ class Drum(object):
 
     def checkShortcuts(self):
         availableShortcuts = set('abcdefghijklmnopqrstuvwxyz')
-        for head, data in self._headData.iteritems():
+        for head, data in iter(self._headData.items()):
             if data.shortcut:
                 availableShortcuts.remove(data.shortcut)
-        for head, data in self._headData.iteritems():
+        for head, data in iter(self._headData.items()):
             if not data.shortcut:
                 if head in availableShortcuts:
                     data.shortcut = head
@@ -176,7 +176,7 @@ class Drum(object):
         shortcuts = []
         for head in self:
             shortcut = self._headData[head].shortcut
-            shortcuts.append((unicode(shortcut), head))
+            shortcuts.append((str(shortcut), head))
         return shortcuts
 
 

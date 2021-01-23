@@ -31,7 +31,7 @@ STYLE_MAP = {"None": QtCore.Qt.NoPen,
              "Solid": QtCore.Qt.SolidLine,
              "Dashed": QtCore.Qt.DashLine}
 STYLES = ["None", "Dashed", "Solid"]
-REVERSE_STYLE_MAP = dict((x, y) for (y, x) in STYLE_MAP.iteritems())
+REVERSE_STYLE_MAP = dict((x, y) for (y, x) in iter(STYLE_MAP.items()))
 
 
 class ColouredItem(object):
@@ -381,7 +381,7 @@ def main():
     if dialog.result():
         scheme = dialog.getColourScheme()
         for col in scheme.iterColours():
-            print col.colourAttrs.longName, col.toString()
+            print (col.colourAttrs.longName, col.toString())
 
 
 if __name__ == "__main__":

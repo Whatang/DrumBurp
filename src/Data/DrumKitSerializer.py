@@ -22,7 +22,7 @@ Created on Jun 20, 2015
 
 @author: Mike Thomas
 '''
-from cStringIO import StringIO
+from io import BytesIO
 import itertools
 from Data import fileUtils
 from Data import DBConstants

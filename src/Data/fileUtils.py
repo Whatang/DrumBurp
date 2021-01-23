@@ -59,7 +59,7 @@ class dbFileIterator(object):
                     if linesRead == self._readLines:
                         break
 
-        def __exit__(self, excType, excValue, excTraceback):
+        def __exit__(self, excType, excValue, Traceback):
             if excType is None:
                 self._process()
             return False
@@ -105,7 +105,7 @@ class Indenter(object):
                 self.indenter.increase()
             return self
 
-        def __exit__(self, excType, excValue, excTraceback):
+        def __exit__(self, excType, excValue, Traceback):
             if self._doIndent:
                 self.indenter.decrease()
                 self.indenter(self.end)
@@ -124,7 +124,7 @@ class Indenter(object):
         self._level = max(0, self._level)
 
     def __call__(self, *args):
-        argString = " ".join(unicode(ar) for ar in args)
+        argString = " ".join(str(ar) for ar in args)
         if self._level != 0:
             argString = (self._indent * self._level) + argString
         print >> self._handle, argString
@@ -133,7 +133,7 @@ class Indenter(object):
         self.increase()
         return self
 
-    def __exit__(self, excType, excValue, excTraceback):
+    def __exit__(self, excType, excValue, Traceback):
         self.decrease()
         return False
 
@@ -159,7 +159,7 @@ class DataReader(object):
             self._reader = codecs.getreader('utf-8')(open(self.filename))
         return self._reader
 
-    def __exit__(self, excType, excValue, traceback):
+    def __exit__(self, excType, excValue, Traceback):
         self._reader.close()
         if self._gzHandle is not None:
             self._gzHandle.close()
@@ -181,7 +181,7 @@ class DataWriter(object):
             self._writer = codecs.getwriter('utf-8')(open(self.filename, 'w'))
         return self._writer
 
-    def __exit__(self, excType, excValue, traceback):
+    def __exit__(self, excType, excValue, Traceback):
         self._writer.close()
         if self._gzHandle is not None:
             self._gzHandle.close()
@@ -321,7 +321,7 @@ class StringField(SimpleValueField):
         return data
 
     def _toString(self, value):
-        return unicode(value)
+        return str(value)
 
 
 class Base64StringField(SimpleValueField):
@@ -474,7 +474,7 @@ class FileStructure(AbstractFileStructureElement):
         try:
             for lineType, lineData in iterator:
                 if debug:
-                    print lineType, lineData
+                    print (lineType, lineData)
                 if lineType in fieldDict:
                     field = fieldDict[lineType]
                     field.read(instance, lineData)
@@ -491,7 +491,7 @@ class FileStructure(AbstractFileStructureElement):
                 else:
                     raise DBErrors.UnrecognisedLine()
             return self.postProcessObject(instance)
-        except DBErrors.DbReadError, exc:
+        except DBErrors.DbReadError (exc):
             exc.setIterator(fileIterator)
             raise
 

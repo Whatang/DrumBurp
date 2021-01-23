@@ -165,4 +165,4 @@ class Ui_InfoDialog(object):
         self.label_8.setText(_translate("InfoDialog", "Cost", None))
         self.label_9.setText(_translate("InfoDialog", "DrumBurp is free for private, non-commercial use. Donations to fund DrumBurp development & support are welcome: please see the website.", None))
 
-import DrumBurp_rc
+from . import DrumBurp_rc

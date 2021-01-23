@@ -95,7 +95,7 @@ def main():
     dialog.show()
     app.exec_()
     if dialog.result() == dialog.Accepted:
-        print dialog.getValue()
+        print (dialog.getValue())
 
 
 if __name__ == "__main__":

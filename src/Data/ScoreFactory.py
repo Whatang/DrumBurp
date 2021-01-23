@@ -34,7 +34,7 @@ class ScoreFactory(object):
             counter = list(registry.countsByTicks(2))
             counter = counter[0][1]
             counter = makeSimpleCount(counter, 4)
-        for dummy in xrange(numMeasures):
+        for dummy in range(numMeasures):
             score.insertMeasureByIndex(len(counter), counter=counter)
         score.scoreData.makeEmpty()
         return score

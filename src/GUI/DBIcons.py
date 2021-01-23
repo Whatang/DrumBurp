@@ -33,7 +33,7 @@ _ICON_CACHE = {"drumburp": "drumburp",
 
 
 def initialiseIcons():
-    for iconName, iconLocation in _ICON_CACHE.iteritems():
+    for iconName, iconLocation in iter(_ICON_CACHE.items()):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/Icons/Icons/" + iconLocation + ".png"),
                        QtGui.QIcon.Normal, QtGui.QIcon.Off)

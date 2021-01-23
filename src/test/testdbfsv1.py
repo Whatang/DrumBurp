@@ -24,7 +24,7 @@ Created on Jun 21, 2015
 '''
 
 import unittest
-from cStringIO import StringIO
+from io import BytesIO
 from Data import Beat, Counter, fileUtils, DBErrors, DefaultKits, DrumKit
 from Data.Drum import Drum, HeadData
 from Data.Counter import CounterRegistry

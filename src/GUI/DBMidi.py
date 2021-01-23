@@ -50,22 +50,27 @@ DRAG_TIME_CONSTANT = 96
 from PyQt4.Qt import QThread
 import atexit
 import time
-import StringIO
+from io import StringIO
 
 try:
     import pygame
     import pygame.midi
+
     _HAS_PYGAME = True
+
 
     def getDefaultId():
         return pygame.midi.get_default_output_id()
 
+
     def iterDeviceIds():
-        return xrange(pygame.midi.get_count())
+        return range(pygame.midi.get_count())
+
 
     def getDeviceInfo(deviceId):
         int_, name, isIn, isOut, isOpen = pygame.midi.get_device_info(deviceId)
         return name, isIn == 1, isOut == 1, isOpen == 1
+
 
     def cleanup():
         _PLAYER.cleanup()
@@ -76,14 +81,18 @@ try:
 except ImportError:
     _HAS_PYGAME = False
 
+
     def getDefaultId():
         return -1
+
 
     def iterDeviceIds():
         return iter([])
 
+
     def getDeviceInfo(deviceId_):
         return None, False, False, False
+
 
     def cleanup():
         if _PLAYER is not None:
@@ -245,7 +254,7 @@ class _midi(QObject):
             self._measureDetails.reverse()
             del self._midiOut
             self._midiOut = None
-            midi = StringIO.StringIO()
+            midi = StringIO()
             exportMidi(measureList, score, midi)
             midi.seek(0, 0)
             pygame.mixer.music.load(midi)
@@ -371,12 +380,12 @@ def _writeMidiNotes(midiObjects, baseTime):
     lastNoteTime = 0
     midiData = []
     for midiEvent in midiObjects:
-        deltaTime = midiEvent.time - lastNoteTime
+        deltaTime = int(midiEvent.time - lastNoteTime)
         lastNoteTime = midiEvent.time
         encodeSevenBitDelta(deltaTime, midiData)
         midiData.extend(midiEvent.write())
     # Turn off drum notes
-    deltaTime = baseTime - lastNoteTime
+    deltaTime = int(baseTime - lastNoteTime)
     # Insert a delay before the end of the track.
     encodeSevenBitDelta(deltaTime + 4 * MIDITICKSPERBEAT, midiData)
     midiData.extend([_PERCUSSION_NOTE_OFF, 38, 0])
@@ -387,7 +396,7 @@ def _writeMidiNotes(midiObjects, baseTime):
 
 def _finishMidiData(midiData):
     numBytes = len(midiData)
-    lenBytes = [((numBytes >> i) & 0xff) for i in xrange(24, -8, -8)]
+    lenBytes = [((numBytes >> i) & 0xff) for i in range(24, -8, -8)]
     return lenBytes + midiData
 
 
@@ -409,7 +418,7 @@ class MidiTempoChange(MidiObject):
 
     def write(self):
         msPerBeat = int(60000000 / self.bpm)
-        return [0xff, 0x51, 03, (msPerBeat >> 16) & 0xff,
+        return [0xff, 0x51, 0o03, (msPerBeat >> 16) & 0xff,
                 (msPerBeat >> 8) & 0xff, msPerBeat & 0xff]
 
 
@@ -522,7 +531,7 @@ def main():
     _initialize()
     refreshOutputDevices()
     for device in iterMidiDevices():
-        print device.name
+        print(device.name)
 
 
 if __name__ == "__main__":

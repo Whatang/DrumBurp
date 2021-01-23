@@ -40,7 +40,7 @@ def initialiseFonts():
              ('Roboto', 'raleway.ttf')]
     for fontName, fontFile in fonts:
         if QFontDatabase.addApplicationFont(":/fonts/" + fontFile) == -1:
-            print fontName
+            print (fontName)
         else:
             font = QFont(fontName)
             Data.FontOptions.FontOptions.addFont(fontName, font)

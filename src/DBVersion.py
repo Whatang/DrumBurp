@@ -61,7 +61,7 @@ def readVersion(text):
     finder = re.compile(r"DB_VERSION_STRING\s*=\s*'(.*)'")
     for line in text.splitlines():
         line = line.strip()
-        match = finder.match(line)
+        match = finder.match(str(line))
         if match:
             versionText = match.groups(1)
             return versionStringToTuple(versionText[0])
@@ -69,13 +69,13 @@ def readVersion(text):
 
 
 def getLatestVersion():
-    import urllib2
+    import urllib
     try:
-        versionUrl = urllib2.urlopen('http://github.com/Whatang/DrumBurp/raw/master/src/' + DB_VERSION_FILE,
+        versionUrl = urllib.request.urlopen('http://github.com/Whatang/DrumBurp/raw/master/src/' + DB_VERSION_FILE,
                                      timeout=10)
         versionText = versionUrl.read()
         return readVersion(versionText)
-    except urllib2.HTTPError:
+    except urllib.error.HTTPError:
         return (0, 0, 0)
 
 
@@ -96,7 +96,7 @@ DB_VERSION, FULL_RELEASE = (DB_VERSION_STRING,
                             _is_full_release(DB_VERSION_STRING))
 
 if __name__ == "__main__":
-    print DB_VERSION, FULL_RELEASE
-    print getLatestVersion()
-    print versionStringToTuple(DB_VERSION)
-    print "'%s'" % str(doesNewerVersionExist())
+    print (DB_VERSION, FULL_RELEASE)
+    print (getLatestVersion())
+    print (versionStringToTuple(DB_VERSION))
+    print ("'%s'" % str(doesNewerVersionExist()))

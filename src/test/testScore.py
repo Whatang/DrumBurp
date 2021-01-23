@@ -507,7 +507,7 @@ class TestFormatScore(unittest.TestCase):
         trailing = self.score.trailingEmptyMeasures()
         self.assertEqual(trailing,
                          [self.score.measureIndexToPosition(i)
-                          for i in xrange(7, 1, -1)])
+                          for i in range(7, 1, -1)])
 
     def testTrailingMeasuresEmptyScore(self):
         for dummy in range(0, 8):
@@ -516,7 +516,7 @@ class TestFormatScore(unittest.TestCase):
         trailing = self.score.trailingEmptyMeasures()
         self.assertEqual(trailing,
                          [self.score.measureIndexToPosition(i)
-                          for i in xrange(7, 0, -1)])
+                          for i in range(7, 0, -1)])
 
 
 class TestCopyPaste(unittest.TestCase):

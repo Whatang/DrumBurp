@@ -138,8 +138,8 @@ class DragSelection(object):
 
 class _HeadShortcut(object):
     def __init__(self, currentHeads):
-        self._headDict = dict((unicode(x), y) for (x, y) in currentHeads)
-        self._headOrder = [unicode(x) for (x, y_) in currentHeads]
+        self._headDict = dict((str(x), y) for (x, y) in currentHeads)
+        self._headOrder = [str(x) for (x, y_) in currentHeads]
         self._textMemo = {}
 
     def text(self, currentKey):
@@ -153,7 +153,7 @@ class _HeadShortcut(object):
         return self._headDict.get(currentKey, None)
 
     def _keyString(self, head):
-        if head == unicode(self._headDict[head]):
+        if head == str(self._headDict[head]):
             return head
         else:
             return u"%s(%s)" % (self._headDict[head], head)
@@ -280,8 +280,8 @@ class QScore(QtGui.QGraphicsScene):
     dragHighlight = QtCore.pyqtSignal(bool)
     sceneFormatted = QtCore.pyqtSignal()
     playing = QtCore.pyqtSignal(bool)
-    currentHeadsChanged = QtCore.pyqtSignal(QtCore.QString)
-    statusMessageSet = QtCore.pyqtSignal(QtCore.QString)
+    currentHeadsChanged = QtCore.pyqtSignal(str)
+    statusMessageSet = QtCore.pyqtSignal(str)
     lilysizeChanged = QtCore.pyqtSignal(int)
     lilypagesChanged = QtCore.pyqtSignal(int)
     lilyFillChanged = QtCore.pyqtSignal(bool)
@@ -387,7 +387,7 @@ class QScore(QtGui.QGraphicsScene):
     @property
     def lineOffsets(self):
         yOffsets = [drumIndex * self.ySpacing
-                    for drumIndex in xrange(self.kitSize)]
+                    for drumIndex in range(self.kitSize)]
         yOffsets.reverse()
         return yOffsets
 
@@ -627,7 +627,7 @@ class QScore(QtGui.QGraphicsScene):
                 self.sendFsmEvent(Escape())
             else:
                 if self._currentKey == None and event.text():
-                    self._currentKey = unicode(event.text())
+                    self._currentKey = str(event.text())
                     self._highlightCurrentKeyHead()
                     self.update()
         return super(QScore, self).keyPressEvent(event)
@@ -635,7 +635,7 @@ class QScore(QtGui.QGraphicsScene):
     def keyReleaseEvent(self, event):
         if not event.isAutoRepeat():
             if event.key() != QtCore.Qt.Key_Escape:
-                if unicode(event.text()) == self._currentKey:
+                if str(event.text()) == self._currentKey:
                     self._currentKey = None
                     self._highlightCurrentKeyHead()
                     self.update()
@@ -650,7 +650,7 @@ class QScore(QtGui.QGraphicsScene):
 
     def _highlightCurrentKeyHead(self):
         headText = self._shortcutMemo.getShortcutText(self._currentKey)
-        self.currentHeadsChanged.emit(QtCore.QString(headText))
+        self.currentHeadsChanged.emit(str(headText))
 
     def copyMeasures(self, np=None):
         if np is not None:
@@ -754,14 +754,14 @@ class QScore(QtGui.QGraphicsScene):
     def loadScore(self, filename, quiet=False):
         try:
             newScore = ScoreSerializer.loadScore(filename)
-        except DBErrors.DbReadError, exc:
+        except DBErrors.DbReadError (exc):
             if not quiet:
                 msg = "Error loading DrumBurp file %s" % filename
                 QtGui.QMessageBox.warning(self.parent(),
                                           "Score load error",
-                                          msg + "\n" + unicode(exc))
+                                          msg + "\n" + str(exc))
             return False
-        except Exception, exc:
+        except Exception (exc):
             raise
         self._setScore(newScore)
         self._saved = True
@@ -770,8 +770,8 @@ class QScore(QtGui.QGraphicsScene):
     def saveScore(self, filename):
         try:
             ScoreSerializer.saveScore(self._score, filename)
-        except StandardError, exc:
-            msg = "Error saving DrumBurp file: %s" % unicode(exc)
+        except Exception (exc):
+            msg = "Error saving DrumBurp file: %s" % str(exc)
             QtGui.QMessageBox.warning(self.parent(),
                                       "Score save error",
                                       msg)
@@ -928,7 +928,7 @@ class QScore(QtGui.QGraphicsScene):
 
     def editKit(self):
         emptyDrums = set(self.score.drumKit)
-        for staffIndex in xrange(self.score.numStaffs()):
+        for staffIndex in range(self.score.numStaffs()):
             lines = set(self.score.iterVisibleLines(staffIndex, True))
             emptyDrums.difference_update(lines)
             if not emptyDrums:
@@ -985,7 +985,7 @@ class QScore(QtGui.QGraphicsScene):
     def sendFsmEvent(self, event):
         try:
             self._stateMachine.send_event(event)
-        except StandardError:
+        except Exception:
             self._stateMachine.set_state(Waiting)
             raise
 
@@ -1025,7 +1025,7 @@ class _metaChangeContext(object):
     def __enter__(self):
         return self
 
-    def __exit__(self, excType, excValue, excTraceback):
+    def __exit__(self, excType, excValue, Traceback):
         self._metaData.update()
         if self._metaData.boundingRect().height() != self._metaSize:
             self._qScore.placeStaffs()
@@ -1041,7 +1041,7 @@ class _kitDataChangeContext(object):
     def __enter__(self):
         return self
 
-    def __exit__(self, excType, excValue, excTraceback):
+    def __exit__(self, excType, excValue, Traceback):
         self._kitData.update()
         if self._kitData.boundingRect().height() != self._kitDataSize:
             self._qScore.placeStaffs()

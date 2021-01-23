@@ -24,7 +24,7 @@ Created on 13 Oct 2012
 '''
 
 from PyQt4 import QtGui, QtCore
-from cStringIO import StringIO
+from io import BytesIO
 from GUI.ui_defaultKitManager import Ui_DefaulKitManager
 from Data import DefaultKits, DrumKitFactory, DrumKitSerializer
 
@@ -113,7 +113,7 @@ class QDefaultKitManager(Ui_DefaulKitManager, QtGui.QDialog):
             index = self.defaultKitList.currentRow()
             isUser = item.data(_IS_USER_KIT).toBool()
             if isUser:
-                kitName = unicode(item.text())
+                kitName = str(item.text())
                 self._writeKit(kitName)
                 self.defaultKitList.setCurrentRow(index)
             else:
@@ -124,9 +124,9 @@ class QDefaultKitManager(Ui_DefaulKitManager, QtGui.QDialog):
     def getKit(self):
         item = self.defaultKitList.currentItem()
         isUser = item.data(_IS_USER_KIT).toBool()
-        kitName = unicode(item.text())
+        kitName = str(item.text())
         if isUser:
-            kitString = unicode(self._settings.value(kitName).toString())
+            kitString = str(self._settings.value(kitName).toString())
             handle = StringIO(kitString)
             return DrumKitSerializer.DrumKitSerializer.read(handle)
         else:
@@ -145,7 +145,7 @@ def main():
     dialog.show()
     app.exec_()
     if dialog.result():
-        print dialog.getKit()
+        print (dialog.getKit())
 
 
 if __name__ == "__main__":

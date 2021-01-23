@@ -1,1 +1,11 @@
+title: DrumBurp
+author: Mike Thomas
+email: drumburp@whatang.org
+description: > # this means to ignore newlines until "baseurl:"
+  Documentation for the DrumBurp free open-source drum tab editor.
+# social links
+github_username: Whatang
+
+show_excerpts: true # set to false to remove excerpts on the homepage
+source: docs
 theme: jekyll-theme-midnight

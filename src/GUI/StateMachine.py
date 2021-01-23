@@ -44,9 +44,9 @@ def _debugStateMachine(method):
 
     @wraps(method)
     def wrapper(self, event):
-        print type(event).__name__
+        print (type(event).__name__)
         retval = method(self, event)
-        print type(self._state).__name__  # IGNORE:protected-access
+        print (type(self._state).__name__)  # IGNORE:protected-access
         return retval
     return wrapper
 
