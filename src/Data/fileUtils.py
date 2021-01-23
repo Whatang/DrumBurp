@@ -59,7 +59,7 @@ class dbFileIterator(object):
                     if linesRead == self._readLines:
                         break
 
-        def __exit__(self, excType, excValue, excTraceback):
+        def __exit__(self, excType, excValue, Traceback):
             if excType is None:
                 self._process()
             return False
@@ -105,7 +105,7 @@ class Indenter(object):
                 self.indenter.increase()
             return self
 
-        def __exit__(self, excType, excValue, excTraceback):
+        def __exit__(self, excType, excValue, Traceback):
             if self._doIndent:
                 self.indenter.decrease()
                 self.indenter(self.end)
@@ -133,7 +133,7 @@ class Indenter(object):
         self.increase()
         return self
 
-    def __exit__(self, excType, excValue, excTraceback):
+    def __exit__(self, excType, excValue, Traceback):
         self.decrease()
         return False
 
@@ -159,7 +159,7 @@ class DataReader(object):
             self._reader = codecs.getreader('utf-8')(open(self.filename))
         return self._reader
 
-    def __exit__(self, excType, excValue, excTraceback):
+    def __exit__(self, excType, excValue, Traceback):
         self._reader.close()
         if self._gzHandle is not None:
             self._gzHandle.close()
@@ -181,7 +181,7 @@ class DataWriter(object):
             self._writer = codecs.getwriter('utf-8')(open(self.filename, 'w'))
         return self._writer
 
-    def __exit__(self, excType, excValue, excTraceback):
+    def __exit__(self, excType, excValue, Traceback):
         self._writer.close()
         if self._gzHandle is not None:
             self._gzHandle.close()

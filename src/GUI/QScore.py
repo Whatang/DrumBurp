@@ -1025,7 +1025,7 @@ class _metaChangeContext(object):
     def __enter__(self):
         return self
 
-    def __exit__(self, excType, excValue, excTraceback):
+    def __exit__(self, excType, excValue, Traceback):
         self._metaData.update()
         if self._metaData.boundingRect().height() != self._metaSize:
             self._qScore.placeStaffs()
@@ -1041,7 +1041,7 @@ class _kitDataChangeContext(object):
     def __enter__(self):
         return self
 
-    def __exit__(self, excType, excValue, excTraceback):
+    def __exit__(self, excType, excValue, Traceback):
         self._kitData.update()
         if self._kitData.boundingRect().height() != self._kitDataSize:
             self._qScore.placeStaffs()
