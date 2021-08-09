@@ -1,6 +1,6 @@
 pylint
 versionflow>=0.3.6
 pygame==1.9.2
-pywin32==222
+pywin32==301
 pre-commit
 autopep8
